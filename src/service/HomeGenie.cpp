@@ -19,12 +19,25 @@ namespace Service {
 
     void HomeGenie::loop() {
         httpServer->loop();
+        //
+        if(Serial.available() > 0)
+        {
+            String cmd = Serial.readStringUntil('\n');
+            if (cmd.startsWith("X10:send "))
+            {
+                String hexData = cmd.substring(9);
+                uint8_t data[hexData.length() / 2]; getBytes(hexData, data);
+                // Disable Receiver callbacks during transmission to prevent echo
+                getIOManager().getX10Receiver().disable();
+                getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
+                getIOManager().getX10Receiver().enable();
+            }
+        }
     }
 
-    IO::IOManager* HomeGenie::getIOManager() {
-        return ioManager;
+    IO::IOManager& HomeGenie::getIOManager() {
+        return *ioManager;
     }
-
 
     // BEGIN RequestHandler interface methods
     bool HomeGenie::canHandle(HTTPMethod method, String uri) {
@@ -36,14 +49,15 @@ namespace Service {
             String rawBytes = requestUri.substring((uint) requestUri.lastIndexOf('/') + 1);
             uint8_t data[rawBytes.length() / 2]; getBytes(rawBytes, data);
             // Disable Receiver callbacks during transmission to prevent echo
-            getIOManager()->getX10Receiver()->disable();
-            getIOManager()->getX10Transmitter()->sendCommand(data, sizeof(data));
-            getIOManager()->getX10Receiver()->enable();
+            getIOManager().getX10Receiver().disable();
+            getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
+            getIOManager().getX10Receiver().enable();
             res = R"({ "ResponseText": "OK" })";
         }
         server.send(200, "application/json", res);
         return true;
     }
+    // END RequestHandler interface methods
 
     void HomeGenie::getBytes(const String &rawBytes, uint8_t *data) {
         uint len = rawBytes.length();

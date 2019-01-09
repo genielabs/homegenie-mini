@@ -21,10 +21,10 @@ namespace IO {
     public:
         IOManager();
         void begin();
-        Transmitter* getX10Transmitter(){ return x10Transmitter; };
         int onX10RfDataReceived(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
 
-        Receiver *getX10Receiver();
+        Receiver& getX10Receiver(){ return *x10Receiver; };
+        Transmitter& getX10Transmitter(){ return *x10Transmitter; };
 
     private:
         class X10ApiHandler;

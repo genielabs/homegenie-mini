@@ -55,8 +55,4 @@ namespace IO {
         }
     }
 
-    Receiver *IOManager::getX10Receiver() {
-        return x10Receiver;
-    }
-
 }

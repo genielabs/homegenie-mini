@@ -12,6 +12,8 @@
 
 namespace Service {
 
+    using namespace IO;
+
     class HomeGenie: RequestHandler {
     public:
         HomeGenie();
@@ -21,10 +23,10 @@ namespace Service {
         bool canHandle(HTTPMethod method, String uri);
         bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
 
-        IO::IOManager* getIOManager();
+        IOManager& getIOManager();
         //void getHttpServer();
     private:
-        IO::IOManager *ioManager;
+        IOManager *ioManager;
         HttpServer *httpServer;
         void getBytes(const String &rawBytes, uint8_t *data);
     };

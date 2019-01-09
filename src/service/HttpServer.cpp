@@ -13,7 +13,7 @@ namespace Service {
     }
 
     void HttpServer::begin() {
-        httpServer.on("/index.html", HTTP_GET, []() {
+        httpServer.on("/start.html", HTTP_GET, []() {
             httpServer.send(200, "text/plain", "Hello World!");
         });
         httpServer.on("/description.xml", HTTP_GET, []() {
@@ -30,14 +30,14 @@ namespace Service {
         Serial.printf("Starting SSDP...\n");
         SSDP.setSchemaURL("description.xml");
         SSDP.setHTTPPort(80);
-        SSDP.setName("Philips hue clone");
-        SSDP.setSerialNumber("001788102201");
-        SSDP.setURL("index.html");
-        SSDP.setModelName("Philips hue bridge 2012");
-        SSDP.setModelNumber("929000226503");
-        SSDP.setModelURL("http://www.meethue.com");
-        SSDP.setManufacturer("Royal Philips Electronics");
-        SSDP.setManufacturerURL("http://www.philips.com");
+        SSDP.setName("HomeGenie-mini V1.0");
+        SSDP.setSerialNumber("ABC0123456789");
+        SSDP.setURL("start.html");
+        SSDP.setModelName("HomeGenie-mini 2019");
+        SSDP.setModelNumber("2134567890");
+        SSDP.setModelURL("http://homegenie.it");
+        SSDP.setManufacturer("G-Labs");
+        SSDP.setManufacturerURL("https://glabs.it");
         SSDP.begin();
     }
 

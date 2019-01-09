@@ -17,11 +17,52 @@
 
 #include "service/HomeGenie.h"
 
-// Callbacks declaration
-void x10_RfReceivedCallback(uint8_t type, uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3);
+// method declaration
 bool startWPSPBC();
 
 auto homeGenie = Service::HomeGenie();
+
+/// This gets called just before the main application loop()
+void setup() {
+    // initialization
+
+    // Initialize RX/TX activity LED
+    //pinMode(LED_BUILTIN, OUTPUT);
+    // ESP D1-mini has LED HIGH/LOW inverted
+    //digitalWrite(LED_BUILTIN, HIGH);
+
+    // Enable serial I/O
+    Serial.begin(115200);
+
+    // Clear/reset the terminal screen
+    // || BEGIN ANSI codes (ESC code)
+    Serial.write(27); // ESC
+    // clear screen command
+    Serial.print("[2J");
+    Serial.write(27); // ESC
+    // cursor to home command
+    Serial.print("[H");
+    // \\ END ANSI codes
+
+    // Welcome message
+    Serial.println("\n\nHomeGenie Mini V1.0");
+    Serial.println("READY.\n");
+
+    Serial.print("\nConfiguring WI-FI...");
+    delay(1000);
+    startWPSPBC();
+    Serial.println("done!\n");
+
+    homeGenie.begin();
+}
+
+/// Main application loop
+void loop()
+{
+    homeGenie.loop();
+}
+
+//////////////////////////////////////////
 
 bool startWPSPBC() {
     Serial.println("Connecting to WI-FI...");
@@ -72,106 +113,4 @@ bool startWPSPBC() {
     }
 
     return wpsSuccess;
-}
-
-
-/// This gets called just before the main application loop()
-void setup() {
-    // initialization
-
-    // Initialize RX/TX activity LED
-    //pinMode(LED_BUILTIN, OUTPUT);
-    // ESP D1-mini has LED HIGH/LOW inverted
-    //digitalWrite(LED_BUILTIN, HIGH);
-
-    // Enable serial I/O
-    Serial.begin(115200);
-    //delay(1000);
-    // || BEGIN ANSI codes (ESC code)
-    Serial.write(33); // ESC
-    // clear screen command
-    Serial.print("[2J");
-    Serial.write(33); // ESC
-    // cursor to home command
-    Serial.print("[H");
-    // \\ END ANSI codes
-    Serial.println("\nHomeGenie Mini V1.0");
-    Serial.println("READY.\n");
-
-
-    Serial.println("\nConfiguring WI-FI...");
-    delay(1000);
-    startWPSPBC();
-
-    homeGenie.begin();
-
-}
-
-/// Main application loop
-void loop()
-{
-    homeGenie.loop();
-
-    /*
-    if(Serial.available() > 0)
-    {
-        String cmd = Serial.readStringUntil('\n');
-        if (cmd.startsWith("X10:send "))
-        {
-            String hexData = cmd.substring(9);
-            uint8_t data[hexData.length() / 2]; getBytes(hexData, data);
-            // Disable Receiver callbacks during transmission to prevent echo
-            x10Receiver.disable();
-            x10Transmitter.sendCommand(data, sizeof(data));
-            x10Receiver.enable();
-        }
-    }
-     */
-
-/*
-
-31412
-13562
-1112
-2199
-
-X10:send 40BF6897
-
-31396
-13575
-1093
-2199
-1111
-1110
-1112
-1111
-1113
-1110
-2202
-1111
-2200
-2200
-2204
-2203
-2202
-2205
-1111
-2202
-2199
-1111
-2200
-1115
-1106
-1113
-2204
-1112
-1114
-2200
-1110
-2200
-2201
-2203
-*/
-
-
 }
