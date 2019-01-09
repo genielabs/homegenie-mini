@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="homegenie-mini"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_REBUILD_PROJECT_INDEX">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_REBUILD_PROJECT_INDEX"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="homegenie-mini">
+				<Option output="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/homegenie-mini" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/tools/sdk/include"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/tools/sdk/libc/xtensa-lx106-elf/include"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/cores/esp8266"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/tools/sdk/lwip2/include"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/variants/d1_mini"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ArduinoOTA"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/DNSServer/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266AVRISP/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPClient/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPUpdateServer/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266LLMNR"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266NetBIOS"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SSDP"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Ethernet/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/GDBStub/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Hash/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/SD/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/SPI"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/SPISlave/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Servo/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/TFT_Touch_Shield_V2"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Ticker"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Wire"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/esp8266/src"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include/c++/4.8.2"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include/c++/4.8.2/xtensa-lx106-elf"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include-fixed"/>
+					<Add directory="/home/gene/.platformio/packages/tool-unity"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/include"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 homegenie-mini"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="homegenie-mini/fast">
+				<Option output="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/homegenie-mini" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/tools/sdk/include"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/tools/sdk/libc/xtensa-lx106-elf/include"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/cores/esp8266"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/tools/sdk/lwip2/include"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/variants/d1_mini"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ArduinoOTA"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/DNSServer/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266AVRISP/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPClient/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPUpdateServer/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266LLMNR"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266NetBIOS"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SSDP"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Ethernet/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/GDBStub/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Hash/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/SD/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/SPI"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/SPISlave/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Servo/src"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/TFT_Touch_Shield_V2"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Ticker"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/Wire"/>
+					<Add directory="/home/gene/.platformio/packages/framework-arduinoespressif8266/libraries/esp8266/src"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include/c++/4.8.2"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include/c++/4.8.2/xtensa-lx106-elf"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include"/>
+					<Add directory="/home/gene/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include-fixed"/>
+					<Add directory="/home/gene/.platformio/packages/tool-unity"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/include"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 homegenie-mini/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_UPLOAD">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_UPLOAD"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_UPDATE_ALL">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_UPDATE_ALL"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_BUILD">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_BUILD"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_UPLOADFS">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_UPLOADFS"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_CLEAN">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_CLEAN"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_TEST">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_TEST"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_PROGRAM">
+				<Option working_dir="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_PROGRAM"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/.travis.yml">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/LICENSE.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/examples/Log/Log.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/keywords.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/library.properties">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/.gitignore">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/Benchmark/Benchmark.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/Die/Die.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/Magic8Ball/Magic8Ball.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/SetRandomSeed/SetRandomSeed.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/Uuid/Uuid.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/keywords.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/.gitignore">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/.travis.yml">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/examples/SimpleList/SimpleList.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/keywords.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/library.properties">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/logo.png">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/src/QList.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/.hg_archival.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinystr.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinystr.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinyxml.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinyxml.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinyxmlerror.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinyxmlparser.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/.gitignore">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/Examples/Json_Example/Json_Example.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/Examples/Json_Serial/Json_Serial.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/Examples/MultiLevelParsing/MultiLevelParsing.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/aJSON.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/aJSON.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/keywords.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/utility/stringbuffer.c">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/utility/stringbuffer.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOManager.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOManager.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/Receiver.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/Receiver.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/ReceiverConfig.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/ReceiverConfig.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/Transmitter.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/Transmitter.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/TransmitterConfig.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/TransmitterConfig.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HttpServer.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HttpServer.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/CMakeListsPrivate.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
