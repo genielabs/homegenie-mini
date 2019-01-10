@@ -1,6 +1,31 @@
-//
-// Created by gene on 09/01/19.
-//
+/*
+ * HomeGenie-Mini (c) 2018-2019 G-Labs
+ *
+ *
+ * This file is part of HomeGenie-Mini (HGM).
+ *
+ *  HomeGenie-Mini is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HomeGenie-Mini is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with HomeGenie-Mini.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * Authors:
+ * - Generoso Martello <gene@homegenie.it>
+ *
+ *
+ * Releases:
+ * - 2019-10-01 Initial release
+ *
+ */
 
 #include "IOManager.h"
 
@@ -23,9 +48,10 @@ namespace IO {
     // TODO: move to an utility class (maybe static)
     /// Convert byte to hex string taking care of leading-zero
     /// \param b
-    void IOManager::byteToHex(byte b) {
-        if (b < 16) Serial.print("0");
-        Serial.print(b, HEX);
+    String IOManager::byteToHex(byte b) {
+        String formatted = String(b, HEX);
+        if (b < 16) return "0"+formatted;
+        return formatted;
     }
 
     /// Callback function that receives X10 RF messages via X10::Receiver instance
@@ -34,21 +60,17 @@ namespace IO {
     /// \param b1 Byte 2
     /// \param b2 Byte 3
     /// \param b3 Byte 4
-    int IOManager::onX10RfDataReceived(uint8_t type, uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
+    void IOManager::onX10RfDataReceived(uint8_t type, uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
         if (x10Receiver->isEnabled()) {
-            byteToHex(type);
-            //Serial.print("-");
-            byteToHex((b0));
-            //Serial.print("-");
-            byteToHex((b1));
-            //Serial.print("-");
-            byteToHex(b2);
-            //Serial.print("-");
-            byteToHex(b3);
-            if (type == 0x29) {
-                Serial.print("0000");
-            }
-            Serial.println("");
+            Logger::info("IO::X10::Receiver DATA: %s%s%s%s%s%s",
+                 byteToHex(type).c_str(),
+                 byteToHex((b0)).c_str(),
+                 byteToHex((b1)).c_str(),
+                 byteToHex(b2).c_str(),
+                 byteToHex(b3).c_str(),
+                 (type == 0x29) ? "0000" : ""
+            );
+            // TODO: blink led ? (visible feedback)
             //digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
             //delay(50);                         // wait for a second
             //digitalWrite(LED_BUILTIN, HIGH);

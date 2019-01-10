@@ -524,6 +524,33 @@ src/io/IOManager.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/IOManager.cpp.s
 .PHONY : src/io/IOManager.cpp.s
 
+src/io/Logger.o: src/io/Logger.cpp.o
+
+.PHONY : src/io/Logger.o
+
+# target to build an object file
+src/io/Logger.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.o
+.PHONY : src/io/Logger.cpp.o
+
+src/io/Logger.i: src/io/Logger.cpp.i
+
+.PHONY : src/io/Logger.i
+
+# target to preprocess a source file
+src/io/Logger.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.i
+.PHONY : src/io/Logger.cpp.i
+
+src/io/Logger.s: src/io/Logger.cpp.s
+
+.PHONY : src/io/Logger.s
+
+# target to generate assembly for a file
+src/io/Logger.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.s
+.PHONY : src/io/Logger.cpp.s
+
 src/io/rf/x10/Receiver.o: src/io/rf/x10/Receiver.cpp.o
 
 .PHONY : src/io/rf/x10/Receiver.o
@@ -659,6 +686,33 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/net/NetManager.o: src/net/NetManager.cpp.o
+
+.PHONY : src/net/NetManager.o
+
+# target to build an object file
+src/net/NetManager.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o
+.PHONY : src/net/NetManager.cpp.o
+
+src/net/NetManager.i: src/net/NetManager.cpp.i
+
+.PHONY : src/net/NetManager.i
+
+# target to preprocess a source file
+src/net/NetManager.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.i
+.PHONY : src/net/NetManager.cpp.i
+
+src/net/NetManager.s: src/net/NetManager.cpp.s
+
+.PHONY : src/net/NetManager.s
+
+# target to generate assembly for a file
+src/net/NetManager.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.s
+.PHONY : src/net/NetManager.cpp.s
+
 src/service/HomeGenie.o: src/service/HomeGenie.cpp.o
 
 .PHONY : src/service/HomeGenie.o
@@ -763,6 +817,9 @@ help:
 	@echo "... src/io/IOManager.o"
 	@echo "... src/io/IOManager.i"
 	@echo "... src/io/IOManager.s"
+	@echo "... src/io/Logger.o"
+	@echo "... src/io/Logger.i"
+	@echo "... src/io/Logger.s"
 	@echo "... src/io/rf/x10/Receiver.o"
 	@echo "... src/io/rf/x10/Receiver.i"
 	@echo "... src/io/rf/x10/Receiver.s"
@@ -778,6 +835,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/net/NetManager.o"
+	@echo "... src/net/NetManager.i"
+	@echo "... src/net/NetManager.s"
 	@echo "... src/service/HomeGenie.o"
 	@echo "... src/service/HomeGenie.i"
 	@echo "... src/service/HomeGenie.s"

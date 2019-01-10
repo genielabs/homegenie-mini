@@ -62,11 +62,13 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/aJSON.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/aJSON.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/IOManager.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/Logger.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/Receiver.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Receiver.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/ReceiverConfig.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/ReceiverConfig.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/Transmitter.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Transmitter.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/TransmitterConfig.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/TransmitterConfig.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/main.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HttpServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o"
   )

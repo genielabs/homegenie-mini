@@ -1,116 +1,70 @@
 /*
- * HomeGenie-micro (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2019 G-Labs
  *
- * Author:
+ *
+ * This file is part of HomeGenie-Mini (HGM).
+ *
+ *  HomeGenie-Mini is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HomeGenie-Mini is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with HomeGenie-Mini.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * Authors:
  * - Generoso Martello <gene@homegenie.it>
+ *
+ *
+ * Releases:
+ * - 2019-10-01 Initial release
  *
  */
 
-#include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
-
-#include <WiFiUdp.h>
-#include <WiFiServer.h>
-#include <WiFiClient.h>
-
 #include <Arduino.h>
+#include <net/NetManager.h>
+#include <io/Logger.h>
 
 #include "service/HomeGenie.h"
 
-// method declaration
-bool startWPSPBC();
+#define HOMEGENIE_MINI_VERSION "1.0"
 
-auto homeGenie = Service::HomeGenie();
+using namespace IO;
+using namespace Net;
+using namespace Service;
+
+NetManager netManager;
+HomeGenie homeGenie;
 
 /// This gets called just before the main application loop()
 void setup() {
-    // initialization
-
-    // Initialize RX/TX activity LED
-    //pinMode(LED_BUILTIN, OUTPUT);
-    // ESP D1-mini has LED HIGH/LOW inverted
-    //digitalWrite(LED_BUILTIN, HIGH);
-
-    // Enable serial I/O
-    Serial.begin(115200);
-
-    // Clear/reset the terminal screen
-    // || BEGIN ANSI codes (ESC code)
-    Serial.write(27); // ESC
-    // clear screen command
-    Serial.print("[2J");
-    Serial.write(27); // ESC
-    // cursor to home command
-    Serial.print("[H");
-    // \\ END ANSI codes
-
+    // Logger initialization
+    Logger::begin();
     // Welcome message
-    Serial.println("\n\nHomeGenie Mini V1.0");
-    Serial.println("READY.\n");
+    Logger::info("HomeGenie Mini V%s", HOMEGENIE_MINI_VERSION);
+    Logger::info("Booting...");
 
-    Serial.print("\nConfiguring WI-FI...");
-    delay(1000);
-    startWPSPBC();
-    Serial.println("done!\n");
+    // WI-FI will not boot without this delay!!!
+    delay(2000);
 
+    Logger::info("+ Starting NetManager");
+    netManager.begin();
+
+    Logger::info("+ Starting HomeGenie service");
     homeGenie.begin();
 }
 
 /// Main application loop
 void loop()
 {
+    Logger::loop();
     homeGenie.loop();
 }
 
 //////////////////////////////////////////
-
-bool startWPSPBC() {
-    Serial.println("Connecting to WI-FI...");
-    // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
-    WiFi.mode(WIFI_STA);
-    delay(1000);
-    // WiFi.begin("foobar",""); // make a failed connection
-    WiFi.begin(WiFi.SSID().c_str(),WiFi.psk().c_str());
-    while (WiFi.status() == WL_DISCONNECTED) {
-        delay(1500);
-        Serial.print(".");
-    }
-
-    bool wpsSuccess = false;
-    wl_status_t status = WiFi.status();
-    if(status == WL_CONNECTED) {
-        Serial.printf("\nConnected successfull to SSID '%s'\n", WiFi.SSID().c_str());
-        wpsSuccess = true;
-    } else {
-        Serial.printf("\nCould not connect to WiFi. state='%d'", status);
-        Serial.println("Please press WPS button on your router.\n Press any key to continue...");
-        //while(!Serial.available()) { ; }
-        //if(!startWPSPBC()) {
-        //    Serial.println("Failed to connect with WPS :-(");
-        //}
-        Serial.println("WPS config start");
-        wpsSuccess = WiFi.beginWPSConfig();
-        if(wpsSuccess) {
-            // Well this means not always success :-/ in case of a timeout we have an empty ssid
-            String newSSID = WiFi.SSID();
-            if(newSSID.length() > 0) {
-                // WPSConfig has already connected in STA mode successfully to the new station.
-                Serial.printf("WPS finished. Connected successfull to SSID '%s'", newSSID.c_str());
-                // save to config and use next time or just use - WiFi.begin(WiFi.SSID().c_str(),WiFi.psk().c_str());
-                //qConfig.wifiSSID = newSSID;
-                //qConfig.wifiPWD = WiFi.psk();
-                //saveConfig();
-            } else {
-                wpsSuccess = false;
-            }
-        }
-
-    }
-
-    if (wpsSuccess)
-    {
-        Serial.println(WiFi.localIP());
-    }
-
-    return wpsSuccess;
-}

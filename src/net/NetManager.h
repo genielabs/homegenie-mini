@@ -27,35 +27,29 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_HOMEGENIE_H
-#define HOMEGENIE_MINI_HOMEGENIE_H
+#ifndef HOMEGENIE_MINI_WIFIMANAGER_H
+#define HOMEGENIE_MINI_WIFIMANAGER_H
 
-#include <io/IOManager.h>
-#include "HttpServer.h"
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 
-#include <detail/RequestHandler.h>
+#include <WiFiUdp.h>
+#include <WiFiServer.h>
+#include <WiFiClient.h>
 
-namespace Service {
+#include <io/Logger.h>
 
-    using namespace IO;
+namespace Net {
 
-    class HomeGenie: RequestHandler {
+    class NetManager {
     public:
-        HomeGenie();
-        void begin();
-        void loop();
+        NetManager();
 
-        bool canHandle(HTTPMethod method, String uri);
-        bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
+        bool begin();
 
-        IOManager& getIOManager();
-        //void getHttpServer();
     private:
-        IOManager *ioManager;
-        HttpServer *httpServer;
-        void getBytes(const String &rawBytes, uint8_t *data);
     };
 
 }
 
-#endif //HOMEGENIE_MINI_HOMEGENIE_H
+#endif //HOMEGENIE_MINI_WIFIMANAGER_H
