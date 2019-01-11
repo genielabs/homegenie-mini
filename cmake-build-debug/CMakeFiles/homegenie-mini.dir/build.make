@@ -291,9 +291,87 @@ CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.s"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.cpp -o CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.s
 
+CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
+CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o: ../src/scripting/ProgramEngine.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp
+
+CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.i"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp > CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.i
+
+CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.s"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp -o CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.s
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.o: ../src/scripting/tinyjs/Script.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.o"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/Script.cpp
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.i"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/Script.cpp > CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.i
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.s"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/Script.cpp -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.s
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.o: ../src/scripting/tinyjs/TinyJS.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.o"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS.cpp
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.i"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS.cpp > CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.i
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.s"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS.cpp -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.s
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.o: ../src/scripting/tinyjs/TinyJS_Functions.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.o"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS_Functions.cpp
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.i"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS_Functions.cpp > CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.i
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.s"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS_Functions.cpp -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.s
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o: ../src/scripting/tinyjs/TinyJS_MathFunctions.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS_MathFunctions.cpp
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS_MathFunctions.cpp > CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/TinyJS_MathFunctions.cpp -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.o: ../src/scripting/tinyjs/run_tests.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.o"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/run_tests.cpp
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.i"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/run_tests.cpp > CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.i
+
+CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.s"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/tinyjs/run_tests.cpp -o CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.s
+
 CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o: ../src/service/HomeGenie.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp
 
 CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.i: cmake_force
@@ -306,7 +384,7 @@ CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o: ../src/service/HttpServer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HttpServer.cpp
 
 CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.i: cmake_force
@@ -337,6 +415,12 @@ homegenie__mini_OBJECTS = \
 "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/TransmitterConfig.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/main.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o" \
+"CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o" \
+"CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.o" \
+"CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.o" \
+"CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.o" \
+"CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o" \
+"CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o"
 
@@ -361,11 +445,17 @@ homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Transmitter.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/TransmitterConfig.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/main.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o
+homegenie-mini: CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o
+homegenie-mini: CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.o
+homegenie-mini: CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.o
+homegenie-mini: CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.o
+homegenie-mini: CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o
+homegenie-mini: CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/build.make
 homegenie-mini: CMakeFiles/homegenie-mini.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX executable homegenie-mini"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Linking CXX executable homegenie-mini"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/homegenie-mini.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

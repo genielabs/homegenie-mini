@@ -27,11 +27,11 @@
  *
  */
 
-#include "TransmitterConfig.h"
+#include "RfTransmitterConfig.h"
 
 namespace IO { namespace X10 {
 
-    TransmitterConfig::TransmitterConfig()
+    RfTransmitterConfig::RfTransmitterConfig()
     {
         this->m_pin = 4;
         this->m_sendRepeat = 4;
@@ -44,18 +44,18 @@ namespace IO { namespace X10 {
 
         this->m_packetGap = 29000;
     }
-    TransmitterConfig::TransmitterConfig(uint8_t pin) : TransmitterConfig()
+    RfTransmitterConfig::RfTransmitterConfig(uint8_t pin) : RfTransmitterConfig()
     {
         this->m_pin = pin;
     }
-    uint8_t TransmitterConfig::getPin() { return this->m_pin; };
-    uint8_t TransmitterConfig::getSendRepeat() { return this->m_sendRepeat; };
-    uint16_t TransmitterConfig::getStartBustLong() { return this->m_startBustLong; };
-    uint16_t TransmitterConfig::getStartBustShort() { return this->m_startBustShort; };
+    uint8_t RfTransmitterConfig::getPin() { return this->m_pin; };
+    uint8_t RfTransmitterConfig::getSendRepeat() { return this->m_sendRepeat; };
+    uint16_t RfTransmitterConfig::getStartBustLong() { return this->m_startBustLong; };
+    uint16_t RfTransmitterConfig::getStartBustShort() { return this->m_startBustShort; };
 
-    uint16_t TransmitterConfig::getBitLong() { return this->m_bitLong; };
-    uint16_t TransmitterConfig::getBitShort() { return this->m_bitShort; };
+    uint16_t RfTransmitterConfig::getBitLong() { return this->m_bitLong; };
+    uint16_t RfTransmitterConfig::getBitShort() { return this->m_bitShort; };
 
-    uint16_t TransmitterConfig::getPacketGap() { return this->m_packetGap; };
+    uint16_t RfTransmitterConfig::getPacketGap() { return this->m_packetGap; };
 
 }} // ns

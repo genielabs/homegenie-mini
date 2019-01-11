@@ -27,30 +27,35 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_X10_TRANSMITTER_H_
-#define HOMEGENIE_MINI_X10_TRANSMITTER_H_
+#ifndef HOMEGENIE_MINI_X10_RF_TRANSMITTER_CONFIG_H_
+#define HOMEGENIE_MINI_X10_RF_TRANSMITTER_CONFIG_H_
 
 #include "Arduino.h"
-#include "TransmitterConfig.h"
-#include "io/Logger.h"
 
 namespace IO { namespace X10 {
 
-    class Transmitter
+    class RfTransmitterConfig
     {
-    public:
-        Transmitter();
-        Transmitter(TransmitterConfig *configuration);
-        void begin();
-        void sendCommand(uint8_t *data, uint8_t size);
     private:
-        TransmitterConfig *configuration;
-        void sendByte(uint8_t data);
-        void sendBit(bool databit);
-        void pulseHigh();
-        void pulseLow();
+        uint8_t m_pin;
+        uint8_t m_sendRepeat;
+        uint16_t m_startBustLong;
+        uint16_t m_startBustShort;
+        uint16_t m_bitLong;
+        uint16_t m_bitShort;
+        uint16_t m_packetGap;
+    public:
+        RfTransmitterConfig();
+        RfTransmitterConfig(uint8_t pin);
+        uint8_t getPin();
+        uint8_t getSendRepeat();
+        uint16_t getStartBustLong();
+        uint16_t getStartBustShort();
+        uint16_t getBitLong();
+        uint16_t getBitShort();
+        uint16_t getPacketGap();
     };
 
 }} // ns
 
-#endif // HOMEGENIE_MINI_X10_TRANSMITTER_H_
+#endif // HOMEGENIE_MINI_X10_RF_TRANSMITTER_CONFIG_H_

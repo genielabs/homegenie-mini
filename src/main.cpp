@@ -30,6 +30,7 @@
 #include <Arduino.h>
 #include <net/NetManager.h>
 #include <io/Logger.h>
+#include <scripting/ProgramEngine.h>
 
 #include "service/HomeGenie.h"
 
@@ -47,7 +48,7 @@ void setup() {
     // Logger initialization
     Logger::begin();
     // Welcome message
-    Logger::info("HomeGenie Mini V%s", HOMEGENIE_MINI_VERSION);
+    Logger::info("HomeGenie-Mini V%s", HOMEGENIE_MINI_VERSION);
     Logger::info("Booting...");
 
     // WI-FI will not boot without this delay!!!
@@ -58,6 +59,8 @@ void setup() {
 
     Logger::info("+ Starting HomeGenie service");
     homeGenie.begin();
+
+    Logger::info("READY.");
 }
 
 /// Main application loop

@@ -27,8 +27,8 @@
  *
  */
 
-#include "Transmitter.h"
-#include "TransmitterConfig.h"
+#include "RfTransmitter.h"
+#include "RfTransmitterConfig.h"
 
 #include <stdlib.h>
 #include "Arduino.h"
@@ -64,19 +64,19 @@ namespace IO { namespace X10 {
 
     */
 
-    Transmitter::Transmitter() {
+    RfTransmitter::RfTransmitter() {
 
     }
-    Transmitter::Transmitter(TransmitterConfig *configuration) : Transmitter() {
+    RfTransmitter::RfTransmitter(RfTransmitterConfig *configuration) : RfTransmitter() {
         this->configuration = configuration;
     }
 
-    void Transmitter::begin() {
+    void RfTransmitter::begin() {
         pinMode(configuration->getPin(), OUTPUT);
-        Logger::info("|  IO::X10::Transmitter started.");
+        Logger::info("|  ✔ IO::X10::RfTransmitter");
     }
 
-    void Transmitter::sendCommand(uint8_t *data, uint8_t size) {
+    void RfTransmitter::sendCommand(uint8_t *data, uint8_t size) {
         for (int i = 0; i < configuration->getSendRepeat(); i++) {
             pulseHigh();
             delayMicroseconds(configuration->getStartBustLong());
@@ -90,7 +90,7 @@ namespace IO { namespace X10 {
         }
     }
 
-    void Transmitter::sendByte(uint8_t data) {
+    void RfTransmitter::sendByte(uint8_t data) {
         //Serial.println("\n");
         for (int i = 7; i >= 0; i--) { // send bits from byte
             sendBit(bitRead(data, i) == 1);
@@ -98,7 +98,7 @@ namespace IO { namespace X10 {
         }
     }
 
-    void Transmitter::sendBit(bool databit) {
+    void RfTransmitter::sendBit(bool databit) {
         pulseHigh();
         delayMicroseconds(configuration->getBitShort());
         pulseLow();
@@ -106,11 +106,11 @@ namespace IO { namespace X10 {
         if (databit) delayMicroseconds(configuration->getBitLong());
     }
 
-    void Transmitter::pulseHigh() {
+    void RfTransmitter::pulseHigh() {
         digitalWrite(configuration->getPin(), HIGH);
     }
 
-    void Transmitter::pulseLow() {
+    void RfTransmitter::pulseLow() {
         digitalWrite(configuration->getPin(), LOW);
     }
 

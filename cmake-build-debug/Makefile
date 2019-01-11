@@ -713,6 +713,168 @@ src/net/NetManager.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.s
 .PHONY : src/net/NetManager.cpp.s
 
+src/scripting/ProgramEngine.o: src/scripting/ProgramEngine.cpp.o
+
+.PHONY : src/scripting/ProgramEngine.o
+
+# target to build an object file
+src/scripting/ProgramEngine.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o
+.PHONY : src/scripting/ProgramEngine.cpp.o
+
+src/scripting/ProgramEngine.i: src/scripting/ProgramEngine.cpp.i
+
+.PHONY : src/scripting/ProgramEngine.i
+
+# target to preprocess a source file
+src/scripting/ProgramEngine.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.i
+.PHONY : src/scripting/ProgramEngine.cpp.i
+
+src/scripting/ProgramEngine.s: src/scripting/ProgramEngine.cpp.s
+
+.PHONY : src/scripting/ProgramEngine.s
+
+# target to generate assembly for a file
+src/scripting/ProgramEngine.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.s
+.PHONY : src/scripting/ProgramEngine.cpp.s
+
+src/scripting/tinyjs/Script.o: src/scripting/tinyjs/Script.cpp.o
+
+.PHONY : src/scripting/tinyjs/Script.o
+
+# target to build an object file
+src/scripting/tinyjs/Script.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.o
+.PHONY : src/scripting/tinyjs/Script.cpp.o
+
+src/scripting/tinyjs/Script.i: src/scripting/tinyjs/Script.cpp.i
+
+.PHONY : src/scripting/tinyjs/Script.i
+
+# target to preprocess a source file
+src/scripting/tinyjs/Script.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.i
+.PHONY : src/scripting/tinyjs/Script.cpp.i
+
+src/scripting/tinyjs/Script.s: src/scripting/tinyjs/Script.cpp.s
+
+.PHONY : src/scripting/tinyjs/Script.s
+
+# target to generate assembly for a file
+src/scripting/tinyjs/Script.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.s
+.PHONY : src/scripting/tinyjs/Script.cpp.s
+
+src/scripting/tinyjs/TinyJS.o: src/scripting/tinyjs/TinyJS.cpp.o
+
+.PHONY : src/scripting/tinyjs/TinyJS.o
+
+# target to build an object file
+src/scripting/tinyjs/TinyJS.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.o
+.PHONY : src/scripting/tinyjs/TinyJS.cpp.o
+
+src/scripting/tinyjs/TinyJS.i: src/scripting/tinyjs/TinyJS.cpp.i
+
+.PHONY : src/scripting/tinyjs/TinyJS.i
+
+# target to preprocess a source file
+src/scripting/tinyjs/TinyJS.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.i
+.PHONY : src/scripting/tinyjs/TinyJS.cpp.i
+
+src/scripting/tinyjs/TinyJS.s: src/scripting/tinyjs/TinyJS.cpp.s
+
+.PHONY : src/scripting/tinyjs/TinyJS.s
+
+# target to generate assembly for a file
+src/scripting/tinyjs/TinyJS.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.s
+.PHONY : src/scripting/tinyjs/TinyJS.cpp.s
+
+src/scripting/tinyjs/TinyJS_Functions.o: src/scripting/tinyjs/TinyJS_Functions.cpp.o
+
+.PHONY : src/scripting/tinyjs/TinyJS_Functions.o
+
+# target to build an object file
+src/scripting/tinyjs/TinyJS_Functions.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.o
+.PHONY : src/scripting/tinyjs/TinyJS_Functions.cpp.o
+
+src/scripting/tinyjs/TinyJS_Functions.i: src/scripting/tinyjs/TinyJS_Functions.cpp.i
+
+.PHONY : src/scripting/tinyjs/TinyJS_Functions.i
+
+# target to preprocess a source file
+src/scripting/tinyjs/TinyJS_Functions.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.i
+.PHONY : src/scripting/tinyjs/TinyJS_Functions.cpp.i
+
+src/scripting/tinyjs/TinyJS_Functions.s: src/scripting/tinyjs/TinyJS_Functions.cpp.s
+
+.PHONY : src/scripting/tinyjs/TinyJS_Functions.s
+
+# target to generate assembly for a file
+src/scripting/tinyjs/TinyJS_Functions.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.s
+.PHONY : src/scripting/tinyjs/TinyJS_Functions.cpp.s
+
+src/scripting/tinyjs/TinyJS_MathFunctions.o: src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o
+
+.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.o
+
+# target to build an object file
+src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o
+.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o
+
+src/scripting/tinyjs/TinyJS_MathFunctions.i: src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i
+
+.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.i
+
+# target to preprocess a source file
+src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i
+.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i
+
+src/scripting/tinyjs/TinyJS_MathFunctions.s: src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s
+
+.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.s
+
+# target to generate assembly for a file
+src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s
+.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s
+
+src/scripting/tinyjs/run_tests.o: src/scripting/tinyjs/run_tests.cpp.o
+
+.PHONY : src/scripting/tinyjs/run_tests.o
+
+# target to build an object file
+src/scripting/tinyjs/run_tests.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.o
+.PHONY : src/scripting/tinyjs/run_tests.cpp.o
+
+src/scripting/tinyjs/run_tests.i: src/scripting/tinyjs/run_tests.cpp.i
+
+.PHONY : src/scripting/tinyjs/run_tests.i
+
+# target to preprocess a source file
+src/scripting/tinyjs/run_tests.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.i
+.PHONY : src/scripting/tinyjs/run_tests.cpp.i
+
+src/scripting/tinyjs/run_tests.s: src/scripting/tinyjs/run_tests.cpp.s
+
+.PHONY : src/scripting/tinyjs/run_tests.s
+
+# target to generate assembly for a file
+src/scripting/tinyjs/run_tests.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.s
+.PHONY : src/scripting/tinyjs/run_tests.cpp.s
+
 src/service/HomeGenie.o: src/service/HomeGenie.cpp.o
 
 .PHONY : src/service/HomeGenie.o
@@ -838,6 +1000,24 @@ help:
 	@echo "... src/net/NetManager.o"
 	@echo "... src/net/NetManager.i"
 	@echo "... src/net/NetManager.s"
+	@echo "... src/scripting/ProgramEngine.o"
+	@echo "... src/scripting/ProgramEngine.i"
+	@echo "... src/scripting/ProgramEngine.s"
+	@echo "... src/scripting/tinyjs/Script.o"
+	@echo "... src/scripting/tinyjs/Script.i"
+	@echo "... src/scripting/tinyjs/Script.s"
+	@echo "... src/scripting/tinyjs/TinyJS.o"
+	@echo "... src/scripting/tinyjs/TinyJS.i"
+	@echo "... src/scripting/tinyjs/TinyJS.s"
+	@echo "... src/scripting/tinyjs/TinyJS_Functions.o"
+	@echo "... src/scripting/tinyjs/TinyJS_Functions.i"
+	@echo "... src/scripting/tinyjs/TinyJS_Functions.s"
+	@echo "... src/scripting/tinyjs/TinyJS_MathFunctions.o"
+	@echo "... src/scripting/tinyjs/TinyJS_MathFunctions.i"
+	@echo "... src/scripting/tinyjs/TinyJS_MathFunctions.s"
+	@echo "... src/scripting/tinyjs/run_tests.o"
+	@echo "... src/scripting/tinyjs/run_tests.i"
+	@echo "... src/scripting/tinyjs/run_tests.s"
 	@echo "... src/service/HomeGenie.o"
 	@echo "... src/service/HomeGenie.i"
 	@echo "... src/service/HomeGenie.s"

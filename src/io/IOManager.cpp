@@ -32,12 +32,12 @@
 namespace IO {
 
     IOManager::IOManager() {
-        // Instantiate the X10 Receiver Class
-        ReceiverConfig x10ReceiverConfig = ReceiverConfig(CONFIG_RF_RX_PIN);
-        x10Receiver = new Receiver(&x10ReceiverConfig, this);
-        // X10 RF Receiver and Transmitter objects
-        TransmitterConfig x10TransmitterConfig = TransmitterConfig(CONFIG_RF_TX_PIN);
-        x10Transmitter = new Transmitter(&x10TransmitterConfig);
+        // Instantiate the X10 RfReceiver Class
+        RfReceiverConfig x10ReceiverConfig = RfReceiverConfig(CONFIG_RF_RX_PIN);
+        x10Receiver = new RfReceiver(&x10ReceiverConfig, this);
+        // X10 RF RfReceiver and RfTransmitter objects
+        RfTransmitterConfig x10TransmitterConfig = RfTransmitterConfig(CONFIG_RF_TX_PIN);
+        x10Transmitter = new RfTransmitter(&x10TransmitterConfig);
     }
 
     void IOManager::begin() {
@@ -62,7 +62,7 @@ namespace IO {
     /// \param b3 Byte 4
     void IOManager::onX10RfDataReceived(uint8_t type, uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
         if (x10Receiver->isEnabled()) {
-            Logger::info("IO::X10::Receiver DATA: %s%s%s%s%s%s",
+            Logger::info("@IO::X10::RfReceiver %s%s%s%s%s%s",
                  byteToHex(type).c_str(),
                  byteToHex((b0)).c_str(),
                  byteToHex((b1)).c_str(),

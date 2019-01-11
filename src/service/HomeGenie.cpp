@@ -52,7 +52,7 @@ namespace Service {
             {
                 String hexData = cmd.substring(9);
                 uint8_t data[hexData.length() / 2]; getBytes(hexData, data);
-                // Disable Receiver callbacks during transmission to prevent echo
+                // Disable RfReceiver callbacks during transmission to prevent echo
                 getIOManager().getX10Receiver().disable();
                 getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
                 getIOManager().getX10Receiver().enable();
@@ -73,7 +73,7 @@ namespace Service {
         if (requestUri.startsWith("/api/HomeAutomation.X10/RF/Control.SendRaw/")) {
             String rawBytes = requestUri.substring((uint) requestUri.lastIndexOf('/') + 1);
             uint8_t data[rawBytes.length() / 2]; getBytes(rawBytes, data);
-            // Disable Receiver callbacks during transmission to prevent echo
+            // Disable RfReceiver callbacks during transmission to prevent echo
             getIOManager().getX10Receiver().disable();
             getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
             getIOManager().getX10Receiver().enable();

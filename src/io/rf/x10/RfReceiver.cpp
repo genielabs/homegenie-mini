@@ -27,21 +27,21 @@
  *
  */
 
-#include "Receiver.h"
+#include "RfReceiver.h"
 
 namespace IO { namespace X10 {
 
-    Receiver *receiverInstance = NULL;
+    RfReceiver *receiverInstance = NULL;
 
     void receiverInstance_wrapper() {
         if (receiverInstance) receiverInstance->receive();
     }
 
-    Receiver::Receiver() {
+    RfReceiver::RfReceiver() {
         receiverInstance = this;
     }
 
-    Receiver::Receiver(ReceiverConfig *configuration, X10RfDataReceivedCallback *rfReceiveCallback) : Receiver() {
+    RfReceiver::RfReceiver(RfReceiverConfig *configuration, X10RfDataReceivedCallback *rfReceiveCallback) : RfReceiver() {
         this->configuration = configuration;
         this->rfReceiveCallback = rfReceiveCallback;
     }
@@ -50,31 +50,31 @@ namespace IO { namespace X10 {
     /// Public
     //////////////////////////////
 
-    void Receiver::begin() {
+    void RfReceiver::begin() {
         enabled = true;
         if (rfReceiveCallback) {
             pinMode(configuration->getPin(), INPUT);
             attachInterrupt(configuration->getInterrupt(), receiverInstance_wrapper, RISING);
         }
-        Logger::info("|  IO::X10::Receiver started.");
+        Logger::info("|  ✔ IO::X10::RfReceiver");
     }
 
-    void Receiver::enable() {
+    void RfReceiver::enable() {
         enabled = true;
     }
 
-    void Receiver::disable() {
+    void RfReceiver::disable() {
         enabled = false;
     }
 
-    bool Receiver::isEnabled() {
+    bool RfReceiver::isEnabled() {
         return enabled;
     }
 
     uint8_t messageType = 0x00;
     uint8_t byteBuffer[4];
 
-    void Receiver::receive() {
+    void RfReceiver::receive() {
         uint32_t lengthUs = micros() - riseUs;
         riseUs = micros();
 
@@ -124,14 +124,14 @@ namespace IO { namespace X10 {
 
     // TODO: move to an utility class (maybe static)
 
-    uint8_t Receiver::reverseByte(uint8_t b) {
+    uint8_t RfReceiver::reverseByte(uint8_t b) {
         b = (b & (uint8_t) 0xF0) >> (uint8_t) 4 | (b & (uint8_t) 0x0F) << 4;
         b = (b & (uint8_t) 0xCC) >> 2 | (b & (uint8_t) 0x33) << 2;
         b = (b & (uint8_t) 0xAA) >> 1 | (b & (uint8_t) 0x55) << 1;
         return b;
     }
 
-    uint32_t Receiver::reverseBits(uint32_t n) {
+    uint32_t RfReceiver::reverseBits(uint32_t n) {
         uint32_t x = 0;
         for (auto i = 31; n;) {
             x |= (n & 1) << i;

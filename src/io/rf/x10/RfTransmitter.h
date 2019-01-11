@@ -27,51 +27,30 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_X10_RECEIVER_H_
-#define HOMEGENIE_MINI_X10_RECEIVER_H_
+#ifndef HOMEGENIE_MINI_X10_RF_TRANSMITTER_H_
+#define HOMEGENIE_MINI_X10_RF_TRANSMITTER_H_
 
 #include "Arduino.h"
-#include "ReceiverConfig.h"
+#include "RfTransmitterConfig.h"
 #include "io/Logger.h"
 
 namespace IO { namespace X10 {
 
-    class Receiver {
+    class RfTransmitter
+    {
     public:
-        class X10RfDataReceivedCallback {
-        public:
-            virtual void onX10RfDataReceived(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
-        };
-
-        Receiver();
-
-        Receiver(ReceiverConfig *configuration, X10RfDataReceivedCallback *rfReceiveCallback);
-
+        RfTransmitter();
+        RfTransmitter(RfTransmitterConfig *configuration);
         void begin();
-
-        void receive();
-
-        void enable();
-
-        void disable();
-
-        bool isEnabled();
-
+        void sendCommand(uint8_t *data, uint8_t size);
     private:
-        bool enabled;
-        ReceiverConfig *configuration;
-        X10RfDataReceivedCallback *rfReceiveCallback;
-        // 32-bit RF message decoding
-        uint32_t riseUs;
-        int8_t receivedCount;
-        uint32_t receiveBuffer;
-
-        // TODO: move to an utility class (maybe static)
-        // Utility methods
-        uint32_t reverseBits(uint32_t n);
-        uint8_t reverseByte(uint8_t n);
+        RfTransmitterConfig *configuration;
+        void sendByte(uint8_t data);
+        void sendBit(bool databit);
+        void pulseHigh();
+        void pulseLow();
     };
 
 }} // ns
 
-#endif // HOMEGENIE_MINI_X10_RECEIVER_H_
+#endif // HOMEGENIE_MINI_X10_RF_TRANSMITTER_H_

@@ -52,7 +52,7 @@ namespace Service {
         //http_rest_server.on("/leds", HTTP_PUT, post_put_leds);
 
         httpServer.begin();
-        Logger::info("|  HTTP service started");
+        Logger::info("|  ✔ HTTP service");
 
         SSDP.setSchemaURL("description.xml");
         SSDP.setHTTPPort(80);
@@ -65,7 +65,7 @@ namespace Service {
         SSDP.setManufacturer("G-Labs");
         SSDP.setManufacturerURL("https://glabs.it");
         SSDP.begin();
-        Logger::info("|  SSDP service started");
+        Logger::info("|  ✔ SSDP service");
     }
 
     void HttpServer::loop() {
