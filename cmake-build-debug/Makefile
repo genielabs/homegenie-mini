@@ -308,6 +308,33 @@ PLATFORMIO_PROGRAM/fast:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s
 .PHONY : .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s
 
+.piolibdeps/OneWire_ID1/OneWire.o: .piolibdeps/OneWire_ID1/OneWire.cpp.o
+
+.PHONY : .piolibdeps/OneWire_ID1/OneWire.o
+
+# target to build an object file
+.piolibdeps/OneWire_ID1/OneWire.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/OneWire_ID1/OneWire.cpp.o
+.PHONY : .piolibdeps/OneWire_ID1/OneWire.cpp.o
+
+.piolibdeps/OneWire_ID1/OneWire.i: .piolibdeps/OneWire_ID1/OneWire.cpp.i
+
+.PHONY : .piolibdeps/OneWire_ID1/OneWire.i
+
+# target to preprocess a source file
+.piolibdeps/OneWire_ID1/OneWire.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/OneWire_ID1/OneWire.cpp.i
+.PHONY : .piolibdeps/OneWire_ID1/OneWire.cpp.i
+
+.piolibdeps/OneWire_ID1/OneWire.s: .piolibdeps/OneWire_ID1/OneWire.cpp.s
+
+.PHONY : .piolibdeps/OneWire_ID1/OneWire.s
+
+# target to generate assembly for a file
+.piolibdeps/OneWire_ID1/OneWire.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/OneWire_ID1/OneWire.cpp.s
+.PHONY : .piolibdeps/OneWire_ID1/OneWire.cpp.s
+
 .piolibdeps/TINYXML_ID2793/tinystr.o: .piolibdeps/TINYXML_ID2793/tinystr.cpp.o
 
 .PHONY : .piolibdeps/TINYXML_ID2793/tinystr.o
@@ -794,6 +821,33 @@ src/scripting/ProgramEngine.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.s
 .PHONY : src/scripting/ProgramEngine.cpp.s
 
+src/service/ApiCommand.o: src/service/ApiCommand.cpp.o
+
+.PHONY : src/service/ApiCommand.o
+
+# target to build an object file
+src/service/ApiCommand.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiCommand.cpp.o
+.PHONY : src/service/ApiCommand.cpp.o
+
+src/service/ApiCommand.i: src/service/ApiCommand.cpp.i
+
+.PHONY : src/service/ApiCommand.i
+
+# target to preprocess a source file
+src/service/ApiCommand.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiCommand.cpp.i
+.PHONY : src/service/ApiCommand.cpp.i
+
+src/service/ApiCommand.s: src/service/ApiCommand.cpp.s
+
+.PHONY : src/service/ApiCommand.s
+
+# target to generate assembly for a file
+src/service/ApiCommand.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiCommand.cpp.s
+.PHONY : src/service/ApiCommand.cpp.s
+
 src/service/HomeGenie.o: src/service/HomeGenie.cpp.o
 
 .PHONY : src/service/HomeGenie.o
@@ -874,6 +928,9 @@ help:
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.o"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.i"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.s"
+	@echo "... .piolibdeps/OneWire_ID1/OneWire.o"
+	@echo "... .piolibdeps/OneWire_ID1/OneWire.i"
+	@echo "... .piolibdeps/OneWire_ID1/OneWire.s"
 	@echo "... .piolibdeps/TINYXML_ID2793/tinystr.o"
 	@echo "... .piolibdeps/TINYXML_ID2793/tinystr.i"
 	@echo "... .piolibdeps/TINYXML_ID2793/tinystr.s"
@@ -928,6 +985,9 @@ help:
 	@echo "... src/scripting/ProgramEngine.o"
 	@echo "... src/scripting/ProgramEngine.i"
 	@echo "... src/scripting/ProgramEngine.s"
+	@echo "... src/service/ApiCommand.o"
+	@echo "... src/service/ApiCommand.i"
+	@echo "... src/service/ApiCommand.s"
 	@echo "... src/service/HomeGenie.o"
 	@echo "... src/service/HomeGenie.i"
 	@echo "... src/service/HomeGenie.s"

@@ -68,7 +68,7 @@ namespace Service {
 
     // BEGIN RequestHandler interface methods
     bool HomeGenie::canHandle(HTTPMethod method, String uri) {
-        return uri != NULL && uri.startsWith("/api/HomeAutomation.X10/");
+        return uri != NULL && uri.startsWith("/api/");
     }
     bool HomeGenie::handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri) {
         String res = R"({ "ResponseText": "ERROR" })";
@@ -80,6 +80,14 @@ namespace Service {
             getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
             getIOManager().getX10Receiver().enable();
             res = R"({ "ResponseText": "OK" })";
+        } else if (requestUri.startsWith("/api/HomeAutomation.Env/Light/Sensor.GetValue")) {
+            char response[1024];
+            sprintf(response, R"({ "ResponseText": "%0.2f" })", ioManager->getLightSensor().getLightLevel() / 10.24F);
+            res = String(response);
+        } else if (requestUri.startsWith("/api/HomeAutomation.Env/Temperature/Sensor.GetValue")) {
+            char response[1024];
+            sprintf(response, R"({ "ResponseText": "%0.2f" })", ioManager->getTemperatureSensor().getTemperature());
+            res = String(response);
         }
         server.send(200, "application/json", res);
         return true;

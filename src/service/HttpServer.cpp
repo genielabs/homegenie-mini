@@ -82,7 +82,6 @@ namespace Service {
 
     void HttpServer::addHandler(RequestHandler* handler) {
         httpServer.addHandler(handler);
-
     }
 
     // END RequestHandler interface methods

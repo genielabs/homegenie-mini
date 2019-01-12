@@ -57,6 +57,8 @@ namespace IO {
         void onX10RfDataReceived(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
         RfReceiver& getX10Receiver(){ return *x10Receiver; };
         RfTransmitter& getX10Transmitter(){ return *x10Transmitter; };
+        DS18B10& getTemperatureSensor(){ return *temperatureSensor; };
+        LightSensor getLightSensor(){ return *lightSensor; };
 
     private:
         class X10ApiHandler;

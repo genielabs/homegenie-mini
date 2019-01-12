@@ -320,6 +320,39 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/library.json">
 			<Option target="homegenie-mini"/>
 		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/OneWire.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/OneWire.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/examples/DS18x20_Temperature/DS18x20_Temperature.pde">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/examples/DS2408_Switch/DS2408_Switch.pde">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/examples/DS250x_PROM/DS250x_PROM.pde">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/keywords.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/library.properties">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/util/OneWire_direct_gpio.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/util/OneWire_direct_regtype.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/.gitignore">
 			<Option target="homegenie-mini"/>
 		</Unit>
@@ -477,6 +510,12 @@
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiCommand.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiCommand.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp">
