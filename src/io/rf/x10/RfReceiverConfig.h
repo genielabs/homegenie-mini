@@ -33,21 +33,11 @@
 #include "Arduino.h"
 
 namespace IO { namespace X10 {
-
+    /**
+     * Decodes X10 RF messages
+     */
     class RfReceiverConfig
     {
-    private:
-        uint8_t m_interrupt;
-        uint8_t m_pin;
-        uint16_t m_startBustMin;
-        uint16_t m_startBustMax;
-        uint16_t m_startBustRepeat;
-
-        uint16_t m_bitZeroMin;
-        uint16_t m_bitZeroMax;
-
-        uint16_t m_bitOneMin;
-        uint16_t m_bitOneMax;
     public:
         RfReceiverConfig();
         RfReceiverConfig(uint8_t pin);
@@ -63,6 +53,18 @@ namespace IO { namespace X10 {
 
         uint16_t getBitOneMin();
         uint16_t getBitOneMax();
+    private:
+        uint8_t m_interrupt;
+        uint8_t m_pin;
+        uint16_t m_startBustMin;
+        uint16_t m_startBustMax;
+        uint16_t m_startBustRepeat;
+
+        uint16_t m_bitZeroMin;
+        uint16_t m_bitZeroMax;
+
+        uint16_t m_bitOneMin;
+        uint16_t m_bitOneMax;
     };
 
 }} // ns

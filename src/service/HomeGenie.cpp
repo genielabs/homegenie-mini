@@ -43,8 +43,10 @@ namespace Service {
     }
 
     void HomeGenie::loop() {
+        ioManager->loop();
         httpServer->loop();
-        //
+        // TODO: move the following to a separate class or method
+        // HomeGenie-Mini Serial CLI
         if(Serial.available() > 0)
         {
             String cmd = Serial.readStringUntil('\n');

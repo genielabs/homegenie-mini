@@ -551,113 +551,167 @@ src/io/Logger.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.s
 .PHONY : src/io/Logger.cpp.s
 
-src/io/rf/x10/Receiver.o: src/io/rf/x10/Receiver.cpp.o
+src/io/env/DS18B10.o: src/io/env/DS18B10.cpp.o
 
-.PHONY : src/io/rf/x10/Receiver.o
-
-# target to build an object file
-src/io/rf/x10/Receiver.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Receiver.cpp.o
-.PHONY : src/io/rf/x10/Receiver.cpp.o
-
-src/io/rf/x10/Receiver.i: src/io/rf/x10/Receiver.cpp.i
-
-.PHONY : src/io/rf/x10/Receiver.i
-
-# target to preprocess a source file
-src/io/rf/x10/Receiver.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Receiver.cpp.i
-.PHONY : src/io/rf/x10/Receiver.cpp.i
-
-src/io/rf/x10/Receiver.s: src/io/rf/x10/Receiver.cpp.s
-
-.PHONY : src/io/rf/x10/Receiver.s
-
-# target to generate assembly for a file
-src/io/rf/x10/Receiver.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Receiver.cpp.s
-.PHONY : src/io/rf/x10/Receiver.cpp.s
-
-src/io/rf/x10/ReceiverConfig.o: src/io/rf/x10/ReceiverConfig.cpp.o
-
-.PHONY : src/io/rf/x10/ReceiverConfig.o
+.PHONY : src/io/env/DS18B10.o
 
 # target to build an object file
-src/io/rf/x10/ReceiverConfig.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/ReceiverConfig.cpp.o
-.PHONY : src/io/rf/x10/ReceiverConfig.cpp.o
+src/io/env/DS18B10.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o
+.PHONY : src/io/env/DS18B10.cpp.o
 
-src/io/rf/x10/ReceiverConfig.i: src/io/rf/x10/ReceiverConfig.cpp.i
+src/io/env/DS18B10.i: src/io/env/DS18B10.cpp.i
 
-.PHONY : src/io/rf/x10/ReceiverConfig.i
+.PHONY : src/io/env/DS18B10.i
 
 # target to preprocess a source file
-src/io/rf/x10/ReceiverConfig.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/ReceiverConfig.cpp.i
-.PHONY : src/io/rf/x10/ReceiverConfig.cpp.i
+src/io/env/DS18B10.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.i
+.PHONY : src/io/env/DS18B10.cpp.i
 
-src/io/rf/x10/ReceiverConfig.s: src/io/rf/x10/ReceiverConfig.cpp.s
+src/io/env/DS18B10.s: src/io/env/DS18B10.cpp.s
 
-.PHONY : src/io/rf/x10/ReceiverConfig.s
+.PHONY : src/io/env/DS18B10.s
 
 # target to generate assembly for a file
-src/io/rf/x10/ReceiverConfig.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/ReceiverConfig.cpp.s
-.PHONY : src/io/rf/x10/ReceiverConfig.cpp.s
+src/io/env/DS18B10.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.s
+.PHONY : src/io/env/DS18B10.cpp.s
 
-src/io/rf/x10/Transmitter.o: src/io/rf/x10/Transmitter.cpp.o
+src/io/env/LightSensor.o: src/io/env/LightSensor.cpp.o
 
-.PHONY : src/io/rf/x10/Transmitter.o
+.PHONY : src/io/env/LightSensor.o
 
 # target to build an object file
-src/io/rf/x10/Transmitter.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Transmitter.cpp.o
-.PHONY : src/io/rf/x10/Transmitter.cpp.o
+src/io/env/LightSensor.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.o
+.PHONY : src/io/env/LightSensor.cpp.o
 
-src/io/rf/x10/Transmitter.i: src/io/rf/x10/Transmitter.cpp.i
+src/io/env/LightSensor.i: src/io/env/LightSensor.cpp.i
 
-.PHONY : src/io/rf/x10/Transmitter.i
+.PHONY : src/io/env/LightSensor.i
 
 # target to preprocess a source file
-src/io/rf/x10/Transmitter.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Transmitter.cpp.i
-.PHONY : src/io/rf/x10/Transmitter.cpp.i
+src/io/env/LightSensor.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.i
+.PHONY : src/io/env/LightSensor.cpp.i
 
-src/io/rf/x10/Transmitter.s: src/io/rf/x10/Transmitter.cpp.s
+src/io/env/LightSensor.s: src/io/env/LightSensor.cpp.s
 
-.PHONY : src/io/rf/x10/Transmitter.s
+.PHONY : src/io/env/LightSensor.s
 
 # target to generate assembly for a file
-src/io/rf/x10/Transmitter.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/Transmitter.cpp.s
-.PHONY : src/io/rf/x10/Transmitter.cpp.s
+src/io/env/LightSensor.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.s
+.PHONY : src/io/env/LightSensor.cpp.s
 
-src/io/rf/x10/TransmitterConfig.o: src/io/rf/x10/TransmitterConfig.cpp.o
+src/io/rf/x10/RfReceiver.o: src/io/rf/x10/RfReceiver.cpp.o
 
-.PHONY : src/io/rf/x10/TransmitterConfig.o
+.PHONY : src/io/rf/x10/RfReceiver.o
 
 # target to build an object file
-src/io/rf/x10/TransmitterConfig.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/TransmitterConfig.cpp.o
-.PHONY : src/io/rf/x10/TransmitterConfig.cpp.o
+src/io/rf/x10/RfReceiver.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiver.cpp.o
+.PHONY : src/io/rf/x10/RfReceiver.cpp.o
 
-src/io/rf/x10/TransmitterConfig.i: src/io/rf/x10/TransmitterConfig.cpp.i
+src/io/rf/x10/RfReceiver.i: src/io/rf/x10/RfReceiver.cpp.i
 
-.PHONY : src/io/rf/x10/TransmitterConfig.i
+.PHONY : src/io/rf/x10/RfReceiver.i
 
 # target to preprocess a source file
-src/io/rf/x10/TransmitterConfig.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/TransmitterConfig.cpp.i
-.PHONY : src/io/rf/x10/TransmitterConfig.cpp.i
+src/io/rf/x10/RfReceiver.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiver.cpp.i
+.PHONY : src/io/rf/x10/RfReceiver.cpp.i
 
-src/io/rf/x10/TransmitterConfig.s: src/io/rf/x10/TransmitterConfig.cpp.s
+src/io/rf/x10/RfReceiver.s: src/io/rf/x10/RfReceiver.cpp.s
 
-.PHONY : src/io/rf/x10/TransmitterConfig.s
+.PHONY : src/io/rf/x10/RfReceiver.s
 
 # target to generate assembly for a file
-src/io/rf/x10/TransmitterConfig.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/TransmitterConfig.cpp.s
-.PHONY : src/io/rf/x10/TransmitterConfig.cpp.s
+src/io/rf/x10/RfReceiver.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiver.cpp.s
+.PHONY : src/io/rf/x10/RfReceiver.cpp.s
+
+src/io/rf/x10/RfReceiverConfig.o: src/io/rf/x10/RfReceiverConfig.cpp.o
+
+.PHONY : src/io/rf/x10/RfReceiverConfig.o
+
+# target to build an object file
+src/io/rf/x10/RfReceiverConfig.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.o
+.PHONY : src/io/rf/x10/RfReceiverConfig.cpp.o
+
+src/io/rf/x10/RfReceiverConfig.i: src/io/rf/x10/RfReceiverConfig.cpp.i
+
+.PHONY : src/io/rf/x10/RfReceiverConfig.i
+
+# target to preprocess a source file
+src/io/rf/x10/RfReceiverConfig.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.i
+.PHONY : src/io/rf/x10/RfReceiverConfig.cpp.i
+
+src/io/rf/x10/RfReceiverConfig.s: src/io/rf/x10/RfReceiverConfig.cpp.s
+
+.PHONY : src/io/rf/x10/RfReceiverConfig.s
+
+# target to generate assembly for a file
+src/io/rf/x10/RfReceiverConfig.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.s
+.PHONY : src/io/rf/x10/RfReceiverConfig.cpp.s
+
+src/io/rf/x10/RfTransmitter.o: src/io/rf/x10/RfTransmitter.cpp.o
+
+.PHONY : src/io/rf/x10/RfTransmitter.o
+
+# target to build an object file
+src/io/rf/x10/RfTransmitter.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitter.cpp.o
+.PHONY : src/io/rf/x10/RfTransmitter.cpp.o
+
+src/io/rf/x10/RfTransmitter.i: src/io/rf/x10/RfTransmitter.cpp.i
+
+.PHONY : src/io/rf/x10/RfTransmitter.i
+
+# target to preprocess a source file
+src/io/rf/x10/RfTransmitter.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitter.cpp.i
+.PHONY : src/io/rf/x10/RfTransmitter.cpp.i
+
+src/io/rf/x10/RfTransmitter.s: src/io/rf/x10/RfTransmitter.cpp.s
+
+.PHONY : src/io/rf/x10/RfTransmitter.s
+
+# target to generate assembly for a file
+src/io/rf/x10/RfTransmitter.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitter.cpp.s
+.PHONY : src/io/rf/x10/RfTransmitter.cpp.s
+
+src/io/rf/x10/RfTransmitterConfig.o: src/io/rf/x10/RfTransmitterConfig.cpp.o
+
+.PHONY : src/io/rf/x10/RfTransmitterConfig.o
+
+# target to build an object file
+src/io/rf/x10/RfTransmitterConfig.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.o
+.PHONY : src/io/rf/x10/RfTransmitterConfig.cpp.o
+
+src/io/rf/x10/RfTransmitterConfig.i: src/io/rf/x10/RfTransmitterConfig.cpp.i
+
+.PHONY : src/io/rf/x10/RfTransmitterConfig.i
+
+# target to preprocess a source file
+src/io/rf/x10/RfTransmitterConfig.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.i
+.PHONY : src/io/rf/x10/RfTransmitterConfig.cpp.i
+
+src/io/rf/x10/RfTransmitterConfig.s: src/io/rf/x10/RfTransmitterConfig.cpp.s
+
+.PHONY : src/io/rf/x10/RfTransmitterConfig.s
+
+# target to generate assembly for a file
+src/io/rf/x10/RfTransmitterConfig.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.s
+.PHONY : src/io/rf/x10/RfTransmitterConfig.cpp.s
 
 src/main.o: src/main.cpp.o
 
@@ -739,141 +793,6 @@ src/scripting/ProgramEngine.s: src/scripting/ProgramEngine.cpp.s
 src/scripting/ProgramEngine.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.s
 .PHONY : src/scripting/ProgramEngine.cpp.s
-
-src/scripting/tinyjs/Script.o: src/scripting/tinyjs/Script.cpp.o
-
-.PHONY : src/scripting/tinyjs/Script.o
-
-# target to build an object file
-src/scripting/tinyjs/Script.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.o
-.PHONY : src/scripting/tinyjs/Script.cpp.o
-
-src/scripting/tinyjs/Script.i: src/scripting/tinyjs/Script.cpp.i
-
-.PHONY : src/scripting/tinyjs/Script.i
-
-# target to preprocess a source file
-src/scripting/tinyjs/Script.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.i
-.PHONY : src/scripting/tinyjs/Script.cpp.i
-
-src/scripting/tinyjs/Script.s: src/scripting/tinyjs/Script.cpp.s
-
-.PHONY : src/scripting/tinyjs/Script.s
-
-# target to generate assembly for a file
-src/scripting/tinyjs/Script.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/Script.cpp.s
-.PHONY : src/scripting/tinyjs/Script.cpp.s
-
-src/scripting/tinyjs/TinyJS.o: src/scripting/tinyjs/TinyJS.cpp.o
-
-.PHONY : src/scripting/tinyjs/TinyJS.o
-
-# target to build an object file
-src/scripting/tinyjs/TinyJS.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.o
-.PHONY : src/scripting/tinyjs/TinyJS.cpp.o
-
-src/scripting/tinyjs/TinyJS.i: src/scripting/tinyjs/TinyJS.cpp.i
-
-.PHONY : src/scripting/tinyjs/TinyJS.i
-
-# target to preprocess a source file
-src/scripting/tinyjs/TinyJS.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.i
-.PHONY : src/scripting/tinyjs/TinyJS.cpp.i
-
-src/scripting/tinyjs/TinyJS.s: src/scripting/tinyjs/TinyJS.cpp.s
-
-.PHONY : src/scripting/tinyjs/TinyJS.s
-
-# target to generate assembly for a file
-src/scripting/tinyjs/TinyJS.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS.cpp.s
-.PHONY : src/scripting/tinyjs/TinyJS.cpp.s
-
-src/scripting/tinyjs/TinyJS_Functions.o: src/scripting/tinyjs/TinyJS_Functions.cpp.o
-
-.PHONY : src/scripting/tinyjs/TinyJS_Functions.o
-
-# target to build an object file
-src/scripting/tinyjs/TinyJS_Functions.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.o
-.PHONY : src/scripting/tinyjs/TinyJS_Functions.cpp.o
-
-src/scripting/tinyjs/TinyJS_Functions.i: src/scripting/tinyjs/TinyJS_Functions.cpp.i
-
-.PHONY : src/scripting/tinyjs/TinyJS_Functions.i
-
-# target to preprocess a source file
-src/scripting/tinyjs/TinyJS_Functions.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.i
-.PHONY : src/scripting/tinyjs/TinyJS_Functions.cpp.i
-
-src/scripting/tinyjs/TinyJS_Functions.s: src/scripting/tinyjs/TinyJS_Functions.cpp.s
-
-.PHONY : src/scripting/tinyjs/TinyJS_Functions.s
-
-# target to generate assembly for a file
-src/scripting/tinyjs/TinyJS_Functions.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_Functions.cpp.s
-.PHONY : src/scripting/tinyjs/TinyJS_Functions.cpp.s
-
-src/scripting/tinyjs/TinyJS_MathFunctions.o: src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o
-
-.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.o
-
-# target to build an object file
-src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o
-.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.cpp.o
-
-src/scripting/tinyjs/TinyJS_MathFunctions.i: src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i
-
-.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.i
-
-# target to preprocess a source file
-src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i
-.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.cpp.i
-
-src/scripting/tinyjs/TinyJS_MathFunctions.s: src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s
-
-.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.s
-
-# target to generate assembly for a file
-src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s
-.PHONY : src/scripting/tinyjs/TinyJS_MathFunctions.cpp.s
-
-src/scripting/tinyjs/run_tests.o: src/scripting/tinyjs/run_tests.cpp.o
-
-.PHONY : src/scripting/tinyjs/run_tests.o
-
-# target to build an object file
-src/scripting/tinyjs/run_tests.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.o
-.PHONY : src/scripting/tinyjs/run_tests.cpp.o
-
-src/scripting/tinyjs/run_tests.i: src/scripting/tinyjs/run_tests.cpp.i
-
-.PHONY : src/scripting/tinyjs/run_tests.i
-
-# target to preprocess a source file
-src/scripting/tinyjs/run_tests.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.i
-.PHONY : src/scripting/tinyjs/run_tests.cpp.i
-
-src/scripting/tinyjs/run_tests.s: src/scripting/tinyjs/run_tests.cpp.s
-
-.PHONY : src/scripting/tinyjs/run_tests.s
-
-# target to generate assembly for a file
-src/scripting/tinyjs/run_tests.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/tinyjs/run_tests.cpp.s
-.PHONY : src/scripting/tinyjs/run_tests.cpp.s
 
 src/service/HomeGenie.o: src/service/HomeGenie.cpp.o
 
@@ -982,18 +901,24 @@ help:
 	@echo "... src/io/Logger.o"
 	@echo "... src/io/Logger.i"
 	@echo "... src/io/Logger.s"
-	@echo "... src/io/rf/x10/Receiver.o"
-	@echo "... src/io/rf/x10/Receiver.i"
-	@echo "... src/io/rf/x10/Receiver.s"
-	@echo "... src/io/rf/x10/ReceiverConfig.o"
-	@echo "... src/io/rf/x10/ReceiverConfig.i"
-	@echo "... src/io/rf/x10/ReceiverConfig.s"
-	@echo "... src/io/rf/x10/Transmitter.o"
-	@echo "... src/io/rf/x10/Transmitter.i"
-	@echo "... src/io/rf/x10/Transmitter.s"
-	@echo "... src/io/rf/x10/TransmitterConfig.o"
-	@echo "... src/io/rf/x10/TransmitterConfig.i"
-	@echo "... src/io/rf/x10/TransmitterConfig.s"
+	@echo "... src/io/env/DS18B10.o"
+	@echo "... src/io/env/DS18B10.i"
+	@echo "... src/io/env/DS18B10.s"
+	@echo "... src/io/env/LightSensor.o"
+	@echo "... src/io/env/LightSensor.i"
+	@echo "... src/io/env/LightSensor.s"
+	@echo "... src/io/rf/x10/RfReceiver.o"
+	@echo "... src/io/rf/x10/RfReceiver.i"
+	@echo "... src/io/rf/x10/RfReceiver.s"
+	@echo "... src/io/rf/x10/RfReceiverConfig.o"
+	@echo "... src/io/rf/x10/RfReceiverConfig.i"
+	@echo "... src/io/rf/x10/RfReceiverConfig.s"
+	@echo "... src/io/rf/x10/RfTransmitter.o"
+	@echo "... src/io/rf/x10/RfTransmitter.i"
+	@echo "... src/io/rf/x10/RfTransmitter.s"
+	@echo "... src/io/rf/x10/RfTransmitterConfig.o"
+	@echo "... src/io/rf/x10/RfTransmitterConfig.i"
+	@echo "... src/io/rf/x10/RfTransmitterConfig.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
@@ -1003,21 +928,6 @@ help:
 	@echo "... src/scripting/ProgramEngine.o"
 	@echo "... src/scripting/ProgramEngine.i"
 	@echo "... src/scripting/ProgramEngine.s"
-	@echo "... src/scripting/tinyjs/Script.o"
-	@echo "... src/scripting/tinyjs/Script.i"
-	@echo "... src/scripting/tinyjs/Script.s"
-	@echo "... src/scripting/tinyjs/TinyJS.o"
-	@echo "... src/scripting/tinyjs/TinyJS.i"
-	@echo "... src/scripting/tinyjs/TinyJS.s"
-	@echo "... src/scripting/tinyjs/TinyJS_Functions.o"
-	@echo "... src/scripting/tinyjs/TinyJS_Functions.i"
-	@echo "... src/scripting/tinyjs/TinyJS_Functions.s"
-	@echo "... src/scripting/tinyjs/TinyJS_MathFunctions.o"
-	@echo "... src/scripting/tinyjs/TinyJS_MathFunctions.i"
-	@echo "... src/scripting/tinyjs/TinyJS_MathFunctions.s"
-	@echo "... src/scripting/tinyjs/run_tests.o"
-	@echo "... src/scripting/tinyjs/run_tests.i"
-	@echo "... src/scripting/tinyjs/run_tests.s"
 	@echo "... src/service/HomeGenie.o"
 	@echo "... src/service/HomeGenie.i"
 	@echo "... src/service/HomeGenie.s"

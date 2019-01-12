@@ -38,11 +38,17 @@ namespace IO {
         // X10 RF RfReceiver and RfTransmitter objects
         RfTransmitterConfig x10TransmitterConfig = RfTransmitterConfig(CONFIG_RF_TX_PIN);
         x10Transmitter = new RfTransmitter(&x10TransmitterConfig);
+        // DS18B10 Temperature Sensor
+        temperatureSensor = new DS18B10();
+        // Light Sensor
+        lightSensor = new LightSensor();
     }
 
     void IOManager::begin() {
         x10Receiver->begin();
         x10Transmitter->begin();
+        temperatureSensor->begin();
+        lightSensor->begin();
     }
 
     // TODO: move to an utility class (maybe static)
@@ -75,6 +81,11 @@ namespace IO {
             //delay(50);                         // wait for a second
             //digitalWrite(LED_BUILTIN, HIGH);
         }
+    }
+
+    void IOManager::loop() {
+        temperatureSensor->loop();
+        lightSensor->loop();
     }
 
 }

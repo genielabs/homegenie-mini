@@ -51,4 +51,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} src/io/IOManager.cpp src/io/IOManager.h src/service/HttpServer.cpp src/service/HttpServer.h src/net/NetManager.cpp src/net/NetManager.h src/io/Logger.cpp src/io/Logger.h src/scripting/ProgramEngine.cpp src/scripting/ProgramEngine.h)
+add_executable(${PROJECT_NAME} ${SRC_LIST} src/io/IOManager.cpp src/io/IOManager.h src/service/HttpServer.cpp src/service/HttpServer.h src/net/NetManager.cpp src/net/NetManager.h src/io/Logger.cpp src/io/Logger.h src/scripting/ProgramEngine.cpp src/scripting/ProgramEngine.h src/io/env/LightSensor.cpp src/io/env/LightSensor.h src/io/env/DS18B10.cpp src/io/env/DS18B10.h)
