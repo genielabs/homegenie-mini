@@ -52,7 +52,6 @@ namespace IO {
         IOManager();
 
         void begin();
-        void loop();
 
         void onX10RfDataReceived(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
         RfReceiver& getX10Receiver(){ return *x10Receiver; };

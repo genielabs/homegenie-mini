@@ -29,11 +29,11 @@
 
 #include "HttpServer.h"
 
-namespace Service {
+namespace Net {
 
     using namespace IO;
 
-    ESP8266WebServer httpServer(HTTP_SERVER_PORT);
+    static ESP8266WebServer httpServer(HTTP_SERVER_PORT);
 
     HttpServer::HttpServer() {
 
@@ -69,7 +69,9 @@ namespace Service {
     }
 
     void HttpServer::loop() {
+        Logger::verbose("  > HttpServer::loop() >> BEGIN");
         httpServer.handleClient();
+        Logger::verbose("  > HttpServer::loop() << END");
     }
 
     // BEGIN RequestHandler interface methods

@@ -308,6 +308,60 @@ PLATFORMIO_PROGRAM/fast:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s
 .PHONY : .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s
 
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.o: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o
+
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.o
+
+# target to build an object file
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o
+
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.i: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.i
+
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.i
+
+# target to preprocess a source file
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.i
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.i
+
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.s: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.s
+
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.s
+
+# target to generate assembly for a file
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.s
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.s
+
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.o: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o
+
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.o
+
+# target to build an object file
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o
+
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.i: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.i
+
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.i
+
+# target to preprocess a source file
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.i
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.i
+
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.s: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.s
+
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.s
+
+# target to generate assembly for a file
+.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.s
+.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.s
+
 .piolibdeps/OneWire_ID1/OneWire.o: .piolibdeps/OneWire_ID1/OneWire.cpp.o
 
 .PHONY : .piolibdeps/OneWire_ID1/OneWire.o
@@ -443,6 +497,195 @@ PLATFORMIO_PROGRAM/fast:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinyxmlparser.cpp.s
 .PHONY : .piolibdeps/TINYXML_ID2793/tinyxmlparser.cpp.s
 
+.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.o: .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.o
+
+.PHONY : .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.o
+
+# target to build an object file
+.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.o
+.PHONY : .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.o
+
+.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.i: .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.i
+
+.PHONY : .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.i
+
+# target to preprocess a source file
+.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.i
+.PHONY : .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.i
+
+.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.s: .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.s
+
+.PHONY : .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.s
+
+# target to generate assembly for a file
+.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.s
+.PHONY : .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.s
+
+.piolibdeps/WebSockets_ID549/src/WebSockets.o: .piolibdeps/WebSockets_ID549/src/WebSockets.cpp.o
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSockets.o
+
+# target to build an object file
+.piolibdeps/WebSockets_ID549/src/WebSockets.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSockets.cpp.o
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSockets.cpp.o
+
+.piolibdeps/WebSockets_ID549/src/WebSockets.i: .piolibdeps/WebSockets_ID549/src/WebSockets.cpp.i
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSockets.i
+
+# target to preprocess a source file
+.piolibdeps/WebSockets_ID549/src/WebSockets.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSockets.cpp.i
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSockets.cpp.i
+
+.piolibdeps/WebSockets_ID549/src/WebSockets.s: .piolibdeps/WebSockets_ID549/src/WebSockets.cpp.s
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSockets.s
+
+# target to generate assembly for a file
+.piolibdeps/WebSockets_ID549/src/WebSockets.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSockets.cpp.s
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSockets.cpp.s
+
+.piolibdeps/WebSockets_ID549/src/WebSocketsClient.o: .piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.o
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsClient.o
+
+# target to build an object file
+.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.o
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.o
+
+.piolibdeps/WebSockets_ID549/src/WebSocketsClient.i: .piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.i
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsClient.i
+
+# target to preprocess a source file
+.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.i
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.i
+
+.piolibdeps/WebSockets_ID549/src/WebSocketsClient.s: .piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.s
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsClient.s
+
+# target to generate assembly for a file
+.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.s
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.s
+
+.piolibdeps/WebSockets_ID549/src/WebSocketsServer.o: .piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.o
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsServer.o
+
+# target to build an object file
+.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.o
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.o
+
+.piolibdeps/WebSockets_ID549/src/WebSocketsServer.i: .piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.i
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsServer.i
+
+# target to preprocess a source file
+.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.i
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.i
+
+.piolibdeps/WebSockets_ID549/src/WebSocketsServer.s: .piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.s
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsServer.s
+
+# target to generate assembly for a file
+.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.s
+.PHONY : .piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.s
+
+.piolibdeps/WebSockets_ID549/src/libb64/cdecode.o: .piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.o
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cdecode.o
+
+# target to build an object file
+.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.o
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.o
+
+.piolibdeps/WebSockets_ID549/src/libb64/cdecode.i: .piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.i
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cdecode.i
+
+# target to preprocess a source file
+.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.i
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.i
+
+.piolibdeps/WebSockets_ID549/src/libb64/cdecode.s: .piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.s
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cdecode.s
+
+# target to generate assembly for a file
+.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.s
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.s
+
+.piolibdeps/WebSockets_ID549/src/libb64/cencode.o: .piolibdeps/WebSockets_ID549/src/libb64/cencode.c.o
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cencode.o
+
+# target to build an object file
+.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.o
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cencode.c.o
+
+.piolibdeps/WebSockets_ID549/src/libb64/cencode.i: .piolibdeps/WebSockets_ID549/src/libb64/cencode.c.i
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cencode.i
+
+# target to preprocess a source file
+.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.i
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cencode.c.i
+
+.piolibdeps/WebSockets_ID549/src/libb64/cencode.s: .piolibdeps/WebSockets_ID549/src/libb64/cencode.c.s
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cencode.s
+
+# target to generate assembly for a file
+.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.s
+.PHONY : .piolibdeps/WebSockets_ID549/src/libb64/cencode.c.s
+
+.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.o: .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.o
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.o
+
+# target to build an object file
+.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.o
+.PHONY : .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.o
+
+.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.i: .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.i
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.i
+
+# target to preprocess a source file
+.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.i
+.PHONY : .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.i
+
+.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.s: .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.s
+
+.PHONY : .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.s
+
+# target to generate assembly for a file
+.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.s
+.PHONY : .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.s
+
 .piolibdeps/aJson_ID35/aJSON.o: .piolibdeps/aJson_ID35/aJSON.cpp.o
 
 .PHONY : .piolibdeps/aJson_ID35/aJSON.o
@@ -523,6 +766,60 @@ PLATFORMIO_PROGRAM/fast:
 .piolibdeps/tinixml2_ID0000/tinyxml2.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.s
 .PHONY : .piolibdeps/tinixml2_ID0000/tinyxml2.cpp.s
+
+src/Task.o: src/Task.cpp.o
+
+.PHONY : src/Task.o
+
+# target to build an object file
+src/Task.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/Task.cpp.o
+.PHONY : src/Task.cpp.o
+
+src/Task.i: src/Task.cpp.i
+
+.PHONY : src/Task.i
+
+# target to preprocess a source file
+src/Task.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/Task.cpp.i
+.PHONY : src/Task.cpp.i
+
+src/Task.s: src/Task.cpp.s
+
+.PHONY : src/Task.s
+
+# target to generate assembly for a file
+src/Task.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/Task.cpp.s
+.PHONY : src/Task.cpp.s
+
+src/TaskManager.o: src/TaskManager.cpp.o
+
+.PHONY : src/TaskManager.o
+
+# target to build an object file
+src/TaskManager.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o
+.PHONY : src/TaskManager.cpp.o
+
+src/TaskManager.i: src/TaskManager.cpp.i
+
+.PHONY : src/TaskManager.i
+
+# target to preprocess a source file
+src/TaskManager.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.i
+.PHONY : src/TaskManager.cpp.i
+
+src/TaskManager.s: src/TaskManager.cpp.s
+
+.PHONY : src/TaskManager.s
+
+# target to generate assembly for a file
+src/TaskManager.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.s
+.PHONY : src/TaskManager.cpp.s
 
 src/io/IOManager.o: src/io/IOManager.cpp.o
 
@@ -767,6 +1064,33 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/net/HttpServer.o: src/net/HttpServer.cpp.o
+
+.PHONY : src/net/HttpServer.o
+
+# target to build an object file
+src/net/HttpServer.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.o
+.PHONY : src/net/HttpServer.cpp.o
+
+src/net/HttpServer.i: src/net/HttpServer.cpp.i
+
+.PHONY : src/net/HttpServer.i
+
+# target to preprocess a source file
+src/net/HttpServer.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.i
+.PHONY : src/net/HttpServer.cpp.i
+
+src/net/HttpServer.s: src/net/HttpServer.cpp.s
+
+.PHONY : src/net/HttpServer.s
+
+# target to generate assembly for a file
+src/net/HttpServer.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.s
+.PHONY : src/net/HttpServer.cpp.s
+
 src/net/NetManager.o: src/net/NetManager.cpp.o
 
 .PHONY : src/net/NetManager.o
@@ -875,33 +1199,6 @@ src/service/HomeGenie.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.s
 .PHONY : src/service/HomeGenie.cpp.s
 
-src/service/HttpServer.o: src/service/HttpServer.cpp.o
-
-.PHONY : src/service/HttpServer.o
-
-# target to build an object file
-src/service/HttpServer.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o
-.PHONY : src/service/HttpServer.cpp.o
-
-src/service/HttpServer.i: src/service/HttpServer.cpp.i
-
-.PHONY : src/service/HttpServer.i
-
-# target to preprocess a source file
-src/service/HttpServer.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.i
-.PHONY : src/service/HttpServer.cpp.i
-
-src/service/HttpServer.s: src/service/HttpServer.cpp.s
-
-.PHONY : src/service/HttpServer.s
-
-# target to generate assembly for a file
-src/service/HttpServer.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.s
-.PHONY : src/service/HttpServer.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -928,6 +1225,12 @@ help:
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.o"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.i"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.s"
+	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.o"
+	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.i"
+	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.s"
+	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.o"
+	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.i"
+	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.s"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.o"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.i"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.s"
@@ -943,6 +1246,27 @@ help:
 	@echo "... .piolibdeps/TINYXML_ID2793/tinyxmlparser.o"
 	@echo "... .piolibdeps/TINYXML_ID2793/tinyxmlparser.i"
 	@echo "... .piolibdeps/TINYXML_ID2793/tinyxmlparser.s"
+	@echo "... .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.o"
+	@echo "... .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.i"
+	@echo "... .piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.s"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSockets.o"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSockets.i"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSockets.s"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSocketsClient.o"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSocketsClient.i"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSocketsClient.s"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSocketsServer.o"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSocketsServer.i"
+	@echo "... .piolibdeps/WebSockets_ID549/src/WebSocketsServer.s"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libb64/cdecode.o"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libb64/cdecode.i"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libb64/cdecode.s"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libb64/cencode.o"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libb64/cencode.i"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libb64/cencode.s"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.o"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.i"
+	@echo "... .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.s"
 	@echo "... .piolibdeps/aJson_ID35/aJSON.o"
 	@echo "... .piolibdeps/aJson_ID35/aJSON.i"
 	@echo "... .piolibdeps/aJson_ID35/aJSON.s"
@@ -952,6 +1276,12 @@ help:
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.o"
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.i"
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.s"
+	@echo "... src/Task.o"
+	@echo "... src/Task.i"
+	@echo "... src/Task.s"
+	@echo "... src/TaskManager.o"
+	@echo "... src/TaskManager.i"
+	@echo "... src/TaskManager.s"
 	@echo "... src/io/IOManager.o"
 	@echo "... src/io/IOManager.i"
 	@echo "... src/io/IOManager.s"
@@ -979,6 +1309,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/net/HttpServer.o"
+	@echo "... src/net/HttpServer.i"
+	@echo "... src/net/HttpServer.s"
 	@echo "... src/net/NetManager.o"
 	@echo "... src/net/NetManager.i"
 	@echo "... src/net/NetManager.s"
@@ -991,9 +1324,6 @@ help:
 	@echo "... src/service/HomeGenie.o"
 	@echo "... src/service/HomeGenie.i"
 	@echo "... src/service/HomeGenie.s"
-	@echo "... src/service/HttpServer.o"
-	@echo "... src/service/HttpServer.i"
-	@echo "... src/service/HttpServer.s"
 .PHONY : help
 
 

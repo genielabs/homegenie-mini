@@ -5,6 +5,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/utility/stringbuffer.c" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/utility/stringbuffer.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
@@ -55,13 +58,21 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/OneWire.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/OneWire_ID1/OneWire.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinystr.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinystr.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinyxml.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinyxml.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinyxmlerror.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinyxmlerror.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinyxmlparser.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinyxmlparser.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/examples/particle/ParticleWebSocketClient/application.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/WebSockets.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSockets.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/aJSON.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/aJSON.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/Task.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/Task.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/TaskManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/IOManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/Logger.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B10.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o"
@@ -71,11 +82,11 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfTransmitter.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitter.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfTransmitterConfig.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/main.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HttpServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiCommand.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/ApiCommand.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"
-  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HttpServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/HttpServer.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

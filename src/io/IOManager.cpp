@@ -83,9 +83,4 @@ namespace IO {
         }
     }
 
-    void IOManager::loop() {
-        temperatureSensor->loop();
-        lightSensor->loop();
-    }
-
 }

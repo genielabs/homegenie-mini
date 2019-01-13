@@ -23,42 +23,40 @@
  *
  *
  * Releases:
- * - 2019-10-01 Initial release
+ * - 2019-13-01 Initial release
  *
  */
 
-#ifndef HOMEGENIE_MINI_HOMEGENIE_H
-#define HOMEGENIE_MINI_HOMEGENIE_H
+#include "TaskManager.h"
 
-#include <io/IOManager.h>
+static Task *taskList = NULL, *currentTask = NULL;
 
-#include <Task.h>
-#include <net/NetManager.h>
-
-namespace Service {
-
-    using namespace IO;
-    using namespace Net;
-
-    class HomeGenie: Task, RequestHandler {
-    public:
-        HomeGenie();
-        void begin();
-
-        // Task interface
-        void loop();
-
-        bool canHandle(HTTPMethod method, String uri);
-        bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
-
-        IOManager& getIOManager();
-        //void getHttpServer();
-    private:
-        NetManager netManager;
-        IOManager ioManager;
-        void getBytes(const String &rawBytes, uint8_t *data);
-    };
-
+TaskManager::TaskManager() {
+    taskList = NULL;
+    currentTask = NULL;
 }
 
-#endif //HOMEGENIE_MINI_HOMEGENIE_H
+void TaskManager::loop() {
+    IO::Logger::verbose("Tasker loop() >> BEGIN");
+    Task *t = taskList;
+    uint c = 0;
+    while (t != NULL) {
+        IO::Logger::verbose("- running task %d", c++);
+        t->loop();
+        t = t->nextTask;
+    }
+    IO::Logger::verbose("Tasker loop() << END");
+}
+
+void TaskManager::addTask(Task *task) {
+    if (taskList == NULL) {
+        taskList = currentTask = task;
+        taskList->nextTask = NULL;
+        taskList->previousTask = NULL;
+    } else {
+        currentTask->nextTask = task;
+        task->previousTask = currentTask;
+        task->nextTask = NULL;
+        currentTask = task;
+    }
+}

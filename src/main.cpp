@@ -33,6 +33,7 @@
 #include <scripting/ProgramEngine.h>
 
 #include "service/HomeGenie.h"
+#include <TaskManager.h>
 
 #define HOMEGENIE_MINI_VERSION "1.0"
 
@@ -40,22 +41,17 @@ using namespace IO;
 using namespace Net;
 using namespace Service;
 
-NetManager netManager;
 HomeGenie homeGenie;
 
 /// This gets called just before the main application loop()
 void setup() {
+
     // Logger initialization
-    Logger::begin();
+    Logger::begin(LOG_LEVEL_NOTICE);
+
     // Welcome message
     Logger::info("HomeGenie-Mini V%s", HOMEGENIE_MINI_VERSION);
     Logger::info("Booting...");
-
-    // WI-FI will not boot without this delay!!!
-    delay(2000);
-
-    Logger::info("+ Starting NetManager");
-    netManager.begin();
 
     Logger::info("+ Starting HomeGenie service");
     homeGenie.begin();
@@ -66,8 +62,7 @@ void setup() {
 /// Main application loop
 void loop()
 {
-    Logger::loop();
-    homeGenie.loop();
+    TaskManager::loop();
 }
 
 //////////////////////////////////////////

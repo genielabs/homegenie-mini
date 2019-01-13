@@ -35,12 +35,13 @@
 #include <detail/RequestHandler.h>
 
 #include "io/Logger.h"
+#include "Task.h"
 
 #define HTTP_SERVER_PORT 80
 
-namespace Service {
+namespace Net {
 
-    class HttpServer : RequestHandler {
+    class HttpServer : Task, RequestHandler {
     public:
         HttpServer();
         void begin();

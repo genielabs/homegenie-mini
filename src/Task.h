@@ -23,42 +23,25 @@
  *
  *
  * Releases:
- * - 2019-10-01 Initial release
+ * - 2019-13-01 Initial release
  *
  */
 
-#ifndef HOMEGENIE_MINI_HOMEGENIE_H
-#define HOMEGENIE_MINI_HOMEGENIE_H
+#ifndef HOMEGENIE_MINI_TASK_H
+#define HOMEGENIE_MINI_TASK_H
 
-#include <io/IOManager.h>
+#include <Arduino.h>
 
-#include <Task.h>
-#include <net/NetManager.h>
+// Task interface
 
-namespace Service {
+class Task {
+public:
+    Task();
+    virtual void loop() {};
 
-    using namespace IO;
-    using namespace Net;
+    Task* nextTask = NULL;
+    Task* previousTask = NULL;
+};
 
-    class HomeGenie: Task, RequestHandler {
-    public:
-        HomeGenie();
-        void begin();
 
-        // Task interface
-        void loop();
-
-        bool canHandle(HTTPMethod method, String uri);
-        bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
-
-        IOManager& getIOManager();
-        //void getHttpServer();
-    private:
-        NetManager netManager;
-        IOManager ioManager;
-        void getBytes(const String &rawBytes, uint8_t *data);
-    };
-
-}
-
-#endif //HOMEGENIE_MINI_HOMEGENIE_H
+#endif //HOMEGENIE_MINI_TASK_H

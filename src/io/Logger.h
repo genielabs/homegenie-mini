@@ -8,26 +8,36 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-namespace IO {
+#define FORMAT_STRING_VARGS char formatted[1024]; \
+                va_list vl; \
+                va_start(vl, s); \
+                vsnprintf(formatted, sizeof(formatted), s, vl); \
+                va_end(vl);
+/*
+#define LOG_LEVEL_SILENT  0
+#define LOG_LEVEL_FATAL   1
+#define LOG_LEVEL_ERROR   2
+#define LOG_LEVEL_WARNING 3
+#define LOG_LEVEL_NOTICE  4
+#define LOG_LEVEL_TRACE   5
+#define LOG_LEVEL_VERBOSE 6
+ */
 
-    enum LogLevel {
-        Info,
-        Warn,
-        Error,
-        Debug,
-        Trace
-    };
+namespace IO {
 
     class Logger {
     public:
-        static void begin();
+        static void begin(int level);
         static void loop();
-        static void info(const char *s, ...);
-        static void infoN(const char *s, ...);
+
         static void error(const char *s, ...);
         static void warn(const char *s, ...);
-        static void log(const char *s, ...);
+        static void info(const char *s, ...);
+        static void infoN(const char *s, ...);
+        static void trace(const char *s, ...);
+        static void verbose(const char *s, ...);
         static void blink();
+
     private:
         Logger();
         static void timestamp();

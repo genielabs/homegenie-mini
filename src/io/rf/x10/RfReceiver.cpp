@@ -53,10 +53,13 @@ namespace IO { namespace X10 {
     void RfReceiver::begin() {
         enabled = true;
         if (rfReceiveCallback) {
+            Logger::info("|  - IO::X10::RfReceiver (PIN=%d INT=%d)", configuration->getPin(), configuration->getInterrupt());
             pinMode(configuration->getPin(), INPUT);
             attachInterrupt(configuration->getInterrupt(), receiverInstance_wrapper, RISING);
+            Logger::info("|  ✔ IO::X10::RfReceiver");
+        } else {
+            Logger::info("|  ! IO::X10::RfReceiver ERROR: NO CALLBACK");
         }
-        Logger::info("|  ✔ IO::X10::RfReceiver");
     }
 
     void RfReceiver::enable() {

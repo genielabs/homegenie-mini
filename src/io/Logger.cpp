@@ -6,17 +6,13 @@
 
 namespace IO {
 
-#define FORMAT_STRING_VARGS char formatted[1024]; \
-                va_list vl; \
-                va_start(vl, s); \
-                vsnprintf(formatted, sizeof(formatted), s, vl); \
-                va_end(vl);
-
+    static int logLevel;
 
     Logger::Logger() {
     }
 
-    void Logger::begin() {
+    void Logger::begin(int level) {
+        logLevel = level;
         // Enable serial I/O
         Serial.begin(115200);
         // TODO: not sure that this is working
@@ -30,7 +26,7 @@ namespace IO {
         Serial.print("[H");
         // \\ END ANSI codes
         Serial.println("\n\nBOOTING!\n");
-        Log.begin(LOG_LEVEL_VERBOSE, &Serial, false);
+        Log.begin(level, &Serial, false);
     }
 
     void Logger::loop() {
@@ -45,30 +41,47 @@ namespace IO {
     }
 
     void Logger::info(const char *s, ...) {
-        timestamp();
-        FORMAT_STRING_VARGS
-        Log.notice(formatted);
-        Serial.println();
+        if (logLevel >= LOG_LEVEL_NOTICE) {
+            timestamp();
+            FORMAT_STRING_VARGS
+            Log.notice(formatted);
+            Serial.println();
+        }
     }
 
     void Logger::infoN(const char *s, ...) {
-        timestamp();
-        FORMAT_STRING_VARGS
-        Log.notice(formatted);
+        if (logLevel >= LOG_LEVEL_NOTICE) {
+            timestamp();
+            FORMAT_STRING_VARGS
+            Log.notice(formatted);
+        }
     }
 
     void Logger::error(const char *s, ...) {
-        timestamp();
-        FORMAT_STRING_VARGS
-        Log.error(formatted);
-        Serial.println();
+        if (logLevel >= LOG_LEVEL_ERROR) {
+            timestamp();
+            FORMAT_STRING_VARGS
+            Log.error(formatted);
+            Serial.println();
+        }
     }
 
     void Logger::warn(const char *s, ...) {
-        timestamp();
-        FORMAT_STRING_VARGS
-        Log.warning(formatted);
-        Serial.println();
+        if (logLevel >= LOG_LEVEL_WARNING) {
+            timestamp();
+            FORMAT_STRING_VARGS
+            Log.warning(formatted);
+            Serial.println();
+        }
+    }
+
+    void Logger::verbose(const char *s, ...) {
+        if (logLevel >= LOG_LEVEL_VERBOSE) {
+            timestamp();
+            FORMAT_STRING_VARGS
+            Log.verbose(formatted);
+            Serial.println();
+        }
     }
 
     void Logger::timestamp() {
@@ -76,5 +89,14 @@ namespace IO {
         char timestamp[15];
         snprintf(timestamp, sizeof(timestamp), "%8.06f", ((float)micros()/(float)1000000));
         Serial.printf("[%15s] ", timestamp);
+    }
+
+    void Logger::trace(const char *s, ...) {
+        if (logLevel >= LOG_LEVEL_TRACE) {
+            timestamp();
+            FORMAT_STRING_VARGS
+            Log.trace(formatted);
+            Serial.println();
+        }
     }
 }

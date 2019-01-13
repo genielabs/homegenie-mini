@@ -32,19 +32,17 @@
 namespace Service {
 
     HomeGenie::HomeGenie() {
-        httpServer = new HttpServer();
-        ioManager = new IO::IOManager();
     }
 
     void HomeGenie::begin() {
-        httpServer->addHandler(this);
-        httpServer->begin();
-        ioManager->begin();
+        netManager.begin();
+        netManager.getHttpServer().addHandler(this);
+        ioManager.begin();
     }
 
     void HomeGenie::loop() {
-        ioManager->loop();
-        httpServer->loop();
+        Logger::verbose("  > Service::HomeGenie::loop() >> BEGIN");
+
         // TODO: move the following to a separate class or method
         // HomeGenie-Mini Serial CLI
         if(Serial.available() > 0)
@@ -60,10 +58,12 @@ namespace Service {
                 getIOManager().getX10Receiver().enable();
             }
         }
+
+        Logger::verbose("  > Service::HomeGenie::loop() << END");
     }
 
-    IO::IOManager& HomeGenie::getIOManager() {
-        return *ioManager;
+    IOManager& HomeGenie::getIOManager() {
+        return ioManager;
     }
 
     // BEGIN RequestHandler interface methods
@@ -82,11 +82,11 @@ namespace Service {
             res = R"({ "ResponseText": "OK" })";
         } else if (requestUri.startsWith("/api/HomeAutomation.Env/Light/Sensor.GetValue")) {
             char response[1024];
-            sprintf(response, R"({ "ResponseText": "%0.2f" })", ioManager->getLightSensor().getLightLevel() / 10.24F);
+            sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getLightSensor().getLightLevel() / 10.24F);
             res = String(response);
         } else if (requestUri.startsWith("/api/HomeAutomation.Env/Temperature/Sensor.GetValue")) {
             char response[1024];
-            sprintf(response, R"({ "ResponseText": "%0.2f" })", ioManager->getTemperatureSensor().getTemperature());
+            sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getTemperatureSensor().getTemperature());
             res = String(response);
         }
         server.send(200, "application/json", res);

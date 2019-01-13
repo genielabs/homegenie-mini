@@ -23,42 +23,24 @@
  *
  *
  * Releases:
- * - 2019-10-01 Initial release
+ * - 2019-13-01 Initial release
  *
  */
 
-#ifndef HOMEGENIE_MINI_HOMEGENIE_H
-#define HOMEGENIE_MINI_HOMEGENIE_H
+#ifndef HOMEGENIE_MINI_TASKMANAGER_H
+#define HOMEGENIE_MINI_TASKMANAGER_H
 
-#include <io/IOManager.h>
 
-#include <Task.h>
-#include <net/NetManager.h>
+#include "Task.h"
+#include "io/Logger.h"
 
-namespace Service {
+/// A very minimalistic task manager
 
-    using namespace IO;
-    using namespace Net;
+class TaskManager {
+public:
+    TaskManager();
+    static void loop();
+    static void addTask(Task *task);
+};
 
-    class HomeGenie: Task, RequestHandler {
-    public:
-        HomeGenie();
-        void begin();
-
-        // Task interface
-        void loop();
-
-        bool canHandle(HTTPMethod method, String uri);
-        bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
-
-        IOManager& getIOManager();
-        //void getHttpServer();
-    private:
-        NetManager netManager;
-        IOManager ioManager;
-        void getBytes(const String &rawBytes, uint8_t *data);
-    };
-
-}
-
-#endif //HOMEGENIE_MINI_HOMEGENIE_H
+#endif //HOMEGENIE_MINI_TASKMANAGER_H
