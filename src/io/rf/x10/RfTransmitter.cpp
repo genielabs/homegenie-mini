@@ -78,7 +78,6 @@ namespace IO { namespace X10 {
     }
 
     void RfTransmitter::sendCommand(uint8_t *data, uint8_t size) {
-        Logger::trace("IO::X10::RfTransmitter::sendCommand(..) >> BEGIN");
         for (int i = 0; i < configuration->getSendRepeat(); i++) {
             pulseHigh();
             delayMicroseconds(configuration->getStartBustLong());
@@ -90,7 +89,6 @@ namespace IO { namespace X10 {
             sendBit(true);
             delayMicroseconds(configuration->getPacketGap());
         }
-        Logger::trace("IO::X10::RfTransmitter::sendCommand(..) << END");
     }
 
     void RfTransmitter::sendByte(uint8_t data) {

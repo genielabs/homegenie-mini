@@ -34,6 +34,7 @@
 
 #include <Task.h>
 #include <net/NetManager.h>
+#include "ApiRequest.h"
 
 namespace Service {
 
@@ -50,6 +51,8 @@ namespace Service {
 
         bool canHandle(HTTPMethod method, String uri);
         bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
+
+        bool api(ApiRequest *command);
 
         IOManager& getIOManager();
         //void getHttpServer();

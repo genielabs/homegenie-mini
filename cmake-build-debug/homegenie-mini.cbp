@@ -977,6 +977,12 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HttpServer.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MqttServer.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MqttServer.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>
@@ -989,10 +995,10 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiCommand.cpp">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiRequest.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiCommand.h">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiRequest.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp">

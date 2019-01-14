@@ -83,9 +83,10 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfTransmitterConfig.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/main.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HttpServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MqttServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o"
-  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiCommand.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/ApiCommand.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiRequest.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

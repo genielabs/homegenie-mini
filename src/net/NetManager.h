@@ -37,29 +37,23 @@
 #include <WiFiServer.h>
 #include <WiFiClient.h>
 
-#include <WebSocketsServer.h>
-#include <ArduinoJson.h>
-#include <MQTTbroker_lite.h>
-
 #include "HttpServer.h"
+#include "MqttServer.h"
 #include <io/Logger.h>
 #include <Task.h>
 
 namespace Net {
 
+    /// Network services management
     class NetManager : Task {
     public:
-
         bool begin();
         void loop();
         HttpServer getHttpServer();
 
-        static void webSocketEventStatic(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
-        static void mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t * payload, uint8_t length_payload);
     private:
         HttpServer *httpServer;
-        WebSocketsServer *webSocket;
-        MQTTbroker_lite *mqttBroker;
+        MqttServer *mqttServer;
         String setStatus(int s);
     };
 

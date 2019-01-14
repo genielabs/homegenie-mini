@@ -37,13 +37,13 @@ namespace IO { namespace X10 {
     class RfTransmitterConfig
     {
     private:
-        uint8_t m_pin;
-        uint8_t m_sendRepeat;
-        uint16_t m_startBustLong;
-        uint16_t m_startBustShort;
-        uint16_t m_bitLong;
-        uint16_t m_bitShort;
-        uint16_t m_packetGap;
+        uint8_t pin;
+        uint8_t sendRepeat;
+        uint16_t startBustLong;
+        uint16_t startBustShort;
+        uint16_t bitLong;
+        uint16_t bitShort;
+        uint16_t packetGap;
     public:
         RfTransmitterConfig();
         RfTransmitterConfig(uint8_t pin);

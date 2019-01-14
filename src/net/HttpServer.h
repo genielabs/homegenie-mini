@@ -41,6 +41,7 @@
 
 namespace Net {
 
+    /// Implements HTTP and SSDP services
     class HttpServer : Task, RequestHandler {
     public:
         HttpServer();

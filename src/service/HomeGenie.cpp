@@ -28,6 +28,7 @@
  */
 
 #include "HomeGenie.h"
+#include "ApiRequest.h"
 
 namespace Service {
 
@@ -43,19 +44,16 @@ namespace Service {
     void HomeGenie::loop() {
         Logger::verbose("  > Service::HomeGenie::loop() >> BEGIN");
 
-        // TODO: move the following to a separate class or method
         // HomeGenie-Mini Serial CLI
-        if(Serial.available() > 0)
-        {
+        if(Serial.available() > 0) {
             String cmd = Serial.readStringUntil('\n');
-            if (cmd.startsWith("X10:send "))
-            {
-                String hexData = cmd.substring(9);
-                uint8_t data[hexData.length() / 2]; getBytes(hexData, data);
-                // Disable RfReceiver callbacks during transmission to prevent echo
-                getIOManager().getX10Receiver().disable();
-                getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
-                getIOManager().getX10Receiver().enable();
+            auto apiCommand = ApiRequest::parse(cmd);
+            if (apiCommand.Prefix.equals("api")) {
+                if (api(&apiCommand)) {
+                    Logger::info("=%s", apiCommand.Response.c_str());
+                } else {
+                    Logger::warn("=%s", apiCommand.Response.c_str());
+                }
             }
         }
 
@@ -71,25 +69,12 @@ namespace Service {
         return uri != NULL && uri.startsWith("/api/");
     }
     bool HomeGenie::handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri) {
-        String res = R"({ "ResponseText": "ERROR" })";
-        if (requestUri.startsWith("/api/HomeAutomation.X10/RF/Control.SendRaw/")) {
-            String rawBytes = requestUri.substring((uint) requestUri.lastIndexOf('/') + 1);
-            uint8_t data[rawBytes.length() / 2]; getBytes(rawBytes, data);
-            // Disable RfReceiver callbacks during transmission to prevent echo
-            getIOManager().getX10Receiver().disable();
-            getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
-            getIOManager().getX10Receiver().enable();
-            res = R"({ "ResponseText": "OK" })";
-        } else if (requestUri.startsWith("/api/HomeAutomation.Env/Light/Sensor.GetValue")) {
-            char response[1024];
-            sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getLightSensor().getLightLevel() / 10.24F);
-            res = String(response);
-        } else if (requestUri.startsWith("/api/HomeAutomation.Env/Temperature/Sensor.GetValue")) {
-            char response[1024];
-            sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getTemperatureSensor().getTemperature());
-            res = String(response);
+        auto command = ApiRequest::parse(requestUri);
+        if (api(&command)) {
+            server.send(200, "application/json", command.Response);
+        } else {
+            server.send(400, "application/json", command.Response);
         }
-        server.send(200, "application/json", res);
         return true;
     }
     // END RequestHandler interface methods
@@ -105,6 +90,35 @@ namespace Service {
             tmp[1] = msg[(i * 2) + 1];
             data[i] = strtol(tmp, NULL, 16);
         }
+    }
+
+    bool HomeGenie::api(ApiRequest *command) {
+        if (command->Domain.equals("HomeAutomation.X10")
+            && command->Address.equals("RF")
+            && command->Command.equals("Control.SendRaw")
+        ) {
+
+            uint8_t data[command->OptionsString.length() / 2]; getBytes(command->OptionsString, data);
+            // Disable RfReceiver callbacks during transmission to prevent echo
+            getIOManager().getX10Receiver().disable();
+            getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
+            getIOManager().getX10Receiver().enable();
+            command->Response = R"({ "ResponseText": "OK" })";
+
+        } else if (command->Domain.equals("HomeAutomation.Env")) {
+
+            if (command->Address.equals("Light") && command->Command.equals("Sensor.GetValue")) {
+                char response[1024];
+                sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getLightSensor().getLightLevel() / 10.24F);
+                command->Response = String(response);
+            } else if (command->Address.equals("Temperature") && command->Command.equals("Sensor.GetValue")) {
+                char response[1024];
+                sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getTemperatureSensor().getTemperature());
+                command->Response = String(response);
+            } else return false;
+
+        } else return false;
+        return true;
     }
 
 }

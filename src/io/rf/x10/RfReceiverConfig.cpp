@@ -33,38 +33,38 @@ namespace IO { namespace X10 {
 
     RfReceiverConfig::RfReceiverConfig()
     {
-        m_pin = m_interrupt = 5;
+        pin = interrupt = 5;
 
-        m_startBustMin = 8000;
-        m_startBustMax = 16000;
-        m_startBustRepeat = 7000;
+        startBustMin = 8000;
+        startBustMax = 16000;
+        startBustRepeat = 7000;
 
-        m_bitZeroMin = 800;
-        m_bitZeroMax = 1400;
+        bitZeroMin = 800;
+        bitZeroMax = 1400;
 
-        m_bitOneMin = 2000;
-        m_bitOneMax = 2400;
+        bitOneMin = 2000;
+        bitOneMax = 2400;
     }
     RfReceiverConfig::RfReceiverConfig(uint8_t pin) : RfReceiverConfig()
     {
-        this->m_pin = pin;
+        this->pin = pin;
     }
     RfReceiverConfig::RfReceiverConfig(
         uint8_t interrupt, uint8_t pin
     ) : RfReceiverConfig(pin)
     {
-        this->m_interrupt = interrupt;
+        this->interrupt = interrupt;
     }
-    uint8_t RfReceiverConfig::getPin() { return m_pin; };
-    uint8_t RfReceiverConfig::getInterrupt() { return m_interrupt; };
-    uint16_t RfReceiverConfig::getStartBustMin() { return m_startBustMin; };
-    uint16_t RfReceiverConfig::getStartBustMax() { return m_startBustMax; };
-    uint16_t RfReceiverConfig::getStartBustRepeat() { return m_startBustRepeat; };
+    uint8_t RfReceiverConfig::getPin() { return pin; };
+    uint8_t RfReceiverConfig::getInterrupt() { return interrupt; };
+    uint16_t RfReceiverConfig::getStartBustMin() { return startBustMin; };
+    uint16_t RfReceiverConfig::getStartBustMax() { return startBustMax; };
+    uint16_t RfReceiverConfig::getStartBustRepeat() { return startBustRepeat; };
 
-    uint16_t RfReceiverConfig::getBitZeroMin() { return m_bitZeroMin; };
-    uint16_t RfReceiverConfig::getBitZeroMax() { return m_bitZeroMax; };
+    uint16_t RfReceiverConfig::getBitZeroMin() { return bitZeroMin; };
+    uint16_t RfReceiverConfig::getBitZeroMax() { return bitZeroMax; };
 
-    uint16_t RfReceiverConfig::getBitOneMin() { return m_bitOneMin; };
-    uint16_t RfReceiverConfig::getBitOneMax() { return m_bitOneMax; };
+    uint16_t RfReceiverConfig::getBitOneMin() { return bitOneMin; };
+    uint16_t RfReceiverConfig::getBitOneMax() { return bitOneMax; };
 
 }} // ns

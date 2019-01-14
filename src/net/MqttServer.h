@@ -23,8 +23,34 @@
  *
  *
  * Releases:
- * - 2019-13-01 Initial release
+ * - 2019-14-01 Initial release
  *
  */
 
-#include "ApiCommand.h"
+#ifndef HOMEGENIE_MINI_MQTTSERVER_H
+#define HOMEGENIE_MINI_MQTTSERVER_H
+
+#include <Arduino.h>
+
+#include <WebSocketsServer.h>
+#include <ArduinoJson.h>
+#include <MQTTbroker_lite.h>
+#include <Task.h>
+
+namespace Net {
+
+/// Simple MQTT Broker implementation over WebSockets
+    class MqttServer : Task {
+    public:
+        void begin();
+        void loop();
+        static void webSocketEventStatic(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
+        static void mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t * payload, uint8_t length_payload);
+    private:
+        WebSocketsServer *webSocket;
+        MQTTbroker_lite *mqttBroker;
+    };
+
+}
+
+#endif //HOMEGENIE_MINI_MQTTSERVER_H

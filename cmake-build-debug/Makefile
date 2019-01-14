@@ -1091,6 +1091,33 @@ src/net/HttpServer.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.s
 .PHONY : src/net/HttpServer.cpp.s
 
+src/net/MqttServer.o: src/net/MqttServer.cpp.o
+
+.PHONY : src/net/MqttServer.o
+
+# target to build an object file
+src/net/MqttServer.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.o
+.PHONY : src/net/MqttServer.cpp.o
+
+src/net/MqttServer.i: src/net/MqttServer.cpp.i
+
+.PHONY : src/net/MqttServer.i
+
+# target to preprocess a source file
+src/net/MqttServer.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.i
+.PHONY : src/net/MqttServer.cpp.i
+
+src/net/MqttServer.s: src/net/MqttServer.cpp.s
+
+.PHONY : src/net/MqttServer.s
+
+# target to generate assembly for a file
+src/net/MqttServer.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.s
+.PHONY : src/net/MqttServer.cpp.s
+
 src/net/NetManager.o: src/net/NetManager.cpp.o
 
 .PHONY : src/net/NetManager.o
@@ -1145,32 +1172,32 @@ src/scripting/ProgramEngine.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.s
 .PHONY : src/scripting/ProgramEngine.cpp.s
 
-src/service/ApiCommand.o: src/service/ApiCommand.cpp.o
+src/service/ApiRequest.o: src/service/ApiRequest.cpp.o
 
-.PHONY : src/service/ApiCommand.o
+.PHONY : src/service/ApiRequest.o
 
 # target to build an object file
-src/service/ApiCommand.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiCommand.cpp.o
-.PHONY : src/service/ApiCommand.cpp.o
+src/service/ApiRequest.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o
+.PHONY : src/service/ApiRequest.cpp.o
 
-src/service/ApiCommand.i: src/service/ApiCommand.cpp.i
+src/service/ApiRequest.i: src/service/ApiRequest.cpp.i
 
-.PHONY : src/service/ApiCommand.i
+.PHONY : src/service/ApiRequest.i
 
 # target to preprocess a source file
-src/service/ApiCommand.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiCommand.cpp.i
-.PHONY : src/service/ApiCommand.cpp.i
+src/service/ApiRequest.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.i
+.PHONY : src/service/ApiRequest.cpp.i
 
-src/service/ApiCommand.s: src/service/ApiCommand.cpp.s
+src/service/ApiRequest.s: src/service/ApiRequest.cpp.s
 
-.PHONY : src/service/ApiCommand.s
+.PHONY : src/service/ApiRequest.s
 
 # target to generate assembly for a file
-src/service/ApiCommand.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiCommand.cpp.s
-.PHONY : src/service/ApiCommand.cpp.s
+src/service/ApiRequest.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.s
+.PHONY : src/service/ApiRequest.cpp.s
 
 src/service/HomeGenie.o: src/service/HomeGenie.cpp.o
 
@@ -1312,15 +1339,18 @@ help:
 	@echo "... src/net/HttpServer.o"
 	@echo "... src/net/HttpServer.i"
 	@echo "... src/net/HttpServer.s"
+	@echo "... src/net/MqttServer.o"
+	@echo "... src/net/MqttServer.i"
+	@echo "... src/net/MqttServer.s"
 	@echo "... src/net/NetManager.o"
 	@echo "... src/net/NetManager.i"
 	@echo "... src/net/NetManager.s"
 	@echo "... src/scripting/ProgramEngine.o"
 	@echo "... src/scripting/ProgramEngine.i"
 	@echo "... src/scripting/ProgramEngine.s"
-	@echo "... src/service/ApiCommand.o"
-	@echo "... src/service/ApiCommand.i"
-	@echo "... src/service/ApiCommand.s"
+	@echo "... src/service/ApiRequest.o"
+	@echo "... src/service/ApiRequest.i"
+	@echo "... src/service/ApiRequest.s"
 	@echo "... src/service/HomeGenie.o"
 	@echo "... src/service/HomeGenie.i"
 	@echo "... src/service/HomeGenie.s"

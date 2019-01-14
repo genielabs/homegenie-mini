@@ -30,10 +30,23 @@
 #ifndef HOMEGENIE_MINI_APICOMMAND_H
 #define HOMEGENIE_MINI_APICOMMAND_H
 
+#include <Arduino.h>
+#include <io/Logger.h>
 
-class ApiCommand {
+namespace Service {
 
-};
+    class ApiRequest {
+    public:
+        String Prefix;
+        String Domain;
+        String Address;
+        String Command;
+        String OptionsString;
+        String Response = R"({ "ResponseText": "ERROR" })";
+        String getOption(unsigned int optionIndex);
+        static ApiRequest parse(String command);
+    };
 
+}
 
 #endif //HOMEGENIE_MINI_APICOMMAND_H

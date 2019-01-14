@@ -47,7 +47,7 @@ HomeGenie homeGenie;
 void setup() {
 
     // Logger initialization
-    Logger::begin(LOG_LEVEL_NOTICE);
+    Logger::begin(LOG_LEVEL_TRACE);
 
     // Welcome message
     Logger::info("HomeGenie-Mini V%s", HOMEGENIE_MINI_VERSION);
@@ -57,6 +57,7 @@ void setup() {
     homeGenie.begin();
 
     Logger::info("READY.");
+
 }
 
 /// Main application loop

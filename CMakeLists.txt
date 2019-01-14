@@ -51,4 +51,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} src/io/IOManager.cpp src/io/IOManager.h src/net/HttpServer.cpp src/net/HttpServer.h src/net/NetManager.cpp src/net/NetManager.h src/io/Logger.cpp src/io/Logger.h src/scripting/ProgramEngine.cpp src/scripting/ProgramEngine.h src/io/env/LightSensor.cpp src/io/env/LightSensor.h src/io/env/DS18B10.cpp src/io/env/DS18B10.h src/service/ApiCommand.cpp src/service/ApiCommand.h src/TaskManager.cpp src/TaskManager.h src/Task.cpp src/Task.h)
+add_executable(${PROJECT_NAME} ${SRC_LIST} src/io/IOManager.cpp src/io/IOManager.h src/net/HttpServer.cpp src/net/HttpServer.h src/net/NetManager.cpp src/net/NetManager.h src/io/Logger.cpp src/io/Logger.h src/scripting/ProgramEngine.cpp src/scripting/ProgramEngine.h src/io/env/LightSensor.cpp src/io/env/LightSensor.h src/io/env/DS18B10.cpp src/io/env/DS18B10.h src/service/ApiRequest.cpp src/service/ApiRequest.h src/TaskManager.cpp src/TaskManager.h src/Task.cpp src/Task.h src/net/MqttServer.cpp src/net/MqttServer.h)
