@@ -35,10 +35,11 @@
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
 
-#include "mqtt/MQTTbroker_lite.h"
+#include "net/mqtt/MQTTBrokerMini.h"
 #include <Task.h>
 
 namespace Net {
+    using namespace MQTT;
 
 /// Simple MQTT Broker implementation over WebSockets
     class MqttServer : Task {
@@ -49,7 +50,7 @@ namespace Net {
         static void mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t * payload, uint16_t length_payload);
     private:
         WebSocketsServer *webSocket;
-        MQTTbroker_lite *mqttBroker;
+        MQTTBrokerMini *mqttBroker;
     };
 
 }

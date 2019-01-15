@@ -1019,16 +1019,16 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HttpServer.cpp">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HTTPServer.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HttpServer.h">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HTTPServer.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MqttServer.cpp">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MQTTServer.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MqttServer.h">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MQTTServer.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.cpp">
@@ -1037,10 +1037,16 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTbroker_lite.cpp">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTBrokerConfig.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTbroker_lite.h">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTBrokerConfig.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTBrokerMini.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTBrokerMini.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp">

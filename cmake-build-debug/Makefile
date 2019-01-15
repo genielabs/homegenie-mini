@@ -1064,59 +1064,59 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
-src/net/HttpServer.o: src/net/HttpServer.cpp.o
+src/net/HTTPServer.o: src/net/HTTPServer.cpp.o
 
-.PHONY : src/net/HttpServer.o
-
-# target to build an object file
-src/net/HttpServer.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.o
-.PHONY : src/net/HttpServer.cpp.o
-
-src/net/HttpServer.i: src/net/HttpServer.cpp.i
-
-.PHONY : src/net/HttpServer.i
-
-# target to preprocess a source file
-src/net/HttpServer.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.i
-.PHONY : src/net/HttpServer.cpp.i
-
-src/net/HttpServer.s: src/net/HttpServer.cpp.s
-
-.PHONY : src/net/HttpServer.s
-
-# target to generate assembly for a file
-src/net/HttpServer.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.s
-.PHONY : src/net/HttpServer.cpp.s
-
-src/net/MqttServer.o: src/net/MqttServer.cpp.o
-
-.PHONY : src/net/MqttServer.o
+.PHONY : src/net/HTTPServer.o
 
 # target to build an object file
-src/net/MqttServer.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.o
-.PHONY : src/net/MqttServer.cpp.o
+src/net/HTTPServer.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o
+.PHONY : src/net/HTTPServer.cpp.o
 
-src/net/MqttServer.i: src/net/MqttServer.cpp.i
+src/net/HTTPServer.i: src/net/HTTPServer.cpp.i
 
-.PHONY : src/net/MqttServer.i
+.PHONY : src/net/HTTPServer.i
 
 # target to preprocess a source file
-src/net/MqttServer.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.i
-.PHONY : src/net/MqttServer.cpp.i
+src/net/HTTPServer.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.i
+.PHONY : src/net/HTTPServer.cpp.i
 
-src/net/MqttServer.s: src/net/MqttServer.cpp.s
+src/net/HTTPServer.s: src/net/HTTPServer.cpp.s
 
-.PHONY : src/net/MqttServer.s
+.PHONY : src/net/HTTPServer.s
 
 # target to generate assembly for a file
-src/net/MqttServer.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.s
-.PHONY : src/net/MqttServer.cpp.s
+src/net/HTTPServer.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.s
+.PHONY : src/net/HTTPServer.cpp.s
+
+src/net/MQTTServer.o: src/net/MQTTServer.cpp.o
+
+.PHONY : src/net/MQTTServer.o
+
+# target to build an object file
+src/net/MQTTServer.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o
+.PHONY : src/net/MQTTServer.cpp.o
+
+src/net/MQTTServer.i: src/net/MQTTServer.cpp.i
+
+.PHONY : src/net/MQTTServer.i
+
+# target to preprocess a source file
+src/net/MQTTServer.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.i
+.PHONY : src/net/MQTTServer.cpp.i
+
+src/net/MQTTServer.s: src/net/MQTTServer.cpp.s
+
+.PHONY : src/net/MQTTServer.s
+
+# target to generate assembly for a file
+src/net/MQTTServer.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.s
+.PHONY : src/net/MQTTServer.cpp.s
 
 src/net/NetManager.o: src/net/NetManager.cpp.o
 
@@ -1145,32 +1145,59 @@ src/net/NetManager.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.s
 .PHONY : src/net/NetManager.cpp.s
 
-src/net/mqtt/MQTTbroker_lite.o: src/net/mqtt/MQTTbroker_lite.cpp.o
+src/net/mqtt/MQTTBrokerConfig.o: src/net/mqtt/MQTTBrokerConfig.cpp.o
 
-.PHONY : src/net/mqtt/MQTTbroker_lite.o
+.PHONY : src/net/mqtt/MQTTBrokerConfig.o
 
 # target to build an object file
-src/net/mqtt/MQTTbroker_lite.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTbroker_lite.cpp.o
-.PHONY : src/net/mqtt/MQTTbroker_lite.cpp.o
+src/net/mqtt/MQTTBrokerConfig.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.o
+.PHONY : src/net/mqtt/MQTTBrokerConfig.cpp.o
 
-src/net/mqtt/MQTTbroker_lite.i: src/net/mqtt/MQTTbroker_lite.cpp.i
+src/net/mqtt/MQTTBrokerConfig.i: src/net/mqtt/MQTTBrokerConfig.cpp.i
 
-.PHONY : src/net/mqtt/MQTTbroker_lite.i
+.PHONY : src/net/mqtt/MQTTBrokerConfig.i
 
 # target to preprocess a source file
-src/net/mqtt/MQTTbroker_lite.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTbroker_lite.cpp.i
-.PHONY : src/net/mqtt/MQTTbroker_lite.cpp.i
+src/net/mqtt/MQTTBrokerConfig.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.i
+.PHONY : src/net/mqtt/MQTTBrokerConfig.cpp.i
 
-src/net/mqtt/MQTTbroker_lite.s: src/net/mqtt/MQTTbroker_lite.cpp.s
+src/net/mqtt/MQTTBrokerConfig.s: src/net/mqtt/MQTTBrokerConfig.cpp.s
 
-.PHONY : src/net/mqtt/MQTTbroker_lite.s
+.PHONY : src/net/mqtt/MQTTBrokerConfig.s
 
 # target to generate assembly for a file
-src/net/mqtt/MQTTbroker_lite.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTbroker_lite.cpp.s
-.PHONY : src/net/mqtt/MQTTbroker_lite.cpp.s
+src/net/mqtt/MQTTBrokerConfig.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.s
+.PHONY : src/net/mqtt/MQTTBrokerConfig.cpp.s
+
+src/net/mqtt/MQTTBrokerMini.o: src/net/mqtt/MQTTBrokerMini.cpp.o
+
+.PHONY : src/net/mqtt/MQTTBrokerMini.o
+
+# target to build an object file
+src/net/mqtt/MQTTBrokerMini.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.o
+.PHONY : src/net/mqtt/MQTTBrokerMini.cpp.o
+
+src/net/mqtt/MQTTBrokerMini.i: src/net/mqtt/MQTTBrokerMini.cpp.i
+
+.PHONY : src/net/mqtt/MQTTBrokerMini.i
+
+# target to preprocess a source file
+src/net/mqtt/MQTTBrokerMini.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.i
+.PHONY : src/net/mqtt/MQTTBrokerMini.cpp.i
+
+src/net/mqtt/MQTTBrokerMini.s: src/net/mqtt/MQTTBrokerMini.cpp.s
+
+.PHONY : src/net/mqtt/MQTTBrokerMini.s
+
+# target to generate assembly for a file
+src/net/mqtt/MQTTBrokerMini.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.s
+.PHONY : src/net/mqtt/MQTTBrokerMini.cpp.s
 
 src/scripting/ProgramEngine.o: src/scripting/ProgramEngine.cpp.o
 
@@ -1363,18 +1390,21 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... src/net/HttpServer.o"
-	@echo "... src/net/HttpServer.i"
-	@echo "... src/net/HttpServer.s"
-	@echo "... src/net/MqttServer.o"
-	@echo "... src/net/MqttServer.i"
-	@echo "... src/net/MqttServer.s"
+	@echo "... src/net/HTTPServer.o"
+	@echo "... src/net/HTTPServer.i"
+	@echo "... src/net/HTTPServer.s"
+	@echo "... src/net/MQTTServer.o"
+	@echo "... src/net/MQTTServer.i"
+	@echo "... src/net/MQTTServer.s"
 	@echo "... src/net/NetManager.o"
 	@echo "... src/net/NetManager.i"
 	@echo "... src/net/NetManager.s"
-	@echo "... src/net/mqtt/MQTTbroker_lite.o"
-	@echo "... src/net/mqtt/MQTTbroker_lite.i"
-	@echo "... src/net/mqtt/MQTTbroker_lite.s"
+	@echo "... src/net/mqtt/MQTTBrokerConfig.o"
+	@echo "... src/net/mqtt/MQTTBrokerConfig.i"
+	@echo "... src/net/mqtt/MQTTBrokerConfig.s"
+	@echo "... src/net/mqtt/MQTTBrokerMini.o"
+	@echo "... src/net/mqtt/MQTTBrokerMini.i"
+	@echo "... src/net/mqtt/MQTTBrokerMini.s"
 	@echo "... src/scripting/ProgramEngine.o"
 	@echo "... src/scripting/ProgramEngine.i"
 	@echo "... src/scripting/ProgramEngine.s"

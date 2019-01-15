@@ -37,8 +37,8 @@
 #include <WiFiServer.h>
 #include <WiFiClient.h>
 
-#include "HttpServer.h"
-#include "MqttServer.h"
+#include "HTTPServer.h"
+#include "MQTTServer.h"
 #include <io/Logger.h>
 #include <Task.h>
 
@@ -49,10 +49,10 @@ namespace Net {
     public:
         bool begin();
         void loop();
-        HttpServer getHttpServer();
+        HTTPServer getHttpServer();
 
     private:
-        HttpServer *httpServer;
+        HTTPServer *httpServer;
         MqttServer *mqttServer;
         String setStatus(int s);
     };

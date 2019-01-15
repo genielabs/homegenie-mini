@@ -1,0 +1,14 @@
+//
+// Created by gene on 15/01/19.
+//
+
+#ifndef HOMEGENIE_MINI_MQTTBROKERCONFIG_H
+#define HOMEGENIE_MINI_MQTTBROKERCONFIG_H
+
+
+class MQTTBrokerConfig {
+
+};
+
+
+#endif //HOMEGENIE_MINI_MQTTBROKERCONFIG_H

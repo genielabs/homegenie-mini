@@ -33,7 +33,7 @@ namespace Net {
 
     using namespace IO;
 
-    static HttpServer httpServer;
+    static HTTPServer httpServer;
 
     bool NetManager::begin() {
 
@@ -91,7 +91,7 @@ namespace Net {
 
 
 
-        httpServer = new HttpServer();
+        httpServer = new HTTPServer();
         httpServer->begin();
 
         mqttServer = new MqttServer();
@@ -111,7 +111,7 @@ namespace Net {
         return stat;
     }
 
-    HttpServer NetManager::getHttpServer() {
+    HTTPServer NetManager::getHttpServer() {
         return *httpServer;
     }
 

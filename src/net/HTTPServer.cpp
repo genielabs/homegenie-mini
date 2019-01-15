@@ -27,7 +27,7 @@
  *
  */
 
-#include "HttpServer.h"
+#include "HTTPServer.h"
 
 namespace Net {
 
@@ -35,11 +35,11 @@ namespace Net {
 
     static ESP8266WebServer httpServer(HTTP_SERVER_PORT);
 
-    HttpServer::HttpServer() {
+    HTTPServer::HTTPServer() {
 
     }
 
-    void HttpServer::begin() {
+    void HTTPServer::begin() {
         httpServer.on("/start.html", HTTP_GET, []() {
             httpServer.send(200, "text/plain", "Hello World!");
         });
@@ -68,21 +68,21 @@ namespace Net {
         Logger::info("|  ✔ SSDP service");
     }
 
-    void HttpServer::loop() {
-        Logger::verbose("  > HttpServer::loop() >> BEGIN");
+    void HTTPServer::loop() {
+        Logger::verbose("  > HTTPServer::loop() >> BEGIN");
         httpServer.handleClient();
-        Logger::verbose("  > HttpServer::loop() << END");
+        Logger::verbose("  > HTTPServer::loop() << END");
     }
 
     // BEGIN RequestHandler interface methods
-    bool HttpServer::canHandle(HTTPMethod method, String uri) {
+    bool HTTPServer::canHandle(HTTPMethod method, String uri) {
         return false;
     }
-    bool HttpServer::handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri) {
+    bool HTTPServer::handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri) {
         return false;
     }
 
-    void HttpServer::addHandler(RequestHandler* handler) {
+    void HTTPServer::addHandler(RequestHandler* handler) {
         httpServer.addHandler(handler);
     }
 
