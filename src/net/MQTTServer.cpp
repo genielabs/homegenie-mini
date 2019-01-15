@@ -78,13 +78,13 @@ namespace Net {
         auto msg = String((char*)payload);
         switch (event){
             case EVENT_CONNECT:
-                Serial.printf("[%d] New connect from ", num);  Serial.println(topic_name);
+                IO::Logger::trace("@Net::MQTTServer [%d] New connect from '%s'", num, topic_name.c_str());
                 break;
             case EVENT_SUBSCRIBE:
-                Serial.printf("[%d] Subscribe to ", num);  Serial.println(topic_name);
+                IO::Logger::trace("@Net::MQTTServer [%d] Subscribe to '%s'", num, topic_name.c_str());
                 break;
             case EVENT_PUBLISH:
-                Serial.printf("[%d] Receive publish to '%s'\n", num, topic_name.c_str());
+                IO::Logger::trace("@Net::MQTTServer [%d] Receive publish to '%s'", num, topic_name.c_str());
                 // broadcast message to subscribed clients
                 for (uint8_t i = 0; i < MQTTBROKER_CLIENT_MAX; i++) {
                     // TODO: send only if subscribed to topic
@@ -98,7 +98,7 @@ namespace Net {
                 }
                 break;
             case EVENT_DISCONNECT:
-                Serial.printf("[%d] Disconnect\n\n", num);
+               IO::Logger::trace("@Net::MQTTServer [%d] Disconnect\n\n", num);
                 break;
         }
     }

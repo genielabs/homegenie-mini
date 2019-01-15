@@ -22,29 +22,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec922180-b3d3-40f1-af0b-2568113a9075" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerConfig.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerConfig.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/homegenie-mini.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/homegenie-mini.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/HttpServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/HttpServer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/MqttServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/MQTTServer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/MqttServer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/MQTTServer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/NetManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/NetManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/mqtt/MQTTbroker_lite.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/mqtt/MQTTbroker_lite.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/net/MQTTServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/MQTTServer.cpp" afterDir="false" />
     </list>
     <ignored path="platformio.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -64,20 +42,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="249">
-              <caret line="33" selection-start-line="33" selection-end-line="33" />
+            <state relative-caret-position="286">
+              <caret line="89" selection-start-line="89" selection-end-line="89" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="423">
-              <caret line="336" lean-forward="true" selection-start-line="336" selection-end-line="336" />
+            <state relative-caret-position="198">
+              <caret line="330" lean-forward="true" selection-start-line="330" selection-end-line="330" />
             </state>
           </provider>
         </entry>
@@ -109,7 +87,7 @@
         <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerConfig.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="308">
-              <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
             </state>
           </provider>
         </entry>
@@ -132,7 +110,7 @@
         <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="330">
-              <caret line="21" column="42" lean-forward="true" selection-start-line="21" selection-start-column="42" selection-end-line="21" selection-end-column="42" />
+              <caret line="21" column="42" selection-start-line="21" selection-start-column="42" selection-end-line="21" selection-end-column="42" />
               <folding>
                 <element signature="e#1176#1196#0" expanded="true" />
               </folding>
@@ -194,7 +172,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.h" />
         <option value="$PROJECT_DIR$/test/test_TaskScheduler_loop.cpp" />
         <option value="$PROJECT_DIR$/platformio.ini" />
         <option value="$PROJECT_DIR$/.piolibdeps/aJson_ID35/aJSON.cpp" />
@@ -245,6 +222,7 @@
         <option value="$PROJECT_DIR$/src/net/HTTPServer.cpp" />
         <option value="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp" />
         <option value="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h" />
+        <option value="$PROJECT_DIR$/src/net/MQTTServer.cpp" />
       </list>
     </option>
   </component>
@@ -490,12 +468,12 @@
       <workItem from="1547256196132" duration="15000" />
       <workItem from="1547256250774" duration="22854000" />
       <workItem from="1547328351144" duration="7125000" />
-      <workItem from="1547384758233" duration="81262000" />
+      <workItem from="1547384758233" duration="81607000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="193129000" />
+    <option name="totallyTimeSpent" value="193474000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1920" height="996" extended-state="6" />
@@ -509,12 +487,12 @@
       <window_info anchor="bottom" id="Database Changes" order="2" />
       <window_info anchor="bottom" id="Run" order="3" />
       <window_info anchor="bottom" id="Debug" order="4" />
-      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.49733192" weight="0.3298731" />
+      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.4967983" weight="0.3298731" />
       <window_info anchor="bottom" id="Event Log" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49786553" weight="0.3298731" />
       <window_info anchor="bottom" id="Find" order="8" sideWeight="0.4994664" weight="0.32871974" />
-      <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.36819637" weight="0.38177624" />
-      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.63180363" side_tool="true" visible="true" weight="0.29988465" />
+      <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.36766276" weight="0.38177624" />
+      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.5032017" side_tool="true" visible="true" weight="0.4071511" />
       <window_info anchor="right" id="Database" order="0" />
     </layout>
   </component>
@@ -872,13 +850,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="249">
-          <caret line="33" selection-start-line="33" selection-end-line="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/io/Logger.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
@@ -899,14 +870,14 @@
     <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerConfig.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
-          <caret line="21" column="42" lean-forward="true" selection-start-line="21" selection-start-column="42" selection-end-line="21" selection-end-column="42" />
+          <caret line="21" column="42" selection-start-line="21" selection-start-column="42" selection-end-line="21" selection-end-column="42" />
           <folding>
             <element signature="e#1176#1196#0" expanded="true" />
           </folding>
@@ -915,8 +886,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="423">
-          <caret line="336" lean-forward="true" selection-start-line="336" selection-end-line="336" />
+        <state relative-caret-position="198">
+          <caret line="330" lean-forward="true" selection-start-line="330" selection-end-line="330" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="89" selection-start-line="89" selection-end-line="89" />
         </state>
       </provider>
     </entry>
