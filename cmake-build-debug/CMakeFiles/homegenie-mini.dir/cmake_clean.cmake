@@ -33,6 +33,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o"
+  "CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTbroker_lite.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"

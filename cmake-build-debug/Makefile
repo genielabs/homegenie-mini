@@ -1145,6 +1145,33 @@ src/net/NetManager.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.s
 .PHONY : src/net/NetManager.cpp.s
 
+src/net/mqtt/MQTTbroker_lite.o: src/net/mqtt/MQTTbroker_lite.cpp.o
+
+.PHONY : src/net/mqtt/MQTTbroker_lite.o
+
+# target to build an object file
+src/net/mqtt/MQTTbroker_lite.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTbroker_lite.cpp.o
+.PHONY : src/net/mqtt/MQTTbroker_lite.cpp.o
+
+src/net/mqtt/MQTTbroker_lite.i: src/net/mqtt/MQTTbroker_lite.cpp.i
+
+.PHONY : src/net/mqtt/MQTTbroker_lite.i
+
+# target to preprocess a source file
+src/net/mqtt/MQTTbroker_lite.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTbroker_lite.cpp.i
+.PHONY : src/net/mqtt/MQTTbroker_lite.cpp.i
+
+src/net/mqtt/MQTTbroker_lite.s: src/net/mqtt/MQTTbroker_lite.cpp.s
+
+.PHONY : src/net/mqtt/MQTTbroker_lite.s
+
+# target to generate assembly for a file
+src/net/mqtt/MQTTbroker_lite.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTbroker_lite.cpp.s
+.PHONY : src/net/mqtt/MQTTbroker_lite.cpp.s
+
 src/scripting/ProgramEngine.o: src/scripting/ProgramEngine.cpp.o
 
 .PHONY : src/scripting/ProgramEngine.o
@@ -1345,6 +1372,9 @@ help:
 	@echo "... src/net/NetManager.o"
 	@echo "... src/net/NetManager.i"
 	@echo "... src/net/NetManager.s"
+	@echo "... src/net/mqtt/MQTTbroker_lite.o"
+	@echo "... src/net/mqtt/MQTTbroker_lite.i"
+	@echo "... src/net/mqtt/MQTTbroker_lite.s"
 	@echo "... src/scripting/ProgramEngine.o"
 	@echo "... src/scripting/ProgramEngine.i"
 	@echo "... src/scripting/ProgramEngine.s"

@@ -55,7 +55,7 @@ namespace Net {
 
         webSocket->loop();
 
-        if (cnt > 100000) {
+        if (false && cnt > 100000) {
             String prefix = "/homegenie";
             String deviceID = "01";
             int num = 0;
@@ -86,14 +86,12 @@ namespace Net {
             Serial.print(msg);
         }
         Serial.println();
-
-        //if (topic_name == prefix) pubConfig();
     }
 */
 
 
     void MqttServer::mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
-                                        uint8_t length_payload) {
+                                        uint16_t length_payload) {
 // TODO: MANAGE connected client list
         auto msg = String((char*)payload);
         switch (event){
@@ -105,17 +103,23 @@ namespace Net {
                 Serial.printf("[%d] Subscribe to ", num);  Serial.println(topic_name);
                 break;
             case EVENT_PUBLISH:
-                Serial.printf("[%d] Receive publish to ", num); Serial.print(topic_name + " ");
-                Serial.print(msg);
-                mb->publish(1, (topic_name).c_str(), (uint8_t *) msg.c_str(),
-                            msg.length());
-                // TODO: ... HANDLE TOPIC
-                if (topic_name == "TODO_CHANGE_TOPIC/control") {
+                Serial.printf("[%d] Receive publish to '%s'\n", num, topic_name.c_str());
+                Serial.println(msg);
+                Serial.printf("Payload Length '%d'\n", length_payload);
+
+                // TODO: send to all **SUBSCRIBED** clients but 'num'
+                for (uint8_t i = 0; i < MQTTBROKER_CLIENT_MAX; i++) {
+                    // TODO: send only if subscribed to topic
+                    if (i != num && mb->MQTTclients[i].status) {
+                        mb->publish(i, (topic_name).c_str(), payload, length_payload);
+                    }
+                }
+                // TODO: ... IMPLEMENT HG API HANDLE TOPIC
+                if (topic_name == "TODO_CHANGE_WITH_MY_ID/control") {
 //                    if (*payload == '0') digitalWrite(BLUE_NODE_LED, LED_OFF);
 //                    else digitalWrite(BLUE_NODE_LED, LED_ON);
                 }
                 Serial.println();
-//TODO:                if (topic_name == prefix) pubConfig(num);
                 break;
             case EVENT_DISCONNECT:
 //                digitalWrite(BLUE_ESP_LED, LED_OFF);

@@ -53,6 +53,12 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   "/home/gene/.platformio/packages/tool-unity"
   "../include"
   "../src"
+  ".././.piolibdeps/aJson_ID35/src"
+  ".././.piolibdeps/ArduinoJson_ID64"
+  ".././.piolibdeps/ArduinoLog_ID1532"
+  ".././.piolibdeps/ESP8266UPnP_ID2048"
+  ".././.piolibdeps/LinkedList_ID443"
+  ".././.piolibdeps/WebSockets_ID549/src"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.o"
@@ -85,6 +91,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HttpServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/HttpServer.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MqttServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/MqttServer.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTbroker_lite.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTbroker_lite.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiRequest.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"
@@ -132,6 +139,12 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/gene/.platformio/packages/tool-unity"
   "../include"
   "../src"
+  ".././.piolibdeps/aJson_ID35/src"
+  ".././.piolibdeps/ArduinoJson_ID64"
+  ".././.piolibdeps/ArduinoLog_ID1532"
+  ".././.piolibdeps/ESP8266UPnP_ID2048"
+  ".././.piolibdeps/LinkedList_ID443"
+  ".././.piolibdeps/WebSockets_ID549/src"
   )
 
 # Targets to which this target links.

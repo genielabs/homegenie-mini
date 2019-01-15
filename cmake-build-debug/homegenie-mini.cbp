@@ -93,6 +93,12 @@
 					<Add directory="/home/gene/.platformio/packages/tool-unity"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/include"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/aJson_ID35/src"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ArduinoJson_ID64"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ArduinoLog_ID1532"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ESP8266UPnP_ID2048"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/LinkedList_ID443"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/WebSockets_ID549/src"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -155,6 +161,12 @@
 					<Add directory="/home/gene/.platformio/packages/tool-unity"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/include"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/aJson_ID35/src"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ArduinoJson_ID64"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ArduinoLog_ID1532"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ESP8266UPnP_ID2048"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/LinkedList_ID443"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/WebSockets_ID549/src"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -644,6 +656,42 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/library.json">
 			<Option target="homegenie-mini"/>
 		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/.gitattributes">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/.gitignore">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/LICENSE.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/LinkedList.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/examples/ClassList/ClassList.pde">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/examples/SimpleIntegerList/SimpleIntegerList.pde">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/examples/Sort/Sort.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/keywords.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/library.properties">
+			<Option target="homegenie-mini"/>
+		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/.library.json">
 			<Option target="homegenie-mini"/>
 		</Unit>
@@ -987,6 +1035,12 @@
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTbroker_lite.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTbroker_lite.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp">
