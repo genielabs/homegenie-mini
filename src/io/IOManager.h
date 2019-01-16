@@ -36,8 +36,10 @@
 
 #include "io/rf/x10/RfReceiver.h"
 #include "io/rf/x10/RfTransmitter.h"
-#include "io/env/DS18B10.h"
+#include "io/env/DS18B20.h"
 #include "io/env/LightSensor.h"
+
+#define IOMANAGER_LOG_PREFIX                    "@IO::IOManager"
 
 #define CONFIG_RF_TX_PIN 4
 #define CONFIG_RF_RX_PIN 5
@@ -56,7 +58,7 @@ namespace IO {
         void onX10RfDataReceived(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
         RfReceiver& getX10Receiver(){ return *x10Receiver; };
         RfTransmitter& getX10Transmitter(){ return *x10Transmitter; };
-        DS18B10& getTemperatureSensor(){ return *temperatureSensor; };
+        DS18B20& getTemperatureSensor(){ return *temperatureSensor; };
         LightSensor getLightSensor(){ return *lightSensor; };
 
     private:
@@ -70,8 +72,8 @@ namespace IO {
         RfTransmitter *x10Transmitter;
         // RF data received event handler
         void x10_RfReceivedCallback(uint8_t type, uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3);
-        // DS18B10 Temperature sensor
-        DS18B10 *temperatureSensor;
+        // DS18B20 Temperature sensor
+        DS18B20 *temperatureSensor;
         // Light Sensor / PhotoResistor
         LightSensor *lightSensor;
     };

@@ -30,9 +30,6 @@
 
 #include "MQTTBrokerMini.h"
 
-#define DEBUG_MQTTBROKER(...) IO::Logger::trace(__VA_ARGS__)
-#define DEBUG_MQTTBROKER_HEX(...)
-
 namespace Net { namespace MQTT {
 
     MQTTBrokerMini::MQTTBrokerMini(WebSocketsServer *webSocket) {
@@ -75,7 +72,7 @@ namespace Net { namespace MQTT {
 
                 variable_header[0] = 0x01 & SESSION_PRESENT_ZERO; //Anyway create a new Session
 
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][RECEIVE] CONNECT [Protocol level = %d, Connect flags = %X]\n", num,
+                DEBUG_MQTTBROKER("%s [%d] >> CONNECT [Protocol level = %d, Connect flags = %X]\n", MQTTBROKER_LOG_PREFIX, num,
                                  Protocol_level, Connect_flags);
                 DEBUG_MQTTBROKER_HEX(payload, length);
 
@@ -126,7 +123,7 @@ namespace Net { namespace MQTT {
                 } // else without packet identifier
 
                 DEBUG_MQTTBROKER(
-                        "[MQTT_BROKER][%d][RECEIVE] PUBLISH [DUP = %d, QoS = %d, RETAIN = %d, Rem_len = %d, Topic_len = %d]\n",
+                        "%s [%d] >> PUBLISH [DUP = %d, QoS = %d, RETAIN = %d, Rem_len = %d, Topic_len = %d]\n", MQTTBROKER_LOG_PREFIX,
                         num, DUP, QoS, RETAIN, Remaining_length, Length_topic_name);
                 DEBUG_MQTTBROKER_HEX(payload, length);
 
@@ -143,7 +140,7 @@ namespace Net { namespace MQTT {
                 uint16_t Length_MSB_LSB = MSB_LSB(&payload[4]);
                 uint8_t Requesteed_QoS = payload[6 + Length_MSB_LSB];
                 DEBUG_MQTTBROKER(
-                        "[MQTT_BROKER][%d][RECEIVE] SUBSCRIBE [Packet identifier = %d, Length = %d, Requested QoS = %d]\n",
+                        "%s [%d] >> SUBSCRIBE [Packet identifier = %d, Length = %d, Requested QoS = %d]\n", MQTTBROKER_LOG_PREFIX,
                         num, Packet_identifier, Length_MSB_LSB, Requesteed_QoS);
                 DEBUG_MQTTBROKER_HEX(payload, length);
                 sendAnswer(num, SUBACK, 0, 3, &payload[2], 2, &Requesteed_QoS, 1);
@@ -154,7 +151,7 @@ namespace Net { namespace MQTT {
             {
                 uint16_t Packet_identifier = MSB_LSB(&payload[2]);
                 uint16_t Length_MSB_LSB = MSB_LSB(&payload[4]);
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][RECEIVE] UNSUBSCRIBE [Packet identifier = %d, Length = %d]\n", num,
+                DEBUG_MQTTBROKER("%s [%d] >> UNSUBSCRIBE [Packet identifier = %d, Length = %d]\n", MQTTBROKER_LOG_PREFIX, num,
                                  Packet_identifier, Length_MSB_LSB);
                 DEBUG_MQTTBROKER_HEX(payload, length);
                 sendAnswer(num, UNSUBACK, 0, 2, &payload[2], 2);
@@ -162,20 +159,20 @@ namespace Net { namespace MQTT {
                 break;
             case PINGREQ: //12
             {
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][RECEIVE] PINGREQ\n", num);
+                DEBUG_MQTTBROKER("%s [%d] >> PINGREQ\n", MQTTBROKER_LOG_PREFIX, num);
                 DEBUG_MQTTBROKER_HEX(payload, length);
                 sendAnswer(num, PINGRESP);
             }
                 break;
             case DISCONNECT: //14
             {
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][RECEIVE] DISCONNECT\n", num);
+                DEBUG_MQTTBROKER("%s [%d] >> DISCONNECT\n", MQTTBROKER_LOG_PREFIX, num);
                 DEBUG_MQTTBROKER_HEX(payload, length);
                 disconnect(num);
             }
                 break;
             default: {
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][RECEIVE] UNKNOWN COMMAND\n", num);
+                DEBUG_MQTTBROKER("%s [%d] >> UNKNOWN COMMAND\n", MQTTBROKER_LOG_PREFIX, num);
                 DEBUG_MQTTBROKER_HEX(payload, length);
             }
         }
@@ -273,7 +270,7 @@ namespace Net { namespace MQTT {
         }
 
         delay(0);
-        DEBUG_MQTTBROKER("[MQTT_BROKER][%d][SENDMESSAGE]\n", num);
+        DEBUG_MQTTBROKER("%s [%d] << SENDMESSAGE\n", MQTTBROKER_LOG_PREFIX, num);
         DEBUG_MQTTBROKER_HEX((uint8_t *) &answer_msg, remaining_length + rc);
 
         WS->sendBIN(num, (const uint8_t *) &answer_msg, remaining_length + rc - 2);
@@ -299,10 +296,10 @@ namespace Net { namespace MQTT {
 
         switch (fixed_header_comm) {
             case CONNACK: //2
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][SEND] CONNACK\n", num);
+                DEBUG_MQTTBROKER("%s [%d] << CONNACK\n", MQTTBROKER_LOG_PREFIX, num);
                 break;
             case PUBACK: //4 QoS level 1
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][SEND] PUBACK\n", num);
+                DEBUG_MQTTBROKER("%s [%d] << PUBACK\n", MQTTBROKER_LOG_PREFIX, num);
                 break;
             case PUBREC: //5 QoS level 2, part 1
                 break;
@@ -312,13 +309,13 @@ namespace Net { namespace MQTT {
                 break;
             case SUBACK: //9
                 answer_msg[i] = *payload;
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][SEND] SUBACK\n", num);
+                DEBUG_MQTTBROKER("%s [%d] >> SUBACK\n", MQTTBROKER_LOG_PREFIX, num);
                 break;
             case UNSUBACK: //11
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][SEND] UNSUBACK\n", num);
+                DEBUG_MQTTBROKER("%s [%d] >> UNSUBACK\n", MQTTBROKER_LOG_PREFIX, num);
                 break;
             case PINGRESP: //13
-                DEBUG_MQTTBROKER("[MQTT_BROKER][%d][SEND] PINGRESP\n", num);
+                DEBUG_MQTTBROKER("%s [%d] >> PINGRESP\n", MQTTBROKER_LOG_PREFIX, num);
                 break;
             default:
                 return;
@@ -331,6 +328,15 @@ namespace Net { namespace MQTT {
 
     MQTTBrokerClient_t* MQTTBrokerMini::getClients() {
         return MQTTclients;
+    }
+
+    void MQTTBrokerMini::broadcast(uint8_t num, String topic_name, uint8_t *payload, uint16_t length_payload) {
+        for (uint8_t i = 0; i < MQTTBROKER_CLIENT_MAX; i++) {
+            // TODO: send only if subscribed to topic
+            if (i != num && MQTTclients[i].status) {
+                publish(i, (topic_name).c_str(), payload, length_payload);
+            }
+        }
     }
 
 }}

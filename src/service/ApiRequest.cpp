@@ -56,23 +56,23 @@ namespace Service {
                     break;
                 case 1:
                     apiCommand.Domain = arg;
-                    IO::Logger::trace(":ApiRequest::parse Domain = '%s'", arg.c_str());
+                    IO::Logger::trace("%s parse() >> [Domain = '%s']", APIREQUEST_LOG_PREFIX, arg.c_str());
                     break;
                 case 2:
                     apiCommand.Address = arg;
-                    IO::Logger::trace(":ApiRequest::parse Address = '%s'", arg.c_str());
+                    IO::Logger::trace("%s parse() >> [Address = '%s']", APIREQUEST_LOG_PREFIX, arg.c_str());
                     break;
                 case 3:
                     apiCommand.Command = arg;
                     apiCommand.OptionsString = command;
-                    IO::Logger::trace(":ApiRequest::parse Command = '%s'", arg.c_str());
-                    IO::Logger::trace(":ApiRequest::parse Options = '%s'", command.c_str());
+                    IO::Logger::trace("%s parse() >> [Command = '%s']", APIREQUEST_LOG_PREFIX, arg.c_str());
+                    IO::Logger::trace("%s parse() >> [Options = '%s']", APIREQUEST_LOG_PREFIX, command.c_str());
                     return apiCommand;
             }
             i = command.indexOf('/');
             if (i < 0 && argIndex == 3) {
                 apiCommand.Command = command;
-                IO::Logger::trace(":ApiRequest::parse Command = '%s'", command.c_str());
+                IO::Logger::trace("%s parse() >> [Command = '%s']", APIREQUEST_LOG_PREFIX, command.c_str());
             }
         }
         return apiCommand;

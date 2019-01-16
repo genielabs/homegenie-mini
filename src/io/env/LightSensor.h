@@ -33,6 +33,8 @@
 #include <io/Logger.h>
 #include <Task.h>
 
+#define LIGHTSENSOR_LOG_PREFIX          "@IO::Env::LightSensor"
+
 namespace IO { namespace Env {
 
     class LightSensor : Task {

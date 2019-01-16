@@ -33,6 +33,8 @@
 #include <Arduino.h>
 #include <io/Logger.h>
 
+#define APIREQUEST_LOG_PREFIX           "@Service::ApiRequest"
+
 namespace Service {
 
     class ApiRequest {

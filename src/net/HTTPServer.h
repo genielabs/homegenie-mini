@@ -37,6 +37,7 @@
 #include "io/Logger.h"
 #include "Task.h"
 
+#define HTTPSERVER_LOG_PREFIX           "@Net::HTTPServer"
 #define HTTP_SERVER_PORT 80
 
 namespace Net {

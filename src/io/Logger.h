@@ -35,6 +35,7 @@ namespace IO {
         static void info(const char *s, ...);
         static void infoN(const char *s, ...);
         static void trace(const char *s, ...);
+        static void traceN(const char *s, ...);
         static void verbose(const char *s, ...);
         static void blink();
 

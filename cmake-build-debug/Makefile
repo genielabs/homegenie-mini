@@ -875,32 +875,32 @@ src/io/Logger.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.s
 .PHONY : src/io/Logger.cpp.s
 
-src/io/env/DS18B10.o: src/io/env/DS18B10.cpp.o
+src/io/env/DS18B20.o: src/io/env/DS18B20.cpp.o
 
-.PHONY : src/io/env/DS18B10.o
+.PHONY : src/io/env/DS18B20.o
 
 # target to build an object file
-src/io/env/DS18B10.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o
-.PHONY : src/io/env/DS18B10.cpp.o
+src/io/env/DS18B20.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o
+.PHONY : src/io/env/DS18B20.cpp.o
 
-src/io/env/DS18B10.i: src/io/env/DS18B10.cpp.i
+src/io/env/DS18B20.i: src/io/env/DS18B20.cpp.i
 
-.PHONY : src/io/env/DS18B10.i
+.PHONY : src/io/env/DS18B20.i
 
 # target to preprocess a source file
-src/io/env/DS18B10.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.i
-.PHONY : src/io/env/DS18B10.cpp.i
+src/io/env/DS18B20.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.i
+.PHONY : src/io/env/DS18B20.cpp.i
 
-src/io/env/DS18B10.s: src/io/env/DS18B10.cpp.s
+src/io/env/DS18B20.s: src/io/env/DS18B20.cpp.s
 
-.PHONY : src/io/env/DS18B10.s
+.PHONY : src/io/env/DS18B20.s
 
 # target to generate assembly for a file
-src/io/env/DS18B10.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.s
-.PHONY : src/io/env/DS18B10.cpp.s
+src/io/env/DS18B20.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.s
+.PHONY : src/io/env/DS18B20.cpp.s
 
 src/io/env/LightSensor.o: src/io/env/LightSensor.cpp.o
 
@@ -1369,9 +1369,9 @@ help:
 	@echo "... src/io/Logger.o"
 	@echo "... src/io/Logger.i"
 	@echo "... src/io/Logger.s"
-	@echo "... src/io/env/DS18B10.o"
-	@echo "... src/io/env/DS18B10.i"
-	@echo "... src/io/env/DS18B10.s"
+	@echo "... src/io/env/DS18B20.o"
+	@echo "... src/io/env/DS18B20.i"
+	@echo "... src/io/env/DS18B20.s"
 	@echo "... src/io/env/LightSensor.o"
 	@echo "... src/io/env/LightSensor.i"
 	@echo "... src/io/env/LightSensor.s"

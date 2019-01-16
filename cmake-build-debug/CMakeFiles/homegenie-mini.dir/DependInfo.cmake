@@ -81,7 +81,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/TaskManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/IOManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/Logger.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.o"
-  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B10.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B20.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/LightSensor.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfReceiver.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiver.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfReceiverConfig.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.o"

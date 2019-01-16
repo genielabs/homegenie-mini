@@ -38,8 +38,8 @@ namespace IO {
         // X10 RF RfReceiver and RfTransmitter objects
         RfTransmitterConfig x10TransmitterConfig = RfTransmitterConfig(CONFIG_RF_TX_PIN);
         x10Transmitter = new RfTransmitter(&x10TransmitterConfig);
-        // DS18B10 Temperature Sensor
-        temperatureSensor = new DS18B10();
+        // DS18B20 Temperature Sensor
+        temperatureSensor = new DS18B20();
         // Light Sensor
         lightSensor = new LightSensor();
     }
@@ -68,7 +68,7 @@ namespace IO {
     /// \param b3 Byte 4
     void IOManager::onX10RfDataReceived(uint8_t type, uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
         if (x10Receiver->isEnabled()) {
-            Logger::info("@IO::X10::RfReceiver %s%s%s%s%s%s",
+            Logger::info("%s [X10::RfReceiver] >> [%s%s%s%s%s%s]", IOMANAGER_LOG_PREFIX,
                  byteToHex(type).c_str(),
                  byteToHex((b0)).c_str(),
                  byteToHex((b1)).c_str(),

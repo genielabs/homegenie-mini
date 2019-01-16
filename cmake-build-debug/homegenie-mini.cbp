@@ -980,10 +980,10 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/Logger.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B10.cpp">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B20.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B10.h">
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B20.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/LightSensor.cpp">

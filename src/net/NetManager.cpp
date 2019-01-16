@@ -89,21 +89,18 @@ namespace Net {
             Logger::info("|  ✔ IP: %s", WiFi.localIP().toString().c_str());
         }
 
-
-
         httpServer = new HTTPServer();
         httpServer->begin();
 
         mqttServer = new MqttServer();
         mqttServer->begin();
 
-
-
         return wpsSuccess;
     }
 
     void NetManager::loop() {
-        Logger::verbose("  > NetManager::loop()");
+        Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
+        Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }
 
     String NetManager::setStatus(int s) {

@@ -42,6 +42,8 @@
 #include <io/Logger.h>
 #include <Task.h>
 
+#define NETMANAGER_LOG_PREFIX           "@Net::NetManager"
+
 namespace Net {
 
     /// Network services management

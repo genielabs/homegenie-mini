@@ -40,9 +40,13 @@
 
 #define MQTT_VERSION_3_1_1              4
 
+#define MQTTBROKER_LOG_PREFIX           "@Net::MQTT::MQTTBrokerMini"
 #define MQTTBROKER_CLIENT_MAX           WEBSOCKETS_SERVER_CLIENT_MAX
 #define MQTTBROKER_LOCAL_CLIENT_ID      MQTTBROKER_CLIENT_MAX
 #define MQTTBROKER_VHEADER_MIN_LENGTH   3
+
+#define DEBUG_MQTTBROKER(...) IO::Logger::traceN(__VA_ARGS__)
+#define DEBUG_MQTTBROKER_HEX(...)
 
 namespace Net { namespace MQTT {
 
@@ -114,6 +118,11 @@ namespace Net { namespace MQTT {
             void parsing(uint8_t num, uint8_t *payload, uint16_t length);
 
             void publish(uint8_t num, String topic, uint8_t *payload, uint16_t length);
+
+            void broadcast(uint8_t num, String topic_name, uint8_t *payload, uint16_t length_payload);
+            void broadcast(String topic_name, uint8_t *payload, uint16_t length_payload) {
+                broadcast(MQTTBROKER_LOCAL_CLIENT_ID, topic_name, payload, length_payload);
+            };
 
             void disconnect(uint8_t num);
 

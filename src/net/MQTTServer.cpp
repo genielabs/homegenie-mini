@@ -53,24 +53,16 @@ namespace Net {
 
     void MqttServer::loop() {
         webSocket->loop();
-
+        // Just for testing, sends a message periodically
         static int cnt = 1;
-        // Just for testing, sends a message
         if (cnt > 100000) {
             String prefix = "/homegenie";
-            String deviceID = "01";
-            int num = 0;
-
-            String test = R"({ "Message": "Hello World!" })";
-
-            // TODO: implment MQTTBBroker::broadcast( .. ) for sending to all clients
-
-            // send to client with id = `num`
-            mqttBroker->publish(num, (prefix).c_str(), (uint8_t *) test.c_str(), test.length());
+            String deviceID = "world";
+            String test = R"({ "Message": "Hello from HomeGenie-Mini!" })";
+            mb->broadcast((prefix).c_str(), (uint8_t *) test.c_str(), test.length());
             cnt = 0;
         }
         cnt++;
-
     }
 
     void MqttServer::mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
@@ -78,27 +70,23 @@ namespace Net {
         auto msg = String((char*)payload);
         switch (event){
             case EVENT_CONNECT:
-                IO::Logger::trace("@Net::MQTTServer [%d] New connect from '%s'", num, topic_name.c_str());
+                IO::Logger::trace("%s [%d] >> CONNECT from '%s'", MQTTBROKER_LOG_PREFIX, num, topic_name.c_str());
                 break;
             case EVENT_SUBSCRIBE:
-                IO::Logger::trace("@Net::MQTTServer [%d] Subscribe to '%s'", num, topic_name.c_str());
+                IO::Logger::trace("%s [%d] >> SUBSCRIBE to '%s'", MQTTBROKER_LOG_PREFIX, num, topic_name.c_str());
                 break;
             case EVENT_PUBLISH:
-                IO::Logger::trace("@Net::MQTTServer [%d] Receive publish to '%s'", num, topic_name.c_str());
-                // broadcast message to subscribed clients
-                for (uint8_t i = 0; i < MQTTBROKER_CLIENT_MAX; i++) {
-                    // TODO: send only if subscribed to topic
-                    if (i != num && mb->getClients()[i].status) {
-                        mb->publish(i, (topic_name).c_str(), payload, length_payload);
-                    }
-                }
+                IO::Logger::trace("%s [%d] >> PUBLISH to '%s'", MQTTBROKER_LOG_PREFIX, num, topic_name.c_str());
                 // TODO: ... IMPLEMENT HG API HANDLE TOPIC
                 if (topic_name == "TODO_CHANGE_WITH_MY_ID/control") {
-                    // TODO: ....
+                    // TODO: Control API
+                } else {
+                    // broadcast message  to subscribed clients
+                    mb->broadcast(num, (topic_name).c_str(), payload, length_payload);
                 }
                 break;
             case EVENT_DISCONNECT:
-               IO::Logger::trace("@Net::MQTTServer [%d] Disconnect\n\n", num);
+               IO::Logger::trace("%s [%d] >> DISCONNECT =/", MQTTBROKER_LOG_PREFIX, num);
                 break;
         }
     }

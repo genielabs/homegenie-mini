@@ -36,6 +36,8 @@
 #include <net/NetManager.h>
 #include "ApiRequest.h"
 
+#define HOMEGENIEMINI_LOG_PREFIX            "@Service::HomeGenie"
+
 namespace Service {
 
     using namespace IO;

@@ -69,9 +69,9 @@ namespace Net {
     }
 
     void HTTPServer::loop() {
-        Logger::verbose("  > HTTPServer::loop() >> BEGIN");
+        Logger::verbose("%s loop() >> BEGIN", HTTPSERVER_LOG_PREFIX);
         httpServer.handleClient();
-        Logger::verbose("  > HTTPServer::loop() << END");
+        Logger::verbose("%s loop() << END", HTTPSERVER_LOG_PREFIX);
     }
 
     // BEGIN RequestHandler interface methods

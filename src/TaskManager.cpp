@@ -37,15 +37,15 @@ TaskManager::TaskManager() {
 }
 
 void TaskManager::loop() {
-    IO::Logger::verbose("Tasker loop() >> BEGIN");
+    IO::Logger::verbose("%s loop() >> BEGIN", TASKMANAGER_LOG_PREFIX);
     Task *t = taskList;
     uint c = 0;
     while (t != NULL) {
-        IO::Logger::verbose("- running task %d", c++);
+        IO::Logger::verbose("%s - running task %d", TASKMANAGER_LOG_PREFIX, c++);
         t->loop();
         t = t->nextTask;
     }
-    IO::Logger::verbose("Tasker loop() << END");
+    IO::Logger::verbose("%s loop() << END", TASKMANAGER_LOG_PREFIX);
 }
 
 void TaskManager::addTask(Task *task) {

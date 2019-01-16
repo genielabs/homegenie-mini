@@ -42,7 +42,7 @@ namespace Service {
     }
 
     void HomeGenie::loop() {
-        Logger::verbose("  > Service::HomeGenie::loop() >> BEGIN");
+        Logger::verbose("%s loop() >> BEGIN", HOMEGENIEMINI_LOG_PREFIX);
 
         // HomeGenie-Mini Serial CLI
         if(Serial.available() > 0) {
@@ -50,14 +50,14 @@ namespace Service {
             auto apiCommand = ApiRequest::parse(cmd);
             if (apiCommand.Prefix.equals("api")) {
                 if (api(&apiCommand)) {
-                    Logger::info("=%s", apiCommand.Response.c_str());
+                    Logger::info("%s =%s", HOMEGENIEMINI_LOG_PREFIX, apiCommand.Response.c_str());
                 } else {
-                    Logger::warn("=%s", apiCommand.Response.c_str());
+                    Logger::warn("%s =%s", HOMEGENIEMINI_LOG_PREFIX, apiCommand.Response.c_str());
                 }
             }
         }
 
-        Logger::verbose("  > Service::HomeGenie::loop() << END");
+        Logger::verbose("%s loop() << END", HOMEGENIEMINI_LOG_PREFIX);
     }
 
     IOManager& HomeGenie::getIOManager() {

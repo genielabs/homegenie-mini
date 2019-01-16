@@ -50,7 +50,7 @@ void setup() {
     Logger::begin(LOG_LEVEL_TRACE);
 
     // Welcome message
-    Logger::info("HomeGenie-Mini V%s", HOMEGENIE_MINI_VERSION);
+    Logger::info("HomeGenie-Mini %s", HOMEGENIE_MINI_VERSION);
     Logger::info("Booting...");
 
     Logger::info("+ Starting HomeGenie service");

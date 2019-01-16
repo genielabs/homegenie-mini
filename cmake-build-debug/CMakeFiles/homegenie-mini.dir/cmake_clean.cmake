@@ -23,7 +23,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/io/IOManager.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.o"
-  "CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o"
+  "CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiver.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.o"

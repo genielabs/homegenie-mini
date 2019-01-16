@@ -99,4 +99,11 @@ namespace IO {
             Serial.println();
         }
     }
+    void Logger::traceN(const char *s, ...) {
+        if (logLevel >= LOG_LEVEL_TRACE) {
+            timestamp();
+            FORMAT_STRING_VARGS
+            Log.trace(formatted);
+        }
+    }
 }

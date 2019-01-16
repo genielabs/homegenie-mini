@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_DS18B10_H
-#define HOMEGENIE_MINI_DS18B10_H
+#ifndef HOMEGENIE_MINI_DS18B20_H
+#define HOMEGENIE_MINI_DS18B20_H
 
 #include <Arduino.h>
 #include <OneWire.h>
@@ -36,11 +36,12 @@
 
 #include "io/Logger.h"
 
-#define DS18B10_READ_ERROR -1000
+#define DS18B20_LOG_PREFIX              "@IO::Env::DS18B10"
+#define DS18B20_READ_ERROR -1000
 
 namespace IO { namespace Env {
 
-    class DS18B10 : Task {
+    class DS18B20 : Task {
     public:
         void begin();
         void loop();
@@ -58,4 +59,4 @@ namespace IO { namespace Env {
 
 }}
 
-#endif //HOMEGENIE_MINI_DS18B10_H
+#endif //HOMEGENIE_MINI_DS18B20_H

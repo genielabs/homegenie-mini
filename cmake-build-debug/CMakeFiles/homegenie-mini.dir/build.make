@@ -369,18 +369,18 @@ CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.s"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/Logger.cpp -o CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.s
 
-CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
-CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o: ../src/io/env/DS18B10.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o"
-	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B10.cpp
+CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
+CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o: ../src/io/env/DS18B20.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B20.cpp
 
-CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.i"
-	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B10.cpp > CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.i
+CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.i"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B20.cpp > CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.i
 
-CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.s"
-	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B10.cpp -o CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.s
+CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.s"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B20.cpp -o CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.s
 
 CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.o: ../src/io/env/LightSensor.cpp
@@ -590,7 +590,7 @@ homegenie__mini_OBJECTS = \
 "CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/io/IOManager.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.o" \
-"CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o" \
+"CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiver.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.o" \
@@ -633,7 +633,7 @@ homegenie-mini: CMakeFiles/homegenie-mini.dir/src/Task.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/IOManager.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.o
-homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/env/DS18B10.cpp.o
+homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/env/LightSensor.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiver.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.o

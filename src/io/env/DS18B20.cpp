@@ -27,30 +27,30 @@
  *
  */
 
-#include "DS18B10.h"
+#include "DS18B20.h"
 
 namespace IO { namespace Env {
 
-    void DS18B10::begin() {
+    void DS18B20::begin() {
         ds = new OneWire(pinNumber);
-        Logger::info("|  ✔ IO::Env::DS18B10");
+        Logger::info("|  ✔ IO::Env::DS18B20");
     }
 
-    void DS18B10::loop() {
-        Logger::verbose("  > IO::Env::DS18B10::loop() >> START");
+    void DS18B20::loop() {
+        Logger::verbose("  > IO::Env::DS18B20::loop() >> START");
         static unsigned long lastSampleTime = 0 - samplingRate;
         unsigned long now = millis();
         if (now - lastSampleTime >= samplingRate) {
             float temperature = getTemperature();
-            Logger::info("@IO::Env::DS18B10 %0.2f", temperature);
+            Logger::info("@IO::Env::DS18B20 %0.2f", temperature);
             lastSampleTime = now;
         }
-        Logger::verbose("  > IO::Env::DS18B10::loop() << END");
+        Logger::verbose("  > IO::Env::DS18B20::loop() << END");
     }
 
     /// Read the temperature value from one DS18S20.
     /// \return The reported temperature in Celsius degrees-
-    float DS18B10::getTemperature() {
+    float DS18B20::getTemperature() {
         //returns the temperature from one DS18S20 in DEG Celsius
 
         byte data[12];
@@ -59,17 +59,17 @@ namespace IO { namespace Env {
         if (!ds->search(addr)) {
             //no more sensors on chain, reset search
             ds->reset_search();
-            return DS18B10_READ_ERROR;
+            return DS18B20_READ_ERROR;
         }
 
         if (OneWire::crc8(addr, 7) != addr[7]) {
             Serial.println("CRC is not valid!");
-            return DS18B10_READ_ERROR;
+            return DS18B20_READ_ERROR;
         }
 
         if (addr[0] != 0x10 && addr[0] != 0x28) {
             Serial.print("Device is not recognized");
-            return DS18B10_READ_ERROR;
+            return DS18B20_READ_ERROR;
         }
 
         ds->reset();
@@ -98,11 +98,11 @@ namespace IO { namespace Env {
         return ((MSB << 8) | LSB) / 16;
     }
 
-    void DS18B10::setInputPin(const int pinNumber) {
+    void DS18B20::setInputPin(const int pinNumber) {
         this->pinNumber = pinNumber;
     }
 
-    void DS18B10::setSamplingRate(const unsigned int samplingRate) {
+    void DS18B20::setSamplingRate(const unsigned int samplingRate) {
         this->samplingRate = samplingRate;
     }
 

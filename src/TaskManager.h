@@ -34,6 +34,8 @@
 #include "Task.h"
 #include "io/Logger.h"
 
+#define TASKMANAGER_LOG_PREFIX           "@ROOT::TaskManager"
+
 /// A very minimalistic task manager
 
 class TaskManager {

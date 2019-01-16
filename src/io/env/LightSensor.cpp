@@ -40,7 +40,7 @@ namespace IO { namespace Env {
             unsigned long now = millis();
             if (now - lastSampleTime >= samplingRate) {
                 float lightLevel = getLightLevel();
-                Logger::info("@IO::Env::LightSensor %0.2f", lightLevel);
+                Logger::info("%s %0.2f", LIGHTSENSOR_LOG_PREFIX, lightLevel);
                 lastSampleTime = now;
             }
         }
