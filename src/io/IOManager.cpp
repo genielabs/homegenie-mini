@@ -27,6 +27,7 @@
  *
  */
 
+#include <io/rf/x10/X10Message.h>
 #include "IOManager.h"
 
 namespace IO {
@@ -76,9 +77,20 @@ namespace IO {
                  byteToHex(b3).c_str(),
                  (type == 0x29) ? "0000" : ""
             );
+
+            auto *decodedMessage = new X10Message();
+            auto *encodedMessage = new uint8_t[5]{ type, b0, b1, b2, b3 };
+
+            IO::X10::X10Message::decodeCommand(encodedMessage, decodedMessage);
+            IO::Logger::trace("%s %s %c%d", IOMANAGER_LOG_PREFIX, cmd_code_to_str(decodedMessage->command), house_code_to_char(decodedMessage->houseCode), unit_code_to_int(decodedMessage->unitCode));
+
+            delete decodedMessage;
+            delete[] encodedMessage;
+
             // TODO: blink led ? (visible feedback)
+            // TODO: this might conflict with DS18B20 temperature reading (same GPIO)
             //digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
-            //delay(50);                         // wait for a second
+            //delay(10);                         // wait for a blink
             //digitalWrite(LED_BUILTIN, HIGH);
         }
     }

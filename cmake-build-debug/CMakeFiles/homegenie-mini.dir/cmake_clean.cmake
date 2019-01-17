@@ -29,6 +29,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitter.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.o"
+  "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/main.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o"

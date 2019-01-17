@@ -48,9 +48,10 @@ namespace Service {
         HomeGenie();
         void begin();
 
-        // Task interface
+        // Task overrides
         void loop();
 
+        // RequestHandler overrides
         bool canHandle(HTTPMethod method, String uri);
         bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
 

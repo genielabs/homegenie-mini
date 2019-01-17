@@ -1037,6 +1037,33 @@ src/io/rf/x10/RfTransmitterConfig.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.s
 .PHONY : src/io/rf/x10/RfTransmitterConfig.cpp.s
 
+src/io/rf/x10/X10Message.o: src/io/rf/x10/X10Message.cpp.o
+
+.PHONY : src/io/rf/x10/X10Message.o
+
+# target to build an object file
+src/io/rf/x10/X10Message.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o
+.PHONY : src/io/rf/x10/X10Message.cpp.o
+
+src/io/rf/x10/X10Message.i: src/io/rf/x10/X10Message.cpp.i
+
+.PHONY : src/io/rf/x10/X10Message.i
+
+# target to preprocess a source file
+src/io/rf/x10/X10Message.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.i
+.PHONY : src/io/rf/x10/X10Message.cpp.i
+
+src/io/rf/x10/X10Message.s: src/io/rf/x10/X10Message.cpp.s
+
+.PHONY : src/io/rf/x10/X10Message.s
+
+# target to generate assembly for a file
+src/io/rf/x10/X10Message.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.s
+.PHONY : src/io/rf/x10/X10Message.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -1387,6 +1414,9 @@ help:
 	@echo "... src/io/rf/x10/RfTransmitterConfig.o"
 	@echo "... src/io/rf/x10/RfTransmitterConfig.i"
 	@echo "... src/io/rf/x10/RfTransmitterConfig.s"
+	@echo "... src/io/rf/x10/X10Message.o"
+	@echo "... src/io/rf/x10/X10Message.i"
+	@echo "... src/io/rf/x10/X10Message.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

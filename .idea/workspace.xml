@@ -22,30 +22,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec922180-b3d3-40f1-af0b-2568113a9075" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/src/io/rf/x10/X10Message.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TaskManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/TaskManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TaskManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/TaskManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/cmake_clean.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/homegenie-mini.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/homegenie-mini.cbp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/IOManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/IOManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/Logger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/Logger.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/Logger.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/Logger.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/env/DS18B10.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/env/DS18B20.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/env/DS18B10.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/env/DS18B20.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/env/LightSensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/env/LightSensor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/env/LightSensor.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/env/LightSensor.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/HTTPServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/HTTPServer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/MQTTServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/MQTTServer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/net/NetManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/net/NetManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/ApiRequest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/ApiRequest.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/ApiRequest.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/ApiRequest.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/HomeGenie.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/HomeGenie.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/service/HomeGenie.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/HomeGenie.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/README" beforeDir="false" afterPath="$PROJECT_DIR$/test/README" afterDir="false" />
     </list>
     <ignored path="platformio.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -65,98 +59,111 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-281">
+              <caret line="21" column="16" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
+              <folding>
+                <element signature="e#879#901#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="484">
+              <caret line="52" selection-start-line="52" selection-end-line="52" />
+              <folding>
+                <element signature="e#950#975#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Message.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="5610">
+              <caret line="303" selection-start-line="303" selection-end-line="303" />
+              <folding>
+                <element signature="e#1270#1396#0" expanded="true" />
+                <element signature="e#1632#1939#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="310">
-              <caret line="53" column="31" lean-forward="true" selection-start-line="53" selection-start-column="31" selection-end-line="53" selection-end-column="31" />
-              <folding>
-                <element signature="e#879#899#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="89" selection-start-line="89" selection-end-line="89" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/IOManager.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="42" selection-start-line="42" selection-end-line="42" />
-              <folding>
-                <element signature="e#950#970#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="71" column="41" selection-start-line="71" selection-start-column="41" selection-end-line="71" selection-end-column="41" />
+            <state relative-caret-position="272">
+              <caret line="80" selection-start-line="80" selection-end-line="80" />
+              <folding>
+                <element signature="e#879#912#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.cpp">
+        <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Message.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="415">
-              <caret line="61" selection-start-line="61" selection-end-line="61" />
+            <state relative-caret-position="2398">
+              <caret line="143" column="4" selection-start-line="143" selection-start-column="4" selection-end-line="143" selection-end-column="4" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/rf/x10/RfTransmitter.cpp">
+        <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="74" column="14" selection-start-line="74" selection-start-column="8" selection-end-line="74" selection-end-column="14" />
+            <state relative-caret-position="184">
+              <caret line="337" column="45" selection-start-line="337" selection-start-column="45" selection-end-line="337" selection-end-column="45" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/env/LightSensor.cpp">
+        <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="34" column="18" selection-start-line="34" selection-start-column="12" selection-end-line="34" selection-end-column="18" />
+            <state relative-caret-position="181">
+              <caret line="49" column="42" selection-start-line="49" selection-start-column="42" selection-end-line="49" selection-end-column="42" />
+              <folding>
+                <element signature="e#952#972#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/env/DS18B20.h">
+        <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="393">
-              <caret line="28" selection-start-line="28" selection-end-line="28" />
+            <state relative-caret-position="220">
+              <caret line="60" column="10" selection-start-line="60" selection-start-column="10" selection-end-line="60" selection-end-column="10" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/env/DS18B20.cpp">
+        <entry file="file://$PROJECT_DIR$/src/net/NetManager.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="35" column="43" selection-start-line="35" selection-start-column="36" selection-end-line="35" selection-end-column="43" />
+            <state relative-caret-position="242">
+              <caret line="115" lean-forward="true" selection-start-line="115" selection-end-line="115" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/env/LightSensor.h">
+        <entry file="file://$PROJECT_DIR$/src/net/NetManager.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+            <state relative-caret-position="198">
+              <caret line="51" column="13" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
+              <folding>
+                <element signature="e#954#978#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -165,15 +172,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Remaining_length</find>
-      <find>parsing</find>
-      <find>par</find>
-      <find>length</find>
-      <find>offset</find>
-      <find>Serial</find>
-      <find>conn</find>
-      <find>new co</find>
-      <find>EVENT_CONNECT</find>
       <find>sendMessage</find>
       <find>ping</find>
       <find>pin</find>
@@ -195,6 +193,15 @@
       <find>@Net::MQTTServer</find>
       <find>logger</find>
       <find>DS18B10</find>
+      <find>haCmd</find>
+      <find>free</find>
+      <find>mallo</find>
+      <find>malloc</find>
+      <find>mall</find>
+      <find>new</find>
+      <find>new</find>
+      <find>mal</find>
+      <find>x10_ha_command</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -203,11 +210,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/.piolibdeps/aJson_ID35/aJSON.cpp" />
-        <option value="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.cpp" />
-        <option value="$PROJECT_DIR$/src/Task.cpp" />
-        <option value="$PROJECT_DIR$/src/TaskScheduler.h" />
-        <option value="$PROJECT_DIR$/src/scripting/ProgramEngine.h" />
         <option value="$PROJECT_DIR$/src/scripting/ProgramEngine.cpp" />
         <option value="$PROJECT_DIR$/src/io/env/DS18B10.cpp" />
         <option value="$PROJECT_DIR$/src/service/HttpServer.h" />
@@ -234,26 +236,31 @@
         <option value="$PROJECT_DIR$/src/net/HttpServer.cpp" />
         <option value="$PROJECT_DIR$/src/io/Logger.cpp" />
         <option value="$PROJECT_DIR$/src/io/Logger.h" />
-        <option value="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp" />
         <option value="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h" />
         <option value="$PROJECT_DIR$/src/net/MQTTServer.cpp" />
         <option value="$PROJECT_DIR$/src/TaskManager.h" />
         <option value="$PROJECT_DIR$/src/TaskManager.cpp" />
-        <option value="$PROJECT_DIR$/src/service/HomeGenie.h" />
         <option value="$PROJECT_DIR$/src/service/HomeGenie.cpp" />
         <option value="$PROJECT_DIR$/src/service/ApiRequest.h" />
         <option value="$PROJECT_DIR$/src/service/ApiRequest.cpp" />
-        <option value="$PROJECT_DIR$/src/net/NetManager.h" />
-        <option value="$PROJECT_DIR$/src/net/NetManager.cpp" />
         <option value="$PROJECT_DIR$/src/net/HTTPServer.h" />
         <option value="$PROJECT_DIR$/src/net/HTTPServer.cpp" />
         <option value="$PROJECT_DIR$/src/io/IOManager.h" />
-        <option value="$PROJECT_DIR$/src/io/IOManager.cpp" />
         <option value="$PROJECT_DIR$/src/io/env/LightSensor.h" />
         <option value="$PROJECT_DIR$/src/io/env/LightSensor.cpp" />
         <option value="$PROJECT_DIR$/src/io/env/DS18B10.h" />
         <option value="$PROJECT_DIR$/src/io/env/DS18B20.h" />
         <option value="$PROJECT_DIR$/src/main.cpp" />
+        <option value="$PROJECT_DIR$/src/io/rf/x10/X10Protocol.h" />
+        <option value="$PROJECT_DIR$/src/io/rf/x10/X10Protocol.cpp" />
+        <option value="$PROJECT_DIR$/src/io/rf/x10/X10Message.h.cpp" />
+        <option value="$PROJECT_DIR$/src/net/NetManager.h" />
+        <option value="$PROJECT_DIR$/src/net/NetManager.cpp" />
+        <option value="$PROJECT_DIR$/src/service/HomeGenie.h" />
+        <option value="$PROJECT_DIR$/src/io/rf/x10/X10Message.cpp" />
+        <option value="$PROJECT_DIR$/src/io/rf/x10/X10Message.h" />
+        <option value="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp" />
+        <option value="$PROJECT_DIR$/src/io/IOManager.cpp" />
       </list>
     </option>
   </component>
@@ -499,12 +506,12 @@
       <workItem from="1547256196132" duration="15000" />
       <workItem from="1547256250774" duration="22854000" />
       <workItem from="1547328351144" duration="7125000" />
-      <workItem from="1547384758233" duration="89640000" />
+      <workItem from="1547384758233" duration="102683000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="201507000" />
+    <option name="totallyTimeSpent" value="214550000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1920" height="996" extended-state="6" />
@@ -518,12 +525,12 @@
       <window_info anchor="bottom" id="Database Changes" order="2" />
       <window_info anchor="bottom" id="Run" order="3" />
       <window_info anchor="bottom" id="Debug" order="4" />
-      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.4381003" weight="0.5524798" />
+      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.4375667" weight="0.5524798" />
       <window_info anchor="bottom" id="Event Log" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49786553" weight="0.3298731" />
-      <window_info anchor="bottom" id="Find" order="8" sideWeight="0.4994664" weight="0.32871974" />
-      <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.36392742" weight="0.38177624" />
-      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.6360726" side_tool="true" visible="true" weight="0.40369087" />
+      <window_info anchor="bottom" id="Find" order="8" sideWeight="0.49893278" weight="0.32871974" />
+      <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.36232656" visible="true" weight="0.38177624" />
+      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.63767344" side_tool="true" visible="true" weight="0.38177624" />
       <window_info anchor="right" id="Database" order="0" />
     </layout>
   </component>
@@ -550,42 +557,11 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/.piolibdeps/MQTTbroker_ID2963/examples/MQTTbroker_lite/MQTTbroker_lite.ino">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="46" selection-start-line="46" selection-end-line="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.piolibdeps/MQTTbroker_ID2963/examples/MQTTbroker/MQTTbroker.ino">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1056">
-          <caret line="48" selection-start-line="48" selection-end-line="56" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1320">
-          <caret line="60" column="13" selection-start-line="60" selection-start-column="13" selection-end-line="60" selection-end-column="13" />
-          <folding>
-            <element signature="e#1191#1387#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/test_TaskScheduler_loop.cpp" />
     <entry file="file://$PROJECT_DIR$/test/README">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
           <caret line="10" column="57" selection-start-line="10" selection-start-column="2" selection-end-line="10" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="39" column="16" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
         </state>
       </provider>
     </entry>
@@ -607,13 +583,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
           <caret line="38" column="11" selection-start-line="38" selection-start-column="11" selection-end-line="38" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/RfReceiver.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="43" column="16" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="16" />
         </state>
       </provider>
     </entry>
@@ -704,61 +673,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerConfig.cpp">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerConfig.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
           <caret line="14" selection-start-line="14" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/Logger.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="106" selection-start-line="106" selection-end-line="106" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/Logger.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="37" column="26" selection-start-line="37" selection-start-column="26" selection-end-line="37" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-553">
-          <caret line="61" column="24" selection-start-line="61" selection-start-column="24" selection-end-line="61" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6996">
-          <caret line="339" column="5" selection-start-line="339" selection-start-column="4" selection-end-line="339" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
-          <caret line="51" lean-forward="true" selection-start-line="51" selection-end-line="51" />
-          <folding>
-            <element signature="e#1176#1196#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="38" column="65" lean-forward="true" selection-start-line="38" selection-start-column="65" selection-end-line="38" selection-end-column="65" />
-          <folding>
-            <element signature="e#950#975#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -773,16 +691,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="701">
           <caret line="62" lean-forward="true" selection-start-line="62" selection-end-line="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="107">
-          <caret line="59" column="14" selection-start-line="59" selection-start-column="8" selection-end-line="59" selection-end-column="14" />
-          <folding>
-            <element signature="e#879#901#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -817,29 +725,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/NetManager.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="44" column="29" selection-start-line="44" selection-start-column="8" selection-end-line="44" selection-end-column="29" />
-          <folding>
-            <element signature="e#954#978#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/NetManager.cpp">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="550">
-          <caret line="48" column="14" selection-start-line="48" selection-start-column="14" selection-end-line="48" selection-end-column="14" />
-          <folding>
-            <element signature="e#952#972#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="159">
@@ -864,13 +749,6 @@
           <folding>
             <element signature="e#950#970#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="71" column="41" selection-start-line="71" selection-start-column="41" selection-end-line="71" selection-end-column="41" />
         </state>
       </provider>
     </entry>
@@ -912,16 +790,153 @@
     <entry file="file://$PROJECT_DIR$/src/io/env/LightSensor.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
-          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
-          <caret line="53" column="31" lean-forward="true" selection-start-line="53" selection-start-column="31" selection-end-line="53" selection-end-column="31" />
+        <state relative-caret-position="1034">
+          <caret line="47" selection-start-line="47" selection-end-line="47" />
           <folding>
             <element signature="e#879#899#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Protocol.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="66">
+          <caret line="34" selection-start-line="34" selection-end-line="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/RfReceiver.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="43" column="16" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/Logger.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="106" selection-start-line="106" selection-end-line="106" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/Logger.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="756">
+          <caret line="39" column="18" selection-start-line="39" selection-start-column="18" selection-end-line="39" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerConfig.cpp">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="51" selection-start-line="51" selection-end-line="51" />
+          <folding>
+            <element signature="e#1176#1196#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="181">
+          <caret line="49" column="42" selection-start-line="49" selection-start-column="42" selection-end-line="49" selection-end-column="42" />
+          <folding>
+            <element signature="e#952#972#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="60" column="10" selection-start-line="60" selection-start-column="10" selection-end-line="60" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-281">
+          <caret line="21" column="16" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
+          <folding>
+            <element signature="e#879#901#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Message.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5610">
+          <caret line="303" selection-start-line="303" selection-end-line="303" />
+          <folding>
+            <element signature="e#1270#1396#0" expanded="true" />
+            <element signature="e#1632#1939#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Message.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2398">
+          <caret line="143" column="4" selection-start-line="143" selection-start-column="4" selection-end-line="143" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="337" column="45" selection-start-line="337" selection-start-column="45" selection-end-line="337" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/NetManager.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="51" column="13" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
+          <folding>
+            <element signature="e#954#978#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/NetManager.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="115" lean-forward="true" selection-start-line="115" selection-end-line="115" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="484">
+          <caret line="52" selection-start-line="52" selection-end-line="52" />
+          <folding>
+            <element signature="e#950#975#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="80" selection-start-line="80" selection-end-line="80" />
+          <folding>
+            <element signature="e#879#912#0" expanded="true" />
           </folding>
         </state>
       </provider>

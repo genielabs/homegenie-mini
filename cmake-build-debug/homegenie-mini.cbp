@@ -1016,6 +1016,12 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfTransmitterConfig.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/X10Message.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/X10Message.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>

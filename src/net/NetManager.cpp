@@ -112,4 +112,14 @@ namespace Net {
         return *httpServer;
     }
 
+    NetManager::NetManager() {
+
+    }
+    NetManager::~NetManager() {
+        // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
+        delete httpServer;
+        // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
+        delete mqttServer;
+    }
+
 }

@@ -447,9 +447,22 @@ CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.s: cmake_for
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.s"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfTransmitterConfig.cpp -o CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.s
 
+CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
+CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o: ../src/io/rf/x10/X10Message.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/X10Message.cpp
+
+CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.i"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/X10Message.cpp > CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.i
+
+CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.s"
+	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/X10Message.cpp -o CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.s
+
 CMakeFiles/homegenie-mini.dir/src/main.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/main.cpp.o: ../src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/homegenie-mini.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/homegenie-mini.dir/src/main.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/main.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp
 
 CMakeFiles/homegenie-mini.dir/src/main.cpp.i: cmake_force
@@ -462,7 +475,7 @@ CMakeFiles/homegenie-mini.dir/src/main.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o: ../src/net/HTTPServer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HTTPServer.cpp
 
 CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.i: cmake_force
@@ -475,7 +488,7 @@ CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o: ../src/net/MQTTServer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MQTTServer.cpp
 
 CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.i: cmake_force
@@ -488,7 +501,7 @@ CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o: ../src/net/NetManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/NetManager.cpp
 
 CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.i: cmake_force
@@ -501,7 +514,7 @@ CMakeFiles/homegenie-mini.dir/src/net/NetManager.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.o: ../src/net/mqtt/MQTTBrokerConfig.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTBrokerConfig.cpp
 
 CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.i: cmake_force
@@ -514,7 +527,7 @@ CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerConfig.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.o: ../src/net/mqtt/MQTTBrokerMini.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/mqtt/MQTTBrokerMini.cpp
 
 CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.i: cmake_force
@@ -527,7 +540,7 @@ CMakeFiles/homegenie-mini.dir/src/net/mqtt/MQTTBrokerMini.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o: ../src/scripting/ProgramEngine.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/scripting/ProgramEngine.cpp
 
 CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.i: cmake_force
@@ -540,7 +553,7 @@ CMakeFiles/homegenie-mini.dir/src/scripting/ProgramEngine.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o: ../src/service/ApiRequest.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiRequest.cpp
 
 CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.i: cmake_force
@@ -553,7 +566,7 @@ CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.s: cmake_force
 
 CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o: CMakeFiles/homegenie-mini.dir/flags.make
 CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o: ../src/service/HomeGenie.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o"
 	/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o -c /home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp
 
 CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.i: cmake_force
@@ -596,6 +609,7 @@ homegenie__mini_OBJECTS = \
 "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitter.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.o" \
+"CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/main.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o" \
 "CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o" \
@@ -639,6 +653,7 @@ homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiver.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfReceiverConfig.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitter.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.o
+homegenie-mini: CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/main.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o
@@ -650,7 +665,7 @@ homegenie-mini: CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/src/service/HomeGenie.cpp.o
 homegenie-mini: CMakeFiles/homegenie-mini.dir/build.make
 homegenie-mini: CMakeFiles/homegenie-mini.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Linking CXX executable homegenie-mini"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Linking CXX executable homegenie-mini"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/homegenie-mini.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

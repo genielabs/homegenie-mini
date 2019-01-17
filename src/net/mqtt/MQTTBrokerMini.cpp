@@ -215,6 +215,8 @@ namespace Net { namespace MQTT {
         }
     }
 
+
+    // TODO: check out this method!! there might be a memory leak
     void MQTTBrokerMini::sendMessage(uint8_t num, uint8_t *topic_name, uint16_t length_topic_name, uint8_t *payload,
                                       uint16_t length_payload) {
         if (!clientIsConnected(num)) return;
@@ -333,6 +335,7 @@ namespace Net { namespace MQTT {
     void MQTTBrokerMini::broadcast(uint8_t num, String topic_name, uint8_t *payload, uint16_t length_payload) {
         for (uint8_t i = 0; i < MQTTBROKER_CLIENT_MAX; i++) {
             // TODO: send only if subscribed to topic
+            // TODO; -> subscription not yet handled!
             if (i != num && MQTTclients[i].status) {
                 publish(i, (topic_name).c_str(), payload, length_payload);
             }

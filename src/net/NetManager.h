@@ -49,6 +49,8 @@ namespace Net {
     /// Network services management
     class NetManager : Task {
     public:
+        NetManager();
+        ~NetManager();
         bool begin();
         void loop();
         HTTPServer getHttpServer();
