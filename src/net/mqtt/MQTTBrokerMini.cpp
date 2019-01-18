@@ -311,13 +311,13 @@ namespace Net { namespace MQTT {
                 break;
             case SUBACK: //9
                 answer_msg[i] = *payload;
-                DEBUG_MQTTBROKER("%s [%d] >> SUBACK\n", MQTTBROKER_LOG_PREFIX, num);
+                DEBUG_MQTTBROKER("%s [%d] << SUBACK\n", MQTTBROKER_LOG_PREFIX, num);
                 break;
             case UNSUBACK: //11
-                DEBUG_MQTTBROKER("%s [%d] >> UNSUBACK\n", MQTTBROKER_LOG_PREFIX, num);
+                DEBUG_MQTTBROKER("%s [%d] << UNSUBACK\n", MQTTBROKER_LOG_PREFIX, num);
                 break;
             case PINGRESP: //13
-                DEBUG_MQTTBROKER("%s [%d] >> PINGRESP\n", MQTTBROKER_LOG_PREFIX, num);
+                DEBUG_MQTTBROKER("%s [%d] << PINGRESP\n", MQTTBROKER_LOG_PREFIX, num);
                 break;
             default:
                 return;

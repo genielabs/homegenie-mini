@@ -58,12 +58,22 @@ do {                                                                    \
 } while (0)
 #endif
 
-namespace IO {
-    namespace X10 {
+#define IS_CAM_CODE(code) ((code) & ~0xFF)
 
-/**********************/
-/*** X10 OPERATIONS ***/
-/**********************/
+/** Normal command length */
+#define NORM_CMD_LEN 5
+/** Pan'n'Tilt command length */
+#define CAM_CMD_LEN 4
+/** Larger of the two lengths, used for allocating buffers */
+#define MAX_CMD_LEN NORM_CMD_LEN
+
+/** Prefix for all normal commands */
+#define NORM_CMD_PFX 0x20
+/** Prefix for all Pan'n'Tilt commands */
+#define CAM_CMD_PFX 0x14
+
+#define ACK_LEN 1
+#define ACK 0xFF
 
 /* Bounds of X10 houseCode codes */
 #define HOUSE_MIN 'a'
@@ -73,10 +83,9 @@ namespace IO {
 #define UNIT_MIN 1
 #define UNIT_MAX 16
 
+namespace IO {
+    namespace X10 {
 
-/**
- * House codes
- */
         enum HouseCode {
             HOUSE_A = 0x60, HOUSE_B = 0x70, HOUSE_C = 0x40, HOUSE_D = 0x50,
             HOUSE_E = 0x80, HOUSE_F = 0x90, HOUSE_G = 0xA0, HOUSE_H = 0xB0,
@@ -87,37 +96,37 @@ namespace IO {
         static char house_code_to_char(enum HouseCode code) {
             switch (code) {
                 case HOUSE_A:
-                    return 'a';
+                    return 'A';
                 case HOUSE_B:
-                    return 'b';
+                    return 'B';
                 case HOUSE_C:
-                    return 'c';
+                    return 'C';
                 case HOUSE_D:
-                    return 'd';
+                    return 'D';
                 case HOUSE_E:
-                    return 'e';
+                    return 'E';
                 case HOUSE_F:
-                    return 'f';
+                    return 'F';
                 case HOUSE_G:
-                    return 'g';
+                    return 'G';
                 case HOUSE_H:
-                    return 'h';
+                    return 'H';
                 case HOUSE_I:
-                    return 'i';
+                    return 'I';
                 case HOUSE_J:
-                    return 'j';
+                    return 'J';
                 case HOUSE_K:
-                    return 'k';
+                    return 'K';
                 case HOUSE_L:
-                    return 'l';
+                    return 'L';
                 case HOUSE_M:
-                    return 'm';
+                    return 'M';
                 case HOUSE_N:
-                    return 'n';
+                    return 'N';
                 case HOUSE_O:
-                    return 'o';
+                    return 'O';
                 case HOUSE_P:
-                    return 'p';
+                    return 'P';
                 default:
                     return '?';
             }
@@ -190,7 +199,6 @@ namespace IO {
             unit |= ((code >> 4) & 0x4);
             unit |= ((code >> 2) & 0x2);
             unit |= ((code >> 4) & 0x1);
-
             return ++unit;
         }
 
@@ -282,13 +290,8 @@ namespace IO {
             }
         }
 
-#define TO_LOWER(ch) (((ch) < 'a')? (((ch) - 'A') + 'a') : (ch))
-#define OUT_OF_BOUNDS(val, low, high) (((val) < (low)) || ((high) < (val)))
-
         class X10Message {
         public:
-            X10Message();
-            ~X10Message();
 
             /** Command code */
             enum Command command;
@@ -298,7 +301,7 @@ namespace IO {
             enum UnitCode unitCode;
 
             // static members
-            static void encodeCommand(X10Message *x10Message, unsigned char *encodedMessage);
+            static int encodeCommand(X10Message *x10Message, unsigned char *encodedMessage);
             static int decodeCommand(unsigned char *encodedMessage, X10Message *x10Message);
 
         };

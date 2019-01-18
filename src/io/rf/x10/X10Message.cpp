@@ -60,71 +60,7 @@ do {                                                                    \
 namespace IO {
     namespace X10 {
 
-#define IS_CAM_CODE(code) ((code) & ~0xFF)
-
-/** Normal command length */
-#define NORM_CMD_LEN 5
-/** Pan'n'Tilt command length */
-#define CAM_CMD_LEN 4
-/** Larger of the two lengths, used for allocating buffers */
-#define MAX_CMD_LEN NORM_CMD_LEN
-
-/** Prefix for all normal commands */
-#define NORM_CMD_PFX 0x20
-/** Prefix for all Pan'n'Tilt commands */
-#define CAM_CMD_PFX 0x14
-
-#define ACK_LEN 1
-#define ACK 0xFF
-
-
-        X10Message::X10Message() {
-            // TODO: ...
-        }
-
-        X10Message::~X10Message() {
-            // TODO: ...
-        }
-
-/*
- * struct x10_ha_command* X10Message::new_x10_ha_command(enum Command command, char houseCode, int unitCode) {
-                struct x10_ha_command *res;
-                houseCode = TO_LOWER(houseCode);
-                if (OUT_OF_BOUNDS(houseCode, HOUSE_MIN, HOUSE_MAX)) {
-                    //error("%s: House code out of bounds: %c\n", __FUNCTION__, houseCode);
-                    return NULL;
-                }
-
-                if (OUT_OF_BOUNDS(unitCode, UNIT_MIN, UNIT_MAX)) {
-                    //error("%s: Unit code out of bounds: %d\n", __FUNCTION__, unitCode);
-                    return NULL;
-                }
-
-                res = new x10_ha_command();
-
-                res = (struct x10_ha_command *) malloc(sizeof(struct x10_ha_command));
-                if (res == NULL) {
-                    //error("%s: kmalloc of HA command failed!\n", __FUNCTION__);
-                    return NULL;
-                }
-
-                res->command = command;
-                res->houseCode = HouseCodeLut[houseCode - HOUSE_MIN];
-                res->unitCode = UnitCodeLut[unitCode - UNIT_MIN];
-
-                //debug(DBG_INFO, "Created HA command: %s %c %d\n", cmd_code_to_str(command), houseCode, unitCode);
-
-                // TODO: the caller must take care of calling `delete res` to free memory;
-                return res;
-            }
-            void X10Message::del_x10_ha_command(struct x10_ha_command *haCmd) {
-                free(haCmd);
-            }
-*/
-
-// TODO: unsigned char* allocageMessage();
-
-            void X10Message::encodeCommand(X10Message *x10Message, unsigned char *encodedMessage) {
+            int X10Message::encodeCommand(X10Message *x10Message, unsigned char *encodedMessage) {
                 //char encodedMessage[MAX_CMD_LEN];
                 int msgLen;
 
@@ -146,6 +82,8 @@ namespace IO {
                     encodedMessage[3] = (x10Message->unitCode & 0xFF) | x10Message->command;
                     encodedMessage[4] = ~encodedMessage[3];
                 }
+
+                return msgLen;
             }
 
             int X10Message::decodeCommand(unsigned char *encodedMessage, X10Message *decodedMessage) {

@@ -34,7 +34,7 @@ namespace Net {
     static WebSocketsServer *ws;
     static MQTTBrokerMini *mb;
 
-    void MqttServer::begin() {
+    void MQTTServer::begin() {
 
         // TODO: add <MQTTBrokerMiniConfig> class to store configuration
         webSocket = new WebSocketsServer(8000, "", "mqtt");
@@ -51,7 +51,7 @@ namespace Net {
 
     }
 
-    void MqttServer::loop() {
+    void MQTTServer::loop() {
         webSocket->loop();
         // Just for testing, sends a message periodically
         static int cnt = 1;
@@ -59,13 +59,13 @@ namespace Net {
             String prefix = "/homegenie";
             String deviceID = "world";
             String test = R"({ "Message": "Hello from HomeGenie-Mini!" })";
-            mb->broadcast((prefix).c_str(), (uint8_t *) test.c_str(), test.length());
+            mb->broadcast((prefix).c_str(), (uint8_t *)test.c_str(), (uint16_t)test.length());
             cnt = 0;
         }
         cnt++;
     }
 
-    void MqttServer::mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
+    void MQTTServer::mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
                                         uint16_t length_payload) {
         auto msg = String((char*)payload);
         switch (event){
@@ -91,15 +91,20 @@ namespace Net {
         }
     }
 
-    void MqttServer::webSocketEventStatic(uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
+    void MQTTServer::webSocketEventStatic(uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
         switch(type) {
             case WStype_DISCONNECTED:
                 if (mb->clientIsConnected(num)) mb->disconnect(num);
                 break;
             case WStype_BIN:
-                mb->parsing(num, payload, length);
+                mb->parsing(num, payload, (uint16_t)length);
                 break;
         }
+    }
+
+    void MQTTServer::broadcast(String *topic, String *payload) {
+        // TODO: implement queue (maybe it's time to use ArduinoList)
+        mb->broadcast(*topic, (uint8_t *)payload->c_str(), (uint16_t)payload->length());
     }
 
 }

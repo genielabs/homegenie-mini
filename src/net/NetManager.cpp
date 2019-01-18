@@ -92,7 +92,7 @@ namespace Net {
         httpServer = new HTTPServer();
         httpServer->begin();
 
-        mqttServer = new MqttServer();
+        mqttServer = new MQTTServer();
         mqttServer->begin();
 
         return wpsSuccess;
@@ -110,6 +110,10 @@ namespace Net {
 
     HTTPServer NetManager::getHttpServer() {
         return *httpServer;
+    }
+
+    MQTTServer NetManager::getMQTTServer() {
+        return *mqttServer;
     }
 
     NetManager::NetManager() {

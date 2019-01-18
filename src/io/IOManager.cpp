@@ -28,6 +28,7 @@
  */
 
 #include <io/rf/x10/X10Message.h>
+#include <service/ApiRequest.h>
 #include "IOManager.h"
 
 namespace IO {
@@ -79,13 +80,29 @@ namespace IO {
             );
 
             auto *decodedMessage = new X10Message();
-            auto *encodedMessage = new uint8_t[5]{ type, b0, b1, b2, b3 };
+            uint8_t encodedMessage[5]{ type, b0, b1, b2, b3 };
+            X10Message::decodeCommand(encodedMessage, decodedMessage);
+            String houseCode(house_code_to_char(decodedMessage->houseCode));
+            String unitCode(unit_code_to_int(decodedMessage->unitCode));
+            Logger::trace("%s %s%s %s", IOMANAGER_LOG_PREFIX, houseCode.c_str(), unitCode.c_str(), cmd_code_to_str(decodedMessage->command));
 
-            IO::X10::X10Message::decodeCommand(encodedMessage, decodedMessage);
-            IO::Logger::trace("%s %s %c%d", IOMANAGER_LOG_PREFIX, cmd_code_to_str(decodedMessage->command), house_code_to_char(decodedMessage->houseCode), unit_code_to_int(decodedMessage->unitCode));
+            if (ioEventCallback != NULL) {
 
+                auto sender = String("hg-mini/HomeAutomation.X10/"+houseCode+unitCode+"/event");
+                String event = R"({"Name":"Status.Level","Value":")";
+                switch (decodedMessage->command) {
+                    case Command::CMD_ON:
+                        event += "1\"}";
+                        ioEventCallback->onIOEvent(&sender, &event);
+                        break;
+                    case Command::CMD_OFF:
+                        event += "0\"}";
+                        ioEventCallback->onIOEvent(&sender, &event);
+                        break;
+                }
+
+            }
             delete decodedMessage;
-            delete[] encodedMessage;
 
             // TODO: blink led ? (visible feedback)
             // TODO: this might conflict with DS18B20 temperature reading (same GPIO)
@@ -93,6 +110,10 @@ namespace IO {
             //delay(10);                         // wait for a blink
             //digitalWrite(LED_BUILTIN, HIGH);
         }
+    }
+
+    void IOManager::setOnEventCallback(IOManager::IOEventCallback *callback) {
+        ioEventCallback = callback;
     }
 
 }

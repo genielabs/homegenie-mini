@@ -54,10 +54,11 @@ namespace Net {
         bool begin();
         void loop();
         HTTPServer getHttpServer();
+        MQTTServer getMQTTServer();
 
     private:
         HTTPServer *httpServer;
-        MqttServer *mqttServer;
+        MQTTServer *mqttServer;
         String setStatus(int s);
     };
 

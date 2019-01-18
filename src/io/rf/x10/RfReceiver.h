@@ -44,15 +44,12 @@ namespace IO { namespace X10 {
         };
 
         RfReceiver();
-
         RfReceiver(RfReceiverConfig *configuration, X10RfDataReceivedCallback *rfReceiveCallback);
 
         void begin();
-
         void receive();
 
         void enable();
-
         void disable();
 
         bool isEnabled();

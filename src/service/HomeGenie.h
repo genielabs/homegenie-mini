@@ -43,13 +43,22 @@ namespace Service {
     using namespace IO;
     using namespace Net;
 
-    class HomeGenie: Task, RequestHandler {
+    class QueuedMessage {
+    public:
+        String sender;
+        String details;
+    };
+
+    class HomeGenie: Task, RequestHandler, IOManager::IOEventCallback {
     public:
         HomeGenie();
         void begin();
 
         // Task overrides
         void loop();
+
+        // IOEventCallback
+        void onIOEvent(String *sender, String *data);
 
         // RequestHandler overrides
         bool canHandle(HTTPMethod method, String uri);
@@ -60,6 +69,7 @@ namespace Service {
         IOManager& getIOManager();
         //void getHttpServer();
     private:
+        LinkedList<QueuedMessage> messageQueue = LinkedList<QueuedMessage>();
         NetManager netManager;
         IOManager ioManager;
         void getBytes(const String &rawBytes, uint8_t *data);

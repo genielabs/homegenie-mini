@@ -39,6 +39,7 @@ namespace Service {
         netManager.begin();
         netManager.getHttpServer().addHandler(this);
         ioManager.begin();
+        ioManager.setOnEventCallback(this);
     }
 
     void HomeGenie::loop() {
@@ -57,12 +58,29 @@ namespace Service {
             }
         }
 
+        for (int i = 0; i < messageQueue.size(); i++) {
+            auto m = messageQueue.pop();
+            //Logger::info("%s %s %s", HOMEGENIEMINI_LOG_PREFIX, m.sender.c_str(), m.details.c_str());
+            netManager.getMQTTServer().broadcast(&m.sender, &m.details);
+        }
+
         Logger::verbose("%s loop() << END", HOMEGENIEMINI_LOG_PREFIX);
     }
 
     IOManager& HomeGenie::getIOManager() {
         return ioManager;
     }
+
+    // BEGIN IOEventCallback interface methods
+    void HomeGenie::onIOEvent(String *sender, String *details) {
+        Logger::trace("onIOEvent( '%s', '%s' )", sender->c_str(), details->c_str());
+        //netManager.getMQTTServer().broadcast(sender, details);
+        QueuedMessage m = QueuedMessage();
+        m.sender = *sender;
+        m.details = *details;
+        messageQueue.add(m);
+    }
+    // END IOEventCallback
 
     // BEGIN RequestHandler interface methods
     bool HomeGenie::canHandle(HTTPMethod method, String uri) {

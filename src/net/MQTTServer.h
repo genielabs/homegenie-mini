@@ -32,6 +32,7 @@
 
 #include <Arduino.h>
 
+#include <LinkedList.h>
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
 
@@ -42,10 +43,13 @@ namespace Net {
     using namespace MQTT;
 
 /// Simple MQTT Broker implementation over WebSockets
-    class MqttServer : Task {
+    class MQTTServer : Task {
     public:
         void begin();
         void loop();
+
+        void broadcast(String *topic, String *payload);
+
         static void webSocketEventStatic(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
         static void mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t * payload, uint16_t length_payload);
     private:
