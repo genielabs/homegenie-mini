@@ -31,26 +31,21 @@
 
 namespace IO { namespace Env {
 
-        void LightSensor::begin() {
-            Logger::info("|  ✔ IO::Env::LightSensor");
-        }
+    void LightSensor::begin() {
+        Logger::info("|  ✔ IO::Env::LightSensor");
+    }
 
-        void LightSensor::loop() {
-            static unsigned long lastSampleTime = 0 - samplingRate;
-            unsigned long now = millis();
-            if (now - lastSampleTime >= samplingRate) {
-                float lightLevel = getLightLevel();
-                Logger::info("%s %0.2f", LIGHTSENSOR_LOG_PREFIX, lightLevel);
-                lastSampleTime = now;
-            }
-        }
+    void LightSensor::loop() {
+        float lightLevel = getLightLevel();
+        Logger::info("%s %0.2f", LIGHTSENSOR_LOG_PREFIX, lightLevel);
+    }
 
-        void LightSensor::setInputPin(uint8_t number) {
-            inputPin = number;
-        }
+    void LightSensor::setInputPin(uint8_t number) {
+        inputPin = number;
+    }
 
-        float LightSensor::getLightLevel() {
-            // It returns values between 0-1024
-            return analogRead(inputPin);
-        }
-    }}
+    float LightSensor::getLightLevel() {
+        // It returns values between 0-1024
+        return analogRead(inputPin);
+    }
+}}

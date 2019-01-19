@@ -32,5 +32,17 @@
 #include "io/Logger.h"
 
 Task::Task() {
+    creationTs = millis();
     TaskManager::addTask(this);
+}
+
+bool Task::willLoop() {
+
+    unsigned long now = millis();
+    if (now - lastLoopTs >= loopInterval) {
+        lastLoopTs = now;
+        return true;
+    }
+
+    return false;
 }

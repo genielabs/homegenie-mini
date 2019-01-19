@@ -38,13 +38,10 @@ namespace IO { namespace Env {
 
     void DS18B20::loop() {
         Logger::verbose("  > IO::Env::DS18B20::loop() >> START");
-        static unsigned long lastSampleTime = 0 - samplingRate;
-        unsigned long now = millis();
-        if (now - lastSampleTime >= samplingRate) {
-            float temperature = getTemperature();
-            Logger::info("@IO::Env::DS18B20 %0.2f", temperature);
-            lastSampleTime = now;
-        }
+
+        float temperature = getTemperature();
+        Logger::info("@IO::Env::DS18B20 %0.2f", temperature);
+
         Logger::verbose("  > IO::Env::DS18B20::loop() << END");
     }
 
@@ -103,7 +100,7 @@ namespace IO { namespace Env {
     }
 
     void DS18B20::setSamplingRate(const unsigned int samplingRate) {
-        this->samplingRate = samplingRate;
+        setLoopInterval(samplingRate);
     }
 
 }}

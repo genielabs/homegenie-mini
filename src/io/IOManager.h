@@ -31,13 +31,19 @@
 #define HOMEGENIE_MINI_IOMANAGER_H
 
 #include <Arduino.h>
+#include <io/sys/Diagnostics.h>
 
 #include "Logger.h"
 
-#include "io/rf/x10/RfReceiver.h"
-#include "io/rf/x10/RfTransmitter.h"
-#include "io/env/DS18B20.h"
-#include "io/env/LightSensor.h"
+#include <service/ApiRequest.h>
+
+#include <io/IOEvent.h>
+#include <io/IOEventDomains.h>
+#include <io/rf/x10/RfReceiver.h>
+#include <io/rf/x10/RfTransmitter.h>
+#include <io/rf/x10/X10Message.h>
+#include <io/env/DS18B20.h>
+#include <io/env/LightSensor.h>
 
 #define IOMANAGER_LOG_PREFIX                    "@IO::IOManager"
 
@@ -49,28 +55,28 @@ namespace IO {
     using namespace X10;
     using namespace Env;
 
-    class IOManager : RfReceiver::X10RfDataReceivedCallback {
+    class IOManager : IIOEventReceiver {
     public:
-        class IOEventCallback {
-        public:
-            virtual void onIOEvent(String *sender, String *details){};
-        };
 
         IOManager();
 
         void begin();
 
-        RfReceiver getX10Receiver(){ return *x10Receiver; };
-        RfTransmitter getX10Transmitter(){ return *x10Transmitter; };
-        DS18B20 getTemperatureSensor(){ return *temperatureSensor; };
-        LightSensor getLightSensor(){ return *lightSensor; };
+        // IIOEventReceiver interface
+        void onIOEvent(IIOEventSender *, const uint8_t *, void *);
 
-        void onX10RfDataReceived(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
+        void setOnEventCallback(IIOEventReceiver *);
 
-        void setOnEventCallback(IOEventCallback *callback);
+        RfReceiver getX10Receiver(){ return *x10Receiver; }
+        RfTransmitter getX10Transmitter(){ return *x10Transmitter; }
+        DS18B20 getTemperatureSensor(){ return *temperatureSensor; }
+        LightSensor getLightSensor(){ return *lightSensor; }
+
     private:
+        // Diagnostics
+        System::Diagnostics *systemDiagnostics;
         //class X10ApiHandler;
-        IOEventCallback *ioEventCallback;
+        IIOEventReceiver *ioEventCallback;
         String byteToHex(byte b);
         // Instantiate the X10 RfReceiver Class
         RfReceiverConfig *x10ReceiverConfig;

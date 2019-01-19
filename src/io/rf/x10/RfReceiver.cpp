@@ -27,6 +27,7 @@
  *
  */
 
+#include <io/IOEventPaths.h>
 #include "RfReceiver.h"
 
 namespace IO { namespace X10 {
@@ -39,11 +40,13 @@ namespace IO { namespace X10 {
 
     RfReceiver::RfReceiver() {
         receiverInstance = this;
+        // IEventSender members
+        domain = (uint8_t *)"HomeAutomation.X10";
+        address = (uint8_t *)"RF";
     }
 
-    RfReceiver::RfReceiver(RfReceiverConfig *configuration, X10RfDataReceivedCallback *rfReceiveCallback) : RfReceiver() {
+    RfReceiver::RfReceiver(RfReceiverConfig *configuration) : RfReceiver() {
         this->configuration = configuration;
-        this->rfReceiveCallback = rfReceiveCallback;
     }
 
     //////////////////////////////
@@ -52,14 +55,10 @@ namespace IO { namespace X10 {
 
     void RfReceiver::begin() {
         enabled = true;
-        if (rfReceiveCallback) {
-            Logger::info("|  - IO::X10::RfReceiver (PIN=%d INT=%d)", configuration->getPin(), configuration->getInterrupt());
-            pinMode(configuration->getPin(), INPUT);
-            attachInterrupt(configuration->getInterrupt(), receiverInstance_wrapper, RISING);
-            Logger::info("|  ✔ IO::X10::RfReceiver");
-        } else {
-            Logger::info("|  ! IO::X10::RfReceiver ERROR: NO CALLBACK");
-        }
+        Logger::info("|  - IO::X10::RfReceiver (PIN=%d INT=%d)", configuration->getPin(), configuration->getInterrupt());
+        pinMode(configuration->getPin(), INPUT);
+        attachInterrupt(configuration->getInterrupt(), receiverInstance_wrapper, RISING);
+        Logger::info("|  ✔ IO::X10::RfReceiver");
     }
 
     void RfReceiver::enable() {
@@ -94,26 +93,25 @@ namespace IO { namespace X10 {
                 receivedCount = -1;
             }
 
-            // Receive complete: parse message
+            // Receive complete: verify message and fire callback
             if (receivedCount == 32) {
-
-                // TODO: reverse
 
                 byteBuffer[3] = reverseByte((receiveBuffer >> 24) & 0xFF);
                 byteBuffer[2] = reverseByte((receiveBuffer >> 16) & 0xFF);
                 byteBuffer[1] = reverseByte((receiveBuffer >> 8) & 0xFF);
                 byteBuffer[0] = reverseByte(receiveBuffer & 0xFF);
 
-                /*
-                b1 = reverseByte(b1);
-                b3 = reverseByte(b3);
-                */
                 bool isSecurityCode = ((byteBuffer[1] ^ byteBuffer[0]) == 0x0F) && ((byteBuffer[3] ^ byteBuffer[2]) == 0xFF);
                 bool isStandardCode = ((byteBuffer[1] & ~byteBuffer[0]) == byteBuffer[1] && (byteBuffer[3] & ~byteBuffer[2]) == byteBuffer[3]);
 
+
+                // TODO: !!! IMPLEMENT CHECKSUM VERIFICATION AND DISCARD MALFORMED MESSAGES
+
+
                 if (isStandardCode || isSecurityCode) {
                     messageType = isStandardCode ? (uint8_t) 0x20 : (uint8_t) 0x29;
-                    rfReceiveCallback->onX10RfDataReceived(messageType, byteBuffer[0], byteBuffer[1], (byteBuffer[2]), (byteBuffer[3]));
+                    uint8_t data[] = { messageType, byteBuffer[0], byteBuffer[1], (byteBuffer[2]), (byteBuffer[3]) };
+                    sendEvent((uint8_t*)IOEventPaths::Sensor_RawData, data);
                 }
 
                 receivedCount = -1;

@@ -821,6 +821,60 @@ src/TaskManager.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.s
 .PHONY : src/TaskManager.cpp.s
 
+src/io/IOEventDomains.o: src/io/IOEventDomains.cpp.o
+
+.PHONY : src/io/IOEventDomains.o
+
+# target to build an object file
+src/io/IOEventDomains.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/IOEventDomains.cpp.o
+.PHONY : src/io/IOEventDomains.cpp.o
+
+src/io/IOEventDomains.i: src/io/IOEventDomains.cpp.i
+
+.PHONY : src/io/IOEventDomains.i
+
+# target to preprocess a source file
+src/io/IOEventDomains.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/IOEventDomains.cpp.i
+.PHONY : src/io/IOEventDomains.cpp.i
+
+src/io/IOEventDomains.s: src/io/IOEventDomains.cpp.s
+
+.PHONY : src/io/IOEventDomains.s
+
+# target to generate assembly for a file
+src/io/IOEventDomains.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/IOEventDomains.cpp.s
+.PHONY : src/io/IOEventDomains.cpp.s
+
+src/io/IOEventPaths.o: src/io/IOEventPaths.cpp.o
+
+.PHONY : src/io/IOEventPaths.o
+
+# target to build an object file
+src/io/IOEventPaths.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/IOEventPaths.cpp.o
+.PHONY : src/io/IOEventPaths.cpp.o
+
+src/io/IOEventPaths.i: src/io/IOEventPaths.cpp.i
+
+.PHONY : src/io/IOEventPaths.i
+
+# target to preprocess a source file
+src/io/IOEventPaths.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/IOEventPaths.cpp.i
+.PHONY : src/io/IOEventPaths.cpp.i
+
+src/io/IOEventPaths.s: src/io/IOEventPaths.cpp.s
+
+.PHONY : src/io/IOEventPaths.s
+
+# target to generate assembly for a file
+src/io/IOEventPaths.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/IOEventPaths.cpp.s
+.PHONY : src/io/IOEventPaths.cpp.s
+
 src/io/IOManager.o: src/io/IOManager.cpp.o
 
 .PHONY : src/io/IOManager.o
@@ -1063,6 +1117,33 @@ src/io/rf/x10/X10Message.s: src/io/rf/x10/X10Message.cpp.s
 src/io/rf/x10/X10Message.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.s
 .PHONY : src/io/rf/x10/X10Message.cpp.s
+
+src/io/sys/Diagnostics.o: src/io/sys/Diagnostics.cpp.o
+
+.PHONY : src/io/sys/Diagnostics.o
+
+# target to build an object file
+src/io/sys/Diagnostics.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/sys/Diagnostics.cpp.o
+.PHONY : src/io/sys/Diagnostics.cpp.o
+
+src/io/sys/Diagnostics.i: src/io/sys/Diagnostics.cpp.i
+
+.PHONY : src/io/sys/Diagnostics.i
+
+# target to preprocess a source file
+src/io/sys/Diagnostics.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/sys/Diagnostics.cpp.i
+.PHONY : src/io/sys/Diagnostics.cpp.i
+
+src/io/sys/Diagnostics.s: src/io/sys/Diagnostics.cpp.s
+
+.PHONY : src/io/sys/Diagnostics.s
+
+# target to generate assembly for a file
+src/io/sys/Diagnostics.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/io/sys/Diagnostics.cpp.s
+.PHONY : src/io/sys/Diagnostics.cpp.s
 
 src/main.o: src/main.cpp.o
 
@@ -1390,6 +1471,12 @@ help:
 	@echo "... src/TaskManager.o"
 	@echo "... src/TaskManager.i"
 	@echo "... src/TaskManager.s"
+	@echo "... src/io/IOEventDomains.o"
+	@echo "... src/io/IOEventDomains.i"
+	@echo "... src/io/IOEventDomains.s"
+	@echo "... src/io/IOEventPaths.o"
+	@echo "... src/io/IOEventPaths.i"
+	@echo "... src/io/IOEventPaths.s"
 	@echo "... src/io/IOManager.o"
 	@echo "... src/io/IOManager.i"
 	@echo "... src/io/IOManager.s"
@@ -1417,6 +1504,9 @@ help:
 	@echo "... src/io/rf/x10/X10Message.o"
 	@echo "... src/io/rf/x10/X10Message.i"
 	@echo "... src/io/rf/x10/X10Message.s"
+	@echo "... src/io/sys/Diagnostics.o"
+	@echo "... src/io/sys/Diagnostics.i"
+	@echo "... src/io/sys/Diagnostics.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

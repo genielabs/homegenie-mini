@@ -99,6 +99,7 @@
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ESP8266UPnP_ID2048"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/LinkedList_ID443"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/WebSockets_ID549/src"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/OneWire_ID1"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -167,6 +168,7 @@
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ESP8266UPnP_ID2048"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/LinkedList_ID443"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/WebSockets_ID549/src"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/OneWire_ID1"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -968,6 +970,21 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/TaskManager.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOEvent.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOEventDomains.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOEventDomains.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOEventPaths.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOEventPaths.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOManager.cpp">
 			<Option target="homegenie-mini"/>
 		</Unit>
@@ -1020,6 +1037,12 @@
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/X10Message.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/sys/Diagnostics.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/sys/Diagnostics.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp">

@@ -63,6 +63,7 @@ void setup() {
 /// Main application loop
 void loop()
 {
+    // TODO: sort of Load index could be obtained by measuring time elapsed for `TaskManager::loop()` method
     TaskManager::loop();
 }
 

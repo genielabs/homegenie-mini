@@ -41,7 +41,7 @@ namespace IO { namespace X10 {
 
      Format of RF envelope
 
-        The carrier is at a nominal frequency of 300 Mhz.  The envelope of the
+        The carrier is at a nominal frequency of 300Mhz or 433Mhz.  The envelope of the
         carrier is sketched below.  Time progresses from left to right.
 
         ---------------        ---------       ---------                    -

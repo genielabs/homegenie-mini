@@ -37,10 +37,16 @@
 class Task {
 public:
     Task();
-    virtual void loop() {};
+    virtual void loop() = 0;
+    bool willLoop();
+    void setLoopInterval(uint64_t interval) { loopInterval = interval; };
 
     Task* nextTask = NULL;
     Task* previousTask = NULL;
+private:
+    uint64_t creationTs;
+    int64_t lastLoopTs;
+    uint64_t loopInterval;
 };
 
 

@@ -37,22 +37,22 @@
 #include "io/Logger.h"
 
 #define DS18B20_LOG_PREFIX              "@IO::Env::DS18B10"
+#define DS18B20_SAMPLING_RATE 60000
 #define DS18B20_READ_ERROR -1000
 
 namespace IO { namespace Env {
 
     class DS18B20 : Task {
     public:
+        DS18B20() { setLoopInterval(DS18B20_SAMPLING_RATE); }
         void begin();
         void loop();
         void setInputPin(int pinNumber);
-        void setSamplingRate(const unsigned int samplingRate);
+        void setSamplingRate(uint32_t samplingRate);
         float getTemperature();
     private:
-        // default sampling rate of 5 minutes
-        unsigned long samplingRate = 5 * 60 * 1000UL;
         // default pin number is 2
-        int pinNumber = 2;
+        uint8_t pinNumber = 2;
         //Temperature chip i/o
         OneWire *ds;
     };

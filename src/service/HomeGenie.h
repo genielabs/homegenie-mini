@@ -30,10 +30,11 @@
 #ifndef HOMEGENIE_MINI_HOMEGENIE_H
 #define HOMEGENIE_MINI_HOMEGENIE_H
 
-#include <io/IOManager.h>
-
 #include <Task.h>
+#include <io/IOManager.h>
+#include <io/IOEventPaths.h>
 #include <net/NetManager.h>
+
 #include "ApiRequest.h"
 
 #define HOMEGENIEMINI_LOG_PREFIX            "@Service::HomeGenie"
@@ -49,7 +50,7 @@ namespace Service {
         String details;
     };
 
-    class HomeGenie: Task, RequestHandler, IOManager::IOEventCallback {
+    class HomeGenie: Task, RequestHandler, IIOEventReceiver {
     public:
         HomeGenie();
         void begin();
@@ -57,8 +58,8 @@ namespace Service {
         // Task overrides
         void loop();
 
-        // IOEventCallback
-        void onIOEvent(String *sender, String *data);
+        // IIOEventSender
+        void onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData);
 
         // RequestHandler overrides
         bool canHandle(HTTPMethod method, String uri);
@@ -69,10 +70,11 @@ namespace Service {
         IOManager& getIOManager();
         //void getHttpServer();
     private:
-        LinkedList<QueuedMessage> messageQueue = LinkedList<QueuedMessage>();
+        LinkedList<QueuedMessage> eventsQueue = LinkedList<QueuedMessage>();
         NetManager netManager;
         IOManager ioManager;
         void getBytes(const String &rawBytes, uint8_t *data);
+        String byteToHex(byte b);
     };
 
 }

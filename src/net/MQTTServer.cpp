@@ -103,7 +103,6 @@ namespace Net {
     }
 
     void MQTTServer::broadcast(String *topic, String *payload) {
-        // TODO: implement queue (maybe it's time to use ArduinoList)
         mb->broadcast(*topic, (uint8_t *)payload->c_str(), (uint16_t)payload->length());
     }
 

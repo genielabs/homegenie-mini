@@ -37,12 +37,14 @@ TaskManager::TaskManager() {
 }
 
 void TaskManager::loop() {
+    // TODO: (maybe) implement a simple `Priority` mechanism
+    // TODO: (maybe) implement a "loop() Load" index by measuring time elapsed till end of `loop()` method
     IO::Logger::verbose("%s loop() >> BEGIN", TASKMANAGER_LOG_PREFIX);
     Task *t = taskList;
     uint c = 0;
     while (t != NULL) {
         IO::Logger::verbose("%s - running task %d", TASKMANAGER_LOG_PREFIX, c++);
-        t->loop();
+        if (t->willLoop()) t->loop();
         t = t->nextTask;
     }
     IO::Logger::verbose("%s loop() << END", TASKMANAGER_LOG_PREFIX);
@@ -60,3 +62,5 @@ void TaskManager::addTask(Task *task) {
         currentTask = task;
     }
 }
+
+// TODO: implement task disposal as well (eg. removeTask(...))

@@ -34,18 +34,18 @@
 #include <Task.h>
 
 #define LIGHTSENSOR_LOG_PREFIX          "@IO::Env::LightSensor"
+#define LIGHTSENSOR_SAMPLING_RATE       5000L
 
 namespace IO { namespace Env {
 
     class LightSensor : Task {
     public:
+        LightSensor() { setLoopInterval(LIGHTSENSOR_SAMPLING_RATE); }
         void begin();
         void loop();
         void setInputPin(uint8_t number);
         float getLightLevel();
     private:
-        // default sampling rate of 1 second
-        unsigned long samplingRate = 1000UL;
         uint8_t inputPin = 0;
     };
 

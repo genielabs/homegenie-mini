@@ -31,20 +31,18 @@
 #define HOMEGENIE_MINI_X10_RFRECEIVER_H_
 
 #include "Arduino.h"
+
+#include <io/Logger.h>
+#include <io/IOEvent.h>
+
 #include "RfReceiverConfig.h"
-#include "io/Logger.h"
 
 namespace IO { namespace X10 {
 
-    class RfReceiver {
+    class RfReceiver : public IIOEventSender {
     public:
-        class X10RfDataReceivedCallback {
-        public:
-            virtual void onX10RfDataReceived(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
-        };
-
         RfReceiver();
-        RfReceiver(RfReceiverConfig *configuration, X10RfDataReceivedCallback *rfReceiveCallback);
+        RfReceiver(RfReceiverConfig *);
 
         void begin();
         void receive();
@@ -57,7 +55,6 @@ namespace IO { namespace X10 {
     private:
         bool enabled;
         RfReceiverConfig *configuration;
-        X10RfDataReceivedCallback *rfReceiveCallback;
         // 32-bit RF message decoding
         uint32_t riseUs;
         int8_t receivedCount;

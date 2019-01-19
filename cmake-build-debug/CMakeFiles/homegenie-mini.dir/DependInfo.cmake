@@ -59,6 +59,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   ".././.piolibdeps/ESP8266UPnP_ID2048"
   ".././.piolibdeps/LinkedList_ID443"
   ".././.piolibdeps/WebSockets_ID549/src"
+  ".././.piolibdeps/OneWire_ID1"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.o"
@@ -79,6 +80,8 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/Task.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/Task.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/TaskManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOEventDomains.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/IOEventDomains.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOEventPaths.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/IOEventPaths.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/IOManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/Logger.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/Logger.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/env/DS18B20.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/env/DS18B20.cpp.o"
@@ -88,6 +91,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfTransmitter.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitter.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/RfTransmitterConfig.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/RfTransmitterConfig.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/rf/x10/X10Message.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/rf/x10/X10Message.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/sys/Diagnostics.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/sys/Diagnostics.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/main.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/main.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/HTTPServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/HTTPServer.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/net/MQTTServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/net/MQTTServer.cpp.o"
@@ -147,6 +151,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   ".././.piolibdeps/ESP8266UPnP_ID2048"
   ".././.piolibdeps/LinkedList_ID443"
   ".././.piolibdeps/WebSockets_ID549/src"
+  ".././.piolibdeps/OneWire_ID1"
   )
 
 # Targets to which this target links.
