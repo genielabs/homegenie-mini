@@ -85,9 +85,7 @@ namespace Service {
             /*
              * X10 RF Receiver "Sensor.RawData" event
              */
-            if (address == "RF"
-                && event == IOEventPaths::Sensor_RawData
-                && ioManager.getX10Receiver().isEnabled()) {
+            if (address == "RF" && event == IOEventPaths::Sensor_RawData) {
                 // decode event data (X10 RF packet)
                 auto data = ((uint8_t *) eventData);
                 /// \param type Type of message (eg. 0x20 = standard, 0x29 = security, ...)
