@@ -27,7 +27,7 @@
  *
  *
  * Releases:
- * - 2019-10-01 Initial release
+ * - 2019-01-10 Initial release
  *
  */
 

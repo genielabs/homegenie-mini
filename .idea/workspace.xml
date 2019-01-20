@@ -22,13 +22,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec922180-b3d3-40f1-af0b-2568113a9075" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/IOEvent.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOEvent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/IOEventDomains.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOEventDomains.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/IOEventDomains.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOEventDomains.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/IOEventPaths.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOEventPaths.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/IOEventPaths.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOEventPaths.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/IOManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/IOManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/env/DS18B20.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/env/DS18B20.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/env/LightSensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/env/LightSensor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/Logger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/Logger.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/Logger.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/Logger.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfReceiverConfig.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfReceiverConfig.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfReceiverConfig.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfReceiverConfig.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitter.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/X10Message.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/X10Message.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/X10Message.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/X10Message.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/io/sys/Diagnostics.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/sys/Diagnostics.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/io/sys/Diagnostics.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/sys/Diagnostics.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/net/HTTPServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/net/HTTPServer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/net/NetManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/net/NetManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/service/HomeGenie.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/HomeGenie.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/service/HomeGenie.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/HomeGenie.h" afterDir="false" />
     </list>
@@ -50,20 +70,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/IOEventDomains.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="413">
-              <caret line="107" selection-start-line="107" selection-end-line="107" />
+            <state relative-caret-position="436">
+              <caret line="28" selection-start-line="28" selection-end-line="28" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main.cpp">
+        <entry file="file://$PROJECT_DIR$/src/io/IOEventDomains.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="34" selection-start-line="34" selection-end-line="34" />
+            <state relative-caret-position="458">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
             </state>
           </provider>
         </entry>
@@ -71,26 +91,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/IOEvent.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="13" selection-start-line="13" selection-end-line="13" />
+            <state relative-caret-position="458">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/env/DS18B20.cpp">
+        <entry file="file://$PROJECT_DIR$/src/io/sys/Diagnostics.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="343">
-              <caret line="48" selection-start-line="48" selection-end-line="48" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/env/LightSensor.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="277">
-              <caret line="43" column="64" selection-start-line="43" selection-start-column="64" selection-end-line="43" selection-end-column="64" />
+            <state relative-caret-position="458">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
+              <folding>
+                <element signature="e#158#175#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -98,32 +112,26 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/sys/Diagnostics.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="19" column="46" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="46" />
+            <state relative-caret-position="458">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Message.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="23" column="2" lean-forward="true" selection-start-line="23" selection-start-column="2" selection-end-line="23" selection-end-column="2" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
+        <entry file="file://$PROJECT_DIR$/src/io/IOEventPaths.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="215">
-              <caret line="66" selection-start-line="66" selection-end-line="66" />
-              <folding>
-                <element signature="e#950#967#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/IOManager.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="65" column="62" selection-start-line="65" selection-start-column="58" selection-end-line="65" selection-end-column="62" />
-              <folding>
-                <element signature="e#950#970#0" expanded="true" />
-              </folding>
+            <state>
+              <caret selection-end-line="29" />
             </state>
           </provider>
         </entry>
@@ -131,8 +139,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="215">
-              <caret line="64" column="90" selection-start-line="64" selection-start-column="86" selection-end-line="64" selection-end-column="90" />
+            <state relative-caret-position="286">
+              <caret line="25" column="15" selection-start-line="25" selection-start-column="15" selection-end-line="25" selection-end-column="15" />
               <folding>
                 <element signature="e#879#901#0" expanded="true" />
               </folding>
@@ -141,10 +149,22 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/io/Logger.cpp">
+        <entry file="file://$PROJECT_DIR$/src/io/IOManager.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="401">
-              <caret line="89" column="16" selection-start-line="89" selection-start-column="8" selection-end-line="89" selection-end-column="16" />
+            <state relative-caret-position="308">
+              <caret line="25" column="17" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
+              <folding>
+                <element signature="e#950#970#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/io/IOEventPaths.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="414">
+              <caret line="27" selection-start-line="27" selection-end-line="27" />
             </state>
           </provider>
         </entry>
@@ -153,7 +173,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>pub</find>
       <find>subd</find>
       <find>pubConfig</find>
       <find>DEBUG_ESP_PORT</find>
@@ -183,7 +202,11 @@
       <find>LOG_</find>
       <find>hello world</find>
       <find>/homegenie&quot;</find>
+      <find>2019-10-01</find>
     </findStrings>
+    <replaceStrings>
+      <replace>2019-01-10</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -191,7 +214,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp" />
         <option value="$PROJECT_DIR$/CMakeListsPrivate.txt" />
         <option value="$PROJECT_DIR$/src/net/MqttServer.cpp" />
         <option value="$PROJECT_DIR$/src/net/mqtt/MQTTbroker_lite.cpp" />
@@ -199,8 +221,6 @@
         <option value="$PROJECT_DIR$/src/net/mqtt/MQTTbroker_lite.h" />
         <option value="$PROJECT_DIR$/src/net/mqtt/MqttBrokerMini.h" />
         <option value="$PROJECT_DIR$/src/net/HttpServer.cpp" />
-        <option value="$PROJECT_DIR$/src/io/Logger.cpp" />
-        <option value="$PROJECT_DIR$/src/io/Logger.h" />
         <option value="$PROJECT_DIR$/src/TaskManager.h" />
         <option value="$PROJECT_DIR$/src/service/ApiRequest.h" />
         <option value="$PROJECT_DIR$/src/service/ApiRequest.cpp" />
@@ -212,7 +232,6 @@
         <option value="$PROJECT_DIR$/src/io/rf/x10/X10Message.h.cpp" />
         <option value="$PROJECT_DIR$/src/io/rf/x10/X10Message.cpp" />
         <option value="$PROJECT_DIR$/src/net/NetManager.h" />
-        <option value="$PROJECT_DIR$/src/io/rf/x10/X10Message.h" />
         <option value="$PROJECT_DIR$/src/net/MQTTServer.h" />
         <option value="$PROJECT_DIR$/src/main.cpp" />
         <option value="$PROJECT_DIR$/src/net/NetManager.cpp" />
@@ -222,26 +241,30 @@
         <option value="$PROJECT_DIR$/src/TaskManager.cpp" />
         <option value="$PROJECT_DIR$/src/Task.h" />
         <option value="$PROJECT_DIR$/src/Task.cpp" />
-        <option value="$PROJECT_DIR$/src/io/IOEventPaths.cpp" />
         <option value="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h" />
         <option value="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp" />
-        <option value="$PROJECT_DIR$/src/io/sys/Diagnostics.h" />
         <option value="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.cpp" />
         <option value="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.h" />
         <option value="$PROJECT_DIR$/src/net/MQTTServer.cpp" />
         <option value="$PROJECT_DIR$/src/io/env/DS18B20.h" />
         <option value="$PROJECT_DIR$/src/io/env/LightSensor.h" />
-        <option value="$PROJECT_DIR$/src/io/IOEventDomains.cpp" />
-        <option value="$PROJECT_DIR$/src/io/IOEventDomains.h" />
-        <option value="$PROJECT_DIR$/src/io/IOEventPaths.h" />
         <option value="$PROJECT_DIR$/src/service/HomeGenie.h" />
-        <option value="$PROJECT_DIR$/src/io/IOManager.cpp" />
-        <option value="$PROJECT_DIR$/src/io/IOManager.h" />
-        <option value="$PROJECT_DIR$/src/io/IOEvent.h" />
-        <option value="$PROJECT_DIR$/src/io/sys/Diagnostics.cpp" />
         <option value="$PROJECT_DIR$/src/io/env/LightSensor.cpp" />
         <option value="$PROJECT_DIR$/src/io/env/DS18B20.cpp" />
         <option value="$PROJECT_DIR$/src/service/HomeGenie.cpp" />
+        <option value="$PROJECT_DIR$/.travis.yml" />
+        <option value="$PROJECT_DIR$/src/io/IOEventPaths.cpp" />
+        <option value="$PROJECT_DIR$/src/io/IOEventPaths.h" />
+        <option value="$PROJECT_DIR$/src/io/IOManager.cpp" />
+        <option value="$PROJECT_DIR$/src/io/IOManager.h" />
+        <option value="$PROJECT_DIR$/src/io/Logger.h" />
+        <option value="$PROJECT_DIR$/src/io/Logger.cpp" />
+        <option value="$PROJECT_DIR$/src/io/IOEventDomains.h" />
+        <option value="$PROJECT_DIR$/src/io/IOEventDomains.cpp" />
+        <option value="$PROJECT_DIR$/src/io/IOEvent.h" />
+        <option value="$PROJECT_DIR$/src/io/sys/Diagnostics.h" />
+        <option value="$PROJECT_DIR$/src/io/sys/Diagnostics.cpp" />
+        <option value="$PROJECT_DIR$/src/io/rf/x10/X10Message.h" />
       </list>
     </option>
   </component>
@@ -479,12 +502,12 @@
       <workItem from="1547256196132" duration="15000" />
       <workItem from="1547256250774" duration="22854000" />
       <workItem from="1547328351144" duration="7125000" />
-      <workItem from="1547384758233" duration="180394000" />
+      <workItem from="1547384758233" duration="181305000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="292261000" />
+    <option name="totallyTimeSpent" value="293172000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1920" height="996" extended-state="6" />
@@ -498,12 +521,12 @@
       <window_info anchor="bottom" id="Database Changes" order="2" />
       <window_info anchor="bottom" id="Run" order="3" />
       <window_info anchor="bottom" id="Debug" order="4" />
-      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.4348986" weight="0.361015" />
+      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.43383136" weight="0.361015" />
       <window_info anchor="bottom" id="Event Log" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49733192" weight="0.3298731" />
-      <window_info anchor="bottom" id="Find" order="8" sideWeight="0.49573106" weight="0.32871974" />
+      <window_info active="true" anchor="bottom" id="Find" order="8" sideWeight="0.49519745" visible="true" weight="0.32871974" />
       <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.3479189" weight="0.41291812" />
-      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.65208113" side_tool="true" visible="true" weight="0.41291812" />
+      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.5048026" side_tool="true" visible="true" weight="0.32871974" />
       <window_info anchor="right" id="Database" order="0" />
     </layout>
   </component>
@@ -543,20 +566,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/io/IOEventPaths.cpp</url>
-          <line>13</line>
+          <line>38</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/CMakeListsPrivate.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="63" selection-start-line="63" selection-end-line="63" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/TaskManager.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="222">
@@ -574,13 +590,6 @@
     <entry file="file://$PROJECT_DIR$/src/scripting/ProgramEngine.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="24">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scripting/ProgramEngine.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
           <caret line="29" selection-start-line="29" selection-end-line="29" />
         </state>
       </provider>
@@ -606,13 +615,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="66">
           <caret line="34" selection-start-line="34" selection-end-line="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/Logger.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="756">
-          <caret line="39" column="18" selection-start-line="39" selection-start-column="18" selection-end-line="39" selection-end-column="18" />
         </state>
       </provider>
     </entry>
@@ -720,13 +722,6 @@
     <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Message.cpp">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOEventPaths.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="14" column="1" selection-start-line="14" selection-start-column="1" selection-end-line="14" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="218">
@@ -812,41 +807,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOEventDomains.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOEventDomains.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="11" selection-start-line="11" selection-end-line="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOEventPaths.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="10" column="11" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/sys/Diagnostics.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="13" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Message.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="246" column="20" selection-start-line="246" selection-start-column="20" selection-end-line="246" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="152">
@@ -860,47 +820,6 @@
           <caret line="66" selection-start-line="66" selection-end-line="66" />
           <folding>
             <element signature="e#950#967#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/Logger.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="401">
-          <caret line="89" column="16" selection-start-line="89" selection-start-column="8" selection-end-line="89" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOManager.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="65" column="62" selection-start-line="65" selection-start-column="58" selection-end-line="65" selection-end-column="62" />
-          <folding>
-            <element signature="e#950#970#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOEvent.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="13" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/sys/Diagnostics.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="19" column="46" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="64" column="90" selection-start-line="64" selection-start-column="86" selection-end-line="64" selection-end-column="90" />
-          <folding>
-            <element signature="e#879#901#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -921,8 +840,115 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="413">
-          <caret line="107" selection-start-line="107" selection-end-line="107" />
+        <state relative-caret-position="39">
+          <caret line="102" column="13" selection-start-line="102" selection-start-column="13" selection-end-line="102" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="370">
+          <caret line="83" lean-forward="true" selection-start-line="83" selection-end-line="83" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripting/ProgramEngine.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-114">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/Logger.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="370">
+          <caret line="25" column="15" selection-start-line="25" selection-start-column="15" selection-end-line="25" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/Logger.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="370">
+          <caret line="25" column="15" selection-start-line="25" selection-start-column="15" selection-end-line="25" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOManager.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="25" column="17" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
+          <folding>
+            <element signature="e#950#970#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="25" column="15" selection-start-line="25" selection-start-column="15" selection-end-line="25" selection-end-column="15" />
+          <folding>
+            <element signature="e#879#901#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOEventPaths.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOEventPaths.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOEventDomains.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="436">
+          <caret line="28" selection-start-line="28" selection-end-line="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOEventDomains.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="458">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOEvent.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="458">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/sys/Diagnostics.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="458">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+          <folding>
+            <element signature="e#158#175#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/sys/Diagnostics.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="458">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/rf/x10/X10Message.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="23" column="2" lean-forward="true" selection-start-line="23" selection-start-column="2" selection-end-line="23" selection-end-column="2" />
         </state>
       </provider>
     </entry>
