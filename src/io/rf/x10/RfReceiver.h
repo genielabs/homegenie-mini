@@ -34,8 +34,12 @@
 
 #include <io/Logger.h>
 #include <io/IOEvent.h>
+#include <io/IOEventPaths.h>
+#include <io/IOEventDomains.h>
 
 #include "RfReceiverConfig.h"
+
+#define X10_RFRECEIVER_NS_PREFIX                  "IO::X10::RfReceiver"
 
 namespace IO { namespace X10 {
 

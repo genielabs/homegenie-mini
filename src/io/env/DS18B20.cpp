@@ -33,21 +33,26 @@ namespace IO { namespace Env {
 
     void DS18B20::begin() {
         ds = new OneWire(pinNumber);
-        Logger::info("|  ✔ IO::Env::DS18B20");
+        Logger::info("|  ✔ %s", DS18B20_NS_PREFIX);
     }
 
     void DS18B20::loop() {
-        Logger::verbose("  > IO::Env::DS18B20::loop() >> START");
+        Logger::verbose("  > %s::loop() >> START", DS18B20_NS_PREFIX);
 
-        float temperature = getTemperature();
-        Logger::info("@IO::Env::DS18B20 %0.2f", temperature);
+        float_t temperature = getTemperature();
+        // signal value changes
+        if (currentTemperature != temperature) {
+            Logger::info("@%s [%s %0.2f]", DS18B20_NS_PREFIX, IOEventPaths::Sensor_Temperature, temperature);
+            sendEvent((uint8_t*)IOEventPaths::Sensor_Temperature, (void *)&currentTemperature);
+            currentTemperature = temperature;
+        }
 
-        Logger::verbose("  > IO::Env::DS18B20::loop() << END");
+        Logger::verbose("  > %s::loop() << END", DS18B20_NS_PREFIX);
     }
 
     /// Read the temperature value from one DS18S20.
     /// \return The reported temperature in Celsius degrees-
-    float DS18B20::getTemperature() {
+    float_t DS18B20::getTemperature() {
         //returns the temperature from one DS18S20 in DEG Celsius
 
         byte data[12];
@@ -83,7 +88,7 @@ namespace IO { namespace Env {
         ds->write(0xBE);
 
         // we need 9 bytes
-        for (int i = 0; i < 9; i++) {
+        for (uint8_t i = 0; i < 9; i++) {
             data[i] = ds->read();
         }
 
@@ -92,14 +97,14 @@ namespace IO { namespace Env {
         byte MSB = data[1];
         byte LSB = data[0];
 
-        return ((MSB << 8) | LSB) / 16;
+        return ((MSB << 8) | LSB) / 16.0f;
     }
 
-    void DS18B20::setInputPin(const int pinNumber) {
+    void DS18B20::setInputPin(const uint8_t pinNumber) {
         this->pinNumber = pinNumber;
     }
 
-    void DS18B20::setSamplingRate(const unsigned int samplingRate) {
+    void DS18B20::setSamplingRate(const uint32_t samplingRate) {
         setLoopInterval(samplingRate);
     }
 

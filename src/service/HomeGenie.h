@@ -37,7 +37,7 @@
 
 #include "ApiRequest.h"
 
-#define HOMEGENIEMINI_LOG_PREFIX            "@Service::HomeGenie"
+#define HOMEGENIEMINI_NS_PREFIX            "Service::HomeGenie"
 
 namespace Service {
 

@@ -45,8 +45,10 @@ namespace IO {
         x10Transmitter = new RfTransmitter(&x10TransmitterConfig);
         // DS18B20 Temperature Sensor
         temperatureSensor = new DS18B20();
+        temperatureSensor->setEventReceiver(this);
         // Light Sensor
         lightSensor = new LightSensor();
+        lightSensor->setEventReceiver(this);
     }
 
     void IOManager::begin() {
@@ -61,7 +63,6 @@ namespace IO {
     }
 
     void IOManager::onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData) {
-        Logger::trace("%s onIOEvent( '%s', length '%d' )", IOMANAGER_LOG_PREFIX, eventPath, sizeof(eventData));
         // route event to HomeGenie
         ioEventCallback->onIOEvent(sender, eventPath, eventData);
     }

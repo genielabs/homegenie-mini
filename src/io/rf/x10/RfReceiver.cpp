@@ -27,7 +27,6 @@
  *
  */
 
-#include <io/IOEventPaths.h>
 #include "RfReceiver.h"
 
 namespace IO { namespace X10 {
@@ -41,7 +40,7 @@ namespace IO { namespace X10 {
     RfReceiver::RfReceiver() {
         receiverInstance = this;
         // IEventSender members
-        domain = (uint8_t *)"HomeAutomation.X10";
+        domain = (uint8_t *)IOEventDomains::HomeAutomation_X10;
         address = (uint8_t *)"RF";
     }
 
@@ -55,10 +54,10 @@ namespace IO { namespace X10 {
 
     void RfReceiver::begin() {
         enabled = true;
-        Logger::info("|  - IO::X10::RfReceiver (PIN=%d INT=%d)", configuration->getPin(), configuration->getInterrupt());
+        Logger::info("|  - %s (PIN=%d INT=%d)", X10_RFRECEIVER_NS_PREFIX, configuration->getPin(), configuration->getInterrupt());
         pinMode(configuration->getPin(), INPUT);
         attachInterrupt(configuration->getInterrupt(), receiverInstance_wrapper, RISING);
-        Logger::info("|  ✔ IO::X10::RfReceiver");
+        Logger::info("|  ✔ %s", X10_RFRECEIVER_NS_PREFIX);
     }
 
     void RfReceiver::enable() {

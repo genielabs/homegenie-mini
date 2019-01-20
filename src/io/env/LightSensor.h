@@ -30,23 +30,32 @@
 #ifndef HOMEGENIE_MINI_LIGHTSENSOR_H
 #define HOMEGENIE_MINI_LIGHTSENSOR_H
 
-#include <io/Logger.h>
 #include <Task.h>
+#include <io/Logger.h>
+#include <io/IOEventPaths.h>
+#include <io/IOEvent.h>
+#include <io/IOEventDomains.h>
 
-#define LIGHTSENSOR_LOG_PREFIX          "@IO::Env::LightSensor"
+#define LIGHTSENSOR_NS_PREFIX           "IO::Env::LightSensor"
 #define LIGHTSENSOR_SAMPLING_RATE       5000L
 
 namespace IO { namespace Env {
 
-    class LightSensor : Task {
+    class LightSensor : Task, public IIOEventSender {
     public:
-        LightSensor() { setLoopInterval(LIGHTSENSOR_SAMPLING_RATE); }
+        LightSensor() {
+            setLoopInterval(LIGHTSENSOR_SAMPLING_RATE);
+            // IEventSender members
+            domain = (uint8_t *)IOEventDomains::HomeAutomation_HomeGenie;
+            address = (uint8_t *)"mini";
+        }
         void begin();
         void loop();
         void setInputPin(uint8_t number);
-        float getLightLevel();
+        uint16_t getLightLevel();
     private:
         uint8_t inputPin = 0;
+        uint16_t currentLevel = 0;
     };
 
 }}

@@ -42,7 +42,7 @@ namespace Service {
     }
 
     void HomeGenie::loop() {
-        Logger::verbose("%s loop() >> BEGIN", HOMEGENIEMINI_LOG_PREFIX);
+        Logger::verbose(":%s loop() >> BEGIN", HOMEGENIEMINI_NS_PREFIX);
 
         // HomeGenie-Mini Terminal CLI
         if(Serial.available() > 0) {
@@ -50,9 +50,9 @@ namespace Service {
             auto apiCommand = ApiRequest::parse(cmd);
             if (apiCommand.Prefix.equals("api")) {
                 if (api(&apiCommand)) {
-                    Logger::info("%s =%s", HOMEGENIEMINI_LOG_PREFIX, apiCommand.Response.c_str());
+                    Logger::info("+%s =%s", HOMEGENIEMINI_NS_PREFIX, apiCommand.Response.c_str());
                 } else {
-                    Logger::warn("%s =%s", HOMEGENIEMINI_LOG_PREFIX, apiCommand.Response.c_str());
+                    Logger::warn("!%s =%s", HOMEGENIEMINI_NS_PREFIX, apiCommand.Response.c_str());
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace Service {
             // TODO: route event to the console as well
         }
 
-        Logger::verbose("%s loop() << END", HOMEGENIEMINI_LOG_PREFIX);
+        Logger::verbose(":%s loop() << END", HOMEGENIEMINI_NS_PREFIX);
     }
 
     IOManager& HomeGenie::getIOManager() {
@@ -77,6 +77,7 @@ namespace Service {
         String domain = String((char*)sender->getDomain());
         String address = String((char*)sender->getAddress());
         String event = String((char*)eventPath);
+        Logger::trace(":%s [IOManager::IOEvent] >> [domain '%s' address '%s' event '%s']", HOMEGENIEMINI_NS_PREFIX, domain.c_str(), address.c_str(), event.c_str());
         /*
          * HomeAutomation.X10 events
          */
@@ -98,7 +99,7 @@ namespace Service {
                 uint8_t b1 = data[2];
                 uint8_t b2 = data[3];
                 uint8_t b3 = data[4];
-                Logger::info("%s [X10::RfReceiver] >> [%s%s%s%s%s%s]", HOMEGENIEMINI_LOG_PREFIX,
+                Logger::info(":%s [X10::RfReceiver] >> [%s%s%s%s%s%s]", HOMEGENIEMINI_NS_PREFIX,
                      byteToHex(type).c_str(),
                      byteToHex((b0)).c_str(),
                      byteToHex((b1)).c_str(),
@@ -115,7 +116,7 @@ namespace Service {
                 // Convert enums to string
                 String houseCode(house_code_to_char(decodedMessage->houseCode));
                 String unitCode(unit_code_to_int(decodedMessage->unitCode));
-                Logger::trace("%s %s%s %s", HOMEGENIEMINI_LOG_PREFIX, houseCode.c_str(), unitCode.c_str(),
+                Logger::trace(":%s %s%s %s", HOMEGENIEMINI_NS_PREFIX, houseCode.c_str(), unitCode.c_str(),
                               cmd_code_to_str(decodedMessage->command));
 
                 // NOTE: Calling `getMQTTServer().broadcast(..)` out of the loop() would cause crashing,
@@ -152,8 +153,9 @@ namespace Service {
 
             // MQTT Message Queue (enqueue)
             QueuedMessage m = QueuedMessage();
-            m.sender = String("hg-mini/"+domain+"/SYS/event");
-            m.details = String(R"({"Name":"System.BytesFree","Value": ")")+String(((uint32_t &)eventData))+R"("})";
+            m.sender = String("hg-mini/"+domain+"/"+address+"/event");
+            // TODO: implement data type handling
+            m.details = String(R"({"Name":")"+event+R"(","Value": ")")+String(((uint32_t &)eventData))+R"("})";
             eventsQueue.add(m);
 
         }

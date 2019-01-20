@@ -12,6 +12,11 @@ extern "C" {
 #include <Task.h>
 #include <io/Logger.h>
 #include <io/IOEvent.h>
+#include <io/IOEventDomains.h>
+#include <io/IOEventPaths.h>
+
+#define DIAGNOSTICS_NS_PREFIX          "IO::Sys::Diagnostics"
+#define DIAGNOSTICS_SAMPLING_RATE       5000L
 
 namespace IO { namespace System {
 
@@ -19,6 +24,9 @@ namespace IO { namespace System {
     public:
         Diagnostics();
         void loop();
+
+    private:
+        uint32_t currentFreeMemory;
     };
 
 }}

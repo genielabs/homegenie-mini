@@ -32,20 +32,25 @@
 namespace IO { namespace Env {
 
     void LightSensor::begin() {
-        Logger::info("|  ✔ IO::Env::LightSensor");
+        Logger::info("|  ✔ %s", LIGHTSENSOR_NS_PREFIX);
     }
 
     void LightSensor::loop() {
-        float lightLevel = getLightLevel();
-        Logger::info("%s %0.2f", LIGHTSENSOR_LOG_PREFIX, lightLevel);
+        uint16_t lightLevel = getLightLevel();
+        // signal value changes
+        if (lightLevel != currentLevel) {
+            Logger::info("@%s [%s %d]", LIGHTSENSOR_NS_PREFIX, IOEventPaths::Sensor_Luminance, lightLevel);
+            sendEvent((uint8_t*)IOEventPaths::Sensor_Luminance, (void*)&lightLevel);
+            currentLevel = lightLevel;
+        }
     }
 
-    void LightSensor::setInputPin(uint8_t number) {
+    void LightSensor::setInputPin(const uint8_t number) {
         inputPin = number;
     }
 
-    float LightSensor::getLightLevel() {
+    uint16_t LightSensor::getLightLevel() {
         // It returns values between 0-1024
-        return analogRead(inputPin);
+        return (uint16_t)analogRead(inputPin);
     }
 }}

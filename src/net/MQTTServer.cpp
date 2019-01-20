@@ -53,16 +53,6 @@ namespace Net {
 
     void MQTTServer::loop() {
         webSocket->loop();
-        // Just for testing, sends a message periodically
-        static int cnt = 1;
-        if (cnt > 100000) {
-            String prefix = "/homegenie";
-            String deviceID = "world";
-            String test = R"({ "Message": "Hello from HomeGenie-Mini!" })";
-            mb->broadcast((prefix).c_str(), (uint8_t *)test.c_str(), (uint16_t)test.length());
-            cnt = 0;
-        }
-        cnt++;
     }
 
     void MQTTServer::mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
@@ -70,13 +60,13 @@ namespace Net {
         auto msg = String((char*)payload);
         switch (event){
             case EVENT_CONNECT:
-                IO::Logger::trace("%s [%d] >> CONNECT from '%s'", MQTTBROKER_LOG_PREFIX, num, topic_name.c_str());
+                IO::Logger::trace(":%s [%d] >> CONNECT from '%s'", MQTTBROKER_NS_PREFIX, num, topic_name.c_str());
                 break;
             case EVENT_SUBSCRIBE:
-                IO::Logger::trace("%s [%d] >> SUBSCRIBE to '%s'", MQTTBROKER_LOG_PREFIX, num, topic_name.c_str());
+                IO::Logger::trace(":%s [%d] >> SUBSCRIBE to '%s'", MQTTBROKER_NS_PREFIX, num, topic_name.c_str());
                 break;
             case EVENT_PUBLISH:
-                IO::Logger::trace("%s [%d] >> PUBLISH to '%s'", MQTTBROKER_LOG_PREFIX, num, topic_name.c_str());
+                IO::Logger::trace(":%s [%d] >> PUBLISH to '%s'", MQTTBROKER_NS_PREFIX, num, topic_name.c_str());
                 // TODO: ... IMPLEMENT HG API HANDLE TOPIC
                 if (topic_name == "TODO_CHANGE_WITH_MY_ID/control") {
                     // TODO: Control API
@@ -86,7 +76,7 @@ namespace Net {
                 }
                 break;
             case EVENT_DISCONNECT:
-               IO::Logger::trace("%s [%d] >> DISCONNECT =/", MQTTBROKER_LOG_PREFIX, num);
+               IO::Logger::trace(":%s [%d] >> DISCONNECT =/", MQTTBROKER_NS_PREFIX, num);
                 break;
         }
     }

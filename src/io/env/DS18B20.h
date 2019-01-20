@@ -32,29 +32,39 @@
 
 #include <Arduino.h>
 #include <OneWire.h>
+
 #include <Task.h>
+#include <io/IOEvent.h>
+#include <io/IOEventPaths.h>
+#include <io/Logger.h>
+#include <io/IOEventDomains.h>
 
-#include "io/Logger.h"
-
-#define DS18B20_LOG_PREFIX              "@IO::Env::DS18B10"
-#define DS18B20_SAMPLING_RATE 60000
-#define DS18B20_READ_ERROR -1000
+#define DS18B20_NS_PREFIX                      "IO::Env::DS18B10"
+#define DS18B20_SAMPLING_RATE           60000L
+#define DS18B20_READ_ERROR              -1000
 
 namespace IO { namespace Env {
 
-    class DS18B20 : Task {
+    class DS18B20 : Task, public IIOEventSender {
     public:
-        DS18B20() { setLoopInterval(DS18B20_SAMPLING_RATE); }
+        DS18B20() {
+            setLoopInterval(DS18B20_SAMPLING_RATE);
+            // IEventSender members
+            domain = (uint8_t *)IOEventDomains::HomeAutomation_HomeGenie;
+            address = (uint8_t *)"mini";
+        }
         void begin();
         void loop();
-        void setInputPin(int pinNumber);
-        void setSamplingRate(uint32_t samplingRate);
-        float getTemperature();
+        void setInputPin(uint8_t);
+        void setSamplingRate(uint32_t);
+        float_t getTemperature();
     private:
-        // default pin number is 2
+        // Default I/O pin number is 2
         uint8_t pinNumber = 2;
-        //Temperature chip i/o
+        // Temperature chip I/O
         OneWire *ds;
+        // Current temperature
+        float_t currentTemperature;
     };
 
 }}
