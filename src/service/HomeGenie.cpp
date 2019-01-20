@@ -73,15 +73,38 @@ namespace Service {
     }
 
     // BEGIN IIOEventSender interface methods
-    void HomeGenie::onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData) {
+    void HomeGenie::onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
         String domain = String((char*)sender->getDomain());
         String address = String((char*)sender->getAddress());
         String event = String((char*)eventPath);
         Logger::trace(":%s [IOManager::IOEvent] >> [domain '%s' address '%s' event '%s']", HOMEGENIEMINI_NS_PREFIX, domain.c_str(), address.c_str(), event.c_str());
-        /*
-         * HomeAutomation.X10 events
-         */
-        if (domain == IOEventDomains::HomeAutomation_X10) {
+        if (domain == IOEventDomains::HomeAutomation_HomeGenie) {
+
+            // MQTT Message Queue (enqueue)
+            QueuedMessage m = QueuedMessage();
+            m.sender = String("hg-mini/"+domain+"/"+address+"/event");
+            // Data type handling
+            String value;
+            switch (dataType) {
+                case SensorLight:
+                    value = String(*(uint16_t *)eventData);
+                    break;
+                case SensorTemperature:
+                    value = String(*(float_t *)eventData);
+                    break;
+                case UnsignedNumber:
+                    value = String(*(uint32_t *)eventData);
+                    break;
+                case Number:
+                    value = String(*(int32_t *)eventData);
+                    break;
+                default:
+                    value = String(*(int32_t *)eventData);
+            }
+            m.details = String(R"({"Name":")"+event+R"(","Value": ")")+value+R"("})";
+            eventsQueue.add(m);
+
+        } else if (domain == IOEventDomains::HomeAutomation_X10) {
 
             /*
              * X10 RF Receiver "Sensor.RawData" event
@@ -148,15 +171,6 @@ namespace Service {
                 //delay(10);                         // wait for a blink
                 //digitalWrite(LED_BUILTIN, HIGH);
             }
-
-        } else if (domain == IOEventDomains::HomeAutomation_HomeGenie) {
-
-            // MQTT Message Queue (enqueue)
-            QueuedMessage m = QueuedMessage();
-            m.sender = String("hg-mini/"+domain+"/"+address+"/event");
-            // TODO: implement data type handling
-            m.details = String(R"({"Name":")"+event+R"(","Value": ")")+String(((uint32_t &)eventData))+R"("})";
-            eventsQueue.add(m);
 
         }
 

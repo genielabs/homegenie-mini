@@ -13,10 +13,18 @@ namespace IO {
 
     class IIOEventSender;
 
+    enum IOEventDataType {
+        Undefined = 0,
+        Number,
+        UnsignedNumber,
+        SensorLight,
+        SensorTemperature
+    };
+
 // IIOEventReceiver interface
     class IIOEventReceiver {
     public:
-        virtual void onIOEvent(IIOEventSender *, const uint8_t *, void *) = 0; // pure virtual
+        virtual void onIOEvent(IIOEventSender *, const uint8_t *, void *, IOEventDataType dataType = Undefined) = 0; // pure virtual
     };
 
 // IIOEventSender interface
@@ -27,9 +35,9 @@ namespace IO {
         void setEventReceiver(IIOEventReceiver *receiver) {
             eventReceiver = receiver;
         }
-        virtual void sendEvent(uint8_t *eventPath, void* eventData) {
+        virtual void sendEvent(uint8_t *eventPath, void* eventData, IOEventDataType dataType = Undefined) {
             if (eventReceiver != NULL) {
-                eventReceiver->onIOEvent(this, eventPath, eventData);
+                eventReceiver->onIOEvent(this, eventPath, eventData, dataType);
             }
         };
 

@@ -59,7 +59,7 @@ namespace Service {
         void loop();
 
         // IIOEventSender
-        void onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData);
+        void onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType);
 
         // RequestHandler overrides
         bool canHandle(HTTPMethod method, String uri);

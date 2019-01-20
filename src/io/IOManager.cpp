@@ -62,9 +62,9 @@ namespace IO {
         ioEventCallback = callback;
     }
 
-    void IOManager::onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData) {
+    void IOManager::onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
         // route event to HomeGenie
-        ioEventCallback->onIOEvent(sender, eventPath, eventData);
+        ioEventCallback->onIOEvent(sender, eventPath, eventData, dataType);
     }
 
 }

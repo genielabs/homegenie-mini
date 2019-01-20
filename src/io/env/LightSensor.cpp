@@ -39,9 +39,9 @@ namespace IO { namespace Env {
         uint16_t lightLevel = getLightLevel();
         // signal value changes
         if (lightLevel != currentLevel) {
-            Logger::info("@%s [%s %d]", LIGHTSENSOR_NS_PREFIX, IOEventPaths::Sensor_Luminance, lightLevel);
-            sendEvent((uint8_t*)IOEventPaths::Sensor_Luminance, (void*)&lightLevel);
             currentLevel = lightLevel;
+            Logger::info("@%s [%s %d]", LIGHTSENSOR_NS_PREFIX, IOEventPaths::Sensor_Luminance, currentLevel);
+            sendEvent((uint8_t*)IOEventPaths::Sensor_Luminance, (uint16_t *)&currentLevel, SensorLight);
         }
     }
 
