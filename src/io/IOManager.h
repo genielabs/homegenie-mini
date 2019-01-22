@@ -47,8 +47,8 @@
 
 #define IOMANAGER_LOG_PREFIX                    "@IO::IOManager"
 
-#define CONFIG_RF_TX_PIN 4
-#define CONFIG_RF_RX_PIN 5
+#define CONFIG_RF_TX_PIN D2 // 4
+#define CONFIG_RF_RX_PIN D1 // 5
 
 namespace IO {
 

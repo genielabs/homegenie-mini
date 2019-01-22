@@ -8,7 +8,6 @@ set(CMAKE_DEPENDS_CHECK_C
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.o"
-  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/utility/stringbuffer.c" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/utility/stringbuffer.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
@@ -53,7 +52,6 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   "/home/gene/.platformio/packages/tool-unity"
   "../include"
   "../src"
-  ".././.piolibdeps/aJson_ID35/src"
   ".././.piolibdeps/ArduinoJson_ID64"
   ".././.piolibdeps/ArduinoLog_ID1532"
   ".././.piolibdeps/ESP8266UPnP_ID2048"
@@ -63,10 +61,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   )
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.o"
-  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.o"
-  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o"
-  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/OneWire.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/OneWire_ID1/OneWire.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinystr.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinystr.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/tinyxml.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinyxml.cpp.o"
@@ -76,7 +71,6 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/WebSockets.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSockets.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.o"
-  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/aJSON.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/aJSON.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/Task.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/Task.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/TaskManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o"
@@ -145,7 +139,6 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/gene/.platformio/packages/tool-unity"
   "../include"
   "../src"
-  ".././.piolibdeps/aJson_ID35/src"
   ".././.piolibdeps/ArduinoJson_ID64"
   ".././.piolibdeps/ArduinoLog_ID1532"
   ".././.piolibdeps/ESP8266UPnP_ID2048"

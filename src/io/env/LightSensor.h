@@ -54,7 +54,7 @@ namespace IO { namespace Env {
         void setInputPin(uint8_t number);
         uint16_t getLightLevel();
     private:
-        uint8_t inputPin = 0;
+        uint8_t inputPin = A0; // Analogic input pin A0 (0)
         uint16_t currentLevel = 0;
     };
 

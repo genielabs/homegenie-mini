@@ -34,6 +34,7 @@
 #include <io/IOManager.h>
 #include <io/IOEventPaths.h>
 #include <net/NetManager.h>
+#include <LinkedList.h>
 
 #include "ApiRequest.h"
 

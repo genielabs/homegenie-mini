@@ -1,9 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.o"
-  "CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.o"
-  "CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o"
-  "CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/OneWire_ID1/OneWire.cpp.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinystr.cpp.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/TINYXML_ID2793/tinyxml.cpp.o"
@@ -16,8 +13,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cdecode.c.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.o"
-  "CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/aJSON.cpp.o"
-  "CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/utility/stringbuffer.c.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/Task.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o"

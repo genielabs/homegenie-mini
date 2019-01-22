@@ -32,6 +32,7 @@
 namespace Service {
 
     HomeGenie::HomeGenie() {
+        setLoopInterval(20L);
     }
 
     void HomeGenie::begin() {
@@ -62,7 +63,10 @@ namespace Service {
             // route event through MQTT
             auto m = eventsQueue.pop();
             netManager.getMQTTServer().broadcast(&m.sender, &m.details);
+
             // TODO: route event to the console as well
+            // process only one message per cycle to prevent excessive overload
+            break;
         }
 
         Logger::verbose(":%s loop() << END", HOMEGENIEMINI_NS_PREFIX);
@@ -104,12 +108,15 @@ namespace Service {
             m.details = String(R"({"Name":")"+event+R"(","Value": ")")+value+R"("})";
             eventsQueue.add(m);
 
+
+            netManager.getHttpServer().sendSSEvent(event, value);
+
         } else if (domain == IOEventDomains::HomeAutomation_X10) {
 
             /*
              * X10 RF Receiver "Sensor.RawData" event
              */
-            if (address == "RF" && event == IOEventPaths::Sensor_RawData) {
+            if (address == "RF" && event == IOEventPaths::Sensor_RawData && ioManager.getX10Receiver().isEnabled()) {
                 // decode event data (X10 RF packet)
                 auto data = ((uint8_t *) eventData);
                 /// \param type Type of message (eg. 0x20 = standard, 0x29 = security, ...)
@@ -221,9 +228,9 @@ namespace Service {
     }
 
     bool HomeGenie::api(ApiRequest *command) {
-        if (command->Domain.equals("HomeAutomation.X10")
-            && command->Address.equals("RF")
-            && command->Command.equals("Control.SendRaw")
+        if (command->Domain == IOEventDomains::HomeAutomation_X10
+            && command->Address == "RF"
+            && command->Command == "Control.SendRaw"
         ) {
 
             uint8_t data[command->OptionsString.length() / 2]; getBytes(command->OptionsString, data);
@@ -233,8 +240,9 @@ namespace Service {
             getIOManager().getX10Receiver().enable();
             command->Response = R"({ "ResponseText": "OK" })";
 
-        } else if (command->Domain.equals("HomeAutomation.Env")) {
+        } else if (command->Domain == IOEventDomains::HomeAutomation_HomeGenie) {
 
+            /*
             if (command->Address.equals("Light") && command->Command.equals("Sensor.GetValue")) {
                 char response[1024];
                 sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getLightSensor().getLightLevel() / 10.24F);
@@ -244,6 +252,54 @@ namespace Service {
                 sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getTemperatureSensor().getTemperature());
                 command->Response = String(response);
             } else return false;
+            */
+
+            if (command->Address == "Config") {
+
+                static const char* moduleTemplate = R"({
+  "Name": "%s",
+  "Description": "%s",
+  "DeviceType": "%s",
+  "Domain": "%s",
+  "Address": "%s",
+  "Properties": [{
+    "Name": "Sensor.Luminance",
+    "Value": "%d",
+    "Description": "",
+    "FieldType": "",
+    "UpdateTime": "2017-08-17T17:50:39.732427Z"
+  },{
+    "Name": "Sensor.Temperature",
+    "Value": "%0.2f",
+    "Description": "",
+    "FieldType": "",
+    "UpdateTime": "2017-08-17T17:50:39.732427Z"
+  }],
+  "RoutingNode": ""
+})";
+
+                if (command->Command == "Modules.List") {
+
+                    ssize_t size = snprintf(NULL, 0, moduleTemplate,
+                            "HG-Mini", "HomeGenie Mini node", "Sensor",
+                            "HomeAutomation.HomeGenie", "mini",
+                            ioManager.getLightSensor().getLightLevel(),
+                            ioManager.getTemperatureSensor().getTemperature()
+                    )+1;
+                    char* moduleJson = (char*)malloc(size);
+                    snprintf(moduleJson, size, moduleTemplate,
+                            "HG-Mini", "HomeGenie Mini node", "Sensor",
+                            "HomeAutomation.HomeGenie", "mini"
+                    );
+                    command->Response = "["+String(moduleJson)+"]";
+                    free(moduleJson);
+
+                } else if (command->Command == "Groups.List") {
+                    command->Response = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]}])";
+                }
+
+
+            }
 
         } else return false;
         return true;

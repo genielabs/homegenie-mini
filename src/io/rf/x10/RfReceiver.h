@@ -57,7 +57,6 @@ namespace IO { namespace X10 {
         bool isEnabled();
 
     private:
-        bool enabled;
         RfReceiverConfig *configuration;
         // 32-bit RF message decoding
         uint32_t riseUs;

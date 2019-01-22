@@ -131,7 +131,6 @@ namespace Net { namespace MQTT {
             MQTTBrokerClient_t *getClients();
 
         private:
-            MQTTBrokerClient_t MQTTclients[MQTTBROKER_CLIENT_MAX + 1]; //Last is MQTTBROKER_LOCAL_CLIENT_ID
             WebSocketsServer *WS;
             callback_t callback;
 

@@ -93,7 +93,6 @@
 					<Add directory="/home/gene/.platformio/packages/tool-unity"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/include"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src"/>
-					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/aJson_ID35/src"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ArduinoJson_ID64"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ArduinoLog_ID1532"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ESP8266UPnP_ID2048"/>
@@ -162,7 +161,6 @@
 					<Add directory="/home/gene/.platformio/packages/tool-unity"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/include"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src"/>
-					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/aJson_ID35/src"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ArduinoJson_ID64"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ArduinoLog_ID1532"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/ESP8266UPnP_ID2048"/>
@@ -610,42 +608,6 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/library.properties">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/.gitignore">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/.library.json">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.h">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/README.md">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/Benchmark/Benchmark.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/Die/Die.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/Magic8Ball/Magic8Ball.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/SetRandomSeed/SetRandomSeed.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/examples/Uuid/Uuid.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/keywords.txt">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266TrueRandom_ID1477/library.json">
-			<Option target="homegenie-mini"/>
-		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/.library.json">
 			<Option target="homegenie-mini"/>
 		</Unit>
@@ -694,36 +656,6 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/library.properties">
 			<Option target="homegenie-mini"/>
 		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/.library.json">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/README.md">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/examples/MQTTbroker/MQTTbroker.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/examples/MQTTbroker_lite/MQTTbroker_lite.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/library.json">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/library.properties">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.h">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.h">
-			<Option target="homegenie-mini"/>
-		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/.library.json">
 			<Option target="homegenie-mini"/>
 		</Unit>
@@ -755,33 +687,6 @@
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/OneWire_ID1/util/OneWire_direct_regtype.h">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/.gitignore">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/.library.json">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/.travis.yml">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/README.md">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/examples/SimpleList/SimpleList.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/keywords.txt">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/library.properties">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/logo.png">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/QList_ID1414/src/QList.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/TINYXML_ID2793/.hg_archival.txt">
@@ -914,42 +819,6 @@
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/travis/common.sh">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/.gitignore">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/.library.json">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/Examples/Json_Example/Json_Example.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/Examples/Json_Serial/Json_Serial.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/Examples/MultiLevelParsing/MultiLevelParsing.ino">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/README.md">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/aJSON.cpp">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/aJSON.h">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/keywords.txt">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/library.json">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/utility/stringbuffer.c">
-			<Option target="homegenie-mini"/>
-		</Unit>
-		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/aJson_ID35/utility/stringbuffer.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp">

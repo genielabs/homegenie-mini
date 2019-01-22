@@ -32,7 +32,6 @@
 
 #include <Arduino.h>
 
-#include <LinkedList.h>
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
 

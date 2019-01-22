@@ -27,6 +27,7 @@
  *
  */
 
+#include <LinkedList.h>
 #include "HTTPServer.h"
 
 namespace Net {
@@ -34,6 +35,8 @@ namespace Net {
     using namespace IO;
 
     static ESP8266WebServer httpServer(HTTP_SERVER_PORT);
+
+    static LinkedList<WiFiClient> wifiClients;
 
     HTTPServer::HTTPServer() {
 
@@ -46,20 +49,25 @@ namespace Net {
         httpServer.on("/description.xml", HTTP_GET, []() {
             SSDP.schema(httpServer.client());
         });
+        static HTTPServer* i = this;
+        httpServer.on("/api/HomeAutomation.HomeGenie/Logging/RealTime.EventStream/", HTTP_GET, []() {
+            WiFiClient sseClient = httpServer.client();
+            wifiClients.add(sseClient);
+            i->serverSentEventHeader(sseClient);
+            sseClient.flush();
+            // connection: CLOSE
+        });
         httpServer.addHandler(this);
-        //http_rest_server.on("/api/HomeAutomation.X10/RF/Control.SendRaw", HTTP_GET, httpApi_X10SendRaw);
-        //http_rest_server.on("/leds", HTTP_POST, post_put_leds);
-        //http_rest_server.on("/leds", HTTP_PUT, post_put_leds);
 
         httpServer.begin();
         Logger::info("|  ✔ HTTP service");
 
         SSDP.setSchemaURL("description.xml");
         SSDP.setHTTPPort(80);
-        SSDP.setName("HomeGenie-mini V1.0");
+        SSDP.setName("HomeGenie:mini V1.0");
         SSDP.setSerialNumber("ABC0123456789");
-        SSDP.setURL("start.html");
-        SSDP.setModelName("HomeGenie-mini 2019");
+        SSDP.setURL("192.168.2.109");
+        SSDP.setModelName("HomeGenie:mini 2019");
         SSDP.setModelNumber("2134567890");
         SSDP.setModelURL("http://homegenie.it");
         SSDP.setManufacturer("G-Labs");
@@ -81,11 +89,39 @@ namespace Net {
     bool HTTPServer::handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri) {
         return false;
     }
+    // END RequestHandler interface methods
 
     void HTTPServer::addHandler(RequestHandler* handler) {
         httpServer.addHandler(handler);
     }
 
-    // END RequestHandler interface methods
+    void HTTPServer::sendSSEvent(String p, String v) {
+        // send message to all connected clients and remove disconnected ones
+        for (int c = wifiClients.size()-1; c >= 0; c--) {
+            auto sseClient = wifiClients.get(c);
+            if (sseClient.connected()) {
+                serverSentEvent(sseClient, p, v);
+            } else wifiClients.remove(c);
+        }
+    }
 
+    void HTTPServer::serverSentEventHeader(WiFiClient client) {
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/event-stream;charset=UTF-8");
+        client.println("Connection: close");  // the connection will be closed after completion of the response
+        client.println("Access-Control-Allow-Origin: *");  // allow any connection. We don't want Arduino to host all of the website ;-)
+        client.println("Cache-Control: no-cache");  // refresh the page automatically every 5 sec
+        client.println();
+        client.flush();
+    }
+
+    void HTTPServer::serverSentEvent(WiFiClient client, String event, String value) {
+        // id: 1548081759906.19
+        // data: {"Timestamp":"2019-01-21T14:42:39.906194Z","UnixTimestamp":1548081759906.19,"Domain":"HomeAutomation.ZWave","Source":"7","Description":"ZWave Node","Property":"Meter.Watts","Value":0}
+        client.printf("id: %lu\n", millis());
+        client.printf(R"(data: {"Timestamp":"2019-01-21T14:42:39.906194Z","UnixTimestamp":1548081759906.19,"Description":"","Domain":"HomeAutomation.HomeGenie","Source":"mini","Property":"%s","Value":"%s"})", event.c_str(), value.c_str());
+        client.println();
+        client.println();
+        client.flush();
+    }
 }

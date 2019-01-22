@@ -32,6 +32,8 @@
 
 namespace Net { namespace MQTT {
 
+    static MQTTBrokerClient_t MQTTclients[MQTTBROKER_CLIENT_MAX + 1]; //Last is MQTTBROKER_LOCAL_CLIENT_ID
+
     MQTTBrokerMini::MQTTBrokerMini(WebSocketsServer *webSocket) {
         WS = webSocket;
     }

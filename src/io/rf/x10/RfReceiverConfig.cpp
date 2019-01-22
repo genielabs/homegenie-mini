@@ -33,7 +33,7 @@ namespace IO { namespace X10 {
 
     RfReceiverConfig::RfReceiverConfig()
     {
-        pin = interrupt = 5;
+        pin = interrupt = D1; // 5
 
         startBustMin = 8000;
         startBustMax = 16000;

@@ -31,6 +31,7 @@
 
 namespace IO { namespace X10 {
 
+    static bool enabled;
     RfReceiver *receiverInstance = NULL;
 
     void receiverInstance_wrapper() {
@@ -76,7 +77,7 @@ namespace IO { namespace X10 {
     uint8_t byteBuffer[4];
 
     void RfReceiver::receive() {
-        if (!enabled) return;
+        if (!isEnabled()) return;
 
         uint32_t lengthUs = micros() - riseUs;
         riseUs = micros();

@@ -254,33 +254,6 @@ PLATFORMIO_PROGRAM/fast:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.s
 .PHONY : .piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.s
 
-.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.o: .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.o
-
-.PHONY : .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.o
-
-# target to build an object file
-.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.o
-.PHONY : .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.o
-
-.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.i: .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.i
-
-.PHONY : .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.i
-
-# target to preprocess a source file
-.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.i
-.PHONY : .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.i
-
-.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.s: .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.s
-
-.PHONY : .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.s
-
-# target to generate assembly for a file
-.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.s
-.PHONY : .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.cpp.s
-
 .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.o: .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.o
 
 .PHONY : .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.o
@@ -307,60 +280,6 @@ PLATFORMIO_PROGRAM/fast:
 .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s
 .PHONY : .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s
-
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.o: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o
-
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.o
-
-# target to build an object file
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.o
-
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.i: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.i
-
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.i
-
-# target to preprocess a source file
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.i
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.i
-
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.s: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.s
-
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.s
-
-# target to generate assembly for a file
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.s
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.cpp.s
-
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.o: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o
-
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.o
-
-# target to build an object file
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.o
-
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.i: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.i
-
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.i
-
-# target to preprocess a source file
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.i
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.i
-
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.s: .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.s
-
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.s
-
-# target to generate assembly for a file
-.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.s
-.PHONY : .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.cpp.s
 
 .piolibdeps/OneWire_ID1/OneWire.o: .piolibdeps/OneWire_ID1/OneWire.cpp.o
 
@@ -685,60 +604,6 @@ PLATFORMIO_PROGRAM/fast:
 .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.s
 .PHONY : .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.s
-
-.piolibdeps/aJson_ID35/aJSON.o: .piolibdeps/aJson_ID35/aJSON.cpp.o
-
-.PHONY : .piolibdeps/aJson_ID35/aJSON.o
-
-# target to build an object file
-.piolibdeps/aJson_ID35/aJSON.cpp.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/aJSON.cpp.o
-.PHONY : .piolibdeps/aJson_ID35/aJSON.cpp.o
-
-.piolibdeps/aJson_ID35/aJSON.i: .piolibdeps/aJson_ID35/aJSON.cpp.i
-
-.PHONY : .piolibdeps/aJson_ID35/aJSON.i
-
-# target to preprocess a source file
-.piolibdeps/aJson_ID35/aJSON.cpp.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/aJSON.cpp.i
-.PHONY : .piolibdeps/aJson_ID35/aJSON.cpp.i
-
-.piolibdeps/aJson_ID35/aJSON.s: .piolibdeps/aJson_ID35/aJSON.cpp.s
-
-.PHONY : .piolibdeps/aJson_ID35/aJSON.s
-
-# target to generate assembly for a file
-.piolibdeps/aJson_ID35/aJSON.cpp.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/aJSON.cpp.s
-.PHONY : .piolibdeps/aJson_ID35/aJSON.cpp.s
-
-.piolibdeps/aJson_ID35/utility/stringbuffer.o: .piolibdeps/aJson_ID35/utility/stringbuffer.c.o
-
-.PHONY : .piolibdeps/aJson_ID35/utility/stringbuffer.o
-
-# target to build an object file
-.piolibdeps/aJson_ID35/utility/stringbuffer.c.o:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/utility/stringbuffer.c.o
-.PHONY : .piolibdeps/aJson_ID35/utility/stringbuffer.c.o
-
-.piolibdeps/aJson_ID35/utility/stringbuffer.i: .piolibdeps/aJson_ID35/utility/stringbuffer.c.i
-
-.PHONY : .piolibdeps/aJson_ID35/utility/stringbuffer.i
-
-# target to preprocess a source file
-.piolibdeps/aJson_ID35/utility/stringbuffer.c.i:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/utility/stringbuffer.c.i
-.PHONY : .piolibdeps/aJson_ID35/utility/stringbuffer.c.i
-
-.piolibdeps/aJson_ID35/utility/stringbuffer.s: .piolibdeps/aJson_ID35/utility/stringbuffer.c.s
-
-.PHONY : .piolibdeps/aJson_ID35/utility/stringbuffer.s
-
-# target to generate assembly for a file
-.piolibdeps/aJson_ID35/utility/stringbuffer.c.s:
-	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/aJson_ID35/utility/stringbuffer.c.s
-.PHONY : .piolibdeps/aJson_ID35/utility/stringbuffer.c.s
 
 .piolibdeps/tinixml2_ID0000/tinyxml2.o: .piolibdeps/tinixml2_ID0000/tinyxml2.cpp.o
 
@@ -1408,18 +1273,9 @@ help:
 	@echo "... .piolibdeps/ArduinoLog_ID1532/ArduinoLog.o"
 	@echo "... .piolibdeps/ArduinoLog_ID1532/ArduinoLog.i"
 	@echo "... .piolibdeps/ArduinoLog_ID1532/ArduinoLog.s"
-	@echo "... .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.o"
-	@echo "... .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.i"
-	@echo "... .piolibdeps/ESP8266TrueRandom_ID1477/ESP8266TrueRandom.s"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.o"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.i"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.s"
-	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.o"
-	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.i"
-	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker.s"
-	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.o"
-	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.i"
-	@echo "... .piolibdeps/MQTTbroker_ID2963/src/MQTTbroker_lite.s"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.o"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.i"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.s"
@@ -1456,12 +1312,6 @@ help:
 	@echo "... .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.o"
 	@echo "... .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.i"
 	@echo "... .piolibdeps/WebSockets_ID549/src/libsha1/libsha1.s"
-	@echo "... .piolibdeps/aJson_ID35/aJSON.o"
-	@echo "... .piolibdeps/aJson_ID35/aJSON.i"
-	@echo "... .piolibdeps/aJson_ID35/aJSON.s"
-	@echo "... .piolibdeps/aJson_ID35/utility/stringbuffer.o"
-	@echo "... .piolibdeps/aJson_ID35/utility/stringbuffer.i"
-	@echo "... .piolibdeps/aJson_ID35/utility/stringbuffer.s"
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.o"
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.i"
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.s"

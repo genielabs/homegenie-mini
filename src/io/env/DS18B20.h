@@ -59,8 +59,8 @@ namespace IO { namespace Env {
         void setSamplingRate(uint32_t);
         float_t getTemperature();
     private:
-        // Default I/O pin number is 2
-        uint8_t pinNumber = 2;
+        // Default I/O pin number is D3 (0)
+        uint8_t pinNumber = D3;
         // Temperature chip I/O
         OneWire *ds;
         // Current temperature
