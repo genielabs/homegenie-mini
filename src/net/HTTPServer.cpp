@@ -100,6 +100,7 @@ namespace Net {
         // send message to all connected clients and remove disconnected ones
         for (int c = wifiClients.size()-1; c >= 0; c--) {
             auto sseClient = wifiClients.get(c);
+            sseClient.keepAlive(65535);
             if (sseClient.connected()) {
                 serverSentEvent(sseClient, p, v);
             } else wifiClients.remove(c);

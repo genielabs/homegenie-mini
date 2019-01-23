@@ -283,6 +283,33 @@ namespace Service {
             getIOManager().getX10Receiver().enable();
             command->Response = R"({ "ResponseText": "OK" })";
 
+        } else if (command->Domain == IOEventDomains::HomeAutomation_X10) {
+
+            command->Address.toLowerCase();
+            uint8_t data[5];
+            X10Message x10Message;
+            x10Message.houseCode = HouseCodeLut[command->Address.charAt(0) - HOUSE_MIN];
+            x10Message.unitCode = UnitCodeLut[command->Address.substring(1).toInt() - UNIT_MIN];
+
+            Serial.print(command->Address.charAt(0));
+            Serial.print(":");
+            Serial.println(x10Message.houseCode);
+            Serial.print(command->Address.substring(1).toInt());
+            Serial.print(":");
+            Serial.println(x10Message.unitCode);
+            Serial.println();
+
+            if (command->Command == "Control.On") {
+                x10Message.command = X10::Command::CMD_ON;
+                X10::X10Message::encodeCommand(&x10Message, data);
+            } else if (command->Command == "Control.Off") {
+                x10Message.command = X10::Command::CMD_OFF;
+                X10::X10Message::encodeCommand(&x10Message, data);
+            }
+            ioManager.getX10Receiver().disable();
+            ioManager.getX10Transmitter().sendCommand(&data[1], sizeof(data)-1);
+            ioManager.getX10Receiver().enable();
+
         } else if (command->Domain == IOEventDomains::HomeAutomation_HomeGenie) {
 
             /*
