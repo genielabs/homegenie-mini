@@ -36,6 +36,7 @@
 #include <WiFiUdp.h>
 #include <WiFiServer.h>
 #include <WiFiClient.h>
+#include <NTPClient.h>
 
 #include "HTTPServer.h"
 #include "MQTTServer.h"
@@ -55,6 +56,7 @@ namespace Net {
         void loop();
         HTTPServer getHttpServer();
         MQTTServer getMQTTServer();
+        static NTPClient getTimeClient();
 
     private:
         HTTPServer *httpServer;

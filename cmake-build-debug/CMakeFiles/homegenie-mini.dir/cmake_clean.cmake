@@ -14,6 +14,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libb64/cencode.c.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/libsha1/libsha1.c.o"
   "CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.o"
+  "CMakeFiles/homegenie-mini.dir/lib/NTPClient-master/NTPClient.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/Task.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o"
   "CMakeFiles/homegenie-mini.dir/src/io/IOEventDomains.cpp.o"

@@ -29,6 +29,7 @@
 
 #include <LinkedList.h>
 #include "HTTPServer.h"
+#include "NetManager.h"
 
 namespace Net {
 
@@ -118,8 +119,12 @@ namespace Net {
     void HTTPServer::serverSentEvent(WiFiClient client, String event, String value) {
         // id: 1548081759906.19
         // data: {"Timestamp":"2019-01-21T14:42:39.906194Z","UnixTimestamp":1548081759906.19,"Domain":"HomeAutomation.ZWave","Source":"7","Description":"ZWave Node","Property":"Meter.Watts","Value":0}
+        String date = Net::NetManager::getTimeClient().getFormattedDate();
+        unsigned long epoch = Net::NetManager::getTimeClient().getEpochTime();
+        int ms = Net::NetManager::getTimeClient().getMilliseconds();
         client.printf("id: %lu\n", millis());
-        client.printf(R"(data: {"Timestamp":"2019-01-21T14:42:39.906194Z","UnixTimestamp":1548081759906.19,"Description":"","Domain":"HomeAutomation.HomeGenie","Source":"mini","Property":"%s","Value":"%s"})", event.c_str(), value.c_str());
+        client.printf(R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"HomeAutomation.HomeGenie","Source":"mini","Property":"%s","Value":"%s"})",
+                date.c_str(), epoch, ms, event.c_str(), value.c_str());
         client.println();
         client.println();
         client.flush();

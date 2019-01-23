@@ -99,6 +99,7 @@
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/LinkedList_ID443"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/WebSockets_ID549/src"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/OneWire_ID1"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -167,6 +168,7 @@
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/LinkedList_ID443"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/WebSockets_ID549/src"/>
 					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/./.piolibdeps/OneWire_ID1"/>
+					<Add directory="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -825,6 +827,33 @@
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/.travis.yml">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/NTPClient.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/NTPClient.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/examples/Advanced/Advanced.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/examples/Basic/Basic.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/keywords.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/library.properties">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/Task.cpp">

@@ -58,6 +58,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   ".././.piolibdeps/LinkedList_ID443"
   ".././.piolibdeps/WebSockets_ID549/src"
   ".././.piolibdeps/OneWire_ID1"
+  "../lib/NTPClient-master"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.o"
@@ -72,6 +73,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsClient.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/WebSockets_ID549/src/WebSocketsServer.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.o"
+  "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/NTPClient-master/NTPClient.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/lib/NTPClient-master/NTPClient.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/Task.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/Task.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/TaskManager.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/TaskManager.cpp.o"
   "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/io/IOEventDomains.cpp" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/cmake-build-debug/CMakeFiles/homegenie-mini.dir/src/io/IOEventDomains.cpp.o"
@@ -145,6 +147,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   ".././.piolibdeps/LinkedList_ID443"
   ".././.piolibdeps/WebSockets_ID549/src"
   ".././.piolibdeps/OneWire_ID1"
+  "../lib/NTPClient-master"
   )
 
 # Targets to which this target links.

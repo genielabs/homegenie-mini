@@ -632,6 +632,33 @@ PLATFORMIO_PROGRAM/fast:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/tinixml2_ID0000/tinyxml2.cpp.s
 .PHONY : .piolibdeps/tinixml2_ID0000/tinyxml2.cpp.s
 
+lib/NTPClient-master/NTPClient.o: lib/NTPClient-master/NTPClient.cpp.o
+
+.PHONY : lib/NTPClient-master/NTPClient.o
+
+# target to build an object file
+lib/NTPClient-master/NTPClient.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/lib/NTPClient-master/NTPClient.cpp.o
+.PHONY : lib/NTPClient-master/NTPClient.cpp.o
+
+lib/NTPClient-master/NTPClient.i: lib/NTPClient-master/NTPClient.cpp.i
+
+.PHONY : lib/NTPClient-master/NTPClient.i
+
+# target to preprocess a source file
+lib/NTPClient-master/NTPClient.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/lib/NTPClient-master/NTPClient.cpp.i
+.PHONY : lib/NTPClient-master/NTPClient.cpp.i
+
+lib/NTPClient-master/NTPClient.s: lib/NTPClient-master/NTPClient.cpp.s
+
+.PHONY : lib/NTPClient-master/NTPClient.s
+
+# target to generate assembly for a file
+lib/NTPClient-master/NTPClient.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/lib/NTPClient-master/NTPClient.cpp.s
+.PHONY : lib/NTPClient-master/NTPClient.cpp.s
+
 src/Task.o: src/Task.cpp.o
 
 .PHONY : src/Task.o
@@ -1315,6 +1342,9 @@ help:
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.o"
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.i"
 	@echo "... .piolibdeps/tinixml2_ID0000/tinyxml2.s"
+	@echo "... lib/NTPClient-master/NTPClient.o"
+	@echo "... lib/NTPClient-master/NTPClient.i"
+	@echo "... lib/NTPClient-master/NTPClient.s"
 	@echo "... src/Task.o"
 	@echo "... src/Task.i"
 	@echo "... src/Task.s"

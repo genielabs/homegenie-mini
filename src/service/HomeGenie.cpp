@@ -105,9 +105,9 @@ namespace Service {
                 default:
                     value = String(*(int32_t *)eventData);
             }
-            m.details = String(R"({"Name":")"+event+R"(","Value": ")")+value+R"("})";
+            m.details = String(R"({"Name":")"+event+R"(","Value": ")")+value+R"(", "UpdateTime": ")"
+                    + NetManager::getTimeClient().getFormattedDate()+R"("})";
             eventsQueue.add(m);
-
 
             netManager.getHttpServer().sendSSEvent(event, value);
 
@@ -180,13 +180,6 @@ namespace Service {
             }
 
         }
-
-
-
-
-
-
-
     }
     // END IIOEventSender
 
@@ -227,6 +220,28 @@ namespace Service {
         return formatted;
     }
 
+    String HomeGenie::createModuleParameter(const char *name, const char* value) {
+        static const char *parameterTemplate = R"({
+    "Name": "%s",
+    "Value": "%s",
+    "Description": "%s",
+    "FieldType": "%s",
+    "UpdateTime": "%s"
+})";
+        auto currentTime = NetManager::getTimeClient().getFormattedDate();
+        ssize_t size = snprintf(NULL, 0, parameterTemplate,
+                                name, value, "", "", currentTime.c_str()
+                                )+1;
+        char* parameterJson = (char*)malloc(size);
+        snprintf(parameterJson, size, parameterTemplate,
+                 name, value, "", "", currentTime.c_str()
+        );
+        auto p = String(parameterJson);
+        free(parameterJson);
+        return p;
+    }
+
+
     bool HomeGenie::api(ApiRequest *command) {
         if (command->Domain == IOEventDomains::HomeAutomation_X10
             && command->Address == "RF"
@@ -262,36 +277,29 @@ namespace Service {
   "DeviceType": "%s",
   "Domain": "%s",
   "Address": "%s",
-  "Properties": [{
-    "Name": "Sensor.Luminance",
-    "Value": "%d",
-    "Description": "",
-    "FieldType": "",
-    "UpdateTime": "2017-08-17T17:50:39.732427Z"
-  },{
-    "Name": "Sensor.Temperature",
-    "Value": "%0.2f",
-    "Description": "",
-    "FieldType": "",
-    "UpdateTime": "2017-08-17T17:50:39.732427Z"
-  }],
+  "Properties": [%s],
   "RoutingNode": ""
 })";
 
                 if (command->Command == "Modules.List") {
 
+
+                    String paramLuminance = createModuleParameter("Sensor.Luminance", String(ioManager.getLightSensor().getLightLevel()).c_str());
+                    String paramTemperature = createModuleParameter("Sensor.Temperature", String(ioManager.getTemperatureSensor().getTemperature()).c_str());
                     ssize_t size = snprintf(NULL, 0, moduleTemplate,
                             "HG-Mini", "HomeGenie Mini node", "Sensor",
                             "HomeAutomation.HomeGenie", "mini",
-                            ioManager.getLightSensor().getLightLevel(),
-                            ioManager.getTemperatureSensor().getTemperature()
+                            (paramLuminance+","+paramTemperature).c_str()
                     )+1;
                     char* moduleJson = (char*)malloc(size);
                     snprintf(moduleJson, size, moduleTemplate,
-                            "HG-Mini", "HomeGenie Mini node", "Sensor",
-                            "HomeAutomation.HomeGenie", "mini"
+                             "HG-Mini", "HomeGenie Mini node", "Sensor",
+                             "HomeAutomation.HomeGenie", "mini",
+                             (paramLuminance+","+paramTemperature).c_str()
                     );
+
                     command->Response = "["+String(moduleJson)+"]";
+
                     free(moduleJson);
 
                 } else if (command->Command == "Groups.List") {

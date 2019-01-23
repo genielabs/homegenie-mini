@@ -35,6 +35,13 @@ namespace Net {
 
     static HTTPServer httpServer;
 
+    WiFiUDP ntpUDP;
+    NTPClient timeClient(ntpUDP);
+    // Variables to save date and time
+    String formattedDate;
+    String dayStamp;
+    String timeStamp;
+
     bool NetManager::begin() {
 
         Logger::info("+ Starting NetManager");
@@ -95,11 +102,31 @@ namespace Net {
         mqttServer = new MQTTServer();
         mqttServer->begin();
 
+        // Initialize a NTPClient to get time
+        timeClient.begin();
+        // Set offset time in seconds to adjust for your timezone, for example:
+        // GMT +1 = 3600
+        // GMT +8 = 28800
+        // GMT -1 = -3600
+        // GMT 0 = 0
+        timeClient.setTimeOffset(0);
+
         return wpsSuccess;
     }
 
     void NetManager::loop() {
         Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
+
+        // TODO: this "while" seem the only way to make NTPClient work
+        while (WiFi.isConnected() && !timeClient.update()) {
+            timeClient.forceUpdate();
+            // The formattedDate comes with the following format:
+            // 2018-05-28T16:00:13Z
+            // We need to extract date and time
+            formattedDate = timeClient.getFormattedDate();
+            Logger::info("NTP Time: %s", formattedDate.c_str());
+        }
+
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }
 
@@ -123,6 +150,10 @@ namespace Net {
         // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
         delete httpServer;
         delete mqttServer;
+    }
+
+    NTPClient NetManager::getTimeClient() {
+        return timeClient;
     }
 
 }
