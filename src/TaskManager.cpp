@@ -44,7 +44,10 @@ void TaskManager::loop() {
     uint c = 0;
     while (t != NULL) {
         IO::Logger::verbose("%s - running task %d", TASKMANAGER_LOG_PREFIX, c++);
-        if (t->willLoop()) t->loop();
+        if (t->willLoop()) {
+            t->loop();
+            t->loopExit();
+        }
         t = t->nextTask;
     }
     IO::Logger::verbose("%s loop() << END", TASKMANAGER_LOG_PREFIX);

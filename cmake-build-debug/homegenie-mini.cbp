@@ -610,6 +610,147 @@
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ArduinoLog_ID1532/library.properties">
 			<Option target="homegenie-mini"/>
 		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/.travis.yml">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/component.mk">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/library.properties">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/AsyncTCP_ID1826/travis/common.sh">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/.travis.yml">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/component.mk">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/.esp31b.skip">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/ESP_AsyncFSBrowser.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/.exclude.files">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/ace.js.gz">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/ext-searchbox.js.gz">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/favicon.ico">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/index.htm">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/mode-css.js.gz">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/mode-html.js.gz">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/mode-javascript.js.gz">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/ESP_AsyncFSBrowser/data/worker-html.js.gz">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/examples/simple_server/simple_server.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/keywords.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/library.properties">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/AsyncEventSource.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/AsyncEventSource.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/AsyncJson.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/AsyncWebSocket.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/AsyncWebSocket.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/ESPAsyncWebServer.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/SPIFFSEditor.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/SPIFFSEditor.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/StringArray.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/WebAuthentication.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/WebAuthentication.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/WebHandlerImpl.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/WebHandlers.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/WebRequest.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/WebResponseImpl.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/WebResponses.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/WebServer.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/src/edit.htm">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP Async WebServer_ID306/travis/common.sh">
+			<Option target="homegenie-mini"/>
+		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/.library.json">
 			<Option target="homegenie-mini"/>
 		</Unit>
@@ -620,6 +761,90 @@
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESP8266UPnP_ID2048/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/.gitignore">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/.library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/.travis.yml">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/LICENSE.txt">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/README.md">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/examples/ClientServer/Client/Client.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/examples/ClientServer/Client/config.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/examples/ClientServer/Server/Server.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/examples/ClientServer/Server/config.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/examples/SyncClient/.esp31b.skip">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/examples/SyncClient/SyncClient.ino">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/library.json">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/library.properties">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/async_config.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/ssl/gen_server_cert.sh">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/ssl/server.cer">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/ssl/server.key">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/ESPAsyncTCP_ID305/travis/common.sh">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/LinkedList_ID443/.gitattributes">
@@ -986,6 +1211,12 @@
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/ApiRequest.h">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/EventRouter.cpp">
+			<Option target="homegenie-mini"/>
+		</Unit>
+		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/EventRouter.h">
 			<Option target="homegenie-mini"/>
 		</Unit>
 		<Unit filename="/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/service/HomeGenie.cpp">

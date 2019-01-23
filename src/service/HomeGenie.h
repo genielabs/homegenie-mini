@@ -37,6 +37,7 @@
 #include <LinkedList.h>
 
 #include "ApiRequest.h"
+#include "EventRouter.h"
 
 #define HOMEGENIEMINI_NS_PREFIX            "Service::HomeGenie"
 
@@ -44,12 +45,6 @@ namespace Service {
 
     using namespace IO;
     using namespace Net;
-
-    class QueuedMessage {
-    public:
-        String sender;
-        String details;
-    };
 
     class HomeGenie: Task, RequestHandler, IIOEventReceiver {
     public:
@@ -70,14 +65,15 @@ namespace Service {
 
         IOManager& getIOManager();
         //void getHttpServer();
+
+        static String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
+        static String createModuleParameter(const char *name, const char* value);
     private:
-        LinkedList<QueuedMessage> eventsQueue = LinkedList<QueuedMessage>();
         NetManager netManager;
         IOManager ioManager;
+        EventRouter eventRouter;
         void getBytes(const String &rawBytes, uint8_t *data);
         String byteToHex(byte b);
-        String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
-        String createModuleParameter(const char *name, const char* value);
     };
 
 }

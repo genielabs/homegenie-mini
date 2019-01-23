@@ -39,10 +39,14 @@ Task::Task() {
 bool Task::willLoop() {
 
     unsigned long now = millis();
-    if (now - lastLoopTs >= loopInterval) {
-        lastLoopTs = now;
-        return true;
-    }
+    return now - lastLoopTs >= loopInterval;
 
-    return false;
 }
+
+void Task::loopExit() {
+    lastLoopTs = millis();
+}
+
+uint64_t Task::taskIdleTime() {
+    return millis()-lastLoopTs;
+};

@@ -27,17 +27,20 @@
  *
  */
 
-#include <LinkedList.h>
 #include "HTTPServer.h"
 #include "NetManager.h"
+#include <LinkedList.h>
+#include <service/HomeGenie.h>
 
 namespace Net {
 
     using namespace IO;
+    using namespace Service;
 
     static ESP8266WebServer httpServer(HTTP_SERVER_PORT);
 
-    static LinkedList<WiFiClient> wifiClients;
+    LinkedList<WiFiClient> wifiClients;
+    LinkedList<QueuedMessage> events;
 
     HTTPServer::HTTPServer() {
 
@@ -54,8 +57,10 @@ namespace Net {
         httpServer.on("/api/HomeAutomation.HomeGenie/Logging/RealTime.EventStream/", HTTP_GET, []() {
             WiFiClient sseClient = httpServer.client();
             wifiClients.add(sseClient);
+            // TODO: check out this "keepAlive"
+            sseClient.keepAlive(65535);
             i->serverSentEventHeader(sseClient);
-            sseClient.flush();
+            //sseClient.flush();
             // connection: CLOSE
         });
         httpServer.addHandler(this);
@@ -80,8 +85,25 @@ namespace Net {
     void HTTPServer::loop() {
         Logger::verbose("%s loop() >> BEGIN", HTTPSERVER_LOG_PREFIX);
         httpServer.handleClient();
+
+        // TODO: "if (millis() % 50 == 0) ..." lower priority routine
+        if (events.size() > 0) {
+
+            auto e = events.pop();
+            // send message to all connected clients and remove disconnected ones
+            for (int c = wifiClients.size() - 1; c >= 0; c--) {
+                auto sseClient = wifiClients.get(c);
+                if (sseClient.connected()) {
+                    serverSentEvent(sseClient, e.domain, e.sender, e.event, e.value);
+                } else wifiClients.remove(c);
+            }
+
+        }
+
         Logger::verbose("%s loop() << END", HTTPSERVER_LOG_PREFIX);
     }
+
+
 
     // BEGIN RequestHandler interface methods
     bool HTTPServer::canHandle(HTTPMethod method, String uri) {
@@ -96,15 +118,9 @@ namespace Net {
         httpServer.addHandler(handler);
     }
 
-    void HTTPServer::sendSSEvent(String p, String v) {
-        // send message to all connected clients and remove disconnected ones
-        for (int c = wifiClients.size()-1; c >= 0; c--) {
-            auto sseClient = wifiClients.get(c);
-            sseClient.keepAlive(65535);
-            if (sseClient.connected()) {
-                serverSentEvent(sseClient, p, v);
-            } else wifiClients.remove(c);
-        }
+    void HTTPServer::sendSSEvent(String domain, String address, String event, String value) {
+        auto m = QueuedMessage(domain, address, event, value);
+        events.add(m);
     }
 
     void HTTPServer::serverSentEventHeader(WiFiClient client) {
@@ -114,20 +130,20 @@ namespace Net {
         client.println("Access-Control-Allow-Origin: *");  // allow any connection. We don't want Arduino to host all of the website ;-)
         client.println("Cache-Control: no-cache");  // refresh the page automatically every 5 sec
         client.println();
-        client.flush();
+        //client.flush();
     }
 
-    void HTTPServer::serverSentEvent(WiFiClient client, String event, String value) {
+    void HTTPServer::serverSentEvent(WiFiClient client, String domain, String address, String event, String value) {
         // id: 1548081759906.19
         // data: {"Timestamp":"2019-01-21T14:42:39.906194Z","UnixTimestamp":1548081759906.19,"Domain":"HomeAutomation.ZWave","Source":"7","Description":"ZWave Node","Property":"Meter.Watts","Value":0}
         String date = Net::NetManager::getTimeClient().getFormattedDate();
         unsigned long epoch = Net::NetManager::getTimeClient().getEpochTime();
         int ms = Net::NetManager::getTimeClient().getMilliseconds();
         client.printf("id: %lu\n", millis());
-        client.printf(R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"HomeAutomation.HomeGenie","Source":"mini","Property":"%s","Value":"%s"})",
-                date.c_str(), epoch, ms, event.c_str(), value.c_str());
+        client.printf(R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
+                date.c_str(), epoch, ms, domain.c_str(), address.c_str(), event.c_str(), value.c_str());
         client.println();
         client.println();
-        client.flush();
+        //client.flush();
     }
 }

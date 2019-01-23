@@ -43,9 +43,16 @@ public:
 
     Task* nextTask = NULL;
     Task* previousTask = NULL;
+
+    void loopExit();
+    uint64_t taskIdleTime();
+    uint64_t uptime() {
+        return millis() - creationTs;
+    }
+
 private:
     uint64_t creationTs;
-    int64_t lastLoopTs;
+    uint64_t lastLoopTs;
     uint64_t loopInterval;
 };
 

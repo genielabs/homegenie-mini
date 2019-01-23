@@ -34,7 +34,7 @@ namespace IO { namespace X10 {
     RfTransmitterConfig::RfTransmitterConfig()
     {
         pin = D2; // 4
-        sendRepeat = 4;
+        sendRepeat = 3;
 
         startBustLong = 9000;
         startBustShort = 4500;

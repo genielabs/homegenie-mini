@@ -60,7 +60,7 @@ namespace IO {
         void setEventReceiver(IIOEventReceiver *receiver) {
             eventReceiver = receiver;
         }
-        virtual void sendEvent(uint8_t *eventPath, void* eventData, IOEventDataType dataType = Undefined) {
+        virtual void sendEvent(uint8_t *eventPath, void* eventData, IOEventDataType dataType) {
             if (eventReceiver != NULL) {
                 eventReceiver->onIOEvent(this, eventPath, eventData, dataType);
             }

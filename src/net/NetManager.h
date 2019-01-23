@@ -42,6 +42,7 @@
 #include "MQTTServer.h"
 #include <io/Logger.h>
 #include <Task.h>
+#include <LinkedList.h>
 
 #define NETMANAGER_LOG_PREFIX           "@Net::NetManager"
 
@@ -54,14 +55,16 @@ namespace Net {
         ~NetManager();
         bool begin();
         void loop();
-        HTTPServer getHttpServer();
-        MQTTServer getMQTTServer();
+        HTTPServer* getHttpServer();
+        MQTTServer* getMQTTServer();
+        WebSocketsServer* getWebSocketServer();
         static NTPClient getTimeClient();
 
     private:
         HTTPServer *httpServer;
         MQTTServer *mqttServer;
-        String setStatus(int s);
+        WebSocketsServer *webSocket;
+        //void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght);
     };
 
 }

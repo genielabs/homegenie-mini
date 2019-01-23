@@ -31,8 +31,8 @@
 
 namespace Net {
 
-    static WebSocketsServer *ws;
-    static MQTTBrokerMini *mb;
+    WebSocketsServer *ws;
+    MQTTBrokerMini *mb;
 
     void MQTTServer::begin() {
 

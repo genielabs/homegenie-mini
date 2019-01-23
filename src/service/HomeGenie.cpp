@@ -33,11 +33,12 @@ namespace Service {
 
     HomeGenie::HomeGenie() {
         setLoopInterval(20L);
+        eventRouter.withNetManager(netManager);
     }
 
     void HomeGenie::begin() {
         netManager.begin();
-        netManager.getHttpServer().addHandler(this);
+        netManager.getHttpServer()->addHandler(this);
         ioManager.begin();
         ioManager.setOnEventCallback(this);
     }
@@ -58,17 +59,6 @@ namespace Service {
             }
         }
 
-        // MQTT Events Queue (dequeue)
-        for (int i = 0; i < eventsQueue.size(); i++) {
-            // route event through MQTT
-            auto m = eventsQueue.pop();
-            netManager.getMQTTServer().broadcast(&m.sender, &m.details);
-
-            // TODO: route event to the console as well
-            // process only one message per cycle to prevent excessive overload
-            break;
-        }
-
         Logger::verbose(":%s loop() << END", HOMEGENIEMINI_NS_PREFIX);
     }
 
@@ -85,31 +75,25 @@ namespace Service {
         if (domain == IOEventDomains::HomeAutomation_HomeGenie) {
 
             // MQTT Message Queue (enqueue)
-            QueuedMessage m = QueuedMessage();
-            m.sender = String("hg-mini/"+domain+"/"+address+"/event");
+            QueuedMessage m = QueuedMessage(domain, address, event, "");
             // Data type handling
-            String value;
             switch (dataType) {
                 case SensorLight:
-                    value = String(*(uint16_t *)eventData);
+                    m.value = String(*(uint16_t *)eventData);
                     break;
                 case SensorTemperature:
-                    value = String(*(float_t *)eventData);
+                    m.value = String(*(float_t *)eventData);
                     break;
                 case UnsignedNumber:
-                    value = String(*(uint32_t *)eventData);
+                    m.value = String(*(uint32_t *)eventData);
                     break;
                 case Number:
-                    value = String(*(int32_t *)eventData);
+                    m.value = String(*(int32_t *)eventData);
                     break;
                 default:
-                    value = String(*(int32_t *)eventData);
+                    m.value = String(*(int32_t *)eventData);
             }
-            m.details = String(R"({"Name":")"+event+R"(","Value": ")")+value+R"(", "UpdateTime": ")"
-                    + NetManager::getTimeClient().getFormattedDate()+R"("})";
-            eventsQueue.add(m);
-
-            netManager.getHttpServer().sendSSEvent(event, value);
+            eventRouter.signalEvent(m);
 
         } else if (domain == IOEventDomains::HomeAutomation_X10) {
 
@@ -156,17 +140,15 @@ namespace Service {
                 // NOTE:  is processed at every cycle). (not sure if it would be of any use though)
 
                 // MQTT Message Queue (enqueue)
-                QueuedMessage m = QueuedMessage();
-                m.sender = String("hg-mini/"+domain+"/" + houseCode + unitCode + "/event");
-                m.details = String(R"({"Name":")")+IOEventPaths::Status_Level+ R"(", "Value": ")";
+                QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, IOEventPaths::Status_Level, "");
                 switch (decodedMessage->command) {
                     case Command::CMD_ON:
-                        m.details += "1\"}";
-                        eventsQueue.add(m);
+                        m.value = "1";
+                        eventRouter.signalEvent(m);
                         break;
                     case Command::CMD_OFF:
-                        m.details += "0\"}";
-                        eventsQueue.add(m);
+                        m.value = "0";
+                        eventRouter.signalEvent(m);
                         break;
 // TODO: Implement all X10 events also for Camera and Security
                 }
@@ -278,29 +260,37 @@ namespace Service {
 
             uint8_t data[command->OptionsString.length() / 2]; getBytes(command->OptionsString, data);
             // Disable RfReceiver callbacks during transmission to prevent echo
+            noInterrupts();
             getIOManager().getX10Receiver().disable();
             getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
             getIOManager().getX10Receiver().enable();
+            interrupts();
             command->Response = R"({ "ResponseText": "OK" })";
 
         } else if (command->Domain == IOEventDomains::HomeAutomation_X10) {
-
-            command->Address.toLowerCase();
             uint8_t data[5];
-            X10Message x10Message;
-            x10Message.houseCode = HouseCodeLut[command->Address.charAt(0) - HOUSE_MIN];
-            x10Message.unitCode = UnitCodeLut[command->Address.substring(1).toInt() - UNIT_MIN];
+            auto hu = command->Address; hu.toLowerCase();
+            auto x10Message = X10Message();
+            x10Message.houseCode = HouseCodeLut[hu.charAt(0) - HOUSE_MIN];
+            x10Message.unitCode = UnitCodeLut[hu.substring(1).toInt() - UNIT_MIN];
 
+            QueuedMessage m = QueuedMessage(command->Domain, command->Address, IOEventPaths::Status_Level, "");
             if (command->Command == "Control.On") {
                 x10Message.command = X10::Command::CMD_ON;
-                X10::X10Message::encodeCommand(&x10Message, data);
+                m.value = "1";
             } else if (command->Command == "Control.Off") {
                 x10Message.command = X10::Command::CMD_OFF;
-                X10::X10Message::encodeCommand(&x10Message, data);
+                m.value = "0";
             }
+            eventRouter.signalEvent(m);
+
+            X10::X10Message::encodeCommand(&x10Message, data);
+            noInterrupts();
             ioManager.getX10Receiver().disable();
             ioManager.getX10Transmitter().sendCommand(&data[1], sizeof(data)-1);
             ioManager.getX10Receiver().enable();
+            interrupts();
+            command->Response = R"({ "ResponseText": "OK" })";
 
         } else if (command->Domain == IOEventDomains::HomeAutomation_HomeGenie) {
 

@@ -56,8 +56,8 @@ namespace IO { namespace X10 {
     void RfReceiver::begin() {
         enabled = true;
         Logger::info("|  - %s (PIN=%d INT=%d)", X10_RFRECEIVER_NS_PREFIX, configuration->getPin(), configuration->getInterrupt());
-        pinMode(configuration->getPin(), INPUT);
-        attachInterrupt(configuration->getInterrupt(), receiverInstance_wrapper, RISING);
+        pinMode(configuration->getPin(), INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(configuration->getInterrupt()), receiverInstance_wrapper, RISING);
         Logger::info("|  ✔ %s", X10_RFRECEIVER_NS_PREFIX);
     }
 
@@ -96,7 +96,9 @@ namespace IO { namespace X10 {
             }
 
             // Receive complete: verify message and fire callback
-            if (receivedCount == 32) {
+            if (receivedCount >= 32) {
+
+// TODO: !!! IMPLEMENT 40 bit DATA DECODING
 
                 byteBuffer[3] = reverseByte((receiveBuffer >> 24) & 0xFF);
                 byteBuffer[2] = reverseByte((receiveBuffer >> 16) & 0xFF);
@@ -107,13 +109,13 @@ namespace IO { namespace X10 {
                 bool isStandardCode = ((byteBuffer[1] & ~byteBuffer[0]) == byteBuffer[1] && (byteBuffer[3] & ~byteBuffer[2]) == byteBuffer[3]);
 
 
-                // TODO: !!! IMPLEMENT CHECKSUM VERIFICATION AND DISCARD MALFORMED MESSAGES
+// TODO: !!! IMPLEMENT CHECKSUM VERIFICATION AND DISCARD MALFORMED MESSAGES
 
 
                 if (isStandardCode || isSecurityCode) {
                     messageType = isStandardCode ? (uint8_t) 0x20 : (uint8_t) 0x29;
                     uint8_t data[] = { messageType, byteBuffer[0], byteBuffer[1], (byteBuffer[2]), (byteBuffer[3]) };
-                    sendEvent((uint8_t*)IOEventPaths::Sensor_RawData, data);
+                    sendEvent((uint8_t*)IOEventPaths::Sensor_RawData, data, IOEventDataType::Undefined);
                 }
 
                 receivedCount = -1;

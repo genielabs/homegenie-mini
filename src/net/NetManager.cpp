@@ -27,13 +27,14 @@
  *
  */
 
+#include <service/HomeGenie.h>
 #include "NetManager.h"
 
 namespace Net {
 
     using namespace IO;
 
-    static HTTPServer httpServer;
+    HTTPServer httpServer;
 
     WiFiUDP ntpUDP;
     NTPClient timeClient(ntpUDP);
@@ -62,7 +63,7 @@ namespace Net {
         }
         Serial.println();
 
-        bool wpsSuccess = false;
+        bool wpsSuccess;
         wl_status_t status = WiFi.status();
         if (status == WL_CONNECTED) {
             Logger::info("|  ✔ Connected to '%s'", WiFi.SSID().c_str());
@@ -99,6 +100,27 @@ namespace Net {
         httpServer = new HTTPServer();
         httpServer->begin();
 
+        // start the websocket server
+        webSocket = new WebSocketsServer(88, "", "hg");
+        webSocket->onEvent([](uint8_t num, WStype_t type, uint8_t * payload, size_t lenght){
+            switch (type) {
+                case WStype_DISCONNECTED:             // if the websocket is disconnected
+                    Serial.printf("[%u] Disconnected!\n", num);
+                    break;
+                case WStype_CONNECTED: {              // if a new websocket connection is established
+                    IPAddress ip; // = webSocket->remoteIP(num);
+                    Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+                    //webSocket.sendTXT(num, "... ping ...");
+                }
+                    break;
+                case WStype_TEXT:                     // if new text data is received
+                    Serial.printf("[%u] get Text: %s\n", num, payload);
+                    break;
+            }
+        });
+        webSocket->begin();
+        Serial.println("WebSocket server started.");
+
         mqttServer = new MQTTServer();
         mqttServer->begin();
 
@@ -117,8 +139,10 @@ namespace Net {
     void NetManager::loop() {
         Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
 
+        webSocket->loop();
+
         // TODO: this "while" seem the only way to make NTPClient work
-        while (WiFi.isConnected() && !timeClient.update()) {
+        if (WiFi.isConnected() && !timeClient.update()) {
             timeClient.forceUpdate();
             // The formattedDate comes with the following format:
             // 2018-05-28T16:00:13Z
@@ -130,17 +154,16 @@ namespace Net {
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }
 
-    String NetManager::setStatus(int s) {
-        String stat = R"({"status":")" + String(s) + "\"}";
-        return stat;
+    HTTPServer* NetManager::getHttpServer() {
+        return httpServer;
     }
 
-    HTTPServer NetManager::getHttpServer() {
-        return *httpServer;
+    MQTTServer* NetManager::getMQTTServer() {
+        return mqttServer;
     }
 
-    MQTTServer NetManager::getMQTTServer() {
-        return *mqttServer;
+    WebSocketsServer* NetManager::getWebSocketServer() {
+        return webSocket;
     }
 
     NetManager::NetManager() {
@@ -150,6 +173,7 @@ namespace Net {
         // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
         delete httpServer;
         delete mqttServer;
+        delete webSocket;
     }
 
     NTPClient NetManager::getTimeClient() {

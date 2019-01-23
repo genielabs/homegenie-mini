@@ -52,10 +52,10 @@ namespace Net {
         // RequestHandler interface methods
         bool canHandle(HTTPMethod method, String uri);
         bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
-        void sendSSEvent(String p, String v);
+        void sendSSEvent(String domain, String address, String event, String value);
     private:
         void serverSentEventHeader(WiFiClient client);
-        void serverSentEvent(WiFiClient client, String event, String value);
+        void serverSentEvent(WiFiClient client, String domain, String address, String event, String value);
     };
 
 }

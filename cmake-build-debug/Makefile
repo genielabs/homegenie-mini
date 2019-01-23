@@ -254,6 +254,33 @@ PLATFORMIO_PROGRAM/fast:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.s
 .PHONY : .piolibdeps/ArduinoLog_ID1532/ArduinoLog.cpp.s
 
+.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.o: .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.o
+
+.PHONY : .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.o
+
+# target to build an object file
+.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.o
+.PHONY : .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.o
+
+.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.i: .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.i
+
+.PHONY : .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.i
+
+# target to preprocess a source file
+.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.i
+.PHONY : .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.i
+
+.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.s: .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.s
+
+.PHONY : .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.s
+
+# target to generate assembly for a file
+.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.s
+.PHONY : .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.cpp.s
+
 .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.o: .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.o
 
 .PHONY : .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.o
@@ -280,6 +307,357 @@ PLATFORMIO_PROGRAM/fast:
 .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s
 .PHONY : .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.cpp.s
+
+.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.o: .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.o
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.o
+
+# target to build an object file
+.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.o
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.o
+
+.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.i: .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.i
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.i
+
+# target to preprocess a source file
+.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.i
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.i
+
+.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.s: .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.s
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.s
+
+# target to generate assembly for a file
+.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.s
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.cpp.s
+
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.o: .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.o
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.o
+
+# target to build an object file
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.o
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.o
+
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.i: .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.i
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.i
+
+# target to preprocess a source file
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.i
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.i
+
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.s: .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.s
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.s
+
+# target to generate assembly for a file
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.s
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.cpp.s
+
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.o: .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.o
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.o
+
+# target to build an object file
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.o
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.o
+
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.i: .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.i
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.i
+
+# target to preprocess a source file
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.i
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.i
+
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.s: .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.s
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.s
+
+# target to generate assembly for a file
+.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.s
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.cpp.s
+
+.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.o: .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.o
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.o
+
+# target to build an object file
+.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.o
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.o
+
+.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.i: .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.i
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.i
+
+# target to preprocess a source file
+.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.i
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.i
+
+.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.s: .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.s
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.s
+
+# target to generate assembly for a file
+.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.s
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.cpp.s
+
+.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.o: .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.o
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.o
+
+# target to build an object file
+.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.o
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.o
+
+.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.i: .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.i
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.i
+
+# target to preprocess a source file
+.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.i
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.i
+
+.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.s: .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.s
+
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.s
+
+# target to generate assembly for a file
+.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.s
+.PHONY : .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.c.s
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.o: .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.o
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.o
+
+# target to build an object file
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.o
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.o
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.i: .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.i
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.i
+
+# target to preprocess a source file
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.i
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.i
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.s: .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.s
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.s
+
+# target to generate assembly for a file
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.s
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.cpp.s
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.o: .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.o
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.o
+
+# target to build an object file
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.o
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.o
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.i: .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.i
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.i
+
+# target to preprocess a source file
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.i
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.i
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.s: .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.s
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.s
+
+# target to generate assembly for a file
+.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.s
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.cpp.s
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.o: .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.o
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.o
+
+# target to build an object file
+.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.o
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.o
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.i: .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.i
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.i
+
+# target to preprocess a source file
+.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.i
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.i
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.s: .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.s
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.s
+
+# target to generate assembly for a file
+.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.s
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.cpp.s
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.o: .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.o
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.o
+
+# target to build an object file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.o
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.o
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.i: .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.i
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.i
+
+# target to preprocess a source file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.i
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.i
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.s: .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.s
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.s
+
+# target to generate assembly for a file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.s
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.cpp.s
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.o: .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.o
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.o
+
+# target to build an object file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.o
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.o
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.i: .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.i
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.i
+
+# target to preprocess a source file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.i
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.i
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.s: .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.s
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.s
+
+# target to generate assembly for a file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.s
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.cpp.s
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.o: .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.o
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.o
+
+# target to build an object file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.o
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.o
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.i: .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.i
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.i
+
+# target to preprocess a source file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.i
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.i
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.s: .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.s
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.s
+
+# target to generate assembly for a file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.s
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.cpp.s
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.o: .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.o
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.o
+
+# target to build an object file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.o
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.o
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.i: .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.i
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.i
+
+# target to preprocess a source file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.i
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.i
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.s: .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.s
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.s
+
+# target to generate assembly for a file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.s
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.cpp.s
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.o: .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.o
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.o
+
+# target to build an object file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.o
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.o
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.i: .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.i
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.i
+
+# target to preprocess a source file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.i
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.i
+
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.s: .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.s
+
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.s
+
+# target to generate assembly for a file
+.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/.piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.s
+.PHONY : .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.cpp.s
 
 .piolibdeps/OneWire_ID1/OneWire.o: .piolibdeps/OneWire_ID1/OneWire.cpp.o
 
@@ -1253,6 +1631,33 @@ src/service/ApiRequest.cpp.s:
 	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/ApiRequest.cpp.s
 .PHONY : src/service/ApiRequest.cpp.s
 
+src/service/EventRouter.o: src/service/EventRouter.cpp.o
+
+.PHONY : src/service/EventRouter.o
+
+# target to build an object file
+src/service/EventRouter.cpp.o:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/EventRouter.cpp.o
+.PHONY : src/service/EventRouter.cpp.o
+
+src/service/EventRouter.i: src/service/EventRouter.cpp.i
+
+.PHONY : src/service/EventRouter.i
+
+# target to preprocess a source file
+src/service/EventRouter.cpp.i:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/EventRouter.cpp.i
+.PHONY : src/service/EventRouter.cpp.i
+
+src/service/EventRouter.s: src/service/EventRouter.cpp.s
+
+.PHONY : src/service/EventRouter.s
+
+# target to generate assembly for a file
+src/service/EventRouter.cpp.s:
+	$(MAKE) -f CMakeFiles/homegenie-mini.dir/build.make CMakeFiles/homegenie-mini.dir/src/service/EventRouter.cpp.s
+.PHONY : src/service/EventRouter.cpp.s
+
 src/service/HomeGenie.o: src/service/HomeGenie.cpp.o
 
 .PHONY : src/service/HomeGenie.o
@@ -1300,9 +1705,51 @@ help:
 	@echo "... .piolibdeps/ArduinoLog_ID1532/ArduinoLog.o"
 	@echo "... .piolibdeps/ArduinoLog_ID1532/ArduinoLog.i"
 	@echo "... .piolibdeps/ArduinoLog_ID1532/ArduinoLog.s"
+	@echo "... .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.o"
+	@echo "... .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.i"
+	@echo "... .piolibdeps/AsyncTCP_ID1826/src/AsyncTCP.s"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.o"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.i"
 	@echo "... .piolibdeps/ESP8266UPnP_ID2048/ESP8266UPnP.s"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.o"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.i"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/AsyncPrinter.s"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.o"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.i"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCP.s"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.o"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.i"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/ESPAsyncTCPbuffer.s"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.o"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.i"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/SyncClient.s"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.o"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.i"
+	@echo "... .piolibdeps/ESPAsyncTCP_ID305/src/tcp_axtls.s"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.o"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.i"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncEventSource.s"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.o"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.i"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/AsyncWebSocket.s"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.o"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.i"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/SPIFFSEditor.s"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.o"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.i"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebAuthentication.s"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.o"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.i"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebHandlers.s"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.o"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.i"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebRequest.s"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.o"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.i"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebResponses.s"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.o"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.i"
+	@echo "... .piolibdeps/ESP_Async_WebServer_ID306/src/WebServer.s"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.o"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.i"
 	@echo "... .piolibdeps/OneWire_ID1/OneWire.s"
@@ -1411,6 +1858,9 @@ help:
 	@echo "... src/service/ApiRequest.o"
 	@echo "... src/service/ApiRequest.i"
 	@echo "... src/service/ApiRequest.s"
+	@echo "... src/service/EventRouter.o"
+	@echo "... src/service/EventRouter.i"
+	@echo "... src/service/EventRouter.s"
 	@echo "... src/service/HomeGenie.o"
 	@echo "... src/service/HomeGenie.i"
 	@echo "... src/service/HomeGenie.s"

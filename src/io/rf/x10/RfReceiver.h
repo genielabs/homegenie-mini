@@ -59,9 +59,9 @@ namespace IO { namespace X10 {
     private:
         RfReceiverConfig *configuration;
         // 32-bit RF message decoding
-        uint32_t riseUs;
-        int8_t receivedCount;
-        uint32_t receiveBuffer;
+        volatile uint32_t riseUs;
+        volatile int8_t receivedCount;
+        volatile uint32_t receiveBuffer;
 
         // TODO: move to an utility class (maybe static)
         // Utility methods
