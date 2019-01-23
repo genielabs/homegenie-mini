@@ -291,14 +291,6 @@ namespace Service {
             x10Message.houseCode = HouseCodeLut[command->Address.charAt(0) - HOUSE_MIN];
             x10Message.unitCode = UnitCodeLut[command->Address.substring(1).toInt() - UNIT_MIN];
 
-            Serial.print(command->Address.charAt(0));
-            Serial.print(":");
-            Serial.println(x10Message.houseCode);
-            Serial.print(command->Address.substring(1).toInt());
-            Serial.print(":");
-            Serial.println(x10Message.unitCode);
-            Serial.println();
-
             if (command->Command == "Control.On") {
                 x10Message.command = X10::Command::CMD_ON;
                 X10::X10Message::encodeCommand(&x10Message, data);
