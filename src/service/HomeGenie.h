@@ -76,6 +76,7 @@ namespace Service {
         IOManager ioManager;
         void getBytes(const String &rawBytes, uint8_t *data);
         String byteToHex(byte b);
+        String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
         String createModuleParameter(const char *name, const char* value);
     };
 

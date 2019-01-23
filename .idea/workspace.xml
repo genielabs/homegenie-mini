@@ -22,22 +22,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec922180-b3d3-40f1-af0b-2568113a9075" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/flags.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/homegenie-mini.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/homegenie-mini.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/Logger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/Logger.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/HTTPServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/NetManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/NetManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/service/HomeGenie.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/HomeGenie.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/service/HomeGenie.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/HomeGenie.h" afterDir="false" />
     </list>
@@ -59,11 +43,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-195">
-              <caret line="209" column="20" selection-start-line="209" selection-start-column="20" selection-end-line="209" selection-end-column="20" />
+            <state relative-caret-position="242">
+              <caret line="324" column="31" selection-start-line="324" selection-start-column="31" selection-end-line="324" selection-end-column="31" />
             </state>
           </provider>
         </entry>
@@ -98,11 +82,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="515">
-              <caret line="125" column="71" selection-start-line="125" selection-start-column="71" selection-end-line="125" selection-end-column="71" />
+            <state relative-caret-position="194">
+              <caret line="122" column="46" selection-start-line="122" selection-start-column="46" selection-end-line="122" selection-end-column="46" />
               <folding>
                 <element signature="e#879#902#0" expanded="true" />
               </folding>
@@ -117,6 +101,18 @@
               <caret line="119" column="80" selection-start-line="119" selection-start-column="80" selection-end-line="119" selection-end-column="80" />
               <folding>
                 <element signature="e#879#906#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="414">
+              <caret line="78" column="19" selection-start-line="78" selection-start-column="19" selection-end-line="78" selection-end-column="19" />
+              <folding>
+                <element signature="e#950#967#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -159,7 +155,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>mallo</find>
       <find>malloc</find>
       <find>mall</find>
       <find>new</find>
@@ -189,6 +184,7 @@
       <find>QList</find>
       <find>_poolServerName</find>
       <find>Serial.</find>
+      <find>dash</find>
     </findStrings>
     <replaceStrings>
       <replace>2019-01-10</replace>
@@ -243,7 +239,6 @@
         <option value="$PROJECT_DIR$/src/net/MQTTServer.cpp" />
         <option value="$PROJECT_DIR$/src/net/MQTTServer.h" />
         <option value="$PROJECT_DIR$/src/net/HTTPServer.h" />
-        <option value="$PROJECT_DIR$/src/service/HomeGenie.h" />
         <option value="$PROJECT_DIR$/src/net/ntp/NTPClient.h" />
         <option value="$PROJECT_DIR$/src/net/ntp/NTPClient.cpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
@@ -251,9 +246,10 @@
         <option value="$PROJECT_DIR$/src/io/Logger.cpp" />
         <option value="$PROJECT_DIR$/lib/NTPClient-master/NTPClient.h" />
         <option value="$PROJECT_DIR$/lib/NTPClient-master/NTPClient.cpp" />
-        <option value="$PROJECT_DIR$/src/service/HomeGenie.cpp" />
         <option value="$PROJECT_DIR$/src/net/NetManager.cpp" />
         <option value="$PROJECT_DIR$/src/net/HTTPServer.cpp" />
+        <option value="$PROJECT_DIR$/src/service/HomeGenie.h" />
+        <option value="$PROJECT_DIR$/src/service/HomeGenie.cpp" />
       </list>
     </option>
   </component>
@@ -504,17 +500,18 @@
       <workItem from="1547384758233" duration="206461000" />
       <workItem from="1548074907462" duration="13006000" />
       <workItem from="1548112613372" duration="7231000" />
-      <workItem from="1548192184001" duration="8554000" />
+      <workItem from="1548192184001" duration="10679000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="347119000" />
+    <option name="totallyTimeSpent" value="349244000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="25" width="1920" height="996" extended-state="7" />
+    <frame x="0" y="25" width="1920" height="996" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" id="Project" order="0" sideWeight="0.55307263" visible="true" weight="0.22572039" />
+      <window_info id="Project" order="0" sideWeight="0.55307263" visible="true" weight="0.22572039" />
       <window_info id="Structure" order="1" sideWeight="0.44692737" side_tool="true" weight="0.1905016" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="CMake" order="0" weight="0.32871974" />
@@ -526,8 +523,8 @@
       <window_info anchor="bottom" id="Event Log" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49733192" weight="0.3298731" />
       <window_info anchor="bottom" id="Find" order="8" sideWeight="0.49466383" weight="0.32871974" />
-      <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.24332978" weight="0.41291812" />
-      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.75667024" side_tool="true" weight="0.41291812" />
+      <window_info active="true" anchor="bottom" id="Messages" order="9" sideWeight="0.24279615" visible="true" weight="0.41291812" />
+      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.7572038" side_tool="true" visible="true" weight="0.41291812" />
       <window_info anchor="right" id="Database" order="0" />
     </layout>
   </component>
@@ -793,16 +790,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="78" column="29" selection-start-line="78" selection-start-column="29" selection-end-line="78" selection-end-column="29" />
-          <folding>
-            <element signature="e#950#967#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/MQTTServer.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="218">
@@ -909,13 +896,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-195">
-          <caret line="209" column="20" selection-start-line="209" selection-start-column="20" selection-end-line="209" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/NetManager.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2357">
@@ -925,11 +905,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="515">
-          <caret line="125" column="71" selection-start-line="125" selection-start-column="71" selection-end-line="125" selection-end-column="71" />
+        <state relative-caret-position="194">
+          <caret line="122" column="46" selection-start-line="122" selection-start-column="46" selection-end-line="122" selection-end-column="46" />
           <folding>
             <element signature="e#879#902#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="78" column="19" selection-start-line="78" selection-start-column="19" selection-end-line="78" selection-end-column="19" />
+          <folding>
+            <element signature="e#950#967#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="324" column="31" selection-start-line="324" selection-start-column="31" selection-end-line="324" selection-end-column="31" />
         </state>
       </provider>
     </entry>

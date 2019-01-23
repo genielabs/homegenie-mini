@@ -227,7 +227,7 @@ namespace Service {
     "Description": "%s",
     "FieldType": "%s",
     "UpdateTime": "%s"
-})";
+  })";
         auto currentTime = NetManager::getTimeClient().getFormattedDate();
         ssize_t size = snprintf(NULL, 0, parameterTemplate,
                                 name, value, "", "", currentTime.c_str()
@@ -239,6 +239,34 @@ namespace Service {
         auto p = String(parameterJson);
         free(parameterJson);
         return p;
+    }
+
+    String HomeGenie::createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters) {
+        static const char* moduleTemplate = R"({
+  "Name": "%s",
+  "Description": "%s",
+  "DeviceType": "%s",
+  "Domain": "%s",
+  "Address": "%s",
+  "Properties": [%s],
+  "RoutingNode": ""
+})";
+        // TODO: WARNING removing "RoutingNode" property will break HomeGenie plus client compatibility
+
+        ssize_t size = snprintf(NULL, 0, moduleTemplate,
+                                name, description, deviceType,
+                                domain, address,
+                                parameters
+                                )+1;
+        char* moduleJson = (char*)malloc(size);
+        snprintf(moduleJson, size, moduleTemplate,
+                 name, description, deviceType,
+                 domain, address,
+                 parameters
+        );
+        auto m = String(moduleJson);
+        free(moduleJson);
+        return m;
     }
 
 
@@ -271,39 +299,34 @@ namespace Service {
 
             if (command->Address == "Config") {
 
-                static const char* moduleTemplate = R"({
-  "Name": "%s",
-  "Description": "%s",
-  "DeviceType": "%s",
-  "Domain": "%s",
-  "Address": "%s",
-  "Properties": [%s],
-  "RoutingNode": ""
-})";
-
                 if (command->Command == "Modules.List") {
 
-
+                    command->Response = "[\n";
+                    // HG Mini multi-sensor module
                     String paramLuminance = createModuleParameter("Sensor.Luminance", String(ioManager.getLightSensor().getLightLevel()).c_str());
                     String paramTemperature = createModuleParameter("Sensor.Temperature", String(ioManager.getTemperatureSensor().getTemperature()).c_str());
-                    ssize_t size = snprintf(NULL, 0, moduleTemplate,
+                    command->Response += createModule("HomeAutomation.HomeGenie", "mini",
                             "HG-Mini", "HomeGenie Mini node", "Sensor",
-                            "HomeAutomation.HomeGenie", "mini",
-                            (paramLuminance+","+paramTemperature).c_str()
-                    )+1;
-                    char* moduleJson = (char*)malloc(size);
-                    snprintf(moduleJson, size, moduleTemplate,
-                             "HG-Mini", "HomeGenie Mini node", "Sensor",
-                             "HomeAutomation.HomeGenie", "mini",
-                             (paramLuminance+","+paramTemperature).c_str()
-                    );
+                            (paramLuminance+","+paramTemperature).c_str());
+                    // X10 Home Automation modules
+                    for (int m = 0; m < 16; m++) {
+                        String paramLevel = createModuleParameter("Status.Level", "0");
+                        command->Response += ",\n"+createModule("HomeAutomation.X10", (String("A")+String(m+1)).c_str(),
+                                "", "X10 Module", "Switch",
+                                paramLevel.c_str());
+                    }
 
-                    command->Response = "["+String(moduleJson)+"]";
-
-                    free(moduleJson);
+                    command->Response += "\n]";
 
                 } else if (command->Command == "Groups.List") {
-                    command->Response = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]}])";
+                    String list = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]},)";
+                    list += R"({"Name":"X10 Modules", "Modules":[)";
+                    for (int m = 0; m < 16; m++) {
+                        list += R"({"Address":"A)"+String(m+1)+R"(","Domain":"HomeAutomation.X10"})";
+                        if (m < 15) list += ",";
+                    }
+                    list += R"(]}])";
+                    command->Response = list;
                 }
 
 
