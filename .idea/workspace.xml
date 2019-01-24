@@ -2,17 +2,17 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
+      <config projectName="homegenie-mini" targetName="PLATFORMIO_REBUILD_PROJECT_INDEX" />
+      <config projectName="homegenie-mini" targetName="PLATFORMIO_TEST" />
+      <config projectName="homegenie-mini" targetName="PLATFORMIO" />
+      <config projectName="homegenie-mini" targetName="PLATFORMIO_UPDATE_ALL" />
+      <config projectName="homegenie-mini" targetName="PLATFORMIO_UPLOADFS" />
+      <config projectName="homegenie-mini" targetName="PLATFORMIO_CLEAN" />
+      <config projectName="homegenie-mini" targetName="PLATFORMIO_UPLOAD" />
+      <config projectName="homegenie-mini" targetName="homegenie-mini" />
+      <config projectName="homegenie-mini" targetName="PLATFORMIO_PROGRAM" />
       <config projectName="homegenie-mini" targetName="DEBUG" />
       <config projectName="homegenie-mini" targetName="PLATFORMIO_BUILD" />
-      <config projectName="homegenie-mini" targetName="PLATFORMIO_UPLOAD" />
-      <config projectName="homegenie-mini" targetName="PLATFORMIO_TEST" />
-      <config projectName="homegenie-mini" targetName="PLATFORMIO_CLEAN" />
-      <config projectName="homegenie-mini" targetName="PLATFORMIO_UPDATE_ALL" />
-      <config projectName="homegenie-mini" targetName="homegenie-mini" />
-      <config projectName="homegenie-mini" targetName="PLATFORMIO_UPLOADFS" />
-      <config projectName="homegenie-mini" targetName="PLATFORMIO" />
-      <config projectName="homegenie-mini" targetName="PLATFORMIO_PROGRAM" />
-      <config projectName="homegenie-mini" targetName="PLATFORMIO_REBUILD_PROJECT_INDEX" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -22,33 +22,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec922180-b3d3-40f1-af0b-2568113a9075" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/service/EventRouter.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/service/EventRouter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/homegenie-mini.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/homegenie-mini.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/homegenie-mini.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Task.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Task.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Task.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Task.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TaskManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/TaskManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/IOEvent.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/IOEvent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfReceiver.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/io/rf/x10/RfTransmitterConfig.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/HTTPServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/HTTPServer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/HTTPServer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/MQTTServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/MQTTServer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/NetManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/net/NetManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/net/NetManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/HomeGenie.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/HomeGenie.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/service/HomeGenie.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/HomeGenie.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/service/EventRouter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/EventRouter.cpp" afterDir="false" />
     </list>
     <ignored path="platformio.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -68,20 +43,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="143" column="17" selection-start-line="143" selection-start-column="17" selection-end-line="143" selection-end-column="17" />
+            <state relative-caret-position="3278">
+              <caret line="149" column="22" selection-start-line="149" selection-start-column="22" selection-end-line="149" selection-end-column="22" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/service/EventRouter.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="321">
-              <caret line="81" column="30" selection-start-line="81" selection-start-column="30" selection-end-line="81" selection-end-column="30" />
+            <state relative-caret-position="192">
+              <caret line="54" selection-start-line="54" selection-end-line="54" />
             </state>
           </provider>
         </entry>
@@ -89,7 +64,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/service/EventRouter.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="159">
+            <state relative-caret-position="1342">
               <caret line="61" column="25" selection-start-line="61" selection-start-column="25" selection-end-line="61" selection-end-column="25" />
             </state>
           </provider>
@@ -98,7 +73,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/NetManager.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="445">
+            <state relative-caret-position="3674">
               <caret line="167" selection-start-line="167" selection-end-line="167" />
               <folding>
                 <element signature="e#879#909#0" expanded="true" />
@@ -110,7 +85,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
+            <state relative-caret-position="1342">
               <caret line="61" selection-start-line="61" selection-end-line="61" />
               <folding>
                 <element signature="e#952#981#0" expanded="true" />
@@ -122,7 +97,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/NetManager.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
+            <state relative-caret-position="1276">
               <caret line="58" column="14" selection-start-line="58" selection-start-column="14" selection-end-line="58" selection-end-column="14" />
               <folding>
                 <element signature="e#954#978#0" expanded="true" />
@@ -134,7 +109,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="328">
+            <state relative-caret-position="792">
               <caret line="36" column="2" selection-start-line="36" selection-start-column="2" selection-end-line="36" selection-end-column="2" />
             </state>
           </provider>
@@ -143,8 +118,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-288">
-              <caret line="114" column="25" selection-start-line="114" selection-start-column="25" selection-end-line="114" selection-end-column="25" />
+            <state relative-caret-position="350">
+              <caret line="80" column="17" selection-start-line="80" selection-start-column="17" selection-end-line="80" selection-end-column="17" />
               <folding>
                 <element signature="e#879#902#0" expanded="true" />
               </folding>
@@ -155,7 +130,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
+            <state relative-caret-position="924">
               <caret line="42" column="37" selection-start-line="42" selection-start-column="37" selection-end-line="42" selection-end-column="37" />
               <folding>
                 <element signature="e#879#901#0" expanded="true" />
@@ -167,7 +142,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
+            <state relative-caret-position="1650">
               <caret line="75" column="31" selection-start-line="75" selection-start-column="31" selection-end-line="75" selection-end-column="31" />
               <folding>
                 <element signature="e#950#967#0" expanded="true" />
@@ -272,9 +247,9 @@
         <option value="$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp" />
         <option value="$PROJECT_DIR$/src/net/NetManager.cpp" />
         <option value="$PROJECT_DIR$/src/service/HomeGenie.h" />
-        <option value="$PROJECT_DIR$/src/service/EventRouter.cpp" />
         <option value="$PROJECT_DIR$/src/service/EventRouter.h" />
         <option value="$PROJECT_DIR$/src/service/HomeGenie.cpp" />
+        <option value="$PROJECT_DIR$/src/service/EventRouter.cpp" />
       </list>
     </option>
   </component>
@@ -307,6 +282,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -390,7 +366,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -519,16 +494,18 @@
       <workItem from="1548074907462" duration="13006000" />
       <workItem from="1548112613372" duration="7231000" />
       <workItem from="1548192184001" duration="14697000" />
+      <workItem from="1548291877974" duration="1788000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="384502000" />
+    <option name="totallyTimeSpent" value="388035000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1920" height="996" extended-state="7" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" order="0" sideWeight="0.55307263" visible="true" weight="0.22572039" />
+      <window_info id="Project" order="0" sideWeight="0.55307263" visible="true" weight="0.22838847" />
       <window_info id="Structure" order="1" sideWeight="0.44692737" side_tool="true" weight="0.1905016" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="CMake" order="0" weight="0.32871974" />
@@ -536,12 +513,12 @@
       <window_info anchor="bottom" id="Database Changes" order="2" />
       <window_info anchor="bottom" id="Run" order="3" />
       <window_info anchor="bottom" id="Debug" order="4" />
-      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.5133405" weight="0.361015" />
+      <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.5122732" weight="0.361015" />
       <window_info anchor="bottom" id="Event Log" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49573106" weight="0.3298731" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49519745" weight="0.3298731" />
       <window_info anchor="bottom" id="Find" order="8" sideWeight="0.49306297" weight="0.32871974" />
-      <window_info anchor="bottom" id="Messages" order="9" sideWeight="0.28388473" visible="true" weight="0.35063437" />
-      <window_info active="true" anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.71611524" side_tool="true" visible="true" weight="0.35063437" />
+      <window_info active="true" anchor="bottom" id="Messages" order="9" sideWeight="0.28335112" visible="true" weight="0.35063437" />
+      <window_info anchor="bottom" id="Serial Monitor" order="10" sideWeight="0.7166489" side_tool="true" visible="true" weight="0.35063437" />
       <window_info anchor="right" id="Database" order="0" />
     </layout>
     <layout-to-restore>
@@ -853,46 +830,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
+    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="42" column="37" selection-start-line="42" selection-start-column="37" selection-end-line="42" selection-end-column="37" />
-          <folding>
-            <element signature="e#879#901#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="3278">
+          <caret line="149" column="22" selection-start-line="149" selection-start-column="22" selection-end-line="149" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.h">
+    <entry file="file://$PROJECT_DIR$/src/service/EventRouter.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="61" selection-start-line="61" selection-end-line="61" />
-          <folding>
-            <element signature="e#952#981#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-288">
-          <caret line="114" column="25" selection-start-line="114" selection-start-column="25" selection-end-line="114" selection-end-column="25" />
-          <folding>
-            <element signature="e#879#902#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="36" column="2" selection-start-line="36" selection-start-column="2" selection-end-line="36" selection-end-column="2" />
+        <state relative-caret-position="1342">
+          <caret line="61" column="25" selection-start-line="61" selection-start-column="25" selection-end-line="61" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/net/NetManager.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="445">
+        <state relative-caret-position="3674">
           <caret line="167" selection-start-line="167" selection-end-line="167" />
           <folding>
             <element signature="e#879#909#0" expanded="true" />
@@ -900,9 +854,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1342">
+          <caret line="61" selection-start-line="61" selection-end-line="61" />
+          <folding>
+            <element signature="e#952#981#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/net/NetManager.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
+        <state relative-caret-position="1276">
           <caret line="58" column="14" selection-start-line="58" selection-start-column="14" selection-end-line="58" selection-end-column="14" />
           <folding>
             <element signature="e#954#978#0" expanded="true" />
@@ -910,9 +874,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/mqtt/MQTTBrokerMini.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="792">
+          <caret line="36" column="2" selection-start-line="36" selection-start-column="2" selection-end-line="36" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/IOManager.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="924">
+          <caret line="42" column="37" selection-start-line="42" selection-start-column="37" selection-end-line="42" selection-end-column="37" />
+          <folding>
+            <element signature="e#879#901#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
+        <state relative-caret-position="1650">
           <caret line="75" column="31" selection-start-line="75" selection-start-column="31" selection-end-line="75" selection-end-column="31" />
           <folding>
             <element signature="e#950#967#0" expanded="true" />
@@ -920,24 +901,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/HTTPServer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="350">
+          <caret line="80" column="17" selection-start-line="80" selection-start-column="17" selection-end-line="80" selection-end-column="17" />
+          <folding>
+            <element signature="e#879#902#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/service/EventRouter.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="321">
-          <caret line="81" column="30" selection-start-line="81" selection-start-column="30" selection-end-line="81" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/service/EventRouter.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="61" column="25" selection-start-line="61" selection-start-column="25" selection-end-line="61" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/service/HomeGenie.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="143" column="17" selection-start-line="143" selection-start-column="17" selection-end-line="143" selection-end-column="17" />
+        <state relative-caret-position="192">
+          <caret line="54" selection-start-line="54" selection-end-line="54" />
         </state>
       </provider>
     </entry>

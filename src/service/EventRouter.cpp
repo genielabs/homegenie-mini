@@ -51,7 +51,7 @@ namespace Service {
                 netManager->getMQTTServer()->broadcast(&topic, &details);
 
                 // SSE
-                //netManager.getHttpServer().sendSSEvent(m.domain, m.sender, m.event, m.value);
+                netManager->getHttpServer()->sendSSEvent(m.domain, m.sender, m.event, m.value);
 
                 // WS
                 if (netManager->getWebSocketServer()->connectedClients() > 0) {
@@ -61,10 +61,9 @@ namespace Service {
                     int sz = 1+snprintf(NULL, 0, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
                                         date.c_str(), epoch, ms, m.domain.c_str(), m.sender.c_str(), m.event.c_str(), m.value.c_str());
                     char msg[sz];
-                    snprintf(msg, sz, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
+                    snprintf(msg, sz, R"({"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
                              date.c_str(), epoch, ms, m.domain.c_str(), m.sender.c_str(), m.event.c_str(), m.value.c_str());
-                    //netManager.getWebSocketServer().broadcastTXT(msg, (size_t)sz);
-                    netManager->getWebSocketServer()->sendTXT(0, msg);
+                    netManager->getWebSocketServer()->broadcastTXT(msg);
                 }
 
                 // TODO: route event to the console as well
