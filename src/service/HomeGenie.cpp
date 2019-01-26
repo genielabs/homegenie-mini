@@ -100,7 +100,7 @@ namespace Service {
             /*
              * X10 RF Receiver "Sensor.RawData" event
              */
-            if (address == "RF" && event == IOEventPaths::Sensor_RawData && ioManager.getX10Receiver().isEnabled()) {
+            if (address == "RF" && event == IOEventPaths::Sensor_RawData /*&& ioManager.getX10Receiver().isEnabled()*/) {
                 // decode event data (X10 RF packet)
                 auto data = ((uint8_t *) eventData);
                 /// \param type Type of message (eg. 0x20 = standard, 0x29 = security, ...)
@@ -261,9 +261,9 @@ namespace Service {
             uint8_t data[command->OptionsString.length() / 2]; getBytes(command->OptionsString, data);
             // Disable RfReceiver callbacks during transmission to prevent echo
             noInterrupts();
-            getIOManager().getX10Receiver().disable();
+            //getIOManager().getX10Receiver().disable();
             getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
-            getIOManager().getX10Receiver().enable();
+            //getIOManager().getX10Receiver().enable();
             interrupts();
             command->Response = R"({ "ResponseText": "OK" })";
 
@@ -286,9 +286,9 @@ namespace Service {
 
             X10::X10Message::encodeCommand(&x10Message, data);
             noInterrupts();
-            ioManager.getX10Receiver().disable();
+            //ioManager.getX10Receiver().disable();
             ioManager.getX10Transmitter().sendCommand(&data[1], sizeof(data)-1);
-            ioManager.getX10Receiver().enable();
+            //ioManager.getX10Receiver().enable();
             interrupts();
             command->Response = R"({ "ResponseText": "OK" })";
 

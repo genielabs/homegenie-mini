@@ -46,6 +46,10 @@ HomeGenie homeGenie;
 /// This gets called just before the main application loop()
 void setup() {
 
+    // Turn off built-in LED
+    pinMode(D4, OUTPUT);
+    digitalWrite(D4, HIGH);
+
     // Logger initialization
     Logger::begin(LOG_LEVEL_TRACE);
 

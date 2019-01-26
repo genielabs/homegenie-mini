@@ -31,7 +31,6 @@
 
 namespace IO { namespace X10 {
 
-    static bool enabled;
     RfReceiver *receiverInstance = NULL;
 
     void receiverInstance_wrapper() {
@@ -54,30 +53,17 @@ namespace IO { namespace X10 {
     //////////////////////////////
 
     void RfReceiver::begin() {
-        enabled = true;
         Logger::info("|  - %s (PIN=%d INT=%d)", X10_RFRECEIVER_NS_PREFIX, configuration->getPin(), configuration->getInterrupt());
         pinMode(configuration->getPin(), INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(configuration->getInterrupt()), receiverInstance_wrapper, RISING);
         Logger::info("|  ✔ %s", X10_RFRECEIVER_NS_PREFIX);
     }
 
-    void RfReceiver::enable() {
-        enabled = true;
-    }
-
-    void RfReceiver::disable() {
-        enabled = false;
-    }
-
-    bool RfReceiver::isEnabled() {
-        return enabled;
-    }
-
     uint8_t messageType = 0x00;
     uint8_t byteBuffer[4];
 
     void RfReceiver::receive() {
-        if (!isEnabled()) return;
+        //if (!isEnabled()) return;
 
         uint32_t lengthUs = micros() - riseUs;
         riseUs = micros();

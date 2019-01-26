@@ -37,7 +37,7 @@ namespace Service {
 
     void EventRouter::loop() {
 
-        if (uptime() > 15000 && millis() - lastSendEventTs > 100) {
+        //if (uptime() > 15000 && millis() - lastSendEventTs > 5) {
             lastSendEventTs = millis();
             // MQTT & SSE Events Queue (dequeue)
             for (int i = 0; i < eventsQueue.size(); i++) {
@@ -70,7 +70,7 @@ namespace Service {
                 // process only one message per cycle to prevent excessive overload
                 //break;
             }
-        }
+        //}
     }
 
     void EventRouter::signalEvent(QueuedMessage m) {

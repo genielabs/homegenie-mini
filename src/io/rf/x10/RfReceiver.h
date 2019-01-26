@@ -51,11 +51,6 @@ namespace IO { namespace X10 {
         void begin();
         void receive();
 
-        void enable();
-        void disable();
-
-        bool isEnabled();
-
     private:
         RfReceiverConfig *configuration;
         // 32-bit RF message decoding
