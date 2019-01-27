@@ -1,6 +1,6 @@
 # HomeGenie Mini
 
-HomeGenie mini is an open source hardware + firmware solution for building smart devices
+HomeGenie mini is an open hardware + firmware solution for building smart devices
 based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 This project can can be employed for a variety of Home Automation and IoT applications.
 
