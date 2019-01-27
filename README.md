@@ -2,16 +2,15 @@
 
 HomeGenie mini is an open hardware + firmware solution for building smart devices
 based on the popular *ESP8266 chip*, a WiFi capable micro controller.
-This project can can be employed for a variety of Home Automation and IoT applications.
 
 **Hardware features**
 
-- Quick install via WPS button and automatic discovery (SSDP)
+- Quick install button via WPS and automatic discovery (SSDP)
 - Temperature and light sensing
 - RF transceiver (315/330/433Mhz) currently implementing **X10** home automation protocol
 - P1 connector with 4 GPIO configurable as SPI/DIO/PWM
 
-**Software features**
+**Firmware features**
 
 - HTTP API (subset of standard HomeGenie API)
 - Real time event stream over WebSocket or SSE connection
