@@ -8,11 +8,11 @@ based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 - WPS button for quick WiFi setup
 - Temperature and light sensors
 - RF transceiver (315/330/433Mhz)
-- P1 connector with 4 GPIO configurable as SPI/DIO/PWM
+- Expansion connector (P1) with 4 GPIO configurable as SPI/DIO/PWM
 
 **Firmware features**
 
-- Quick install with automatic discovery (SSDP)
+- Automatic discovery (SSDP) for quick client setup
 - X10 RF protocol encoding and decoding
 - HTTP API (subset of standard HomeGenie API)
 - Real time event stream over WebSocket or SSE connection
