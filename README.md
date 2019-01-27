@@ -9,29 +9,26 @@ This project can can be employed for a variety of Home Automation and IoT applic
 - Quick install via WPS button and automatic discovery (SSDP)
 - Temperature and light sensing
 - RF transceiver (315/330/433Mhz) currently implementing **X10** home automation protocol
-- Expansion port with SPI and up to 5 GPIO/PWM
+- P1 connector with 4 GPIO configurable as SPI/DIO/PWM
 
 **Software features**
 
-- Scripting engine (\*)
 - HTTP API (subset of standard HomeGenie API)
 - Real time event stream over WebSocket or SSE connection
 - MQTT broker over websocket
 - SSDP
 - NTP client for time sync
-
-<small>**(*)** *currently work in progress*</small>
+- Scripting engine (currently work in progress)
 
 **Mobile client**
 
 - HomeGenie plus for Android
 
-The expansion port can be used for various applications such as:
+The P1 connector can be used for various applications such as:
 
-- control a led brightness or drive a motor at different speed
-- control up to 5 relays to actuate lights and appliances
-- hosting other sensors
-- interfacing with other hardware
+- control a led brightness or drive a motor at different speed (PWM)
+- control up to 4 relays to actuate lights and appliances (DIO)
+- hosting other sensors or interfacing with other hardware (SPI)
 - breadboard playground
 
 ## Building HomeGene Mini
@@ -46,7 +43,7 @@ Required Gerber files for printing the printed circuit board are located in the 
 
 **Components listing**
 
-- ESP8266 WeMoo D1 mini WiFi module (or equivalent)
+- 1 ESP8266 WeMoo D1 mini WiFi module (or equivalent)
 - 1 DS18B20 (temperature sensor)
 - 1 LDR (light sensor)
 - 1 FS1000A (RF transmitter)
@@ -56,7 +53,7 @@ Required Gerber files for printing the printed circuit board are located in the 
 - 1 R3 330Ω
 - 1 R4 330Ω
 - 2 LED 3mm
-- 1 push button 6mm*6mm
+- 1 Push button 6mm*6mm
 
 ### Firmware
 
