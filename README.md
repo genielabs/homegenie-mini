@@ -41,7 +41,7 @@ Required Gerber files for printing the printed circuit board are located in the 
 
 - https://github.com/genielabs/homegenie-mini/tree/master/pcb
 
-The PCB measures 44x50mm.
+The PCB size is 44x50mm.
 
 **Components listing**
 
