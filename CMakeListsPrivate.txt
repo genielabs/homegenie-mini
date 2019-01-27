@@ -60,4 +60,4 @@ include_directories("$ENV{HOME}/.platformio/packages/tool-unity")
 include_directories("$ENV{HOME}/Documents/PlatformIO/Projects/homegenie-mini/include")
 include_directories("$ENV{HOME}/Documents/PlatformIO/Projects/homegenie-mini/src")
 
-FILE(GLOB_RECURSE SRC_LIST "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/src/*.*" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/lib/*.*" "/home/gene/Documents/PlatformIO/Projects/homegenie-mini/.piolibdeps/*.*")
+FILE(GLOB_RECURSE SRC_LIST "./src/*.*" "./lib/*.*" "./.piolibdeps/*.*")
