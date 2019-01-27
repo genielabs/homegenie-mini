@@ -41,6 +41,8 @@ Required Gerber files for printing the printed circuit board are located in the 
 
 - https://github.com/genielabs/homegenie-mini/tree/master/pcb
 
+The PCB measures 44x50mm.
+
 **Components listing**
 
 - 1 ESP8266 WeMoo D1 mini WiFi module (or equivalent)
