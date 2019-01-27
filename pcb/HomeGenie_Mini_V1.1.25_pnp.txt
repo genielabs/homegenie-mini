@@ -1,0 +1,105 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=HomeGenie_Mini_V1.1.25
+*Date=15:30:16
+*CreatedBy=Fritzing 0.9.3b.04.19.5c895d327c44a3114e5fcc9d8260daf0cbb52806
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;;12.0269;-13.3732;0;Bottom;Copper Fill26
+2;;;13.0155;-35.3785;0;Bottom;TMP
+3;;;20.2692;-44.4755;0;Bottom;Copper Fill8
+4;;;20.1185;-46.6571;0;Bottom;Via164
+5;;;34.9289;-16.7886;0;Bottom;Via171
+6;10k;THT;16.1965;-44.411;0;Bottom;R1 10k
+7;;;19.5834;-37.3254;0;Bottom;Copper Fill22
+8;;3 mm [THT];16.5141;-40.022;0;Bottom;LED8
+9;;;6.13332;-39.4149;0;Bottom;blkr1
+10;;;34.8171;-23.7498;0;Bottom;Via149
+11;;;35.1917;-39.7638;0;Bottom;Copper Fill32
+12;;;42.2315;-48.221;0;Bottom;Hole8
+13;;THT;3.93206;-9.69414;0;Bottom;RF-TX
+14;;;37.6731;-36.8292;0;Bottom;TXT1
+15;;;16.4084;-35.2299;0;Bottom;Copper Fill31
+16;;;15.5321;-36.1316;0;Bottom;Copper Fill29
+17;;;42.2315;-1.86598;0;Bottom;Hole5
+18;;;25.0698;-41.4656;0;Bottom;Copper Fill21
+19;;;29.2139;-23.7735;0;Bottom;Via153
+20;;3 mm [THT];21.5941;-40.022;0;Bottom;LED9
+21;;;1.90897;-48.221;0;Bottom;Hole6
+22;330;THT;22.5465;-31.076;-90;Bottom;R4
+23;;;40.3265;-40.601;0;Bottom;Via170
+24;;;28.3734;-17.1392;0;Bottom;WeMos D1 Mini
+25;;;9.6774;-21.3488;0;Bottom;Copper Fill24
+26;;;10.4075;-46.5745;0;Bottom;TXT1
+27;;;27.3089;-23.7735;0;Bottom;Via154
+28;;;20.2692;-44.4755;0;Bottom;Copper Fill34
+29;;;31.1189;-23.7735;0;Bottom;Via152
+30;;THT;1.62764;-34.3496;0;Bottom;RF-RX
+31;;;21.6408;-23.9396;0;Bottom;Copper Fill2
+32;;;22.5933;-47.5616;0;Bottom;Copper Fill13
+33;;;34.29;-40.6655;0;Bottom;Copper Fill11
+34;;;28.8518;-48.5166;0;Bottom;TXT1
+35;;;15.621;-41.9355;0;Bottom;Copper Fill38
+36;330;THT;26.3565;-31.076;-90;Bottom;R3
+37;;;24.1339;-22.186;0;Bottom;Via157
+38;;;37.8985;-46.6571;0;Bottom;Via165
+39;;;36.0934;-40.6655;0;Bottom;Copper Fill12
+40;;;16.4973;-42.7864;0;Bottom;Copper Fill37
+41;;;37.7548;-40.6304;0;Bottom;IMG2
+42;;;12.0588;-40.5269;0;Bottom;TXT1
+43;;;19.2347;-35.8792;0;Bottom;TXT1
+44;;;21.9964;-25.0064;0;Bottom;Copper Fill20
+45;;;15.6735;-46.6571;0;Bottom;Via155
+46;;;11.4384;-1.6927;0;Bottom;TXT1
+47;;;21.9964;-25.0064;0;Bottom;Copper Fill1
+48;;;24.8412;-13.3478;0;Bottom;Copper Fill25
+49;;;22.1742;-44.4755;0;Bottom;Copper Fill35
+50;;;35.1917;-41.5672;0;Bottom;Copper Fill9
+51;;;20.5994;-26.7844;0;Bottom;Copper Fill23
+52;;;33.1784;-1.86466;0;Bottom;TXT1
+53;;;20.701;-41.9355;0;Bottom;Copper Fill14
+54;;;35.3568;-23.7999;0;Bottom;Copper Fill6
+55;;;29.7449;-35.9584;0;Bottom;TXT1
+56;;;25.1985;-46.6571;0;Bottom;Via162
+57;;;16.4973;-42.7864;0;Bottom;Copper Fill16
+58;;;26.0255;-40.6782;0;Bottom;TXT1
+59;;;12.0269;-13.3732;0;Bottom;Copper Fill3
+60;;;35.1917;-39.7638;0;Bottom;Copper Fill10
+61;4.7k;THT;12.069;-29.806;0;Bottom;R2 4.7k
+62;;;27.7385;-46.6571;0;Bottom;Via161
+63;;;36.0934;-40.6655;0;Bottom;Copper Fill33
+64;;;22.4028;-41.9355;0;Bottom;Copper Fill36
+65;;;15.5321;-34.3536;0;Bottom;Copper Fill30
+66;;;8.4328;-39.1542;0;Bottom;Copper Fill19
+67;;;32.8185;-46.6571;0;Bottom;Via160
+68;;;30.2785;-46.6571;0;Bottom;Via158
+69;;;11.0236;-12.3699;0;Bottom;Copper Fill4
+70;;;14.0336;-46.9805;0;Bottom;IMG4
+71;;;40.7416;-11.7603;0;Bottom;Copper Fill27
+72;;;8.10489;-20.7672;0;Bottom;IMG1
+73;;;35.2465;-40.601;0;Bottom;Via169
+74;;;33.0239;-23.7735;0;Bottom;Via151
+75;;;22.4028;-41.9355;0;Bottom;Copper Fill15
+76;;;12.4985;-46.6571;0;Bottom;Via156
+77;;;10.7392;-34.0034;0;Bottom;blkr2
+78;;;32.5729;-3.45735;0;Bottom;TXT1
+79;;;28.0156;-46.6271;0;Bottom;IMG3
+80;;;1.90897;-1.86598;0;Bottom;Hole7
+81;;;34.7853;-23.203;0;Bottom;Copper Fill28
+82;;;35.2933;-47.6124;0;Bottom;Copper Fill7
+83;;;22.3444;-32.5738;0;Bottom;IMG5
+84;;;35.3585;-46.6571;0;Bottom;Via159
+85;;;29.1773;-44.0612;0;Bottom;TXT1
+86;;;22.6441;-46.6335;0;Bottom;Via173
+87;;;40.7416;-11.7603;0;Bottom;Copper Fill5
+88;;;17.3228;-41.9355;0;Bottom;Copper Fill18
+89;;;15.621;-41.9355;0;Bottom;Copper Fill17
+90;;;36.8339;-21.5511;0;Bottom;Via172
