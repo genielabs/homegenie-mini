@@ -37,7 +37,7 @@ The P1 connector can be used for various applications such as:
 
 ### Hardware
 
-Required Gerber files for printing the printed circuit board are located in the `./pcb` folder.
+Gerber files required for printing the circuit board are located in the `./pcb` folder.
 
 - https://github.com/genielabs/homegenie-mini/tree/master/pcb
 
