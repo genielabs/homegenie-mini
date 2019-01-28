@@ -35,13 +35,13 @@ namespace IO {
     IOManager::IOManager() {
         systemDiagnostics = new System::Diagnostics();
         systemDiagnostics->setEventReceiver(this);
-        // Instantiate the X10 RfReceiver Class
-//        RfReceiverConfig x10ReceiverConfig = RfReceiverConfig(CONFIG_RF_RX_PIN);
-//        x10Receiver = new RfReceiver(&x10ReceiverConfig);
+        // Instantiate the X10 RFReceiver Class
+//        RFReceiverConfig x10ReceiverConfig = RFReceiverConfig(CONFIG_RF_RX_PIN);
+//        x10Receiver = new RFReceiver(&x10ReceiverConfig);
 //        x10Receiver->setEventReceiver(this);
-        // X10 RF RfReceiver and RfTransmitter objects
-        RfTransmitterConfig x10TransmitterConfig = RfTransmitterConfig(CONFIG_RF_TX_PIN);
-        x10Transmitter = new RfTransmitter(&x10TransmitterConfig);
+        // X10 RF RFReceiver and RFTransmitter objects
+        RFTransmitterConfig x10TransmitterConfig = RFTransmitterConfig(CONFIG_RF_TX_PIN);
+        x10Transmitter = new RFTransmitter(&x10TransmitterConfig);
         // DS18B20 Temperature Sensor
         temperatureSensor = new DS18B20();
         temperatureSensor->setEventReceiver(this);

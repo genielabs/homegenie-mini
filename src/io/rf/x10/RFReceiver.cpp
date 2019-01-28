@@ -27,24 +27,24 @@
  *
  */
 
-#include "RfReceiver.h"
+#include "RFReceiver.h"
 
 namespace IO { namespace X10 {
 
-    RfReceiver *receiverInstance = NULL;
+    RFReceiver *receiverInstance = NULL;
 
     void receiverInstance_wrapper() {
         if (receiverInstance) receiverInstance->receive();
     }
 
-    RfReceiver::RfReceiver() {
+    RFReceiver::RFReceiver() {
         receiverInstance = this;
         // IEventSender members
         domain = (uint8_t *)IOEventDomains::HomeAutomation_X10;
         address = (uint8_t *)"RF";
     }
 
-    RfReceiver::RfReceiver(RfReceiverConfig *configuration) : RfReceiver() {
+    RFReceiver::RFReceiver(RFReceiverConfig *configuration) : RFReceiver() {
         this->configuration = configuration;
     }
 
@@ -52,7 +52,7 @@ namespace IO { namespace X10 {
     /// Public
     //////////////////////////////
 
-    void RfReceiver::begin() {
+    void RFReceiver::begin() {
         Logger::info("|  - %s (PIN=%d INT=%d)", X10_RFRECEIVER_NS_PREFIX, configuration->getPin(), configuration->getInterrupt());
         pinMode(configuration->getPin(), INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(configuration->getInterrupt()), receiverInstance_wrapper, RISING);
@@ -62,7 +62,7 @@ namespace IO { namespace X10 {
     uint8_t messageType = 0x00;
     uint8_t byteBuffer[4];
 
-    void RfReceiver::receive() {
+    void RFReceiver::receive() {
         //if (!isEnabled()) return;
 
         uint32_t lengthUs = micros() - riseUs;
@@ -86,10 +86,10 @@ namespace IO { namespace X10 {
 
 // TODO: !!! IMPLEMENT 40 bit DATA DECODING
 
-                byteBuffer[3] = reverseByte((receiveBuffer >> 24) & 0xFF);
-                byteBuffer[2] = reverseByte((receiveBuffer >> 16) & 0xFF);
-                byteBuffer[1] = reverseByte((receiveBuffer >> 8) & 0xFF);
-                byteBuffer[0] = reverseByte(receiveBuffer & 0xFF);
+                byteBuffer[3] = Utility::reverseByte((receiveBuffer >> 24) & 0xFF);
+                byteBuffer[2] = Utility::reverseByte((receiveBuffer >> 16) & 0xFF);
+                byteBuffer[1] = Utility::reverseByte((receiveBuffer >> 8) & 0xFF);
+                byteBuffer[0] = Utility::reverseByte(receiveBuffer & 0xFF);
 
                 bool isSecurityCode = ((byteBuffer[1] ^ byteBuffer[0]) == 0x0F) && ((byteBuffer[3] ^ byteBuffer[2]) == 0xFF);
                 bool isStandardCode = ((byteBuffer[1] & ~byteBuffer[0]) == byteBuffer[1] && (byteBuffer[3] & ~byteBuffer[2]) == byteBuffer[3]);
@@ -111,25 +111,6 @@ namespace IO { namespace X10 {
 
             receivedCount++;
         }
-    }
-
-    // TODO: move to an utility class (maybe static)
-
-    uint8_t RfReceiver::reverseByte(uint8_t b) {
-        b = (b & (uint8_t) 0xF0) >> (uint8_t) 4 | (b & (uint8_t) 0x0F) << 4;
-        b = (b & (uint8_t) 0xCC) >> 2 | (b & (uint8_t) 0x33) << 2;
-        b = (b & (uint8_t) 0xAA) >> 1 | (b & (uint8_t) 0x55) << 1;
-        return b;
-    }
-
-    uint32_t RfReceiver::reverseBits(uint32_t n) {
-        uint32_t x = 0;
-        for (auto i = 31; n;) {
-            x |= (n & 1) << i;
-            n >>= 1;
-            --i;
-        }
-        return x;
     }
 
 }} // ns

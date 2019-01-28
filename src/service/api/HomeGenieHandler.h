@@ -23,39 +23,28 @@
  *
  *
  * Releases:
- * - 2019-01-10 Initial release
+ * - 2019-01-28 Initial release
  *
  */
 
-#ifndef HOMEGENIE_MINI_X10_RF_TRANSMITTER_CONFIG_H_
-#define HOMEGENIE_MINI_X10_RF_TRANSMITTER_CONFIG_H_
+#ifndef HOMEGENIE_MINI_HOMEGENIEHANDLER_H
+#define HOMEGENIE_MINI_HOMEGENIEHANDLER_H
 
-#include "Arduino.h"
+#include <service/HomeGenie.h>
+#include <io/IOEventDomains.h>
+#include <Utility.h>
+#include "APIHandler.h"
 
-namespace IO { namespace X10 {
+namespace Service { namespace API {
 
-    class RfTransmitterConfig
-    {
-    private:
-        uint8_t pin;
-        uint8_t sendRepeat;
-        uint16_t startBustLong;
-        uint16_t startBustShort;
-        uint16_t bitLong;
-        uint16_t bitShort;
-        uint16_t packetGap;
+    class HomeGenieHandler : APIHandler {
     public:
-        RfTransmitterConfig();
-        RfTransmitterConfig(uint8_t pin);
-        uint8_t getPin();
-        uint8_t getSendRepeat();
-        uint16_t getStartBustLong();
-        uint16_t getStartBustShort();
-        uint16_t getBitLong();
-        uint16_t getBitShort();
-        uint16_t getPacketGap();
+        bool canHandleDomain(String &domain);
+        bool handleRequest(HomeGenie &homeGenie, APIRequest *request);
+        bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData,
+                    IOEventDataType dataType);
     };
 
-}} // ns
+}}
 
-#endif // HOMEGENIE_MINI_X10_RF_TRANSMITTER_CONFIG_H_
+#endif //HOMEGENIE_MINI_HOMEGENIEHANDLER_H

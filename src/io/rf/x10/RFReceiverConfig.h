@@ -27,43 +27,46 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_X10_RFRECEIVER_H_
-#define HOMEGENIE_MINI_X10_RFRECEIVER_H_
+#ifndef HOMEGENIE_MINI_X10_RF_RECEIVER_CONFIG_H_
+#define HOMEGENIE_MINI_X10_RF_RECEIVER_CONFIG_H_
 
 #include "Arduino.h"
 
-#include <io/Logger.h>
-#include <io/IOEvent.h>
-#include <io/IOEventPaths.h>
-#include <io/IOEventDomains.h>
-
-#include "RfReceiverConfig.h"
-
-#define X10_RFRECEIVER_NS_PREFIX                  "IO::X10::RfReceiver"
-
 namespace IO { namespace X10 {
-
-    class RfReceiver : public IIOEventSender {
+    /**
+     * Decodes X10 RF messages
+     */
+    class RFReceiverConfig
+    {
     public:
-        RfReceiver();
-        RfReceiver(RfReceiverConfig *);
+        RFReceiverConfig();
+        RFReceiverConfig(uint8_t pin);
+        RFReceiverConfig(uint8_t interrupt, uint8_t pin);
+        uint8_t getPin();
+        uint8_t getInterrupt();
+        uint16_t getStartBustMin();
+        uint16_t getStartBustMax();
+        uint16_t getStartBustRepeat();
 
-        void begin();
-        void receive();
+        uint16_t getBitZeroMin();
+        uint16_t getBitZeroMax();
 
+        uint16_t getBitOneMin();
+        uint16_t getBitOneMax();
     private:
-        RfReceiverConfig *configuration;
-        // 32-bit RF message decoding
-        volatile uint32_t riseUs;
-        volatile int8_t receivedCount;
-        volatile uint32_t receiveBuffer;
+        uint8_t interrupt;
+        uint8_t pin;
+        uint16_t startBustMin;
+        uint16_t startBustMax;
+        uint16_t startBustRepeat;
 
-        // TODO: move to an utility class (maybe static)
-        // Utility methods
-        uint32_t reverseBits(uint32_t n);
-        uint8_t reverseByte(uint8_t n);
+        uint16_t bitZeroMin;
+        uint16_t bitZeroMax;
+
+        uint16_t bitOneMin;
+        uint16_t bitOneMax;
     };
 
 }} // ns
 
-#endif // HOMEGENIE_MINI_X10_RFRECEIVER_H_
+#endif // HOMEGENIE_MINI_X10_RF_RECEIVER_CONFIG_H_

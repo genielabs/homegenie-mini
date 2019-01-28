@@ -27,46 +27,30 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_X10_RF_RECEIVER_CONFIG_H_
-#define HOMEGENIE_MINI_X10_RF_RECEIVER_CONFIG_H_
+#ifndef HOMEGENIE_MINI_X10_RF_TRANSMITTER_H_
+#define HOMEGENIE_MINI_X10_RF_TRANSMITTER_H_
 
 #include "Arduino.h"
+#include "RFTransmitterConfig.h"
+#include "io/Logger.h"
 
 namespace IO { namespace X10 {
-    /**
-     * Decodes X10 RF messages
-     */
-    class RfReceiverConfig
+
+    class RFTransmitter
     {
     public:
-        RfReceiverConfig();
-        RfReceiverConfig(uint8_t pin);
-        RfReceiverConfig(uint8_t interrupt, uint8_t pin);
-        uint8_t getPin();
-        uint8_t getInterrupt();
-        uint16_t getStartBustMin();
-        uint16_t getStartBustMax();
-        uint16_t getStartBustRepeat();
-
-        uint16_t getBitZeroMin();
-        uint16_t getBitZeroMax();
-
-        uint16_t getBitOneMin();
-        uint16_t getBitOneMax();
+        RFTransmitter();
+        RFTransmitter(RFTransmitterConfig *configuration);
+        void begin();
+        void sendCommand(uint8_t *data, uint8_t size);
     private:
-        uint8_t interrupt;
-        uint8_t pin;
-        uint16_t startBustMin;
-        uint16_t startBustMax;
-        uint16_t startBustRepeat;
-
-        uint16_t bitZeroMin;
-        uint16_t bitZeroMax;
-
-        uint16_t bitOneMin;
-        uint16_t bitOneMax;
+        RFTransmitterConfig *configuration;
+        void sendByte(uint8_t data);
+        void sendBit(bool databit);
+        void pulseHigh();
+        void pulseLow();
     };
 
 }} // ns
 
-#endif // HOMEGENIE_MINI_X10_RF_RECEIVER_CONFIG_H_
+#endif // HOMEGENIE_MINI_X10_RF_TRANSMITTER_H_

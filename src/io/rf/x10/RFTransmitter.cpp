@@ -27,8 +27,8 @@
  *
  */
 
-#include "RfTransmitter.h"
-#include "RfTransmitterConfig.h"
+#include "RFTransmitter.h"
+#include "RFTransmitterConfig.h"
 
 #include <stdlib.h>
 #include "Arduino.h"
@@ -64,20 +64,20 @@ namespace IO { namespace X10 {
 
     */
 
-    RfTransmitter::RfTransmitter() {
+    RFTransmitter::RFTransmitter() {
 
     }
-    RfTransmitter::RfTransmitter(RfTransmitterConfig *configuration) : RfTransmitter() {
+    RFTransmitter::RFTransmitter(RFTransmitterConfig *configuration) : RFTransmitter() {
         this->configuration = configuration;
     }
 
-    void RfTransmitter::begin() {
-        Logger::info("|  - IO::X10::RfTransmitter (PIN=%d)", configuration->getPin());
+    void RFTransmitter::begin() {
+        Logger::info("|  - IO::X10::RFTransmitter (PIN=%d)", configuration->getPin());
         pinMode(configuration->getPin(), OUTPUT);
-        Logger::info("|  ✔ IO::X10::RfTransmitter");
+        Logger::info("|  ✔ IO::X10::RFTransmitter");
     }
 
-    void RfTransmitter::sendCommand(uint8_t *data, uint8_t size) {
+    void RFTransmitter::sendCommand(uint8_t *data, uint8_t size) {
         for (int i = 0; i < configuration->getSendRepeat(); i++) {
             pulseHigh();
             delayMicroseconds(configuration->getStartBustLong());
@@ -91,7 +91,7 @@ namespace IO { namespace X10 {
         }
     }
 
-    void RfTransmitter::sendByte(uint8_t data) {
+    void RFTransmitter::sendByte(uint8_t data) {
         //Serial.println("\n");
         for (int i = 7; i >= 0; i--) { // send bits from byte
             sendBit(bitRead(data, i) == 1);
@@ -99,7 +99,7 @@ namespace IO { namespace X10 {
         }
     }
 
-    void RfTransmitter::sendBit(bool databit) {
+    void RFTransmitter::sendBit(bool databit) {
         pulseHigh();
         delayMicroseconds(configuration->getBitShort());
         pulseLow();
@@ -107,11 +107,11 @@ namespace IO { namespace X10 {
         if (databit) delayMicroseconds(configuration->getBitLong());
     }
 
-    void RfTransmitter::pulseHigh() {
+    void RFTransmitter::pulseHigh() {
         digitalWrite(configuration->getPin(), HIGH);
     }
 
-    void RfTransmitter::pulseLow() {
+    void RFTransmitter::pulseLow() {
         digitalWrite(configuration->getPin(), LOW);
     }
 

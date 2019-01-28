@@ -35,12 +35,12 @@
 
 #include "Logger.h"
 
-#include <service/ApiRequest.h>
+#include <service/api/APIRequest.h>
 
 #include <io/IOEvent.h>
 #include <io/IOEventDomains.h>
-#include <io/rf/x10/RfReceiver.h>
-#include <io/rf/x10/RfTransmitter.h>
+#include <io/rf/x10/RFReceiver.h>
+#include <io/rf/x10/RFTransmitter.h>
 #include <io/rf/x10/X10Message.h>
 #include <io/env/DS18B20.h>
 #include <io/env/LightSensor.h>
@@ -67,8 +67,8 @@ namespace IO {
 
         void setOnEventCallback(IIOEventReceiver *);
 
-        RfReceiver getX10Receiver(){ return *x10Receiver; }
-        RfTransmitter getX10Transmitter(){ return *x10Transmitter; }
+        RFReceiver getX10Receiver(){ return *x10Receiver; }
+        RFTransmitter getX10Transmitter(){ return *x10Transmitter; }
         DS18B20 getTemperatureSensor(){ return *temperatureSensor; }
         LightSensor getLightSensor(){ return *lightSensor; }
 
@@ -78,12 +78,12 @@ namespace IO {
         //class X10ApiHandler;
         IIOEventReceiver *ioEventCallback;
         String byteToHex(byte b);
-        // Instantiate the X10 RfReceiver Class
-        RfReceiverConfig *x10ReceiverConfig;
-        RfReceiver *x10Receiver;
-        // X10 RF RfReceiver and RfTransmitter objects
-        RfTransmitterConfig *x10TransmitterConfig;
-        RfTransmitter *x10Transmitter;
+        // Instantiate the X10 RFReceiver Class
+        RFReceiverConfig *x10ReceiverConfig;
+        RFReceiver *x10Receiver;
+        // X10 RF RFReceiver and RFTransmitter objects
+        RFTransmitterConfig *x10TransmitterConfig;
+        RFTransmitter *x10Transmitter;
         // DS18B20 Temperature sensor
         DS18B20 *temperatureSensor;
         // Light Sensor / PhotoResistor

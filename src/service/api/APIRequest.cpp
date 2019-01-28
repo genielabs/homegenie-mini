@@ -27,11 +27,11 @@
  *
  */
 
-#include "ApiRequest.h"
+#include "APIRequest.h"
 
-namespace Service {
+namespace Service { namespace API {
 
-    String ApiRequest::getOption(unsigned int optionIndex) {
+    String APIRequest::getOption(unsigned int optionIndex) {
         // TODO: ...
         return String();
     }
@@ -39,8 +39,8 @@ namespace Service {
     /// Parse an API command request URL
     /// \param command API URL string
     /// \return the parsed ApiCommand instance.
-    ApiRequest ApiRequest::parse(String command) {
-        auto apiCommand = ApiRequest();
+    APIRequest APIRequest::parse(String command) {
+        auto apiCommand = APIRequest();
         int argIndex = 0;
         int i = command.indexOf('/', 1);
         while (i > 0) {
@@ -78,4 +78,4 @@ namespace Service {
         return apiCommand;
     }
 
-}
+}}

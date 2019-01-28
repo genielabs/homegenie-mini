@@ -23,32 +23,28 @@
  *
  *
  * Releases:
- * - 2019-13-01 Initial release
+ * - 2019-01-28 Initial release
  *
  */
 
-#ifndef HOMEGENIE_MINI_APICOMMAND_H
-#define HOMEGENIE_MINI_APICOMMAND_H
+#ifndef HOMEGENIE_MINI_X10APIHANDLER_H
+#define HOMEGENIE_MINI_X10APIHANDLER_H
 
-#include <Arduino.h>
-#include <io/Logger.h>
+#include "APIHandler.h"
 
-#define APIREQUEST_LOG_PREFIX           "@Service::ApiRequest"
+#include <service/HomeGenie.h>
+#include <io/IOEventDomains.h>
+#include <Utility.h>
 
-namespace Service {
+namespace Service { namespace API {
 
-    class ApiRequest {
+    class X10Handler : APIHandler {
     public:
-        String Prefix;
-        String Domain;
-        String Address;
-        String Command;
-        String OptionsString;
-        String Response = R"({ "ResponseText": "ERROR" })";
-        String getOption(unsigned int optionIndex);
-        static ApiRequest parse(String command);
+        bool canHandleDomain(String &domain);
+        bool handleRequest(HomeGenie &homeGenie, APIRequest *request);
+        bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType);
     };
 
-}
+}}
 
-#endif //HOMEGENIE_MINI_APICOMMAND_H
+#endif //HOMEGENIE_MINI_X10APIHANDLER_H

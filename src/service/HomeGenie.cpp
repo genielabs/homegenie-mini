@@ -27,9 +27,15 @@
  *
  */
 
+#include <Utility.h>
+#include <service/api/X10Handler.h>
+#include <service/api/HomeGenieHandler.h>
 #include "HomeGenie.h"
 
 namespace Service {
+
+    API::HomeGenieHandler homeGenieHandler;
+    API::X10Handler x10Handler;
 
     HomeGenie::HomeGenie() {
         setLoopInterval(20L);
@@ -49,7 +55,7 @@ namespace Service {
         // HomeGenie-Mini Terminal CLI
         if(Serial.available() > 0) {
             String cmd = Serial.readStringUntil('\n');
-            auto apiCommand = ApiRequest::parse(cmd);
+            auto apiCommand = APIRequest::parse(cmd);
             if (apiCommand.Prefix.equals("api")) {
                 if (api(&apiCommand)) {
                     Logger::info("+%s =%s", HOMEGENIEMINI_NS_PREFIX, apiCommand.Response.c_str());
@@ -65,6 +71,10 @@ namespace Service {
     IOManager& HomeGenie::getIOManager() {
         return ioManager;
     }
+    EventRouter &HomeGenie::getEventRouter() {
+        return eventRouter;
+    }
+
 
     // BEGIN IIOEventSender interface methods
     void HomeGenie::onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
@@ -74,92 +84,11 @@ namespace Service {
         Logger::trace(":%s [IOManager::IOEvent] >> [domain '%s' address '%s' event '%s']", HOMEGENIEMINI_NS_PREFIX, domain.c_str(), address.c_str(), event.c_str());
         if (domain == IOEventDomains::HomeAutomation_HomeGenie) {
 
-            // MQTT Message Queue (enqueue)
-            QueuedMessage m = QueuedMessage(domain, address, event, "");
-            // Data type handling
-            switch (dataType) {
-                case SensorLight:
-                    m.value = String(*(uint16_t *)eventData);
-                    break;
-                case SensorTemperature:
-                    m.value = String(*(float_t *)eventData);
-                    break;
-                case UnsignedNumber:
-                    m.value = String(*(uint32_t *)eventData);
-                    break;
-                case Number:
-                    m.value = String(*(int32_t *)eventData);
-                    break;
-                default:
-                    m.value = String(*(int32_t *)eventData);
-            }
-            eventRouter.signalEvent(m);
+            homeGenieHandler.handleEvent(*this, sender, eventPath, eventData, dataType);
 
         } else if (domain == IOEventDomains::HomeAutomation_X10) {
 
-            /*
-             * X10 RF Receiver "Sensor.RawData" event
-             */
-            if (address == "RF" && event == IOEventPaths::Sensor_RawData /*&& ioManager.getX10Receiver().isEnabled()*/) {
-                // decode event data (X10 RF packet)
-                auto data = ((uint8_t *) eventData);
-                /// \param type Type of message (eg. 0x20 = standard, 0x29 = security, ...)
-                /// \param b0 Byte 1
-                /// \param b1 Byte 2
-                /// \param b2 Byte 3
-                /// \param b3 Byte 4
-                uint8_t type = data[0];
-                uint8_t b0 = data[1];
-                uint8_t b1 = data[2];
-                uint8_t b2 = data[3];
-                uint8_t b3 = data[4];
-                Logger::info(":%s [X10::RfReceiver] >> [%s%s%s%s%s%s]", HOMEGENIEMINI_NS_PREFIX,
-                     byteToHex(type).c_str(),
-                     byteToHex((b0)).c_str(),
-                     byteToHex((b1)).c_str(),
-                     byteToHex(b2).c_str(),
-                     byteToHex(b3).c_str(),
-                     (type == 0x29) ? "0000" : ""
-                );
-
-                // Decode RF message data to X10Message class
-                auto *decodedMessage = new X10Message();
-                uint8_t encodedMessage[5]{type, b0, b1, b2, b3};
-                X10Message::decodeCommand(encodedMessage, decodedMessage);
-
-                // Convert enums to string
-                String houseCode(house_code_to_char(decodedMessage->houseCode));
-                String unitCode(unit_code_to_int(decodedMessage->unitCode));
-                Logger::trace(":%s %s%s %s", HOMEGENIEMINI_NS_PREFIX, houseCode.c_str(), unitCode.c_str(),
-                              cmd_code_to_str(decodedMessage->command));
-
-                // NOTE: Calling `getMQTTServer().broadcast(..)` out of the loop() would cause crashing,
-                // NOTE: so an `eventsQueue` is used to store messages that are then sent in the `loop()`
-                // NOTE: method. Currently the queue will only hold one element but it can be used as a real
-                // NOTE: queue by processing queued elements at every n-th loop() cycle (currently the queue
-                // NOTE:  is processed at every cycle). (not sure if it would be of any use though)
-
-                // MQTT Message Queue (enqueue)
-                QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, IOEventPaths::Status_Level, "");
-                switch (decodedMessage->command) {
-                    case Command::CMD_ON:
-                        m.value = "1";
-                        eventRouter.signalEvent(m);
-                        break;
-                    case Command::CMD_OFF:
-                        m.value = "0";
-                        eventRouter.signalEvent(m);
-                        break;
-// TODO: Implement all X10 events also for Camera and Security
-                }
-
-                delete decodedMessage;
-
-                // TODO: blink led ? (visible feedback)
-                //digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
-                //delay(10);                         // wait for a blink
-                //digitalWrite(LED_BUILTIN, HIGH);
-            }
+            x10Handler.handleEvent(*this, sender, eventPath, eventData, dataType);
 
         }
     }
@@ -170,7 +99,7 @@ namespace Service {
         return uri != NULL && uri.startsWith("/api/");
     }
     bool HomeGenie::handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri) {
-        auto command = ApiRequest::parse(requestUri);
+        auto command = APIRequest::parse(requestUri);
         if (api(&command)) {
             server.send(200, "application/json", command.Response);
         } else {
@@ -180,27 +109,6 @@ namespace Service {
     }
     // END RequestHandler interface methods
 
-
-    // TODO: move to an utility class (maybe static)
-    /// Convert byte to hex string taking care of leading-zero
-    /// \param b
-    void HomeGenie::getBytes(const String &rawBytes, uint8_t *data) {
-        uint len = rawBytes.length();
-        char msg[len+1]; rawBytes.toCharArray(msg, len+1, 0);
-        char tmp[3] = "00";
-        len = (len / 2);
-        for (uint i = 0; i < len; i++)
-        {
-            tmp[0] = msg[i * 2];
-            tmp[1] = msg[(i * 2) + 1];
-            data[i] = strtol(tmp, NULL, 16);
-        }
-    }
-    String HomeGenie::byteToHex(byte b) {
-        String formatted = String(b, HEX);
-        if (b < 16) return "0"+formatted;
-        return formatted;
-    }
 
     String HomeGenie::createModuleParameter(const char *name, const char* value) {
         static const char *parameterTemplate = R"({
@@ -251,98 +159,16 @@ namespace Service {
         return m;
     }
 
+    bool HomeGenie::api(APIRequest *request) {
+        if (request->Domain == IOEventDomains::HomeAutomation_X10) {
 
-    bool HomeGenie::api(ApiRequest *command) {
-        if (command->Domain == IOEventDomains::HomeAutomation_X10
-            && command->Address == "RF"
-            && command->Command == "Control.SendRaw"
-        ) {
+            return x10Handler.handleRequest(*this, request);
 
-            uint8_t data[command->OptionsString.length() / 2]; getBytes(command->OptionsString, data);
-            // Disable RfReceiver callbacks during transmission to prevent echo
-            noInterrupts();
-            //getIOManager().getX10Receiver().disable();
-            getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
-            //getIOManager().getX10Receiver().enable();
-            interrupts();
-            command->Response = R"({ "ResponseText": "OK" })";
+        } else if (request->Domain == IOEventDomains::HomeAutomation_HomeGenie) {
 
-        } else if (command->Domain == IOEventDomains::HomeAutomation_X10) {
-            uint8_t data[5];
-            auto hu = command->Address; hu.toLowerCase();
-            auto x10Message = X10Message();
-            x10Message.houseCode = HouseCodeLut[hu.charAt(0) - HOUSE_MIN];
-            x10Message.unitCode = UnitCodeLut[hu.substring(1).toInt() - UNIT_MIN];
-
-            QueuedMessage m = QueuedMessage(command->Domain, command->Address, IOEventPaths::Status_Level, "");
-            if (command->Command == "Control.On") {
-                x10Message.command = X10::Command::CMD_ON;
-                m.value = "1";
-            } else if (command->Command == "Control.Off") {
-                x10Message.command = X10::Command::CMD_OFF;
-                m.value = "0";
-            }
-            eventRouter.signalEvent(m);
-
-            X10::X10Message::encodeCommand(&x10Message, data);
-            noInterrupts();
-            //ioManager.getX10Receiver().disable();
-            ioManager.getX10Transmitter().sendCommand(&data[1], sizeof(data)-1);
-            //ioManager.getX10Receiver().enable();
-            interrupts();
-            command->Response = R"({ "ResponseText": "OK" })";
-
-        } else if (command->Domain == IOEventDomains::HomeAutomation_HomeGenie) {
-
-            /*
-            if (command->Address.equals("Light") && command->Command.equals("Sensor.GetValue")) {
-                char response[1024];
-                sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getLightSensor().getLightLevel() / 10.24F);
-                command->Response = String(response);
-            } else if (command->Address.equals("Temperature") && command->Command.equals("Sensor.GetValue")) {
-                char response[1024];
-                sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getTemperatureSensor().getTemperature());
-                command->Response = String(response);
-            } else return false;
-            */
-
-            if (command->Address == "Config") {
-
-                if (command->Command == "Modules.List") {
-
-                    command->Response = "[\n";
-                    // HG Mini multi-sensor module
-                    String paramLuminance = createModuleParameter("Sensor.Luminance", String(ioManager.getLightSensor().getLightLevel()).c_str());
-                    String paramTemperature = createModuleParameter("Sensor.Temperature", String(ioManager.getTemperatureSensor().getTemperature()).c_str());
-                    command->Response += createModule("HomeAutomation.HomeGenie", "mini",
-                            "HG-Mini", "HomeGenie Mini node", "Sensor",
-                            (paramLuminance+","+paramTemperature).c_str());
-                    // X10 Home Automation modules
-                    for (int m = 0; m < 16; m++) {
-                        String paramLevel = createModuleParameter("Status.Level", "0");
-                        command->Response += ",\n"+createModule("HomeAutomation.X10", (String("A")+String(m+1)).c_str(),
-                                "", "X10 Module", "Switch",
-                                paramLevel.c_str());
-                    }
-
-                    command->Response += "\n]";
-
-                } else if (command->Command == "Groups.List") {
-                    String list = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]},)";
-                    list += R"({"Name":"X10 Modules", "Modules":[)";
-                    for (int m = 0; m < 16; m++) {
-                        list += R"({"Address":"A)"+String(m+1)+R"(","Domain":"HomeAutomation.X10"})";
-                        if (m < 15) list += ",";
-                    }
-                    list += R"(]}])";
-                    command->Response = list;
-                }
-
-
-            }
+            return homeGenieHandler.handleRequest(*this, request);
 
         } else return false;
-        return true;
     }
 
 }

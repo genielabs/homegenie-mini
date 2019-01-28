@@ -30,13 +30,13 @@
 #ifndef HOMEGENIE_MINI_HOMEGENIE_H
 #define HOMEGENIE_MINI_HOMEGENIE_H
 
+#include <LinkedList.h>
+
 #include <Task.h>
 #include <io/IOManager.h>
 #include <io/IOEventPaths.h>
 #include <net/NetManager.h>
-#include <LinkedList.h>
-
-#include "ApiRequest.h"
+#include "service/api/APIRequest.h"
 #include "EventRouter.h"
 
 #define HOMEGENIEMINI_NS_PREFIX            "Service::HomeGenie"
@@ -45,6 +45,7 @@ namespace Service {
 
     using namespace IO;
     using namespace Net;
+    using namespace Service::API;
 
     class HomeGenie: Task, RequestHandler, IIOEventReceiver {
     public:
@@ -61,10 +62,10 @@ namespace Service {
         bool canHandle(HTTPMethod method, String uri);
         bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
 
-        bool api(ApiRequest *command);
+        bool api(APIRequest *request);
 
         IOManager& getIOManager();
-        //void getHttpServer();
+        EventRouter& getEventRouter();
 
         static String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
         static String createModuleParameter(const char *name, const char* value);
@@ -72,8 +73,6 @@ namespace Service {
         NetManager netManager;
         IOManager ioManager;
         EventRouter eventRouter;
-        void getBytes(const String &rawBytes, uint8_t *data);
-        String byteToHex(byte b);
     };
 
 }

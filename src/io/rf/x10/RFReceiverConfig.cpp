@@ -27,11 +27,11 @@
  *
  */
 
-#include "RfReceiverConfig.h"
+#include "RFReceiverConfig.h"
 
 namespace IO { namespace X10 {
 
-    RfReceiverConfig::RfReceiverConfig()
+    RFReceiverConfig::RFReceiverConfig()
     {
         pin = interrupt = D1; // 5
 
@@ -45,26 +45,26 @@ namespace IO { namespace X10 {
         bitOneMin = 2000;
         bitOneMax = 2400;
     }
-    RfReceiverConfig::RfReceiverConfig(uint8_t pin) : RfReceiverConfig()
+    RFReceiverConfig::RFReceiverConfig(uint8_t pin) : RFReceiverConfig()
     {
         this->pin = pin;
     }
-    RfReceiverConfig::RfReceiverConfig(
+    RFReceiverConfig::RFReceiverConfig(
         uint8_t interrupt, uint8_t pin
-    ) : RfReceiverConfig(pin)
+    ) : RFReceiverConfig(pin)
     {
         this->interrupt = interrupt;
     }
-    uint8_t RfReceiverConfig::getPin() { return pin; };
-    uint8_t RfReceiverConfig::getInterrupt() { return interrupt; };
-    uint16_t RfReceiverConfig::getStartBustMin() { return startBustMin; };
-    uint16_t RfReceiverConfig::getStartBustMax() { return startBustMax; };
-    uint16_t RfReceiverConfig::getStartBustRepeat() { return startBustRepeat; };
+    uint8_t RFReceiverConfig::getPin() { return pin; };
+    uint8_t RFReceiverConfig::getInterrupt() { return interrupt; };
+    uint16_t RFReceiverConfig::getStartBustMin() { return startBustMin; };
+    uint16_t RFReceiverConfig::getStartBustMax() { return startBustMax; };
+    uint16_t RFReceiverConfig::getStartBustRepeat() { return startBustRepeat; };
 
-    uint16_t RfReceiverConfig::getBitZeroMin() { return bitZeroMin; };
-    uint16_t RfReceiverConfig::getBitZeroMax() { return bitZeroMax; };
+    uint16_t RFReceiverConfig::getBitZeroMin() { return bitZeroMin; };
+    uint16_t RFReceiverConfig::getBitZeroMax() { return bitZeroMax; };
 
-    uint16_t RfReceiverConfig::getBitOneMin() { return bitOneMin; };
-    uint16_t RfReceiverConfig::getBitOneMax() { return bitOneMax; };
+    uint16_t RFReceiverConfig::getBitOneMin() { return bitOneMin; };
+    uint16_t RFReceiverConfig::getBitOneMax() { return bitOneMax; };
 
 }} // ns
