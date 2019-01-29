@@ -30,8 +30,6 @@
 #ifndef HOMEGENIE_MINI_APIHANDLER_H
 #define HOMEGENIE_MINI_APIHANDLER_H
 
-#include "APIRequest.h"
-
 #include <Arduino.h>
 #include <io/IOEvent.h>
 #include <service/HomeGenie.h>
@@ -41,10 +39,16 @@ namespace Service { namespace API {
     using namespace IO;
     using namespace Service;
 
+    class ModuleListOutputCallback {
+    public:
+        virtual void write(String &s) = 0;
+    };
+
     class APIHandler {
         virtual bool canHandleDomain(String &domain) = 0;
-        virtual bool handleRequest(HomeGenie &homeGenie, APIRequest *request) = 0;
+        virtual bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server) = 0;
         virtual bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) = 0;
+        virtual void getModuleListJSON(ModuleListOutputCallback *outputCallback) = 0;
     };
 
 }}

@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_APICOMMAND_H
-#define HOMEGENIE_MINI_APICOMMAND_H
+#ifndef HOMEGENIE_MINI_APIREQUEST_H
+#define HOMEGENIE_MINI_APIREQUEST_H
 
 #include <Arduino.h>
 #include <io/Logger.h>
@@ -51,4 +51,4 @@ namespace Service { namespace API {
 
 }}
 
-#endif //HOMEGENIE_MINI_APICOMMAND_H
+#endif //HOMEGENIE_MINI_APIREQUEST_H

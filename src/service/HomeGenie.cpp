@@ -27,10 +27,11 @@
  *
  */
 
-#include <Utility.h>
-#include <service/api/X10Handler.h>
-#include <service/api/HomeGenieHandler.h>
 #include "HomeGenie.h"
+
+#include "service/api/APIRequest.h"
+#include <service/api/HomeGenieHandler.h>
+#include <service/api/X10Handler.h>
 
 namespace Service {
 
@@ -56,6 +57,7 @@ namespace Service {
         if(Serial.available() > 0) {
             String cmd = Serial.readStringUntil('\n');
             auto apiCommand = APIRequest::parse(cmd);
+            /*
             if (apiCommand.Prefix.equals("api")) {
                 if (api(&apiCommand)) {
                     Logger::info("+%s =%s", HOMEGENIEMINI_NS_PREFIX, apiCommand.Response.c_str());
@@ -63,6 +65,7 @@ namespace Service {
                     Logger::warn("!%s =%s", HOMEGENIEMINI_NS_PREFIX, apiCommand.Response.c_str());
                 }
             }
+            */
         }
 
         Logger::verbose(":%s loop() << END", HOMEGENIEMINI_NS_PREFIX);
@@ -100,7 +103,7 @@ namespace Service {
     }
     bool HomeGenie::handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri) {
         auto command = APIRequest::parse(requestUri);
-        if (api(&command)) {
+        if (api(&command, server)) {
             server.send(200, "application/json", command.Response);
         } else {
             server.send(400, "application/json", command.Response);
@@ -159,16 +162,22 @@ namespace Service {
         return m;
     }
 
-    bool HomeGenie::api(APIRequest *request) {
+    bool HomeGenie::api(APIRequest *request, ESP8266WebServer &server) {
         if (request->Domain == IOEventDomains::HomeAutomation_X10) {
 
-            return x10Handler.handleRequest(*this, request);
+            return x10Handler.handleRequest(*this, request, server);
 
         } else if (request->Domain == IOEventDomains::HomeAutomation_HomeGenie) {
 
-            return homeGenieHandler.handleRequest(*this, request);
+            return homeGenieHandler.handleRequest(*this, request, server);
 
         } else return false;
+    }
+
+    int HomeGenie::writeX10ModuleListJSON(ESP8266WebServer *server) {
+        auto callback = X10ModulesOutputCallback(server);
+        x10Handler.getModuleListJSON(&callback);
+        return callback.outputLength;
     }
 
 }

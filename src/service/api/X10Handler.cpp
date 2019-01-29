@@ -31,19 +31,53 @@
 
 namespace Service { namespace API {
 
-    bool X10Handler::handleRequest(HomeGenie &homeGenie, APIRequest *command) {
+    enum ModuleType {
+        Switch = 0,
+        Light,
+        Dimmer,
+        MotionDetector,
+        DoorWindow
+    };
+
+    struct X10Module {
+        uint8_t Type;
+        float Level;
+    };
+
+    String DeviceTypes[] = {
+            "Switch",
+            "Light",
+            "Dimmer",
+            "Sensor", // Generic sensor
+            "DoorWindow"
+    };
+
+    X10Module moduleList[/*house codes*/ (16 + 1/*+1 is for sensors*/)][/*units*/ 16];
+
+    void X10Handler::getModuleListJSON(ModuleListOutputCallback *outputCallback) {
+        // X10 Home Automation modules
+        for (int h = 0; h < 16; h++) {
+            for (int m = 0; m < 16; m++) {
+                auto paramLevel = String(moduleList[h][m].Level);
+                auto deviceType = DeviceTypes[moduleList[h][m].Type];
+                paramLevel = HomeGenie::createModuleParameter("Status.Level", paramLevel.c_str());
+                outputCallback->write(",\n"+HomeGenie::createModule("HomeAutomation.X10", (String((char)('A'+h))+String(m+1)).c_str(),
+                                                      "", "X10 Module", deviceType.c_str(),
+                                                      paramLevel.c_str()));
+            }
+        }
+    }
+
+    bool X10Handler::handleRequest(HomeGenie &homeGenie, APIRequest *command, ESP8266WebServer &server) {
 
         if (command->Domain == IOEventDomains::HomeAutomation_X10
             && command->Address == "RF"
-            && command->Command == "Control.SendRaw"
-                ) {
+            && command->Command == "Control.SendRaw") {
 
             uint8_t data[command->OptionsString.length() / 2]; Utility::getBytes(command->OptionsString, data);
             // Disable RFReceiver callbacks during transmission to prevent echo
             noInterrupts();
-            //getIOManager().getX10Receiver().disable();
             homeGenie.getIOManager().getX10Transmitter().sendCommand(data, sizeof(data));
-            //getIOManager().getX10Receiver().enable();
             interrupts();
             command->Response = R"({ "ResponseText": "OK" })";
 
@@ -55,29 +89,28 @@ namespace Service { namespace API {
             x10Message.houseCode = HouseCodeLut[hu.charAt(0) - HOUSE_MIN];
             x10Message.unitCode = UnitCodeLut[hu.substring(1).toInt() - UNIT_MIN];
 
+            int h = (int)hu.charAt(0)-(int)'a'; // house code 0..15
+            int u = hu.substring(1).toInt()-1; // unit code 0..15
+
             QueuedMessage m = QueuedMessage(command->Domain, command->Address, IOEventPaths::Status_Level, "");
             if (command->Command == "Control.On") {
                 x10Message.command = X10::Command::CMD_ON;
-                m.value = "1";
+                moduleList[h][u].Level = 1;
             } else if (command->Command == "Control.Off") {
                 x10Message.command = X10::Command::CMD_OFF;
-                m.value = "0";
+                moduleList[h][u].Level = 0;
             }
+            m.value = String(moduleList[h][u].Level);
             homeGenie.getEventRouter().signalEvent(m);
 
             X10::X10Message::encodeCommand(&x10Message, data);
             noInterrupts();
-            //ioManager.getX10Receiver().disable();
             homeGenie.getIOManager().getX10Transmitter().sendCommand(&data[1], sizeof(data)-1);
-            //ioManager.getX10Receiver().enable();
             interrupts();
             command->Response = R"({ "ResponseText": "OK" })";
 
             return true;
         }
-
-
-
 
         return false;
     }
@@ -161,4 +194,4 @@ namespace Service { namespace API {
             return false;
         }
 
-    }}
+}}

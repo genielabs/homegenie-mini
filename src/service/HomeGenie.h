@@ -36,7 +36,6 @@
 #include <io/IOManager.h>
 #include <io/IOEventPaths.h>
 #include <net/NetManager.h>
-#include "service/api/APIRequest.h"
 #include "EventRouter.h"
 
 #define HOMEGENIEMINI_NS_PREFIX            "Service::HomeGenie"
@@ -62,10 +61,13 @@ namespace Service {
         bool canHandle(HTTPMethod method, String uri);
         bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
 
-        bool api(APIRequest *request);
+        bool api(APIRequest *request, ESP8266WebServer &server);
 
         IOManager& getIOManager();
         EventRouter& getEventRouter();
+
+        // TODO: writeBuiltinModuleListJSON(...) ?
+        int writeX10ModuleListJSON(ESP8266WebServer *server);
 
         static String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
         static String createModuleParameter(const char *name, const char* value);

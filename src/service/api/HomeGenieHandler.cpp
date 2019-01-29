@@ -28,12 +28,13 @@
  */
 
 #include "HomeGenieHandler.h"
+#include "X10Handler.h"
 
 bool Service::API::HomeGenieHandler::canHandleDomain(String &domain) {
-    return false;
+    return domain == IO::IOEventDomains::HomeAutomation_HomeGenie;
 }
 
-bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie, Service::APIRequest *request) {
+bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie, Service::APIRequest *request, ESP8266WebServer &server) {
     /*
     if (request->Address.equals("Light") && request->Command.equals("Sensor.GetValue")) {
         char response[1024];
@@ -45,45 +46,47 @@ bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie
         request->Response = String(response);
     } else return false;
     */
-
     if (request->Address == "Config") {
-
+        // TODO: implement "Modules.Get"
         if (request->Command == "Modules.List") {
-
-            request->Response = "[\n";
             // HG Mini multi-sensor module
+            // TODO: move to getModuleListJSON(ModuleListOutputCallback callback) method like getModuleListJSON in X10Handler.cpp
             auto lightSensor = homeGenie.getIOManager().getLightSensor();
             auto temperatureSensor = homeGenie.getIOManager().getTemperatureSensor();
             String paramLuminance = HomeGenie::createModuleParameter("Sensor.Luminance", String(lightSensor.getLightLevel()).c_str());
             String paramTemperature = HomeGenie::createModuleParameter("Sensor.Temperature", String(temperatureSensor.getTemperature()).c_str());
-            request->Response += HomeGenie::createModule("HomeAutomation.HomeGenie", "mini",
+            String localModule = HomeGenie::createModule("HomeAutomation.HomeGenie", "mini",
                                               "HG-Mini", "HomeGenie Mini node", "Sensor",
                                               (paramLuminance+","+paramTemperature).c_str());
-            // X10 Home Automation modules
-            for (int m = 0; m < 16; m++) {
-                String paramLevel = HomeGenie::createModuleParameter("Status.Level", "0");
-                request->Response += ",\n"+HomeGenie::createModule("HomeAutomation.X10", (String("A")+String(m+1)).c_str(),
-                                                        "", "X10 Module", "Switch",
-                                                        paramLevel.c_str());
-            }
+            int msz = homeGenie.writeX10ModuleListJSON(NULL);
 
-            request->Response += "\n]";
+            size_t contentLength = (msz+localModule.length()+4);
+            server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            server.sendHeader("Pragma", "no-cache");
+            server.sendHeader("Expires", "0");
+            server.setContentLength(contentLength);
+            server.send(200, "application/json; charset=utf-8", "");
+            server.sendContent("[\n");
+            server.sendContent(localModule);
+            homeGenie.writeX10ModuleListJSON(&server);
+            server.sendContent("\n]");
 
+            server.client().flush();
+            delay(10);
             return true;
         } else if (request->Command == "Groups.List") {
-
             String list = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]},)";
             list += R"({"Name":"X10 Modules", "Modules":[)";
-            for (int m = 0; m < 16; m++) {
-                list += R"({"Address":"A)"+String(m+1)+R"(","Domain":"HomeAutomation.X10"})";
-                if (m < 15) list += ",";
+            for (int h = 0; h < 16; h++) {
+                for (int m = 0; m < 16; m++) {
+                    list += R"({"Address":")" + String((char)('A'+h))+String(m + 1) + R"(","Domain":"HomeAutomation.X10"})";
+                    if (!(m == 15 && h == 15)) list += ",";
+                }
             }
             list += R"(]}])";
             request->Response = list;
-
             return true;
         }
-
     }
     return false;
 }

@@ -38,11 +38,12 @@
 
 namespace Service { namespace API {
 
-    class X10Handler : APIHandler {
+    class X10Handler : public APIHandler {
     public:
         bool canHandleDomain(String &domain);
-        bool handleRequest(HomeGenie &homeGenie, APIRequest *request);
+        bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server);
         bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType);
+        void getModuleListJSON(ModuleListOutputCallback *outputCallback);
     };
 
 }}

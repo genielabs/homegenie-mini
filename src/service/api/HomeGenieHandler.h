@@ -34,15 +34,32 @@
 #include <io/IOEventDomains.h>
 #include <Utility.h>
 #include "APIHandler.h"
+#include "X10Handler.h"
 
 namespace Service { namespace API {
 
-    class HomeGenieHandler : APIHandler {
+    class X10ModulesOutputCallback : public ModuleListOutputCallback {
+        ESP8266WebServer *server;
+    public:
+        int outputLength = 0;
+        X10ModulesOutputCallback(ESP8266WebServer *server) {
+            this->server = server;
+        }
+        void write(String &s) {
+            outputLength += s.length();
+            if (server != NULL) {
+                server->sendContent(s);
+            }
+        }
+    };
+
+    class HomeGenieHandler : public APIHandler {
     public:
         bool canHandleDomain(String &domain);
-        bool handleRequest(HomeGenie &homeGenie, APIRequest *request);
+        bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server);
         bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData,
                     IOEventDataType dataType);
+        void getModuleListJSON(ModuleListOutputCallback *outputCallback) {};
     };
 
 }}
