@@ -77,8 +77,8 @@ namespace IO { namespace X10 {
         Logger::info("|  ✔ IO::X10::RFTransmitter");
     }
 
-    void RFTransmitter::sendCommand(uint8_t *data, uint8_t size) {
-        for (int i = 0; i < configuration->getSendRepeat(); i++) {
+    void RFTransmitter::sendCommand(uint8_t *data, uint8_t size, uint8_t repeat) {
+        for (int i = 0; i < (repeat > 0 ? repeat : configuration->getSendRepeat()); i++) {
             pulseHigh();
             delayMicroseconds(configuration->getStartBustLong());
             pulseLow();

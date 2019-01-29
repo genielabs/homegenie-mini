@@ -42,7 +42,7 @@ namespace IO { namespace X10 {
         RFTransmitter();
         RFTransmitter(RFTransmitterConfig *configuration);
         void begin();
-        void sendCommand(uint8_t *data, uint8_t size);
+        void sendCommand(uint8_t *data, uint8_t size, uint8_t repeat = 0);
     private:
         RFTransmitterConfig *configuration;
         void sendByte(uint8_t data);

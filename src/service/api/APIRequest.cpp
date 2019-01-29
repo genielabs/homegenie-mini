@@ -33,7 +33,16 @@ namespace Service { namespace API {
 
     String APIRequest::getOption(unsigned int optionIndex) {
         // TODO: ...
-        return String();
+        unsigned int o = 0, ci = 0;
+        int oi = OptionsString.indexOf('/');
+        if (oi < 0) return OptionsString;
+        String option;
+        do {
+            option = OptionsString.substring(ci, oi-1);
+            ci = oi+1;
+            o++;
+        } while (o < optionIndex);
+        return option;
     }
 
     /// Parse an API command request URL

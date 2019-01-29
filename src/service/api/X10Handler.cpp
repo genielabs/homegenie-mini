@@ -45,9 +45,9 @@ namespace Service { namespace API {
     };
 
     String DeviceTypes[] = {
-            "Switch",
-            "Light",
             "Dimmer",
+            "Light",
+            "Switch",
             "Sensor", // Generic sensor
             "DoorWindow"
     };
@@ -91,22 +91,51 @@ namespace Service { namespace API {
 
             int h = (int)hu.charAt(0)-(int)'a'; // house code 0..15
             int u = hu.substring(1).toInt()-1; // unit code 0..15
+            auto moduleStatus = &moduleList[h][u];
+
+            uint8_t sendRepeat = 0; // fallback to default repeat (3)
+            bool ignoreCommand = false;
 
             QueuedMessage m = QueuedMessage(command->Domain, command->Address, IOEventPaths::Status_Level, "");
             if (command->Command == "Control.On") {
                 x10Message.command = X10::Command::CMD_ON;
-                moduleList[h][u].Level = 1;
+                moduleStatus->Level = 1;
             } else if (command->Command == "Control.Off") {
                 x10Message.command = X10::Command::CMD_OFF;
-                moduleList[h][u].Level = 0;
+                moduleStatus->Level = 0;
+            } else if (command->Command == "Control.Level") {
+                float level = command->getOption(0).toFloat()/100.0f;
+                sendRepeat = abs((level-moduleStatus->Level) / X10_DIM_BRIGHT_STEP);
+                if (level > moduleStatus->Level) {
+                    x10Message.command = X10::Command::CMD_BRIGHT;
+                    moduleStatus->Level += (sendRepeat * X10_DIM_BRIGHT_STEP);
+                    if (moduleStatus->Level > 1) moduleStatus->Level = 1;
+                } else if (level < moduleStatus->Level) {
+                    x10Message.command = X10::Command::CMD_DIM;
+                    moduleStatus->Level -= (sendRepeat * X10_DIM_BRIGHT_STEP);
+                    if (moduleStatus->Level < 0) moduleStatus->Level = 0;
+                }
+                if (sendRepeat == 0) {
+                    ignoreCommand = true;
+                } else sendRepeat += 2; // improve initial burst detection
+            } else if (command->Command == "Control.Toggle") {
+                if (moduleStatus->Level > 0) {
+                    x10Message.command = X10::Command::CMD_OFF;
+                    moduleStatus->Level = 0;
+                } else {
+                    x10Message.command = X10::Command::CMD_ON;
+                    moduleStatus->Level = 1;
+                }
             }
-            m.value = String(moduleList[h][u].Level);
+            m.value = String(moduleStatus->Level);
             homeGenie.getEventRouter().signalEvent(m);
 
-            X10::X10Message::encodeCommand(&x10Message, data);
-            noInterrupts();
-            homeGenie.getIOManager().getX10Transmitter().sendCommand(&data[1], sizeof(data)-1);
-            interrupts();
+            if (!ignoreCommand) {
+                X10::X10Message::encodeCommand(&x10Message, data);
+                noInterrupts();
+                homeGenie.getIOManager().getX10Transmitter().sendCommand(&data[1], sizeof(data)-1, sendRepeat);
+                interrupts();
+            }
             command->Response = R"({ "ResponseText": "OK" })";
 
             return true;

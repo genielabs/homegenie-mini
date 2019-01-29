@@ -36,6 +36,8 @@
 #include <io/IOEventDomains.h>
 #include <Utility.h>
 
+#define X10_DIM_BRIGHT_STEP     (1.0f/21.0f)
+
 namespace Service { namespace API {
 
     class X10Handler : public APIHandler {
