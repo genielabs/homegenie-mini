@@ -47,17 +47,10 @@ bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie
     } else return false;
     */
     if (request->Address == "Config") {
-        // TODO: implement "Modules.Get"
         if (request->Command == "Modules.List") {
             // HG Mini multi-sensor module
             // TODO: move to getModuleListJSON(ModuleListOutputCallback callback) method like getModuleListJSON in X10Handler.cpp
-            auto lightSensor = homeGenie.getIOManager().getLightSensor();
-            auto temperatureSensor = homeGenie.getIOManager().getTemperatureSensor();
-            String paramLuminance = HomeGenie::createModuleParameter("Sensor.Luminance", String(lightSensor.getLightLevel()).c_str());
-            String paramTemperature = HomeGenie::createModuleParameter("Sensor.Temperature", String(temperatureSensor.getTemperature()).c_str());
-            String localModule = HomeGenie::createModule("HomeAutomation.HomeGenie", "mini",
-                                              "HG-Mini", "HomeGenie Mini node", "Sensor",
-                                              (paramLuminance+","+paramTemperature).c_str());
+            auto localModule = getBuiltinModule(homeGenie);
             int msz = homeGenie.writeX10ModuleListJSON(NULL);
 
             size_t contentLength = (msz+localModule.length()+4);
@@ -74,7 +67,18 @@ bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie
             server.client().flush();
             delay(10);
             return true;
+        } else if (request->Command == "Modules.Get") {
+            String domain = request->getOption(0);
+            String address = request->getOption(1);
+            if (domain == IOEventDomains::HomeAutomation_X10) {
+                // TODO: ...
+            } else if (domain == IOEventDomains::HomeAutomation_HomeGenie && address == BUILTIN_MODULE_ADDRESS) {
+                request->Response = getBuiltinModule(homeGenie);
+                return true;
+            }
+            return false;
         } else if (request->Command == "Groups.List") {
+            // TODO: improve this...
             String list = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]},)";
             list += R"({"Name":"X10 Modules", "Modules":[)";
             for (int h = 0; h < 16; h++) {
@@ -95,9 +99,9 @@ bool Service::API::HomeGenieHandler::handleEvent(Service::HomeGenie &homeGenie, 
                                                  const unsigned char *eventPath, void *eventData,
                                                  IO::IOEventDataType dataType) {
 
-    String domain = String((char*)sender->getDomain());
-    String address = String((char*)sender->getAddress());
-    String event = String((char*)eventPath);
+    auto domain = String((char*)sender->getDomain());
+    auto address = String((char*)sender->getAddress());
+    auto event = String((char*)eventPath);
 
     // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
     QueuedMessage m = QueuedMessage(domain, address, event, "");
@@ -121,4 +125,15 @@ bool Service::API::HomeGenieHandler::handleEvent(Service::HomeGenie &homeGenie, 
     homeGenie.getEventRouter().signalEvent(m);
 
     return false;
+}
+
+String Service::API::HomeGenieHandler::getBuiltinModule(Service::HomeGenie &homeGenie) {
+    auto currentTime = NetManager::getTimeClient().getFormattedDate();
+    auto lightSensor = homeGenie.getIOManager().getLightSensor();
+    auto temperatureSensor = homeGenie.getIOManager().getTemperatureSensor();
+    auto paramLuminance = HomeGenie::createModuleParameter("Sensor.Luminance", String(lightSensor.getLightLevel()).c_str(), currentTime.c_str());
+    auto paramTemperature = HomeGenie::createModuleParameter("Sensor.Temperature", String(temperatureSensor.getTemperature()).c_str(), currentTime.c_str());
+    return HomeGenie::createModule("HomeAutomation.HomeGenie", BUILTIN_MODULE_ADDRESS,
+                                                 "HG-Mini", "HomeGenie Mini node", "Sensor",
+                                                 (paramLuminance+","+paramTemperature).c_str());
 }

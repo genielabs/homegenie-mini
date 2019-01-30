@@ -113,7 +113,7 @@ namespace Service {
     // END RequestHandler interface methods
 
 
-    String HomeGenie::createModuleParameter(const char *name, const char* value) {
+    String HomeGenie::createModuleParameter(const char *name, const char *value, const char *timestamp) {
         static const char *parameterTemplate = R"({
     "Name": "%s",
     "Value": "%s",
@@ -121,13 +121,12 @@ namespace Service {
     "FieldType": "%s",
     "UpdateTime": "%s"
   })";
-        auto currentTime = NetManager::getTimeClient().getFormattedDate();
         ssize_t size = snprintf(NULL, 0, parameterTemplate,
-                                name, value, "", "", currentTime.c_str()
+                                name, value, "", "", timestamp
                                 )+1;
         char* parameterJson = (char*)malloc(size);
         snprintf(parameterJson, size, parameterTemplate,
-                 name, value, "", "", currentTime.c_str()
+                 name, value, "", "", timestamp
         );
         auto p = String(parameterJson);
         free(parameterJson);

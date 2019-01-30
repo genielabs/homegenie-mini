@@ -36,6 +36,8 @@
 #include "APIHandler.h"
 #include "X10Handler.h"
 
+#define BUILTIN_MODULE_ADDRESS      "mini"
+
 namespace Service { namespace API {
 
     class X10ModulesOutputCallback : public ModuleListOutputCallback {
@@ -60,6 +62,8 @@ namespace Service { namespace API {
         bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData,
                     IOEventDataType dataType);
         void getModuleListJSON(ModuleListOutputCallback *outputCallback) {};
+
+        String getBuiltinModule(HomeGenie &homeGenie);
     };
 
 }}

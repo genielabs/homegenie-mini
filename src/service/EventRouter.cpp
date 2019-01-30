@@ -45,9 +45,11 @@ namespace Service {
                 auto m = eventsQueue.pop();
                 Logger::trace(":%s de-queued event >> [domain '%s' address '%s' event '%s']", EVENTROUTER_NS_PREFIX, m.domain.c_str(), m.sender.c_str(), m.event.c_str());
 
+                auto currentTime = NetManager::getTimeClient().getFormattedDate().c_str();
+
                 // MQTT
                 auto topic = String("hg-mini/"+m.domain+"/" + m.sender + "/event");
-                auto details = Service::HomeGenie::createModuleParameter(m.event.c_str(), m.value.c_str());
+                auto details = Service::HomeGenie::createModuleParameter(m.event.c_str(), m.value.c_str(), currentTime);
                 netManager->getMQTTServer()->broadcast(&topic, &details);
 
                 // SSE

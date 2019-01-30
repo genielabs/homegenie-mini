@@ -40,8 +40,12 @@ namespace Service { namespace API {
     };
 
     struct X10Module {
-        uint8_t Type;
-        float Level;
+        uint8_t Type = 0;
+        float Level = 0;
+        String UpdateTime;
+        X10Module() {
+            UpdateTime = NetManager::getTimeClient().getFormattedDate();
+        }
     };
 
     String DeviceTypes[] = {
@@ -58,9 +62,13 @@ namespace Service { namespace API {
         // X10 Home Automation modules
         for (int h = 0; h < 16; h++) {
             for (int m = 0; m < 16; m++) {
-                auto paramLevel = String(moduleList[h][m].Level);
-                auto deviceType = DeviceTypes[moduleList[h][m].Type];
-                paramLevel = HomeGenie::createModuleParameter("Status.Level", paramLevel.c_str());
+                auto module = &moduleList[h][m];
+                auto paramLevel = String(module->Level);
+                auto deviceType = DeviceTypes[module->Type];
+                if (module->UpdateTime.startsWith("1970-")) {
+                    module->UpdateTime = NetManager::getTimeClient().getFormattedDate();
+                }
+                paramLevel = HomeGenie::createModuleParameter("Status.Level", paramLevel.c_str(), module->UpdateTime.c_str());
                 outputCallback->write(",\n"+HomeGenie::createModule("HomeAutomation.X10", (String((char)('A'+h))+String(m+1)).c_str(),
                                                       "", "X10 Module", deviceType.c_str(),
                                                       paramLevel.c_str()));
@@ -96,6 +104,7 @@ namespace Service { namespace API {
             uint8_t sendRepeat = 0; // fallback to default repeat (3)
             bool ignoreCommand = false;
 
+            auto currentTime = NetManager::getTimeClient().getFormattedDate();
             QueuedMessage m = QueuedMessage(command->Domain, command->Address, IOEventPaths::Status_Level, "");
             if (command->Command == "Control.On") {
                 x10Message.command = X10::Command::CMD_ON;
@@ -117,7 +126,9 @@ namespace Service { namespace API {
                 }
                 if (sendRepeat == 0) {
                     ignoreCommand = true;
-                } else sendRepeat += 2; // improve initial burst detection
+                } else {
+                    sendRepeat += 2; // improve initial burst detection
+                }
             } else if (command->Command == "Control.Toggle") {
                 if (moduleStatus->Level > 0) {
                     x10Message.command = X10::Command::CMD_OFF;
@@ -126,7 +137,10 @@ namespace Service { namespace API {
                     x10Message.command = X10::Command::CMD_ON;
                     moduleStatus->Level = 1;
                 }
-            }
+            } else return false;
+
+            moduleStatus->UpdateTime = currentTime;
+
             m.value = String(moduleStatus->Level);
             homeGenie.getEventRouter().signalEvent(m);
 
@@ -199,10 +213,12 @@ namespace Service { namespace API {
                 QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, IOEventPaths::Status_Level, "");
                 switch (decodedMessage->command) {
                     case Command::CMD_ON:
+                        // TODO: update moduleList as well!
                         m.value = "1";
                         homeGenie.getEventRouter().signalEvent(m);
                         break;
                     case Command::CMD_OFF:
+                        // TODO: update moduleList as well!
                         m.value = "0";
                         homeGenie.getEventRouter().signalEvent(m);
                         break;
