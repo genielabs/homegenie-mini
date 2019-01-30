@@ -1,4 +1,5 @@
 # HomeGenie Mini
+*(code name **Sbirulino**)*
 
 HomeGenie mini is an open hardware + firmware solution for building smart devices
 based on the popular *ESP8266 chip*, a WiFi capable micro controller.
@@ -10,27 +11,83 @@ based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 - RF transceiver (315/330/433Mhz)
 - Expansion connector (P1) with 4 GPIO configurable as SPI/DIO/PWM
 
+*Example applications of the P1 connector:*
+
+- control the brightness of a led or drive a motor at different speed (PWM)
+- control up to 4 relays to actuate lights and appliances (DIO)
+- hosting additional sensors, connecting a display or other hardware (SPI)
+- breadboard playground
+
 **Firmware features**
 
-- Automatic discovery (SSDP) for quick client setup
-- X10 RF protocol encoding and decoding
+- Automatic discovery (SSDP) for instant client setup
+- X10 home automation RF protocol encoding and decoding with mapping to virtual modules
+- GPIO mapping to virtual modules: switch for digital output, dimmer for analog output or sensor for inputs (work in progress)
+- Modules state persistence
 - HTTP API (subset of standard HomeGenie API)
 - Real time event stream over WebSocket or SSE connection
 - MQTT broker over websocket
 - NTP client for time sync
-- Scripting engine (currently work in progress)
+- Scripting engine (work in progress)
 - Serial CLI
 
 **Mobile client**
 
 - HomeGenie plus for Android
 
-The P1 connector can be used for various applications such as:
 
-- control a led brightness or drive a motor at different speed (PWM)
-- control up to 4 relays to actuate lights and appliances (DIO)
-- hosting other sensors or interfacing with other hardware (SPI)
-- breadboard playground
+### HomeGenie API
+
+HomeGenie Mini API is a subset of HomeGenie Server API that makes HomeGenie Mini a real
+fully working light version of HomeGenie Server specifically designed for micro controllers.
+
+#### [HomeAutomation.HomeGenie](https://genielabs.github.io/HomeGenie/api/mig/core_api_config.html)
+
+Implemented subset:
+
+- [`/api/HomeAutomation.HomeGenie/Config/Modules.Get`](https://genielabs.github.io/HomeGenie/api/mig/core_api_config.html#2)
+- [`/api/HomeAutomation.HomeGenie/Config/Modules.List`](https://genielabs.github.io/HomeGenie/api/mig/core_api_config.html#3)
+- [`/api/HomeAutomation.HomeGenie/Config/Groups.List`](https://genielabs.github.io/HomeGenie/api/mig/core_api_config.html#4)
+
+`EXAMPLE Request`
+```
+GET /api/HomeAutomation.HomeGenie/Config/Modules.Get/HomeAutomation.HomeGenie/mini
+```
+
+`Response`
+```
+{
+  "Name": "HG-Mini",
+  "Description": "HomeGenie Mini node",
+  "DeviceType": "Sensor",
+  "Domain": "HomeAutomation.HomeGenie",
+  "Address": "mini",
+  "Properties": [{
+    "Name": "Sensor.Luminance",
+    "Value": "114",
+    "Description": "",
+    "FieldType": "",
+    "UpdateTime": "2019-01-30T13:34:02.293Z"
+  },{
+    "Name": "Sensor.Temperature",
+    "Value": "18.25",
+    "Description": "",
+    "FieldType": "",
+    "UpdateTime": "2019-01-30T13:34:02.293Z"
+  }],
+  "RoutingNode": ""
+}
+```
+
+#### [HomeAutomation.X10](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html)
+
+Implemented subset:
+
+- [`/api/HomeAutomation.X10/<module_address>/Control.On`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#1)
+- [`/api/HomeAutomation.X10/<module_address>/Control.Off`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#2)
+- [`/api/HomeAutomation.X10/<module_address>/Control.Level`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#5)
+- [`/api/HomeAutomation.X10/<module_address>/Control.Toggle`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#6)
+
 
 ## Building HomeGene Mini
 
