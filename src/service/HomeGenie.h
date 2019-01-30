@@ -68,6 +68,7 @@ namespace Service {
 
         // TODO: writeBuiltinModuleListJSON(...) ?
         int writeX10ModuleListJSON(ESP8266WebServer *server);
+        int writeX10GroupsListJSON(ESP8266WebServer *server);
 
         static String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
         static String createModuleParameter(const char *name, const char* value, const char *timestamp);

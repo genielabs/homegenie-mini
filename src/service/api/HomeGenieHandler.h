@@ -40,11 +40,11 @@
 
 namespace Service { namespace API {
 
-    class X10ModulesOutputCallback : public ModuleListOutputCallback {
+    class X10HandlerOutputCallback : public OutputStreamCallback {
         ESP8266WebServer *server;
     public:
         int outputLength = 0;
-        X10ModulesOutputCallback(ESP8266WebServer *server) {
+        X10HandlerOutputCallback(ESP8266WebServer *server) {
             this->server = server;
         }
         void write(String &s) {
@@ -61,7 +61,7 @@ namespace Service { namespace API {
         bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server);
         bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData,
                     IOEventDataType dataType);
-        void getModuleListJSON(ModuleListOutputCallback *outputCallback) {};
+        void getModuleListJSON(OutputStreamCallback *outputCallback) {};
 
         String getBuiltinModule(HomeGenie &homeGenie);
     };

@@ -39,7 +39,7 @@ namespace Service { namespace API {
     using namespace IO;
     using namespace Service;
 
-    class ModuleListOutputCallback {
+    class OutputStreamCallback {
     public:
         virtual void write(String &s) = 0;
     };
@@ -48,7 +48,7 @@ namespace Service { namespace API {
         virtual bool canHandleDomain(String &domain) = 0;
         virtual bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server) = 0;
         virtual bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) = 0;
-        virtual void getModuleListJSON(ModuleListOutputCallback *outputCallback) = 0;
+        virtual void getModuleListJSON(OutputStreamCallback *outputCallback) = 0;
     };
 
 }}

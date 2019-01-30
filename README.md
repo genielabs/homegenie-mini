@@ -1,7 +1,6 @@
 # HomeGenie Mini
-*(code name **Sbirulino**)*
 
-HomeGenie mini is an open hardware + firmware solution for building smart devices
+HomeGenie mini *(code name **Sbirulino**)* is an open hardware + firmware solution for building smart devices
 based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 
 **Hardware features**
@@ -45,6 +44,7 @@ fully working light version of HomeGenie Server specifically designed for micro 
 
 Implemented subset:
 
+- [`/api/HomeAutomation.HomeGenie/Logging/RealTime.EventStream/`](https://genielabs.github.io/HomeGenie/api/mig/core_api_logging.html#1)
 - [`/api/HomeAutomation.HomeGenie/Config/Modules.Get`](https://genielabs.github.io/HomeGenie/api/mig/core_api_config.html#2)
 - [`/api/HomeAutomation.HomeGenie/Config/Modules.List`](https://genielabs.github.io/HomeGenie/api/mig/core_api_config.html#3)
 - [`/api/HomeAutomation.HomeGenie/Config/Groups.List`](https://genielabs.github.io/HomeGenie/api/mig/core_api_config.html#4)

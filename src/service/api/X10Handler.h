@@ -31,6 +31,7 @@
 #define HOMEGENIE_MINI_X10APIHANDLER_H
 
 #include "APIHandler.h"
+#include "HomeGenieHandler.h"
 
 #include <service/HomeGenie.h>
 #include <io/IOEventDomains.h>
@@ -45,7 +46,9 @@ namespace Service { namespace API {
         bool canHandleDomain(String &domain);
         bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server);
         bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType);
-        void getModuleListJSON(ModuleListOutputCallback *outputCallback);
+
+        void getModuleListJSON(OutputStreamCallback *outputCallback);
+        void getGroupListJSON(OutputStreamCallback *outputCallback);
     };
 
 }}

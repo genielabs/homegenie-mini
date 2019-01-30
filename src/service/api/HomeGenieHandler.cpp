@@ -49,10 +49,8 @@ bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie
     if (request->Address == "Config") {
         if (request->Command == "Modules.List") {
             // HG Mini multi-sensor module
-            // TODO: move to getModuleListJSON(ModuleListOutputCallback callback) method like getModuleListJSON in X10Handler.cpp
             auto localModule = getBuiltinModule(homeGenie);
             int msz = homeGenie.writeX10ModuleListJSON(NULL);
-
             size_t contentLength = (msz+localModule.length()+4);
             server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             server.sendHeader("Pragma", "no-cache");
@@ -63,9 +61,7 @@ bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie
             server.sendContent(localModule);
             homeGenie.writeX10ModuleListJSON(&server);
             server.sendContent("\n]");
-
             server.client().flush();
-            delay(10);
             return true;
         } else if (request->Command == "Modules.Get") {
             String domain = request->getOption(0);
@@ -78,17 +74,14 @@ bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie
             }
             return false;
         } else if (request->Command == "Groups.List") {
-            // TODO: improve this...
-            String list = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]},)";
-            list += R"({"Name":"X10 Modules", "Modules":[)";
-            for (int h = 0; h < 16; h++) {
-                for (int m = 0; m < 16; m++) {
-                    list += R"({"Address":")" + String((char)('A'+h))+String(m + 1) + R"(","Domain":"HomeAutomation.X10"})";
-                    if (!(m == 15 && h == 15)) list += ",";
-                }
-            }
-            list += R"(]}])";
-            request->Response = list;
+            auto contentLength = (size_t )homeGenie.writeX10GroupsListJSON(NULL);
+            server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            server.sendHeader("Pragma", "no-cache");
+            server.sendHeader("Expires", "0");
+            server.setContentLength(contentLength);
+            server.send(200, "application/json; charset=utf-8", "");
+            homeGenie.writeX10GroupsListJSON(&server);
+            server.client().flush();
             return true;
         }
     }

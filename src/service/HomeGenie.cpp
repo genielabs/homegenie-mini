@@ -174,8 +174,14 @@ namespace Service {
     }
 
     int HomeGenie::writeX10ModuleListJSON(ESP8266WebServer *server) {
-        auto callback = X10ModulesOutputCallback(server);
+        auto callback = X10HandlerOutputCallback(server);
         x10Handler.getModuleListJSON(&callback);
+        return callback.outputLength;
+    }
+
+    int HomeGenie::writeX10GroupsListJSON(ESP8266WebServer *server) {
+        auto callback = X10HandlerOutputCallback(server);
+        x10Handler.getGroupListJSON(&callback);
         return callback.outputLength;
     }
 

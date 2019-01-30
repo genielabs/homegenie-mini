@@ -58,7 +58,24 @@ namespace Service { namespace API {
 
     X10Module moduleList[/*house codes*/ (16 + 1/*+1 is for sensors*/)][/*units*/ 16];
 
-    void X10Handler::getModuleListJSON(ModuleListOutputCallback *outputCallback) {
+    void X10Handler::getGroupListJSON(OutputStreamCallback *outputCallback) {
+        String line = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]},)";
+        outputCallback->write(line);
+        line = R"({"Name":"X10 Modules", "Modules":[)";
+        outputCallback->write(line);
+        for (int h = 0; h < 16; h++) {
+            for (int m = 0; m < 16; m++) {
+                line = R"({"Address":")" + String((char)('A'+h))+String(m + 1) + R"(","Domain":"HomeAutomation.X10"})";
+                outputCallback->write(line);
+                line = ",";
+                if (!(m == 15 && h == 15)) outputCallback->write(line);
+            }
+        }
+        line = "]}]";
+        outputCallback->write(line);
+    }
+
+    void X10Handler::getModuleListJSON(OutputStreamCallback *outputCallback) {
         // X10 Home Automation modules
         for (int h = 0; h < 16; h++) {
             for (int m = 0; m < 16; m++) {
@@ -239,4 +256,4 @@ namespace Service { namespace API {
             return false;
         }
 
-}}
+    }}
