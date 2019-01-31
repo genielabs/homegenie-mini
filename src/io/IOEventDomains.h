@@ -31,13 +31,10 @@
 #define HOMEGENIE_MINI_IOEVENTDOMAINS_H
 
 namespace IO {
-
-    class IOEventDomains {
-    public:
-        static const char HomeAutomation_HomeGenie[];
-        static const char HomeAutomation_X10[];
+    namespace IOEventDomains {
+        const char HomeAutomation_HomeGenie[] = "HomeAutomation.HomeGenie";
+        const char HomeAutomation_X10[] = "HomeAutomation.X10";
     };
-
 }
 
 #endif //HOMEGENIE_MINI_IOEVENTDOMAINS_H

@@ -54,8 +54,8 @@ namespace Net {
         bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
         void sendSSEvent(String domain, String address, String event, String value);
     private:
-        void serverSentEventHeader(WiFiClient client);
-        void serverSentEvent(WiFiClient client, String domain, String address, String event, String value);
+        void serverSentEventHeader(WiFiClient &client);
+        void serverSentEvent(WiFiClient &client, String &domain, String &address, String &event, String &value);
     };
 
 }

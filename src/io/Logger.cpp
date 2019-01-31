@@ -111,12 +111,6 @@ namespace IO {
     }
 
     void Logger::timestamp() {
-        // output timestamp
-        /*
-        char timestamp[15];
-        snprintf(timestamp, sizeof(timestamp), "%8.06f", ((float)micros()/(float)1000000));
-        Serial.printf("[%15s] ", timestamp);
-         */
         Serial.printf("[%s] ", Net::NetManager::getTimeClient().getFormattedDate().c_str());
     }
 

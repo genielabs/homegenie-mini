@@ -37,6 +37,15 @@ namespace Net {
     using namespace IO;
     using namespace Service;
 
+    const char SSDP_Description[] PROGMEM = "description.xml";
+    const char SSDP_Name[] PROGMEM = "HomeGenie:mini V1.0";
+    const char SSDP_SerialNumber[] PROGMEM = "ABC0123456789";
+    const char SSDP_ModelName[] PROGMEM = "HomeGenie:mini 2019";
+    const char SSDP_ModelNumber[] PROGMEM = "2134567890";
+    const char SSDP_ModelURL[] PROGMEM = "http://homegenie.it";
+    const char SSDP_Manufacturer[] PROGMEM = "G-Labs";
+    const char SSDP_ManufacturerURL[] PROGMEM = "https://glabs.it";
+
     static ESP8266WebServer httpServer(HTTP_SERVER_PORT);
 
     LinkedList<WiFiClient> wifiClients;
@@ -68,16 +77,16 @@ namespace Net {
         httpServer.begin();
         Logger::info("|  ✔ HTTP service");
 
-        SSDP.setSchemaURL("description.xml");
+        SSDP.setSchemaURL(FPSTR(SSDP_Description));
         SSDP.setHTTPPort(80);
-        SSDP.setName("HomeGenie:mini V1.0");
-        SSDP.setSerialNumber("ABC0123456789");
-        SSDP.setURL("192.168.2.109");
-        SSDP.setModelName("HomeGenie:mini 2019");
-        SSDP.setModelNumber("2134567890");
-        SSDP.setModelURL("http://homegenie.it");
-        SSDP.setManufacturer("G-Labs");
-        SSDP.setManufacturerURL("https://glabs.it");
+        SSDP.setName(FPSTR(SSDP_Name));
+        SSDP.setSerialNumber(FPSTR(SSDP_SerialNumber));
+        SSDP.setURL(WiFi.localIP().toString());
+        SSDP.setModelName(FPSTR(SSDP_ModelName));
+        SSDP.setModelNumber(FPSTR(SSDP_ModelNumber));
+        SSDP.setModelURL(FPSTR(SSDP_ModelURL));
+        SSDP.setManufacturer(FPSTR(SSDP_Manufacturer));
+        SSDP.setManufacturerURL(FPSTR(SSDP_ManufacturerURL));
         SSDP.begin();
         Logger::info("|  ✔ SSDP service");
     }
@@ -123,7 +132,7 @@ namespace Net {
         events.add(m);
     }
 
-    void HTTPServer::serverSentEventHeader(WiFiClient client) {
+    void HTTPServer::serverSentEventHeader(WiFiClient &client) {
         client.println("HTTP/1.1 200 OK");
         client.println("Content-Type: text/event-stream;charset=UTF-8");
         client.println("Connection: close");  // the connection will be closed after completion of the response
@@ -133,7 +142,7 @@ namespace Net {
         //client.flush();
     }
 
-    void HTTPServer::serverSentEvent(WiFiClient client, String domain, String address, String event, String value) {
+    void HTTPServer::serverSentEvent(WiFiClient &client, String &domain, String &address, String &event, String &value) {
         // id: 1548081759906.19
         // data: {"Timestamp":"2019-01-21T14:42:39.906194Z","UnixTimestamp":1548081759906.19,"Domain":"HomeAutomation.ZWave","Source":"7","Description":"ZWave Node","Property":"Meter.Watts","Value":0}
         String date = Net::NetManager::getTimeClient().getFormattedDate();

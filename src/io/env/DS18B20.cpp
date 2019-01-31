@@ -43,8 +43,8 @@ namespace IO { namespace Env {
         // signal value changes
         if (currentTemperature != temperature) {
             currentTemperature = temperature;
-            Logger::info("@%s [%s %0.2f]", DS18B20_NS_PREFIX, IOEventPaths::Sensor_Temperature, currentTemperature);
-            sendEvent((uint8_t*)IOEventPaths::Sensor_Temperature, (float_t *)&currentTemperature, SensorTemperature);
+            Logger::info("@%s [%s %0.2f]", DS18B20_NS_PREFIX, (IOEventPaths::Sensor_Temperature), currentTemperature);
+            sendEvent((const uint8_t*)(IOEventPaths::Sensor_Temperature), (float_t *)&currentTemperature, SensorTemperature);
         }
 
         Logger::verbose("  > %s::loop() << END", DS18B20_NS_PREFIX);

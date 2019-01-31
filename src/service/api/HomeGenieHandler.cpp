@@ -30,7 +30,7 @@
 #include "HomeGenieHandler.h"
 
 bool Service::API::HomeGenieHandler::canHandleDomain(String &domain) {
-    return domain == IO::IOEventDomains::HomeAutomation_HomeGenie;
+    return domain == (IO::IOEventDomains::HomeAutomation_HomeGenie);
 }
 
 bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie, Service::APIRequest *request, ESP8266WebServer &server) {

@@ -32,8 +32,6 @@
 
 #include <Arduino.h>
 
-#define IOEVENT_DOMAIN__HOMEAUTOMATION_X10           "HomeAutomation.X10"
-
 namespace IO {
 
     class IIOEventSender;
@@ -60,7 +58,7 @@ namespace IO {
         void setEventReceiver(IIOEventReceiver *receiver) {
             eventReceiver = receiver;
         }
-        virtual void sendEvent(uint8_t *eventPath, void* eventData, IOEventDataType dataType) {
+        virtual void sendEvent(const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
             if (eventReceiver != NULL) {
                 eventReceiver->onIOEvent(this, eventPath, eventData, dataType);
             }

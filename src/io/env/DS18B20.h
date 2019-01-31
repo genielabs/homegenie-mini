@@ -50,8 +50,8 @@ namespace IO { namespace Env {
         DS18B20() {
             setLoopInterval(DS18B20_SAMPLING_RATE);
             // IEventSender members
-            domain = (uint8_t *)IOEventDomains::HomeAutomation_HomeGenie;
-            address = (uint8_t *)"mini";
+            domain = (const uint8_t *)(IOEventDomains::HomeAutomation_HomeGenie);
+            address = (const uint8_t *)"mini"; // TODO: declare "mini" as const
         }
         void begin();
         void loop();

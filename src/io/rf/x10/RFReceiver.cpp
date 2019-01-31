@@ -40,8 +40,8 @@ namespace IO { namespace X10 {
     RFReceiver::RFReceiver() {
         receiverInstance = this;
         // IEventSender members
-        domain = (uint8_t *)IOEventDomains::HomeAutomation_X10;
-        address = (uint8_t *)"RF";
+        domain = (const uint8_t *)(IOEventDomains::HomeAutomation_X10);
+        address = (const uint8_t *)"RF"; // TODO: declare "RF" as const
     }
 
     RFReceiver::RFReceiver(RFReceiverConfig *configuration) : RFReceiver() {
@@ -101,7 +101,7 @@ namespace IO { namespace X10 {
                 if (isStandardCode || isSecurityCode) {
                     messageType = isStandardCode ? (uint8_t) 0x20 : (uint8_t) 0x29;
                     uint8_t data[] = { messageType, byteBuffer[0], byteBuffer[1], (byteBuffer[2]), (byteBuffer[3]) };
-                    sendEvent((uint8_t*)IOEventPaths::Sensor_RawData, data, IOEventDataType::Undefined);
+                    sendEvent((const uint8_t*)(IOEventPaths::Sensor_RawData), data, IOEventDataType::Undefined);
                 }
 
                 receivedCount = -1;

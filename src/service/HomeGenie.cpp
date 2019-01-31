@@ -85,11 +85,11 @@ namespace Service {
         String address = String((char*)sender->getAddress());
         String event = String((char*)eventPath);
         Logger::trace(":%s [IOManager::IOEvent] >> [domain '%s' address '%s' event '%s']", HOMEGENIEMINI_NS_PREFIX, domain.c_str(), address.c_str(), event.c_str());
-        if (domain == IOEventDomains::HomeAutomation_HomeGenie) {
+        if (domain == (IOEventDomains::HomeAutomation_HomeGenie)) {
 
             homeGenieHandler.handleEvent(*this, sender, eventPath, eventData, dataType);
 
-        } else if (domain == IOEventDomains::HomeAutomation_X10) {
+        } else if (domain == (IOEventDomains::HomeAutomation_X10)) {
 
             x10Handler.handleEvent(*this, sender, eventPath, eventData, dataType);
 
@@ -113,7 +113,7 @@ namespace Service {
     // END RequestHandler interface methods
 
 
-    String HomeGenie::createModuleParameter(const char *name, const char *value, const char *timestamp) {
+    String HomeGenie::createModuleParameter(const char* name, const char *value, const char *timestamp) {
         static const char *parameterTemplate = R"({
     "Name": "%s",
     "Value": "%s",
@@ -133,7 +133,7 @@ namespace Service {
         return p;
     }
 
-    String HomeGenie::createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters) {
+    String HomeGenie::createModule(const char* domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters) {
         static const char* moduleTemplate = R"({
   "Name": "%s",
   "Description": "%s",
@@ -167,17 +167,17 @@ namespace Service {
         auto temperatureSensor = getIOManager().getTemperatureSensor();
         auto paramLuminance = HomeGenie::createModuleParameter("Sensor.Luminance", String(lightSensor.getLightLevel()).c_str(), currentTime.c_str());
         auto paramTemperature = HomeGenie::createModuleParameter("Sensor.Temperature", String(temperatureSensor.getTemperature()).c_str(), currentTime.c_str());
-        return String(HomeGenie::createModule("HomeAutomation.HomeGenie", BUILTIN_MODULE_ADDRESS,
+        return String(HomeGenie::createModule(IOEventDomains::HomeAutomation_HomeGenie, BUILTIN_MODULE_ADDRESS,
                                               "HG-Mini", "HomeGenie Mini node", "Sensor",
                                               (paramLuminance+","+paramTemperature).c_str()));
     }
 
     bool HomeGenie::api(APIRequest *request, ESP8266WebServer &server) {
-        if (request->Domain == IOEventDomains::HomeAutomation_X10) {
+        if (request->Domain == (IOEventDomains::HomeAutomation_X10)) {
 
             return x10Handler.handleRequest(*this, request, server);
 
-        } else if (request->Domain == IOEventDomains::HomeAutomation_HomeGenie) {
+        } else if (request->Domain == (IOEventDomains::HomeAutomation_HomeGenie)) {
 
             return homeGenieHandler.handleRequest(*this, request, server);
 
@@ -186,11 +186,11 @@ namespace Service {
 
     int HomeGenie::writeModuleJSON(ESP8266WebServer *server, String &domain, String &address) {
         auto outputCallback = APIHandlerOutputCallback(server);
-        if (domain == IOEventDomains::HomeAutomation_HomeGenie && address == BUILTIN_MODULE_ADDRESS) {
+        if (domain == (IOEventDomains::HomeAutomation_HomeGenie) && address == BUILTIN_MODULE_ADDRESS) {
             auto module = getBuiltinModuleJSON();
             outputCallback.write(module);
             // TODO: check out if `module` gets actually disposed
-        } else if (domain == IOEventDomains::HomeAutomation_X10) {
+        } else if (domain == (IOEventDomains::HomeAutomation_X10)) {
             x10Handler.getModuleJSON(&outputCallback, domain, address);
         }
         return outputCallback.outputLength;

@@ -68,15 +68,15 @@ namespace Service { namespace API {
         if (module->UpdateTime.startsWith("1970-")) {
             module->UpdateTime = NetManager::getTimeClient().getFormattedDate();
         }
-        paramLevel = HomeGenie::createModuleParameter("Status.Level", paramLevel.c_str(), module->UpdateTime.c_str());
-        auto moduleJSON = HomeGenie::createModule("HomeAutomation.X10", (String((char)('A'+h))+String(m+1)).c_str(),
+        paramLevel = HomeGenie::createModuleParameter(IOEventPaths::Status_Level, paramLevel.c_str(), module->UpdateTime.c_str());
+        auto moduleJSON = HomeGenie::createModule(IOEventDomains::HomeAutomation_X10, (String((char)('A'+h))+String(m+1)).c_str(),
                                                     "", "X10 Module", deviceType.c_str(),
                                                     paramLevel.c_str());
         outputCallback->write(moduleJSON);
     }
 
     void X10Handler::getModuleListJSON(OutputStreamCallback *outputCallback) {
-        auto domain = String(IOEventDomains::HomeAutomation_X10);
+        auto domain = String((IOEventDomains::HomeAutomation_X10));
         auto separator = String(",\n");
         // X10 Home Automation modules
         for (int h = 0; h < 16; h++) {
@@ -109,7 +109,7 @@ namespace Service { namespace API {
 
     bool X10Handler::handleRequest(HomeGenie &homeGenie, APIRequest *command, ESP8266WebServer &server) {
 
-        if (command->Domain == IOEventDomains::HomeAutomation_X10
+        if (command->Domain == (IOEventDomains::HomeAutomation_X10)
             && command->Address == "RF"
             && command->Command == "Control.SendRaw") {
 
@@ -121,7 +121,7 @@ namespace Service { namespace API {
             command->Response = R"({ "ResponseText": "OK" })";
 
             return true;
-        } else if (command->Domain == IOEventDomains::HomeAutomation_X10) {
+        } else if (command->Domain == (IOEventDomains::HomeAutomation_X10)) {
             uint8_t data[5];
             auto hu = command->Address; hu.toLowerCase();
             int h = (int)hu.charAt(0)-(int)HOUSE_MIN; // house code 0..15
@@ -136,7 +136,7 @@ namespace Service { namespace API {
             bool ignoreCommand = false;
 
             auto currentTime = NetManager::getTimeClient().getFormattedDate();
-            QueuedMessage m = QueuedMessage(command->Domain, command->Address, IOEventPaths::Status_Level, "");
+            QueuedMessage m = QueuedMessage(command->Domain, command->Address, (IOEventPaths::Status_Level), "");
             if (command->Command == "Control.On") {
                 x10Message.command = X10::Command::CMD_ON;
                 moduleStatus->Level = 1;
@@ -190,84 +190,83 @@ namespace Service { namespace API {
     }
 
     bool X10Handler::canHandleDomain(String &domain) {
-        return domain == IO::IOEventDomains::HomeAutomation_X10;
+        return domain == (IO::IOEventDomains::HomeAutomation_X10);
     }
 
-        bool X10Handler::handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
+    bool X10Handler::handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
 
-            String domain = String((char*)sender->getDomain());
-            String address = String((char*)sender->getAddress());
-            String event = String((char*)eventPath);
-            /*
-             * X10 RF Receiver "Sensor.RawData" event
-             */
-            if (address == "RF" && event == IOEventPaths::Sensor_RawData /*&& ioManager.getX10Receiver().isEnabled()*/) {
-                // decode event data (X10 RF packet)
-                auto data = ((uint8_t *) eventData);
-                /// \param type Type of message (eg. 0x20 = standard, 0x29 = security, ...)
-                /// \param b0 Byte 1
-                /// \param b1 Byte 2
-                /// \param b2 Byte 3
-                /// \param b3 Byte 4
-                uint8_t type = data[0];
-                uint8_t b0 = data[1];
-                uint8_t b1 = data[2];
-                uint8_t b2 = data[3];
-                uint8_t b3 = data[4];
-                Logger::info(":%s [X10::RFReceiver] >> [%s%s%s%s%s%s]", HOMEGENIEMINI_NS_PREFIX,
-                             Utility::byteToHex(type).c_str(),
-                             Utility::byteToHex((b0)).c_str(),
-                             Utility::byteToHex((b1)).c_str(),
-                             Utility::byteToHex(b2).c_str(),
-                             Utility::byteToHex(b3).c_str(),
-                             (type == 0x29) ? "0000" : ""
-                );
+        String domain = String((char*)sender->getDomain());
+        String address = String((char*)sender->getAddress());
+        String event = String((char*)eventPath);
+        /*
+         * X10 RF Receiver "Sensor.RawData" event
+         */
+        if (address == "RF" /* TODO: declare "RF" as const */ && event == (IOEventPaths::Sensor_RawData) /*&& ioManager.getX10Receiver().isEnabled()*/) {
+            // decode event data (X10 RF packet)
+            auto data = ((uint8_t *) eventData);
+            /// \param type Type of message (eg. 0x20 = standard, 0x29 = security, ...)
+            /// \param b0 Byte 1
+            /// \param b1 Byte 2
+            /// \param b2 Byte 3
+            /// \param b3 Byte 4
+            uint8_t type = data[0];
+            uint8_t b0 = data[1];
+            uint8_t b1 = data[2];
+            uint8_t b2 = data[3];
+            uint8_t b3 = data[4];
+            Logger::info(":%s [X10::RFReceiver] >> [%s%s%s%s%s%s]", HOMEGENIEMINI_NS_PREFIX,
+                         Utility::byteToHex(type).c_str(),
+                         Utility::byteToHex((b0)).c_str(),
+                         Utility::byteToHex((b1)).c_str(),
+                         Utility::byteToHex(b2).c_str(),
+                         Utility::byteToHex(b3).c_str(),
+                         (type == 0x29) ? "0000" : ""
+            );
 
-                // Decode RF message data to X10Message class
-                auto *decodedMessage = new X10Message();
-                uint8_t encodedMessage[5]{type, b0, b1, b2, b3};
-                X10Message::decodeCommand(encodedMessage, decodedMessage);
+            // Decode RF message data to X10Message class
+            auto *decodedMessage = new X10Message();
+            uint8_t encodedMessage[5]{type, b0, b1, b2, b3};
+            X10Message::decodeCommand(encodedMessage, decodedMessage);
 
-                // Convert enums to string
-                String houseCode(house_code_to_char(decodedMessage->houseCode));
-                String unitCode(unit_code_to_int(decodedMessage->unitCode));
-                Logger::trace(":%s %s%s %s", HOMEGENIEMINI_NS_PREFIX, houseCode.c_str(), unitCode.c_str(),
-                              cmd_code_to_str(decodedMessage->command));
+            // Convert enums to string
+            String houseCode(house_code_to_char(decodedMessage->houseCode));
+            String unitCode(unit_code_to_int(decodedMessage->unitCode));
+            Logger::trace(":%s %s%s %s", HOMEGENIEMINI_NS_PREFIX, houseCode.c_str(), unitCode.c_str(),
+                          cmd_code_to_str(decodedMessage->command));
 
-                // NOTE: Calling `getMQTTServer().broadcast(..)` out of the loop() would cause crashing,
-                // NOTE: so an `eventsQueue` is used to store messages that are then sent in the `loop()`
-                // NOTE: method. Currently the queue will only hold one element but it can be used as a real
-                // NOTE: queue by processing queued elements at every n-th loop() cycle (currently the queue
-                // NOTE:  is processed at every cycle). (not sure if it would be of any use though)
+            // NOTE: Calling `getMQTTServer().broadcast(..)` out of the loop() would cause crashing,
+            // NOTE: so an `eventsQueue` is used to store messages that are then sent in the `loop()`
+            // NOTE: method. Currently the queue will only hold one element but it can be used as a real
+            // NOTE: queue by processing queued elements at every n-th loop() cycle (currently the queue
+            // NOTE:  is processed at every cycle). (not sure if it would be of any use though)
 
-                // MQTT Message Queue (enqueue)
-                QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, IOEventPaths::Status_Level, "");
-                switch (decodedMessage->command) {
-                    case Command::CMD_ON:
-                        // TODO: update moduleList as well!
-                        m.value = "1";
-                        homeGenie.getEventRouter().signalEvent(m);
-                        break;
-                    case Command::CMD_OFF:
-                        // TODO: update moduleList as well!
-                        m.value = "0";
-                        homeGenie.getEventRouter().signalEvent(m);
-                        break;
+            // MQTT Message Queue (enqueue)
+            QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, (IOEventPaths::Status_Level), "");
+            switch (decodedMessage->command) {
+                case Command::CMD_ON:
+                    // TODO: update moduleList as well!
+                    m.value = "1";
+                    homeGenie.getEventRouter().signalEvent(m);
+                    break;
+                case Command::CMD_OFF:
+                    // TODO: update moduleList as well!
+                    m.value = "0";
+                    homeGenie.getEventRouter().signalEvent(m);
+                    break;
 // TODO: Implement all X10 events + Camera and Security
-                }
-
-                delete decodedMessage;
-
-                // TODO: blink led ? (visible feedback)
-                //digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
-                //delay(10);                         // wait for a blink
-                //digitalWrite(LED_BUILTIN, HIGH);
-
-                return true;
             }
 
+            delete decodedMessage;
 
-            return false;
+            // TODO: blink led ? (visible feedback)
+            //digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
+            //delay(10);                         // wait for a blink
+            //digitalWrite(LED_BUILTIN, HIGH);
+
+            return true;
         }
 
-    }}
+        return false;
+    }
+
+}}

@@ -119,7 +119,7 @@ namespace Net {
             }
         });
         webSocket->begin();
-        Serial.println("WebSocket server started.");
+        Logger::info("|  ✔ WebSocket server");
 
         mqttServer = new MQTTServer();
         mqttServer->begin();

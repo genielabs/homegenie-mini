@@ -31,16 +31,13 @@
 #define HOMEGENIE_MINI_IOEVENTPATHS_H
 
 namespace IO {
-
-    class IOEventPaths {
-    public:
-        static const char Sensor_RawData[];
-        static const char Status_Level[];
-        static const char Sensor_Luminance[];
-        static const char Sensor_Temperature[];
-        static const char System_BytesFree[];
-    };
-
+    namespace IOEventPaths {
+        const char Sensor_RawData[] = "Sensor.RawData";
+        const char Status_Level[] = "Status.Level";
+        const char Sensor_Luminance[] = "Sensor.Luminance";
+        const char Sensor_Temperature[] = "Sensor.Temperature";
+        const char System_BytesFree[] = "System.BytesFree";
+    }
 }
 
 

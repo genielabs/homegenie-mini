@@ -56,8 +56,8 @@ namespace Net { namespace MQTT {
 
     void MQTTBrokerMini::begin(void) {
         unsetCallback();
-        for (uint8_t i = 0; i < MQTTBROKER_CLIENT_MAX + 1; i++) {
-            MQTTclients[i].status = false;
+        for (auto &MQTTclient : MQTTclients) {
+            MQTTclient.status = false;
         }
     }
 
