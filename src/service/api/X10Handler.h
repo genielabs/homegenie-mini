@@ -31,9 +31,7 @@
 #define HOMEGENIE_MINI_X10APIHANDLER_H
 
 #include "APIHandler.h"
-#include "HomeGenieHandler.h"
 
-#include <service/HomeGenie.h>
 #include <io/IOEventDomains.h>
 #include <Utility.h>
 
@@ -47,7 +45,9 @@ namespace Service { namespace API {
         bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server);
         bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType);
 
+        void getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address);
         void getModuleListJSON(OutputStreamCallback *outputCallback);
+        // TODO: deprecate `getGroupListJSON` (read note in the function body from .cpp file)
         void getGroupListJSON(OutputStreamCallback *outputCallback);
     };
 

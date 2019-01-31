@@ -48,6 +48,7 @@ namespace Service { namespace API {
         virtual bool canHandleDomain(String &domain) = 0;
         virtual bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server) = 0;
         virtual bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) = 0;
+        virtual void getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address) = 0;
         virtual void getModuleListJSON(OutputStreamCallback *outputCallback) = 0;
     };
 

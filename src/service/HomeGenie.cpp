@@ -161,6 +161,17 @@ namespace Service {
         return m;
     }
 
+    String HomeGenie::getBuiltinModuleJSON() {
+        auto currentTime = NetManager::getTimeClient().getFormattedDate();
+        auto lightSensor = getIOManager().getLightSensor();
+        auto temperatureSensor = getIOManager().getTemperatureSensor();
+        auto paramLuminance = HomeGenie::createModuleParameter("Sensor.Luminance", String(lightSensor.getLightLevel()).c_str(), currentTime.c_str());
+        auto paramTemperature = HomeGenie::createModuleParameter("Sensor.Temperature", String(temperatureSensor.getTemperature()).c_str(), currentTime.c_str());
+        return String(HomeGenie::createModule("HomeAutomation.HomeGenie", BUILTIN_MODULE_ADDRESS,
+                                              "HG-Mini", "HomeGenie Mini node", "Sensor",
+                                              (paramLuminance+","+paramTemperature).c_str()));
+    }
+
     bool HomeGenie::api(APIRequest *request, ESP8266WebServer &server) {
         if (request->Domain == IOEventDomains::HomeAutomation_X10) {
 
@@ -173,16 +184,38 @@ namespace Service {
         } else return false;
     }
 
-    int HomeGenie::writeX10ModuleListJSON(ESP8266WebServer *server) {
-        auto callback = X10HandlerOutputCallback(server);
-        x10Handler.getModuleListJSON(&callback);
-        return callback.outputLength;
+    int HomeGenie::writeModuleJSON(ESP8266WebServer *server, String &domain, String &address) {
+        auto outputCallback = APIHandlerOutputCallback(server);
+        if (domain == IOEventDomains::HomeAutomation_HomeGenie && address == BUILTIN_MODULE_ADDRESS) {
+            auto module = getBuiltinModuleJSON();
+            outputCallback.write(module);
+            // TODO: check out if `module` gets actually disposed
+        } else if (domain == IOEventDomains::HomeAutomation_X10) {
+            x10Handler.getModuleJSON(&outputCallback, domain, address);
+        }
+        return outputCallback.outputLength;
     }
 
-    int HomeGenie::writeX10GroupsListJSON(ESP8266WebServer *server) {
-        auto callback = X10HandlerOutputCallback(server);
-        x10Handler.getGroupListJSON(&callback);
-        return callback.outputLength;
+    int HomeGenie::writeModuleListJSON(ESP8266WebServer *server) {
+        auto outputCallback = APIHandlerOutputCallback(server);
+        String line = "[";
+        outputCallback.write(line);
+        // HomeAutomation.HomeGenie
+        line = getBuiltinModuleJSON();
+        outputCallback.write(line);
+        line = ",\n";
+        outputCallback.write(line);
+        // HomeAutomation.X10
+        x10Handler.getModuleListJSON(&outputCallback);
+        line = "]\n";
+        outputCallback.write(line);
+        return outputCallback.outputLength;
+    }
+
+    int HomeGenie::writeGroupListJSON(ESP8266WebServer *server) {
+        auto outputCallback = APIHandlerOutputCallback(server);
+        x10Handler.getGroupListJSON(&outputCallback);
+        return outputCallback.outputLength;
     }
 
 }

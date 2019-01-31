@@ -28,60 +28,45 @@
  */
 
 #include "HomeGenieHandler.h"
-#include "X10Handler.h"
 
 bool Service::API::HomeGenieHandler::canHandleDomain(String &domain) {
     return domain == IO::IOEventDomains::HomeAutomation_HomeGenie;
 }
 
 bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie, Service::APIRequest *request, ESP8266WebServer &server) {
-    /*
-    if (request->Address.equals("Light") && request->Command.equals("Sensor.GetValue")) {
-        char response[1024];
-        sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getLightSensor().getLightLevel() / 10.24F);
-        request->Response = String(response);
-    } else if (request->Address.equals("Temperature") && request->Command.equals("Sensor.GetValue")) {
-        char response[1024];
-        sprintf(response, R"({ "ResponseText": "%0.2f" })", getIOManager().getTemperatureSensor().getTemperature());
-        request->Response = String(response);
-    } else return false;
-    */
     if (request->Address == "Config") {
         if (request->Command == "Modules.List") {
             // HG Mini multi-sensor module
-            auto localModule = getBuiltinModule(homeGenie);
-            int msz = homeGenie.writeX10ModuleListJSON(NULL);
-            size_t contentLength = (msz+localModule.length()+4);
+            auto contentLength = (size_t)homeGenie.writeModuleListJSON(NULL);
             server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             server.sendHeader("Pragma", "no-cache");
             server.sendHeader("Expires", "0");
             server.setContentLength(contentLength);
             server.send(200, "application/json; charset=utf-8", "");
-            server.sendContent("[\n");
-            server.sendContent(localModule);
-            homeGenie.writeX10ModuleListJSON(&server);
-            server.sendContent("\n]");
-            server.client().flush();
+            homeGenie.writeModuleListJSON(&server);
+            //server.client().flush();
             return true;
         } else if (request->Command == "Modules.Get") {
             String domain = request->getOption(0);
             String address = request->getOption(1);
-            if (domain == IOEventDomains::HomeAutomation_X10) {
-                // TODO: ...
-            } else if (domain == IOEventDomains::HomeAutomation_HomeGenie && address == BUILTIN_MODULE_ADDRESS) {
-                request->Response = getBuiltinModule(homeGenie);
-                return true;
-            }
-            return false;
-        } else if (request->Command == "Groups.List") {
-            auto contentLength = (size_t )homeGenie.writeX10GroupsListJSON(NULL);
+            auto contentLength = (size_t)homeGenie.writeModuleJSON(NULL, domain, address);
+            if (contentLength == 0) return false;
             server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             server.sendHeader("Pragma", "no-cache");
             server.sendHeader("Expires", "0");
             server.setContentLength(contentLength);
             server.send(200, "application/json; charset=utf-8", "");
-            homeGenie.writeX10GroupsListJSON(&server);
-            server.client().flush();
+            homeGenie.writeModuleJSON(&server, domain, address);
+            return true;
+        } else if (request->Command == "Groups.List") {
+            auto contentLength = (size_t ) homeGenie.writeGroupListJSON(NULL);
+            server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            server.sendHeader("Pragma", "no-cache");
+            server.sendHeader("Expires", "0");
+            server.setContentLength(contentLength);
+            server.send(200, "application/json; charset=utf-8", "");
+            homeGenie.writeGroupListJSON(&server);
+            //server.client().flush();
             return true;
         }
     }
@@ -118,15 +103,4 @@ bool Service::API::HomeGenieHandler::handleEvent(Service::HomeGenie &homeGenie, 
     homeGenie.getEventRouter().signalEvent(m);
 
     return false;
-}
-
-String Service::API::HomeGenieHandler::getBuiltinModule(Service::HomeGenie &homeGenie) {
-    auto currentTime = NetManager::getTimeClient().getFormattedDate();
-    auto lightSensor = homeGenie.getIOManager().getLightSensor();
-    auto temperatureSensor = homeGenie.getIOManager().getTemperatureSensor();
-    auto paramLuminance = HomeGenie::createModuleParameter("Sensor.Luminance", String(lightSensor.getLightLevel()).c_str(), currentTime.c_str());
-    auto paramTemperature = HomeGenie::createModuleParameter("Sensor.Temperature", String(temperatureSensor.getTemperature()).c_str(), currentTime.c_str());
-    return HomeGenie::createModule("HomeAutomation.HomeGenie", BUILTIN_MODULE_ADDRESS,
-                                                 "HG-Mini", "HomeGenie Mini node", "Sensor",
-                                                 (paramLuminance+","+paramTemperature).c_str());
 }

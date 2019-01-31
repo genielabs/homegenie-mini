@@ -58,39 +58,53 @@ namespace Service { namespace API {
 
     X10Module moduleList[/*house codes*/ (16 + 1/*+1 is for sensors*/)][/*units*/ 16];
 
+    void X10Handler::getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address) {
+        address.toLowerCase();
+        int h = (int)address.charAt(0)-(int)'a'; // house code 0..15
+        int m = address.substring(1).toInt()-UNIT_MIN; // unit code 0..15
+        auto module = &moduleList[h][m];
+        auto paramLevel = String(module->Level);
+        auto deviceType = DeviceTypes[module->Type];
+        if (module->UpdateTime.startsWith("1970-")) {
+            module->UpdateTime = NetManager::getTimeClient().getFormattedDate();
+        }
+        paramLevel = HomeGenie::createModuleParameter("Status.Level", paramLevel.c_str(), module->UpdateTime.c_str());
+        auto moduleJSON = HomeGenie::createModule("HomeAutomation.X10", (String((char)('A'+h))+String(m+1)).c_str(),
+                                                    "", "X10 Module", deviceType.c_str(),
+                                                    paramLevel.c_str());
+        outputCallback->write(moduleJSON);
+    }
+
+    void X10Handler::getModuleListJSON(OutputStreamCallback *outputCallback) {
+        auto domain = String(IOEventDomains::HomeAutomation_X10);
+        auto separator = String(",\n");
+        // X10 Home Automation modules
+        for (int h = 0; h < 16; h++) {
+            for (int m = 0; m < UNIT_MAX; m++) {
+                auto address = String((char)((int)HOUSE_MIN+h))+String(m+UNIT_MIN);
+                if (h != 0 || m != 0) outputCallback->write(separator);
+                getModuleJSON(outputCallback, domain, address);
+            }
+        }
+    }
+
     void X10Handler::getGroupListJSON(OutputStreamCallback *outputCallback) {
+        // TODO: Groups have to be managed from Service::HomeGenie class, read below:
+        // TODO: implement X10Handler::getGetModules() and move this code to HomeGenie::writeGroupListJSON(&server)
         String line = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]},)";
         outputCallback->write(line);
         line = R"({"Name":"X10 Modules", "Modules":[)";
         outputCallback->write(line);
         for (int h = 0; h < 16; h++) {
-            for (int m = 0; m < 16; m++) {
+            for (int m = 0; m < UNIT_MAX; m++) {
                 line = R"({"Address":")" + String((char)('A'+h))+String(m + 1) + R"(","Domain":"HomeAutomation.X10"})";
                 outputCallback->write(line);
                 line = ",";
-                if (!(m == 15 && h == 15)) outputCallback->write(line);
+                if (!(m == UNIT_MAX-1 && h == 16-1)) outputCallback->write(line);
             }
         }
         line = "]}]";
         outputCallback->write(line);
-    }
-
-    void X10Handler::getModuleListJSON(OutputStreamCallback *outputCallback) {
-        // X10 Home Automation modules
-        for (int h = 0; h < 16; h++) {
-            for (int m = 0; m < 16; m++) {
-                auto module = &moduleList[h][m];
-                auto paramLevel = String(module->Level);
-                auto deviceType = DeviceTypes[module->Type];
-                if (module->UpdateTime.startsWith("1970-")) {
-                    module->UpdateTime = NetManager::getTimeClient().getFormattedDate();
-                }
-                paramLevel = HomeGenie::createModuleParameter("Status.Level", paramLevel.c_str(), module->UpdateTime.c_str());
-                outputCallback->write(",\n"+HomeGenie::createModule("HomeAutomation.X10", (String((char)('A'+h))+String(m+1)).c_str(),
-                                                      "", "X10 Module", deviceType.c_str(),
-                                                      paramLevel.c_str()));
-            }
-        }
     }
 
     bool X10Handler::handleRequest(HomeGenie &homeGenie, APIRequest *command, ESP8266WebServer &server) {
@@ -110,13 +124,13 @@ namespace Service { namespace API {
         } else if (command->Domain == IOEventDomains::HomeAutomation_X10) {
             uint8_t data[5];
             auto hu = command->Address; hu.toLowerCase();
-            auto x10Message = X10Message();
-            x10Message.houseCode = HouseCodeLut[hu.charAt(0) - HOUSE_MIN];
-            x10Message.unitCode = UnitCodeLut[hu.substring(1).toInt() - UNIT_MIN];
-
-            int h = (int)hu.charAt(0)-(int)'a'; // house code 0..15
-            int u = hu.substring(1).toInt()-1; // unit code 0..15
+            int h = (int)hu.charAt(0)-(int)HOUSE_MIN; // house code 0..15
+            int u = hu.substring(1).toInt() - UNIT_MIN; // unit code 0..15
             auto moduleStatus = &moduleList[h][u];
+
+            auto x10Message = X10Message();
+            x10Message.houseCode = HouseCodeLut[h];
+            x10Message.unitCode = UnitCodeLut[u];
 
             uint8_t sendRepeat = 0; // fallback to default repeat (3)
             bool ignoreCommand = false;
@@ -239,7 +253,7 @@ namespace Service { namespace API {
                         m.value = "0";
                         homeGenie.getEventRouter().signalEvent(m);
                         break;
-// TODO: Implement all X10 events also for Camera and Security
+// TODO: Implement all X10 events + Camera and Security
                 }
 
                 delete decodedMessage;

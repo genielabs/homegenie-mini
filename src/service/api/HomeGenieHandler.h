@@ -30,21 +30,21 @@
 #ifndef HOMEGENIE_MINI_HOMEGENIEHANDLER_H
 #define HOMEGENIE_MINI_HOMEGENIEHANDLER_H
 
+#include "APIHandler.h"
+
 #include <service/HomeGenie.h>
 #include <io/IOEventDomains.h>
 #include <Utility.h>
-#include "APIHandler.h"
-#include "X10Handler.h"
 
 #define BUILTIN_MODULE_ADDRESS      "mini"
 
 namespace Service { namespace API {
 
-    class X10HandlerOutputCallback : public OutputStreamCallback {
+    class APIHandlerOutputCallback : public OutputStreamCallback {
         ESP8266WebServer *server;
     public:
         int outputLength = 0;
-        X10HandlerOutputCallback(ESP8266WebServer *server) {
+        APIHandlerOutputCallback(ESP8266WebServer *server) {
             this->server = server;
         }
         void write(String &s) {
@@ -61,9 +61,8 @@ namespace Service { namespace API {
         bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server);
         bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData,
                     IOEventDataType dataType);
+        void getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address) {};
         void getModuleListJSON(OutputStreamCallback *outputCallback) {};
-
-        String getBuiltinModule(HomeGenie &homeGenie);
     };
 
 }}
