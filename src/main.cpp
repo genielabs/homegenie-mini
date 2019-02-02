@@ -28,6 +28,9 @@
  */
 
 #include <Arduino.h>
+
+#include <ESP8266HTTPClient.h> // this is required or Travis CI build will break
+
 #include <net/NetManager.h>
 #include <io/Logger.h>
 #include <scripting/ProgramEngine.h>
