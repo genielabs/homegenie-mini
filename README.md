@@ -1,3 +1,6 @@
+[![Travis Build Status](https://travis-ci.org/genielabs/homegenie-mini.svg?branch=master)](https://travis-ci.org/genielabs/homegenie-mini)
+[![Join the chat at https://gitter.im/genielabs/HomeGenie](https://badges.gitter.im/genielabs/HomeGenie.svg)](https://gitter.im/genielabs/HomeGenie?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 # HomeGenie Mini
 
 HomeGenie mini *(code name **Sbirulino**)* is an open hardware + firmware solution for building smart devices
