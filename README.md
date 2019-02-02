@@ -32,7 +32,7 @@ based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 
 **Mobile client**
 
-- HomeGenie plus for Android
+- [HomeGenie plus](https://play.google.com/store/apps/details?id=com.glabs.homegenieplus&hl=en_US) for Android
 
 
 ### HomeGenie API
@@ -117,8 +117,8 @@ The PCB size is 44mm*50mm.
 
 ### Firmware
 
-The firmware source code is built using *Platform.IO* and based on *Espressif*
-platform and *Arduino* framework.
+The firmware source code is built using [*Platform.IO IDE*](https://docs.platformio.org/en/latest/ide/pioide.html) and based on **Espressif**
+platform and **Arduino** framework.
 
 **Source code**
 

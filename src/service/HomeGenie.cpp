@@ -167,7 +167,7 @@ namespace Service {
         auto temperatureSensor = getIOManager().getTemperatureSensor();
         auto paramLuminance = HomeGenie::createModuleParameter("Sensor.Luminance", String(lightSensor.getLightLevel()).c_str(), currentTime.c_str());
         auto paramTemperature = HomeGenie::createModuleParameter("Sensor.Temperature", String(temperatureSensor.getTemperature()).c_str(), currentTime.c_str());
-        return String(HomeGenie::createModule(IOEventDomains::HomeAutomation_HomeGenie, BUILTIN_MODULE_ADDRESS,
+        return String(HomeGenie::createModule(IOEventDomains::HomeAutomation_HomeGenie, HOMEGENIE_BUILTIN_MODULE_ADDRESS,
                                               "HG-Mini", "HomeGenie Mini node", "Sensor",
                                               (paramLuminance+","+paramTemperature).c_str()));
     }
@@ -186,7 +186,7 @@ namespace Service {
 
     int HomeGenie::writeModuleJSON(ESP8266WebServer *server, String &domain, String &address) {
         auto outputCallback = APIHandlerOutputCallback(server);
-        if (domain == (IOEventDomains::HomeAutomation_HomeGenie) && address == BUILTIN_MODULE_ADDRESS) {
+        if (domain == (IOEventDomains::HomeAutomation_HomeGenie) && address == HOMEGENIE_BUILTIN_MODULE_ADDRESS) {
             auto module = getBuiltinModuleJSON();
             outputCallback.write(module);
             // TODO: check out if `module` gets actually disposed

@@ -36,6 +36,7 @@ namespace Net {
 
     HTTPServer httpServer;
 
+    // Time sync
     WiFiUDP ntpUDP;
     NTPClient timeClient(ntpUDP);
     // Variables to save date and time
@@ -141,7 +142,6 @@ namespace Net {
 
         webSocket->loop();
 
-        // TODO: this "while" seem the only way to make NTPClient work
         if (WiFi.isConnected() && !timeClient.update()) {
             timeClient.forceUpdate();
             // The formattedDate comes with the following format:

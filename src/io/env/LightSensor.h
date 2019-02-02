@@ -35,6 +35,7 @@
 #include <io/IOEventPaths.h>
 #include <io/IOEvent.h>
 #include <io/IOEventDomains.h>
+#include <service/defs.h>
 
 #define LIGHTSENSOR_NS_PREFIX           "IO::Env::LightSensor"
 #define LIGHTSENSOR_SAMPLING_RATE       5000L
@@ -46,8 +47,8 @@ namespace IO { namespace Env {
         LightSensor() {
             setLoopInterval(LIGHTSENSOR_SAMPLING_RATE);
             // IEventSender members
-            domain = (const uint8_t *)(IOEventDomains::HomeAutomation_HomeGenie);
-            address = (const uint8_t *)"mini"; // TODO: delcare "mini" as const
+            domain = (const uint8_t*)IOEventDomains::HomeAutomation_HomeGenie;
+            address = (const uint8_t*)HOMEGENIE_BUILTIN_MODULE_ADDRESS;
         }
         void begin();
         void loop();

@@ -27,6 +27,7 @@
  *
  */
 
+#include <service/defs.h>
 #include "RFReceiver.h"
 
 namespace IO { namespace X10 {
@@ -41,7 +42,7 @@ namespace IO { namespace X10 {
         receiverInstance = this;
         // IEventSender members
         domain = (const uint8_t *)(IOEventDomains::HomeAutomation_X10);
-        address = (const uint8_t *)"RF"; // TODO: declare "RF" as const
+        address = (const uint8_t *)HOMEGENIE_X10RF_MODULE_ADDRESS;
     }
 
     RFReceiver::RFReceiver(RFReceiverConfig *configuration) : RFReceiver() {

@@ -56,7 +56,7 @@ namespace Service { namespace API {
             "DoorWindow"
     };
 
-    X10Module moduleList[/*house codes*/ (16 + 1/*+1 is for sensors*/)][/*units*/ 16];
+    X10Module moduleList[/*house codes*/ (HOUSE_MAX-HOUSE_MIN+1)][/*units*/ UNIT_MAX];
 
     void X10Handler::getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address) {
         address.toLowerCase();
@@ -79,10 +79,10 @@ namespace Service { namespace API {
         auto domain = String((IOEventDomains::HomeAutomation_X10));
         auto separator = String(",\n");
         // X10 Home Automation modules
-        for (int h = 0; h < 16; h++) {
+        for (int h = HOUSE_MIN; h <= HOUSE_MAX; h++) {
             for (int m = 0; m < UNIT_MAX; m++) {
-                auto address = String((char)((int)HOUSE_MIN+h))+String(m+UNIT_MIN);
-                if (h != 0 || m != 0) outputCallback->write(separator);
+                auto address = String((char)h)+String(m+UNIT_MIN);
+                if (h != HOUSE_MIN || m != 0) outputCallback->write(separator);
                 getModuleJSON(outputCallback, domain, address);
             }
         }
@@ -91,16 +91,18 @@ namespace Service { namespace API {
     void X10Handler::getGroupListJSON(OutputStreamCallback *outputCallback) {
         // TODO: Groups have to be managed from Service::HomeGenie class, read below:
         // TODO: implement X10Handler::getGetModules() and move this code to HomeGenie::writeGroupListJSON(&server)
-        String line = R"([{"Name":"Dashboard","Modules":[{"Address":"mini","Domain":"HomeAutomation.HomeGenie"}]},)";
+        String line = R"([{"Name":"Dashboard","Modules":[{"Address":")";
+        line += HOMEGENIE_BUILTIN_MODULE_ADDRESS;
+        line += R"(","Domain":"HomeAutomation.HomeGenie"}]},)";
         outputCallback->write(line);
         line = R"({"Name":"X10 Modules", "Modules":[)";
         outputCallback->write(line);
-        for (int h = 0; h < 16; h++) {
+        for (int h = 0; h <= (HOUSE_MAX-HOUSE_MIN); h++) {
             for (int m = 0; m < UNIT_MAX; m++) {
                 line = R"({"Address":")" + String((char)('A'+h))+String(m + 1) + R"(","Domain":"HomeAutomation.X10"})";
                 outputCallback->write(line);
                 line = ",";
-                if (!(m == UNIT_MAX-1 && h == 16-1)) outputCallback->write(line);
+                if (!(m == UNIT_MAX-1 && h == (HOUSE_MAX-HOUSE_MIN))) outputCallback->write(line);
             }
         }
         line = "]}]";
@@ -110,7 +112,7 @@ namespace Service { namespace API {
     bool X10Handler::handleRequest(HomeGenie &homeGenie, APIRequest *command, ESP8266WebServer &server) {
 
         if (command->Domain == (IOEventDomains::HomeAutomation_X10)
-            && command->Address == "RF"
+            && command->Address == HOMEGENIE_X10RF_MODULE_ADDRESS
             && command->Command == "Control.SendRaw") {
 
             uint8_t data[command->OptionsString.length() / 2]; Utility::getBytes(command->OptionsString, data);
@@ -124,7 +126,7 @@ namespace Service { namespace API {
         } else if (command->Domain == (IOEventDomains::HomeAutomation_X10)) {
             uint8_t data[5];
             auto hu = command->Address; hu.toLowerCase();
-            int h = (int)hu.charAt(0)-(int)HOUSE_MIN; // house code 0..15
+            int h = (int)hu.charAt(0) - (int)HOUSE_MIN; // house code 0..15
             int u = hu.substring(1).toInt() - UNIT_MIN; // unit code 0..15
             auto moduleStatus = &moduleList[h][u];
 
@@ -201,7 +203,7 @@ namespace Service { namespace API {
         /*
          * X10 RF Receiver "Sensor.RawData" event
          */
-        if (address == "RF" /* TODO: declare "RF" as const */ && event == (IOEventPaths::Sensor_RawData) /*&& ioManager.getX10Receiver().isEnabled()*/) {
+        if (address == HOMEGENIE_X10RF_MODULE_ADDRESS && event == (IOEventPaths::Sensor_RawData) /*&& ioManager.getX10Receiver().isEnabled()*/) {
             // decode event data (X10 RF packet)
             auto data = ((uint8_t *) eventData);
             /// \param type Type of message (eg. 0x20 = standard, 0x29 = security, ...)

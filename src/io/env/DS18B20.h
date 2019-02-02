@@ -38,6 +38,7 @@
 #include <io/IOEventPaths.h>
 #include <io/Logger.h>
 #include <io/IOEventDomains.h>
+#include <service/defs.h>
 
 #define DS18B20_NS_PREFIX                      "IO::Env::DS18B10"
 #define DS18B20_SAMPLING_RATE           60000L
@@ -50,8 +51,8 @@ namespace IO { namespace Env {
         DS18B20() {
             setLoopInterval(DS18B20_SAMPLING_RATE);
             // IEventSender members
-            domain = (const uint8_t *)(IOEventDomains::HomeAutomation_HomeGenie);
-            address = (const uint8_t *)"mini"; // TODO: declare "mini" as const
+            domain = (const uint8_t*)IOEventDomains::HomeAutomation_HomeGenie;
+            address = (const uint8_t*)HOMEGENIE_BUILTIN_MODULE_ADDRESS;
         }
         void begin();
         void loop();

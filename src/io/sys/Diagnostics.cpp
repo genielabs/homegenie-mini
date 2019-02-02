@@ -27,6 +27,7 @@
  *
  */
 
+#include <service/api/HomeGenieHandler.h>
 #include "Diagnostics.h"
 
 namespace IO { namespace System {
@@ -34,7 +35,7 @@ namespace IO { namespace System {
     Diagnostics::Diagnostics() {
         // IEventSender members
         domain = (const uint8_t *)(IOEventDomains::HomeAutomation_HomeGenie);
-        address = (const uint8_t *)"mini";
+        address = (const uint8_t*)HOMEGENIE_BUILTIN_MODULE_ADDRESS;
         // update interval
         setLoopInterval(DIAGNOSTICS_SAMPLING_RATE);
     }

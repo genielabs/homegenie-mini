@@ -36,8 +36,6 @@
 #include <io/IOEventDomains.h>
 #include <Utility.h>
 
-#define BUILTIN_MODULE_ADDRESS      "mini"
-
 namespace Service { namespace API {
 
     class APIHandlerOutputCallback : public OutputStreamCallback {
