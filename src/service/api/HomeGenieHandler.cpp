@@ -34,7 +34,24 @@ bool Service::API::HomeGenieHandler::canHandleDomain(String &domain) {
 }
 
 bool Service::API::HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie, Service::APIRequest *request, ESP8266WebServer &server) {
-    if (request->Address == "Config") {
+    static uint8_t ioPins[] = { D5, D6, D7, D8 };
+    if (request->Address.length() == 2 && request->Address.startsWith("D")) {
+        int pinNumber = request->Address.substring(2).toInt()-4;
+        if (pinNumber >= 1 && pinNumber <= 4) {
+            auto pin = ioPins[pinNumber-1];
+            pinMode(pin, OUTPUT);
+            if (request->Command == "Control.On") {
+                digitalWrite(pin, HIGH);
+            } else if (request->Command == "Control.Off") {
+                digitalWrite(pin, LOW);
+            } else if (request->Command == "Control.Level") {
+                int level = request->getOption(0).toInt();
+                analogWrite(pin, lround((PWMRANGE/100.0)*level));
+            } // TODO: implement "Control.Toggle" too
+            request->Response = R"({ "ResponseText": "OK" })";
+            return  true;
+        } else return false;
+    } else if (request->Address == "Config") {
         if (request->Command == "Modules.List") {
             // HG Mini multi-sensor module
             auto contentLength = (size_t)homeGenie.writeModuleListJSON(NULL);

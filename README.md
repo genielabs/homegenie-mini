@@ -92,6 +92,34 @@ Implemented subset:
 - [`/api/HomeAutomation.X10/<module_address>/Control.Toggle`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#6)
 
 
+#### HomeGenie Mini specific API
+
+It's possible to control the 4 GPIOs on the `P1` expansion port using the following API:
+
+- `/api/HomeAutomation.HomeGenie/<pin_name>/Control.On`
+- `/api/HomeAutomation.HomeGenie/<pin_name>/Control.Off`
+- `/api/HomeAutomation.HomeGenie/<pin_name>/Control.Level/<level>`
+
+Where `<pin_name>` can be `D5`, `D6`, `D7` or `D8` and `<level>` a integer between `0` and `100`.
+
+**Examples**
+
+```
+# Set output D6 to 50% (1.65V)
+/api/HomeAutomation.HomeGenie/D6/Control.Level/50
+
+# Set output D5 to 100% (3.3V)
+/api/HomeAutomation.HomeGenie/D5/Control.Level/100
+# or
+/api/HomeAutomation.HomeGenie/D5/Control.On
+
+# Set output D8 to 0% (0V)
+/api/HomeAutomation.HomeGenie/D8/Control.Level/0
+# or
+/api/HomeAutomation.HomeGenie/D8/Control.Off
+```
+
+
 ## Building HomeGene Mini
 
 ![HomeGenie mini PCB front and rear](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/homegenie_mini_v1_1_pcb.png)
