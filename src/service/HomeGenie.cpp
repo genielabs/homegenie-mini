@@ -205,6 +205,10 @@ namespace Service {
         outputCallback.write(line);
         line = ",\n";
         outputCallback.write(line);
+        // HomeGenie Mini P1Port modules (GPIO D5, D6, D6, D8)
+        homeGenieHandler.getModuleListJSON(&outputCallback);
+        line = ",\n";
+        outputCallback.write(line);
         // HomeAutomation.X10
         x10Handler.getModuleListJSON(&outputCallback);
         line = "]\n";

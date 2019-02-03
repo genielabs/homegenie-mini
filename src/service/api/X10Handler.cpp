@@ -39,15 +39,6 @@ namespace Service { namespace API {
         DoorWindow
     };
 
-    struct X10Module {
-        uint8_t Type = 0;
-        float Level = 0;
-        String UpdateTime;
-        X10Module() {
-            UpdateTime = NetManager::getTimeClient().getFormattedDate();
-        }
-    };
-
     String DeviceTypes[] = {
             "Dimmer",
             "Light",
@@ -56,7 +47,7 @@ namespace Service { namespace API {
             "DoorWindow"
     };
 
-    X10Module moduleList[/*house codes*/ (HOUSE_MAX-HOUSE_MIN+1)][/*units*/ UNIT_MAX];
+    IOModule moduleList[/*house codes*/ (HOUSE_MAX-HOUSE_MIN+1)][/*units*/ UNIT_MAX];
 
     void X10Handler::getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address) {
         address.toLowerCase();
@@ -91,9 +82,19 @@ namespace Service { namespace API {
     void X10Handler::getGroupListJSON(OutputStreamCallback *outputCallback) {
         // TODO: Groups have to be managed from Service::HomeGenie class, read below:
         // TODO: implement X10Handler::getGetModules() and move this code to HomeGenie::writeGroupListJSON(&server)
+        String separator = ",";
         String line = R"([{"Name":"Dashboard","Modules":[{"Address":")";
         line += HOMEGENIE_BUILTIN_MODULE_ADDRESS;
         line += R"(","Domain":"HomeAutomation.HomeGenie"}]},)";
+        outputCallback->write(line);
+        line = R"({"Name":"GPIO P1 Port", "Modules":[)";
+        outputCallback->write(line);
+        for (int m = 0; m < P1PORT_GPIO_COUNT; m++) {
+            line = R"({"Address":")" + String("D")+String(m+1+P1PORT_GPIO_COUNT) + R"(","Domain":"HomeAutomation.HomeGenie"})";
+            outputCallback->write(line);
+            if (m != P1PORT_GPIO_COUNT-1) outputCallback->write(separator);
+        }
+        line = "]},";
         outputCallback->write(line);
         line = R"({"Name":"X10 Modules", "Modules":[)";
         outputCallback->write(line);
@@ -101,8 +102,7 @@ namespace Service { namespace API {
             for (int m = 0; m < UNIT_MAX; m++) {
                 line = R"({"Address":")" + String((char)('A'+h))+String(m + 1) + R"(","Domain":"HomeAutomation.X10"})";
                 outputCallback->write(line);
-                line = ",";
-                if (!(m == UNIT_MAX-1 && h == (HOUSE_MAX-HOUSE_MIN))) outputCallback->write(line);
+                if (!(m == UNIT_MAX-1 && h == (HOUSE_MAX-HOUSE_MIN))) outputCallback->write(separator);
             }
         }
         line = "]}]";

@@ -48,6 +48,9 @@ namespace IO {
         // Light Sensor
         lightSensor = new LightSensor();
         lightSensor->setEventReceiver(this);
+        // P1 expansion port
+        p1Port = new P1Port();
+        p1Port->setEventReceiver(this);
     }
 
     void IOManager::begin() {

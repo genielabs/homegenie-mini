@@ -44,6 +44,7 @@
 #include <io/rf/x10/X10Message.h>
 #include <io/env/DS18B20.h>
 #include <io/env/LightSensor.h>
+#include <io/gpio/P1Port.h>
 
 #define IOMANAGER_LOG_PREFIX                    "@IO::IOManager"
 
@@ -52,8 +53,9 @@
 
 namespace IO {
 
-    using namespace X10;
     using namespace Env;
+    using namespace GPIO;
+    using namespace X10;
 
     class IOManager : IIOEventReceiver {
     public:
@@ -71,6 +73,7 @@ namespace IO {
         RFTransmitter getX10Transmitter(){ return *x10Transmitter; }
         DS18B20 getTemperatureSensor(){ return *temperatureSensor; }
         LightSensor getLightSensor(){ return *lightSensor; }
+        P1Port getExpansionPort(){ return *p1Port; }
 
     private:
         // Diagnostics
@@ -88,6 +91,8 @@ namespace IO {
         DS18B20 *temperatureSensor;
         // Light Sensor / PhotoResistor
         LightSensor *lightSensor;
+        // P1Port GPIOs
+        P1Port *p1Port;
     };
 
 }

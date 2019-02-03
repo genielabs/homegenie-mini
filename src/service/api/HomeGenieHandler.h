@@ -59,8 +59,8 @@ namespace Service { namespace API {
         bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server);
         bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData,
                     IOEventDataType dataType);
-        void getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address) {};
-        void getModuleListJSON(OutputStreamCallback *outputCallback) {};
+        void getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address);
+        void getModuleListJSON(OutputStreamCallback *outputCallback);
     };
 
 }}

@@ -109,10 +109,9 @@ namespace Net {
                     Serial.printf("[%u] Disconnected!\n", num);
                     break;
                 case WStype_CONNECTED: {              // if a new websocket connection is established
-                    IPAddress ip; // = webSocket->remoteIP(num);
-                    Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-                    //webSocket.sendTXT(num, "... ping ...");
-                }
+                        IPAddress ip; // = webSocket->remoteIP(num);
+                        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+                    }
                     break;
                 case WStype_TEXT:                     // if new text data is received
                     Serial.printf("[%u] get Text: %s\n", num, payload);

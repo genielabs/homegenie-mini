@@ -39,6 +39,7 @@ namespace IO {
     enum IOEventDataType {
         Undefined = 0,
         Number,
+        Float,
         UnsignedNumber,
         SensorLight,
         SensorTemperature
