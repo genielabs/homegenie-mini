@@ -37,11 +37,24 @@
 class Task {
 public:
     Task();
+    /**
+     * Task loop() entry point. This is called by the TaskManager when the task is scheduled.
+     */
     virtual void loop() = 0;
+    /**
+     * If the task loop() is scheduled.
+     * @return `true` if scheduled, `false` otherwise.
+     */
     bool willLoop();
-    void setLoopInterval(uint64_t interval) { loopInterval = interval; };
+    /**
+     * Set task loop() schedule interval.
+     * @param interval_ms schedule interval in milliseconds.
+     */
+    void setLoopInterval(uint64_t interval_ms) { loopInterval = interval_ms; };
 
+    /// Pointer to the next task
     Task* nextTask = NULL;
+    /// Pointer to the previous task
     Task* previousTask = NULL;
 
     void loopExit();

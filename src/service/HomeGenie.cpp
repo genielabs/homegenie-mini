@@ -45,7 +45,7 @@ namespace Service {
 
     void HomeGenie::begin() {
         netManager.begin();
-        netManager.getHttpServer()->addHandler(this);
+        netManager.getHttpServer().addHandler(this);
         ioManager.begin();
         ioManager.setOnEventCallback(this);
     }
@@ -57,20 +57,16 @@ namespace Service {
         if(Serial.available() > 0) {
             String cmd = Serial.readStringUntil('\n');
             auto apiCommand = APIRequest::parse(cmd);
-            /*
-            if (apiCommand.Prefix.equals("api")) {
-                if (api(&apiCommand)) {
-                    Logger::info("+%s =%s", HOMEGENIEMINI_NS_PREFIX, apiCommand.Response.c_str());
-                } else {
-                    Logger::warn("!%s =%s", HOMEGENIEMINI_NS_PREFIX, apiCommand.Response.c_str());
-                }
-            }
-            */
+            // TODO: implement API commands from console input as well
+            //      - see `HomeGenie::api(...)` method
         }
 
         Logger::verbose(":%s loop() << END", HOMEGENIEMINI_NS_PREFIX);
     }
 
+    NetManager& HomeGenie::getNetManager() {
+        return netManager;
+    }
     IOManager& HomeGenie::getIOManager() {
         return ioManager;
     }

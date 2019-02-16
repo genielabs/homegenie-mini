@@ -55,6 +55,8 @@ namespace IO { namespace X10 {
     private:
         RFReceiverConfig *configuration;
         // 32-bit RF message decoding
+        volatile uint8_t messageType = 0x00;
+        volatile uint8_t byteBuffer[4];
         volatile uint32_t riseUs;
         volatile int8_t receivedCount;
         volatile uint32_t receiveBuffer;

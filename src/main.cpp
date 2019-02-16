@@ -29,11 +29,13 @@
 
 #include <Arduino.h>
 
+#include <net/WiFiManager.h>
 #include <net/NetManager.h>
 #include <io/Logger.h>
 #include <scripting/ProgramEngine.h>
 
 #include "service/HomeGenie.h"
+#include "Config.h"
 #include <TaskManager.h>
 
 #define HOMEGENIE_MINI_VERSION "1.0"
@@ -44,12 +46,46 @@ using namespace Service;
 
 HomeGenie homeGenie;
 
+volatile int64_t buttonPressStart = -1;
+volatile bool buttonPressed = false;
+void buttonChange() {
+    buttonPressed = (digitalRead(Config::ServiceButtonPin) == LOW);
+    if (buttonPressed) {
+        buttonPressStart = millis();
+    }
+}
+void checkServiceButton() {
+    int64_t elapsed = 0;
+    if (buttonPressed) {
+        // released
+        elapsed = millis() - buttonPressStart;
+        if (elapsed > Config::WpsModePushInterval) {
+            homeGenie.getNetManager().getWiFiManager().startWPS();
+        }
+    }
+}
+bool statusLedOn = false;
+uint64_t statusLedTs = 0;
+void statusLedLoop() {
+    if (millis() - statusLedTs > 950 && !statusLedOn) {
+        statusLedOn = true;
+        digitalWrite(Config::StatusLedPin, HIGH);
+        statusLedTs = millis();
+    } else if (statusLedOn && millis() - statusLedTs > 50) {
+        statusLedOn = false;
+        digitalWrite(Config::StatusLedPin, LOW);
+        statusLedTs = millis();
+    }
+}
+
 /// This gets called just before the main application loop()
 void setup() {
 
-    // Turn off built-in LED
-    pinMode(D4, OUTPUT);
-    digitalWrite(D4, HIGH);
+    // Setup status led
+    pinMode(Config::StatusLedPin, OUTPUT);
+    // Setup button
+    pinMode(Config::ServiceButtonPin, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(Config::ServiceButtonPin), buttonChange, CHANGE);
 
     // Logger initialization
     Logger::begin(LOG_LEVEL_TRACE);
@@ -68,7 +104,9 @@ void setup() {
 /// Main application loop
 void loop()
 {
-    // TODO: sort of Load index could be obtained by measuring time elapsed for `TaskManager::loop()` method
+    statusLedLoop();
+    checkServiceButton();
+    // TODO: sort of system load index could be obtained by measuring time elapsed for `TaskManager::loop()` method
     TaskManager::loop();
 }
 

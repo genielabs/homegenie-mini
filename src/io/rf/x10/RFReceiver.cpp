@@ -28,6 +28,7 @@
  */
 
 #include <service/defs.h>
+#include <Config.h>
 #include "RFReceiver.h"
 
 namespace IO { namespace X10 {
@@ -54,14 +55,14 @@ namespace IO { namespace X10 {
     //////////////////////////////
 
     void RFReceiver::begin() {
-        Logger::info("|  - %s (PIN=%d INT=%d)", X10_RFRECEIVER_NS_PREFIX, configuration->getPin(), configuration->getInterrupt());
-        pinMode(configuration->getPin(), INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(configuration->getInterrupt()), receiverInstance_wrapper, RISING);
-        Logger::info("|  ✔ %s", X10_RFRECEIVER_NS_PREFIX);
+        if (Config::X10RFReceiverEnabled) {
+            Logger::info("|  - %s (PIN=%d INT=%d)", X10_RFRECEIVER_NS_PREFIX, configuration->getPin(),
+                         configuration->getInterrupt());
+            pinMode(configuration->getPin(), INPUT_PULLUP);
+            attachInterrupt(digitalPinToInterrupt(configuration->getInterrupt()), receiverInstance_wrapper, RISING);
+            Logger::info("|  ✔ %s", X10_RFRECEIVER_NS_PREFIX);
+        }
     }
-
-    uint8_t messageType = 0x00;
-    uint8_t byteBuffer[4];
 
     void RFReceiver::receive() {
         //if (!isEnabled()) return;

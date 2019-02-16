@@ -97,7 +97,7 @@ namespace IO { namespace Env {
         byte MSB = data[1];
         byte LSB = data[0];
 
-        return ((MSB << 8) | LSB) / 16.0f;
+        return (((MSB << 8) | LSB) / 16.0f) + DS18B20_MEASURE_OFFSET;
     }
 
     void DS18B20::setInputPin(const uint8_t pinNumber) {

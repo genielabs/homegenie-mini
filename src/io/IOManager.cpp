@@ -36,9 +36,9 @@ namespace IO {
         systemDiagnostics = new System::Diagnostics();
         systemDiagnostics->setEventReceiver(this);
         // Instantiate the X10 RFReceiver Class
-//        RFReceiverConfig x10ReceiverConfig = RFReceiverConfig(CONFIG_RF_RX_PIN);
-//        x10Receiver = new RFReceiver(&x10ReceiverConfig);
-//        x10Receiver->setEventReceiver(this);
+        RFReceiverConfig x10ReceiverConfig = RFReceiverConfig(CONFIG_RF_RX_PIN);
+        x10Receiver = new RFReceiver(&x10ReceiverConfig);
+        x10Receiver->setEventReceiver(this);
         // X10 RF RFReceiver and RFTransmitter objects
         RFTransmitterConfig x10TransmitterConfig = RFTransmitterConfig(CONFIG_RF_TX_PIN);
         x10Transmitter = new RFTransmitter(&x10TransmitterConfig);
@@ -54,7 +54,7 @@ namespace IO {
     }
 
     void IOManager::begin() {
-//        x10Receiver->begin();
+        x10Receiver->begin();
         x10Transmitter->begin();
         temperatureSensor->begin();
         lightSensor->begin();

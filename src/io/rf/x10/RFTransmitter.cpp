@@ -92,10 +92,8 @@ namespace IO { namespace X10 {
     }
 
     void RFTransmitter::sendByte(uint8_t data) {
-        //Serial.println("\n");
         for (int i = 7; i >= 0; i--) { // send bits from byte
             sendBit(bitRead(data, i) == 1);
-            //Serial.print(bitRead(data,i));
         }
     }
 

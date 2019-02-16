@@ -48,14 +48,14 @@ namespace IO { namespace X10 {
     {
         this->pin = pin;
     }
-    uint8_t RFTransmitterConfig::getPin() { return this->pin; };
-    uint8_t RFTransmitterConfig::getSendRepeat() { return this->sendRepeat; };
-    uint16_t RFTransmitterConfig::getStartBustLong() { return this->startBustLong; };
-    uint16_t RFTransmitterConfig::getStartBustShort() { return this->startBustShort; };
+    uint8_t RFTransmitterConfig::getPin() { return pin; };
+    uint8_t RFTransmitterConfig::getSendRepeat() { return sendRepeat; };
+    uint16_t RFTransmitterConfig::getStartBustLong() { return startBustLong; };
+    uint16_t RFTransmitterConfig::getStartBustShort() { return startBustShort; };
 
-    uint16_t RFTransmitterConfig::getBitLong() { return this->bitLong; };
-    uint16_t RFTransmitterConfig::getBitShort() { return this->bitShort; };
+    uint16_t RFTransmitterConfig::getBitLong() { return bitLong; };
+    uint16_t RFTransmitterConfig::getBitShort() { return bitShort; };
 
-    uint16_t RFTransmitterConfig::getPacketGap() { return this->packetGap; };
+    uint16_t RFTransmitterConfig::getPacketGap() { return packetGap; };
 
 }} // ns

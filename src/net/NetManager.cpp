@@ -27,14 +27,12 @@
  *
  */
 
-#include <service/HomeGenie.h>
+#include <Config.h>
 #include "NetManager.h"
 
 namespace Net {
 
     using namespace IO;
-
-    HTTPServer httpServer;
 
     // Time sync
     WiFiUDP ntpUDP;
@@ -48,55 +46,8 @@ namespace Net {
 
         Logger::info("+ Starting NetManager");
 
-        // WI-FI will not boot without this delay!!!
-        delay(2000);
-
-        Logger::infoN("|  - Connecting to WI-FI .");
-        // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
-        WiFi.mode(WIFI_STA);
-        delay(1000); // TODO: is this delay necessary?
-
-        // WiFi.begin("foobar",""); // make a failed connection
-        WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
-        while (WiFi.status() == WL_DISCONNECTED) {
-            delay(2000);
-            Serial.print(".");
-        }
-        Serial.println();
-
-        bool wpsSuccess;
-        wl_status_t status = WiFi.status();
-        if (status == WL_CONNECTED) {
-            Logger::info("|  ✔ Connected to '%s'", WiFi.SSID().c_str());
-            wpsSuccess = true;
-        } else {
-            Logger::error("|  ! Not connected to WiFi (state='%d')", status);
-            Logger::info ("|  >> Press WPS button on your router <<");
-            //while(!Serial.available()) { ; }
-            //if(!startWPSPBC()) {
-            //    Serial.println("Failed to connect with WPS :-(");
-            //}
-            wpsSuccess = WiFi.beginWPSConfig();
-            if (wpsSuccess) {
-                // Well this means not always success :-/ in case of a timeout we have an empty ssid
-                String newSSID = WiFi.SSID();
-                if (newSSID.length() > 0) {
-                    // WPSConfig has already connected in STA mode successfully to the new station.
-                    Logger::info("|  ✔ Successfully connected to '%s'", newSSID.c_str());
-                    // save to config and use next time or just use - WiFi.begin(WiFi.SSID().c_str(),WiFi.psk().c_str());
-                    //qConfig.wifiSSID = newSSID;
-                    //qConfig.wifiPWD = WiFi.psk();
-                    //saveConfig();
-                } else {
-                    wpsSuccess = false;
-                }
-            }
-
-        }
-
-        if (wpsSuccess) {
-            Logger::info("|  ✔ IP: %s", WiFi.localIP().toString().c_str());
-        }
+        wiFiManager = new WiFiManager();
+        bool wpsSuccess = wiFiManager->checkWiFiStatus();
 
         httpServer = new HTTPServer();
         httpServer->begin();
@@ -142,31 +93,37 @@ namespace Net {
         webSocket->loop();
 
         if (WiFi.isConnected() && !timeClient.update()) {
+            digitalWrite(Config::StatusLedPin, HIGH);
             timeClient.forceUpdate();
             // The formattedDate comes with the following format:
             // 2018-05-28T16:00:13Z
             // We need to extract date and time
             formattedDate = timeClient.getFormattedDate();
             Logger::info("NTP Time: %s", formattedDate.c_str());
+            digitalWrite(Config::StatusLedPin, LOW);
         }
 
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }
 
-    HTTPServer* NetManager::getHttpServer() {
-        return httpServer;
+    WiFiManager& NetManager::getWiFiManager() {
+        return *wiFiManager;
     }
 
-    MQTTServer* NetManager::getMQTTServer() {
-        return mqttServer;
+    HTTPServer& NetManager::getHttpServer() {
+        return *httpServer;
     }
 
-    WebSocketsServer* NetManager::getWebSocketServer() {
-        return webSocket;
+    MQTTServer& NetManager::getMQTTServer() {
+        return *mqttServer;
+    }
+
+    WebSocketsServer& NetManager::getWebSocketServer() {
+        return *webSocket;
     }
 
     NetManager::NetManager() {
-
+        // TODO: ...
     }
     NetManager::~NetManager() {
         // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
@@ -175,7 +132,7 @@ namespace Net {
         delete webSocket;
     }
 
-    NTPClient NetManager::getTimeClient() {
+    NTPClient& NetManager::getTimeClient() {
         return timeClient;
     }
 

@@ -27,10 +27,9 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_WIFIMANAGER_H
-#define HOMEGENIE_MINI_WIFIMANAGER_H
+#ifndef HOMEGENIE_MINI_NETMANAGER_H
+#define HOMEGENIE_MINI_NETMANAGER_H
 
-#include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 
 #include <WiFiUdp.h>
@@ -38,11 +37,13 @@
 #include <WiFiClient.h>
 #include <NTPClient.h>
 
+#include <Task.h>
+#include <io/Logger.h>
+#include <LinkedList.h>
+
+#include "WiFiManager.h"
 #include "HTTPServer.h"
 #include "MQTTServer.h"
-#include <io/Logger.h>
-#include <Task.h>
-#include <LinkedList.h>
 
 #define NETMANAGER_LOG_PREFIX           "@Net::NetManager"
 
@@ -55,12 +56,14 @@ namespace Net {
         ~NetManager();
         bool begin();
         void loop();
-        HTTPServer* getHttpServer();
-        MQTTServer* getMQTTServer();
-        WebSocketsServer* getWebSocketServer();
-        static NTPClient getTimeClient();
+        WiFiManager& getWiFiManager();
+        HTTPServer& getHttpServer();
+        MQTTServer& getMQTTServer();
+        WebSocketsServer& getWebSocketServer();
+        static NTPClient& getTimeClient();
 
     private:
+        WiFiManager *wiFiManager;
         HTTPServer *httpServer;
         MQTTServer *mqttServer;
         WebSocketsServer *webSocket;
@@ -69,4 +72,4 @@ namespace Net {
 
 }
 
-#endif //HOMEGENIE_MINI_WIFIMANAGER_H
+#endif //HOMEGENIE_MINI_NETMANAGER_H

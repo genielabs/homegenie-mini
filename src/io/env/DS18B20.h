@@ -43,6 +43,8 @@
 #define DS18B20_NS_PREFIX                      "IO::Env::DS18B10"
 #define DS18B20_SAMPLING_RATE           60000L
 #define DS18B20_READ_ERROR              -1000
+// TODO: maybe put this as a configurable parameter through API
+#define DS18B20_MEASURE_OFFSET          (float_t)-7.0
 
 namespace IO { namespace Env {
 

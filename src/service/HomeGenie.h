@@ -63,6 +63,7 @@ namespace Service {
 
         bool api(APIRequest *request, ESP8266WebServer &server);
 
+        NetManager& getNetManager();
         IOManager& getIOManager();
         EventRouter& getEventRouter();
 
