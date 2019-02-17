@@ -67,7 +67,7 @@ void checkServiceButton() {
 bool statusLedOn = false;
 uint64_t statusLedTs = 0;
 void statusLedLoop() {
-    if (millis() - statusLedTs > 950 && !statusLedOn) {
+    if (millis() - statusLedTs > 1950 && !statusLedOn) {
         statusLedOn = true;
         digitalWrite(Config::StatusLedPin, HIGH);
         statusLedTs = millis();

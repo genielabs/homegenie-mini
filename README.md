@@ -14,23 +14,42 @@ based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 
 *Example applications of the P1 connector:*
 
-- control the brightness of a led or drive a motor at different speed (PWM)
 - control up to 4 relays to actuate lights and appliances (DIO)
 - hosting additional sensors, connecting a display or other hardware (SPI)
+- control the brightness of a led or drive a motor at different speed (PWM)
 - breadboard playground
 
 **Firmware features**
 
 - Automatic discovery (SSDP) for instant client setup
-- X10 home automation RF protocol encoding and decoding with mapping to virtual modules
 - GPIO mapping to virtual modules: switch for digital output, dimmer for analog output or sensor for inputs (work in progress)
+- X10 home automation RF protocol encoding and decoding with mapping to virtual modules
 - Modules state persistence
 - HTTP API (subset of standard HomeGenie API)
 - Real time event stream over WebSocket or SSE connection
 - MQTT broker over websocket
 - NTP client for time sync
 - Scripting engine (work in progress)
-- Serial CLI
+- Serial CLI with same API as HTTP
+
+## Assembling a HomeGenie Mini device
+
+![HomeGenie Mini PCB front and rear](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_board_front_rear.png)
+*HomeGenie Mini board front and rear view*
+
+1. Start by soldering the 3 resistors, 2 leds, light sensor, temperature sensor and the momentary switch button
+
+![HomeGenie Mini assembling step 1](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_assembling_step_1.png)
+
+2. Solder the header pins to the D1 Mini
+
+![HomeGenie Mini assembling step 2](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_assembling_step_2.png)
+
+3. Solder the D1 Mini to HomeGenie Mini board
+
+![HomeGenie Mini assembling step 3](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_assembling_step_3.png)
+
+4. Optionally solder the RF receiver and transmitter: the firmware currently only support X10 home automation protocol. More protocols might be added in the future (any request?).
 
 **Mobile client**
 
@@ -121,7 +140,7 @@ Where `<pin_name>` can be `D5`, `D6`, `D7` or `D8` and `<level>` a integer betwe
 
 ## Building HomeGene Mini
 
-![HomeGenie mini PCB front and rear](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/homegenie_mini_v1_1_pcb.png)
+![HomeGenie mini PCB front and rear](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/homegenie_mini_v1_1_pcb.png)
 
 ### Hardware
 
