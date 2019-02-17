@@ -37,19 +37,21 @@ based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 ![HomeGenie Mini PCB front and rear](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_board_front_rear.png)
 *HomeGenie Mini board front and rear view*
 
-### 1) Start by soldering the 3 resistors, 2 leds, light sensor, temperature sensor and the momentary switch button
+### STEP 1: Start by soldering the 3 resistors, 2 LEDS, light sensor, temperature sensor and the momentary switch button
 
 ![HomeGenie Mini assembling step 1](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_assembling_step_1.png)
 
-### 2) Solder the header pins to the D1 Mini
+### STEP 2: Solder the header pins to the D1 Mini
 
 ![HomeGenie Mini assembling step 2](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_assembling_step_2.png)
 
-### 3) Solder the D1 Mini to HomeGenie Mini board
+### STEP 3: Solder the D1 Mini to HomeGenie Mini board
 
 ![HomeGenie Mini assembling step 3](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_assembling_step_3.png)
 
-### 4) Optionally solder the RF receiver and transmitter: the firmware currently only support X10 home automation protocol. More protocols might be added in the future (any request?).
+### STEP 4: Optionally solder the RF receiver and transmitter: the firmware currently only support X10 home automation protocol. More protocols might be added in the future (any request?).
+
+In this example shows HomeGenie Mini without the RF transceiver but adding the RF transceiver is easy as solder [two more components](https://www.instructables.com/id/RF-315433-MHz-Transmitter-receiver-Module-and-Ardu/).
 
 ![HomeGenie Mini assembling step 4](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_assembling_step_4.png)
 
@@ -57,7 +59,7 @@ based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 
 HomeGenie Mini firmware is based on **Platform.IO**. You can choose to build firmware
 without installing the code editor but just the [Platform.IO core](https://docs.platformio.org/en/latest/installation.html).
-After installing *Platform.IO* you can build the firmware by entering this command:
+After installing *Platform.IO core* you can build the firmware by entering this command:
 
 ```
 platformio update
@@ -65,7 +67,7 @@ platformio lib install
 platformio run
 ```
 
-If you prefer intalling the whole IDE follow instructions for [Platform.IO IDE](https://platformio.org/platformio-ide) installation.
+If you prefer installing the whole IDE follow instructions for [Platform.IO IDE](https://platformio.org/platformio-ide) installation instead.
 
 To install the firmware connect HomeGenie Mini to the USB port of your PC and issue the command:
 
@@ -75,7 +77,7 @@ platformio run -t upload
 
 **Congratulations!! =)** You've just got a new shiny HomeGenie Mini device up and running.
 
-## Connecting HomeGenie Mini to a WiFi network
+## Pairing HomeGenie Mini to a WiFi network
 
 // TODO: ....
 
