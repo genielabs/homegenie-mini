@@ -67,14 +67,28 @@ void checkServiceButton() {
 bool statusLedOn = false;
 uint64_t statusLedTs = 0;
 void statusLedLoop() {
-    if (millis() - statusLedTs > 1950 && !statusLedOn) {
-        statusLedOn = true;
-        digitalWrite(Config::StatusLedPin, HIGH);
-        statusLedTs = millis();
-    } else if (statusLedOn && millis() - statusLedTs > 50) {
-        statusLedOn = false;
-        digitalWrite(Config::StatusLedPin, LOW);
-        statusLedTs = millis();
+    if (WiFi.isConnected()) {
+        // when connected the led will blink quickly every 2 seconds
+        if (millis() - statusLedTs > 1950 && !statusLedOn) {
+            statusLedOn = true;
+            digitalWrite(Config::StatusLedPin, HIGH);
+            statusLedTs = millis();
+        } else if (statusLedOn && millis() - statusLedTs > 50) {
+            statusLedOn = false;
+            digitalWrite(Config::StatusLedPin, LOW);
+            statusLedTs = millis();
+        }
+    } else {
+        // if not connected the led will blink quickly every 200ms
+        if (millis() - statusLedTs > 100 && !statusLedOn) {
+            statusLedOn = true;
+            digitalWrite(Config::StatusLedPin, HIGH);
+            statusLedTs = millis();
+        } else if (statusLedOn && millis() - statusLedTs > 100) {
+            statusLedOn = false;
+            digitalWrite(Config::StatusLedPin, LOW);
+            statusLedTs = millis();
+        }
     }
 }
 

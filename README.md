@@ -5,9 +5,11 @@
 HomeGenie mini *(code name **Sbirulino**)* is an open hardware + firmware solution for building smart devices
 based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 
+[![HomeGenie Mini Quick Setup Video](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/video_cover.jpg)](https://youtu.be/CovB1jl3980)
+
 **Hardware features**
 
-- WPS button for quick WiFi setup
+- WPS button for quick WiFi protected setup
 - Temperature and light sensors
 - RF transceiver (315/330/433Mhz)
 - Expansion connector (P1) with 4 GPIO configurable as SPI/DIO/PWM
@@ -35,7 +37,8 @@ based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 ## Assembling a HomeGenie Mini device
 
 ![HomeGenie Mini PCB front and rear](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_board_front_rear.png)
-*HomeGenie Mini board front and rear view*
+
+<small>*HomeGenie Mini board front and rear view*</small>
 
 ### STEP 1: Start by soldering the 3 resistors, 2 LEDS, light sensor, temperature sensor and the momentary switch button
 
@@ -78,14 +81,6 @@ platformio run -t upload
 ```
 
 **Congratulations!! =)** You've just got a new shiny HomeGenie Mini device up and running.
-
-### Pairing HomeGenie Mini to a WiFi network
-
-// TODO: ....
-
-**Mobile client**
-
-- [HomeGenie plus](https://play.google.com/store/apps/details?id=com.glabs.homegenieplus&hl=en_US) for Android
 
 
 ### HomeGenie API
