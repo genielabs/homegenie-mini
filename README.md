@@ -5,7 +5,10 @@
 HomeGenie mini *(code name **Sbirulino**)* is an open hardware + firmware solution for building smart devices
 based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 
+<p align="center">
 [![HomeGenie Mini Quick Setup Video](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/video_cover.jpg)](https://youtu.be/CovB1jl3980)
+</p>
+<small>(click the picture above to watch the video)</small>
 
 **Hardware features**
 
