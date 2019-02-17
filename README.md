@@ -51,7 +51,9 @@ based on the popular *ESP8266 chip*, a WiFi capable micro controller.
 
 ### STEP 4: Optionally solder the RF receiver and transmitter: the firmware currently only support X10 home automation protocol. More protocols might be added in the future (any request?).
 
-In this example shows HomeGenie Mini without the RF transceiver but adding the RF transceiver is easy as solder [two more components](https://www.instructables.com/id/RF-315433-MHz-Transmitter-receiver-Module-and-Ardu/).
+The picture below shows a basic HomeGenie Mini device **without** the RF transceiver but adding the RF transceiver is easy as solder [two more components](https://www.google.it/search?q=rf+MX-FS-03V+MX-05V+315+433+transmitter-receiver+module).
+You can also take advantage of the expansion port (P1) to connect a [relay module](https://www.google.it/search?q=buy+4+or+2+channels+relay+module+arduino) to control lights and appliances or
+any other additional sensors/components required for your projects.
 
 ![HomeGenie Mini assembling step 4](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/hg_mini_assembling_step_4.png)
 
