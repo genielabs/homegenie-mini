@@ -79,7 +79,7 @@ platformio run -t upload
 
 **Congratulations!! =)** You've just got a new shiny HomeGenie Mini device up and running.
 
-## Pairing HomeGenie Mini to a WiFi network
+### Pairing HomeGenie Mini to a WiFi network
 
 // TODO: ....
 
@@ -170,15 +170,18 @@ Where `<pin_name>` can be `D5`, `D6`, `D7` or `D8` and `<level>` a integer betwe
 ```
 
 
-## Building HomeGene Mini
-
-![HomeGenie mini PCB front and rear](https://raw.githubusercontent.com/genielabs/homegenie-mini/master/pcb/images/homegenie_mini_v1_1_pcb.png)
-
-### Hardware
+## Components listing
 
 Gerber files required for printing the circuit board are located in the `./pcb` folder.
 
 - https://github.com/genielabs/homegenie-mini/tree/master/pcb
+
+You can use the Gerber file and autonomously get HomeGenie Mini board manufactured from any PCB
+print service.
+
+If just need a few boards you can get 3 boards for less than $20 from [AISLER](https://aisler.net/).
+Open **AISLER** website and click **Get Started** then you will be able to upload
+[HomeGenie Mini Gerber](https://github.com/genielabs/homegenie-mini/raw/master/pcb/HomeGenie_Mini_Gerber_V1.1.25.zip) file and order your PCBs.
 
 The PCB size is 44mm*50mm.
 
@@ -195,11 +198,6 @@ The PCB size is 44mm*50mm.
 - 1 R4 330Ω
 - 2 LED 3mm
 - 1 Push button 6mm*6mm
-
-### Firmware
-
-The firmware source code is built using [*Platform.IO IDE*](https://docs.platformio.org/en/latest/ide/pioide.html) and based on **Espressif**
-platform and **Arduino** framework.
 
 **Source code**
 
