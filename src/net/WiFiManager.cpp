@@ -27,7 +27,6 @@
  *
  */
 
-#include <Config.h>
 #include "WiFiManager.h"
 
 namespace Net {

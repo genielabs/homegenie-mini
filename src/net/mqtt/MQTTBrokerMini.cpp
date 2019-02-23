@@ -96,8 +96,8 @@ namespace Net { namespace MQTT {
                 uint8_t QoS = (*payload >> 1) & 0x3;
                 uint8_t RETAIN = (*payload) & 0x1;
                 //uint8_t Remaining_length = payload[1];
-                //uint16_t Length_topic_name = MSB_LSB(&payload[2]);
                 uint16_t Remaining_length = 0;
+                //uint16_t Length_topic_name = MSB_LSB(&payload[2]);
                 uint16_t Length_topic_name = 0;
 #define MAX_NO_OF_REMAINING_LENGTH_BYTES 4
                 uint16_t len = 0;

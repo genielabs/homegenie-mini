@@ -31,19 +31,19 @@
 #define HOMEGENIE_MINI_NETMANAGER_H
 
 #include <ESP8266mDNS.h>
-
 #include <WiFiUdp.h>
 #include <WiFiServer.h>
 #include <WiFiClient.h>
+
+#include <LinkedList.h>
 #include <NTPClient.h>
 
+#include <Config.h>
 #include <Task.h>
 #include <io/Logger.h>
-#include <LinkedList.h>
-
-#include "WiFiManager.h"
-#include "HTTPServer.h"
-#include "MQTTServer.h"
+#include <net/HTTPServer.h>
+#include <net/MQTTServer.h>
+#include <net/WiFiManager.h>
 
 #define NETMANAGER_LOG_PREFIX           "@Net::NetManager"
 

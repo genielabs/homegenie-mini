@@ -27,7 +27,6 @@
  *
  */
 
-#include <Config.h>
 #include "NetManager.h"
 
 namespace Net {

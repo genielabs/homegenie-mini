@@ -23,12 +23,11 @@
  *
  *
  * Releases:
- * - 2019-13-01 Initial release
+ * - 2019-01-13 Initial release
  *
  */
 
 #include "ProgramEngine.h"
-#include "io/Logger.h"
 
 namespace Scripting {
 

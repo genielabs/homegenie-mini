@@ -33,10 +33,11 @@
 #include <LinkedList.h>
 
 #include <Task.h>
-#include <io/IOManager.h>
 #include <io/IOEventPaths.h>
+#include <io/IOManager.h>
 #include <net/NetManager.h>
-#include "EventRouter.h"
+#include <service/EventRouter.h>
+#include <service/api/APIRequest.h>
 
 #define HOMEGENIEMINI_NS_PREFIX            "Service::HomeGenie"
 

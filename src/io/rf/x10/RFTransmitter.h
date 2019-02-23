@@ -31,8 +31,9 @@
 #define HOMEGENIE_MINI_X10_RF_TRANSMITTER_H_
 
 #include "Arduino.h"
-#include "RFTransmitterConfig.h"
-#include "io/Logger.h"
+
+#include <io/Logger.h>
+#include <io/rf/x10/RFTransmitterConfig.h>
 
 namespace IO { namespace X10 {
 

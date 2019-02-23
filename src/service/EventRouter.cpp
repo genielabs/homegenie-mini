@@ -27,9 +27,9 @@
  *
  */
 
-#include <io/Logger.h>
 #include "EventRouter.h"
-#include "HomeGenie.h"
+
+#include <service/HomeGenie.h>
 
 namespace Service {
 

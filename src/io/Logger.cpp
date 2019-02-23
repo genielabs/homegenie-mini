@@ -27,8 +27,9 @@
  *
  */
 
-#include <net/NetManager.h>
 #include "Logger.h"
+
+#include <net/NetManager.h>
 
 namespace IO {
 

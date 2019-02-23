@@ -32,11 +32,13 @@
 
 #include "Arduino.h"
 
+#include <Config.h>
+#include <Utility.h>
 #include <io/Logger.h>
 #include <io/IOEvent.h>
 #include <io/IOEventPaths.h>
 #include <io/IOEventDomains.h>
-#include <Utility.h>
+#include <service/defs.h>
 
 #include "RFReceiverConfig.h"
 

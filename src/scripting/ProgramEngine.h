@@ -23,7 +23,7 @@
  *
  *
  * Releases:
- * - 2019-13-01 Initial release
+ * - 2019-01-13 Initial release
  *
  */
 
@@ -34,6 +34,8 @@
 #include "tinyjs/TinyJS_Functions.h"
 #include "tinyjs/TinyJS_MathFunctions.h"
 */
+#include <io/Logger.h>
+
 namespace Scripting {
 
     class ProgramEngine {

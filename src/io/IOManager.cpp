@@ -27,8 +27,7 @@
  *
  */
 
-#include "IOManager.h"
-#include "IOEventPaths.h"
+#include <io/IOManager.h>
 
 namespace IO {
 

@@ -27,8 +27,6 @@
  *
  */
 
-#include <service/defs.h>
-#include <Config.h>
 #include "RFReceiver.h"
 
 namespace IO { namespace X10 {
@@ -65,10 +63,9 @@ namespace IO { namespace X10 {
     }
 
     void RFReceiver::receive() {
-        //if (!isEnabled()) return;
-
-        uint32_t lengthUs = micros() - riseUs;
-        riseUs = micros();
+        uint32_t currentTs = micros();
+        uint32_t lengthUs = currentTs - riseUs;
+        riseUs = currentTs;
 
         if (lengthUs >= configuration->getStartBustRepeat() && lengthUs <= configuration->getStartBustMax()) {
             receiveBuffer = 0;

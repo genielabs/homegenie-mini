@@ -23,13 +23,12 @@
  *
  *
  * Releases:
- * - 2019-13-01 Initial release
+ * - 2019-01-13 Initial release
  *
  */
 
-#include "Task.h"
-#include "TaskManager.h"
-#include "io/Logger.h"
+#include <Task.h>
+#include <TaskManager.h>
 
 Task::Task() {
     creationTs = millis();

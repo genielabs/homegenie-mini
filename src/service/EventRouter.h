@@ -34,6 +34,7 @@
 #include <LinkedList.h>
 
 #include <Task.h>
+#include <io/Logger.h>
 #include <net/NetManager.h>
 
 #define EVENTROUTER_NS_PREFIX            "Service::EventRouter"

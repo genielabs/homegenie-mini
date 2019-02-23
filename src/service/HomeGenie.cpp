@@ -29,7 +29,6 @@
 
 #include "HomeGenie.h"
 
-#include "service/api/APIRequest.h"
 #include <service/api/HomeGenieHandler.h>
 #include <service/api/X10Handler.h>
 

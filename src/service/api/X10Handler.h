@@ -32,8 +32,8 @@
 
 #include "APIHandler.h"
 
-#include <io/IOEventDomains.h>
 #include <Utility.h>
+#include <io/IOEventDomains.h>
 
 #define X10_DIM_BRIGHT_STEP     (1.0f/21.0f)
 

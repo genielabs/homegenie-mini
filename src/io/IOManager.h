@@ -31,25 +31,23 @@
 #define HOMEGENIE_MINI_IOMANAGER_H
 
 #include <Arduino.h>
-#include <io/sys/Diagnostics.h>
 
 #include "Logger.h"
 
-#include <service/api/APIRequest.h>
-
 #include <io/IOEvent.h>
 #include <io/IOEventDomains.h>
-#include <io/rf/x10/RFReceiver.h>
-#include <io/rf/x10/RFTransmitter.h>
-#include <io/rf/x10/X10Message.h>
+#include <io/IOEventPaths.h>
 #include <io/env/DS18B20.h>
 #include <io/env/LightSensor.h>
 #include <io/gpio/P1Port.h>
+#include <io/rf/x10/RFReceiver.h>
+#include <io/rf/x10/RFTransmitter.h>
+#include <io/rf/x10/X10Message.h>
+#include <io/sys/Diagnostics.h>
+#include <service/api/APIRequest.h>
 
-#define IOMANAGER_LOG_PREFIX                    "@IO::IOManager"
-
-#define CONFIG_RF_TX_PIN D2 // 4
 #define CONFIG_RF_RX_PIN D1 // 5
+#define CONFIG_RF_TX_PIN D2 // 4
 
 namespace IO {
 
@@ -80,7 +78,6 @@ namespace IO {
         System::Diagnostics *systemDiagnostics;
         //class X10ApiHandler;
         IIOEventReceiver *ioEventCallback;
-        String byteToHex(byte b);
         // Instantiate the X10 RFReceiver Class
         RFReceiverConfig *x10ReceiverConfig;
         RFReceiver *x10Receiver;
@@ -96,6 +93,5 @@ namespace IO {
     };
 
 }
-
 
 #endif //HOMEGENIE_MINI_IOMANAGER_H

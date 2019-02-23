@@ -30,11 +30,10 @@
 #ifndef HOMEGENIE_MINI_HOMEGENIEHANDLER_H
 #define HOMEGENIE_MINI_HOMEGENIEHANDLER_H
 
-#include "APIHandler.h"
-
-#include <service/HomeGenie.h>
-#include <io/IOEventDomains.h>
 #include <Utility.h>
+#include <io/IOEventDomains.h>
+#include <service/HomeGenie.h>
+#include <service/api/APIHandler.h>
 
 namespace Service { namespace API {
 

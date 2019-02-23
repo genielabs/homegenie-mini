@@ -28,10 +28,6 @@
  */
 
 #include "RFTransmitter.h"
-#include "RFTransmitterConfig.h"
-
-#include <stdlib.h>
-#include "Arduino.h"
 
 namespace IO { namespace X10 {
 

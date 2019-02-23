@@ -23,7 +23,7 @@
  *
  *
  * Releases:
- * - 2019-13-01 Initial release
+ * - 2019-01-13 Initial release
  *
  */
 
@@ -31,6 +31,8 @@
 #define HOMEGENIE_MINI_TASK_H
 
 #include <Arduino.h>
+
+#include <io/Logger.h>
 
 // Task interface
 

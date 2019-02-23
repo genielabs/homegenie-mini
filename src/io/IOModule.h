@@ -6,6 +6,7 @@
 #define HOMEGENIE_MINI_IOMODULE_H
 
 #include <Arduino.h>
+
 #include <net/NetManager.h>
 
 namespace IO {

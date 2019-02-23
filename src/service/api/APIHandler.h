@@ -31,6 +31,7 @@
 #define HOMEGENIE_MINI_APIHANDLER_H
 
 #include <Arduino.h>
+
 #include <io/IOEvent.h>
 #include <service/HomeGenie.h>
 

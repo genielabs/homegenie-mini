@@ -34,8 +34,10 @@
 #include <ESP8266SSDP.h>
 #include <detail/RequestHandler.h>
 
-#include "io/Logger.h"
-#include "Task.h"
+#include <LinkedList.h>
+
+#include <Task.h>
+#include <io/Logger.h>
 
 #define HTTPSERVER_LOG_PREFIX           "@Net::HTTPServer"
 #define HTTP_SERVER_PORT 80

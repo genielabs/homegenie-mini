@@ -23,7 +23,7 @@
  *
  *
  * Releases:
- * - 2019-13-01 Initial release
+ * - 2019-01-13 Initial release
  *
  */
 
@@ -31,8 +31,8 @@
 #define HOMEGENIE_MINI_TASKMANAGER_H
 
 
-#include "Task.h"
-#include "io/Logger.h"
+#include <Task.h>
+#include <io/Logger.h>
 
 #define TASKMANAGER_LOG_PREFIX           "@ROOT::TaskManager"
 

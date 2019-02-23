@@ -28,8 +28,8 @@
  */
 
 #include "HTTPServer.h"
-#include "NetManager.h"
-#include <LinkedList.h>
+
+#include <net/NetManager.h>
 #include <service/HomeGenie.h>
 
 namespace Net {

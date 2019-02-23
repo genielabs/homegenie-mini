@@ -29,13 +29,12 @@
 
 #include <Arduino.h>
 
+#include <Config.h>
+#include <io/Logger.h>
 #include <net/WiFiManager.h>
 #include <net/NetManager.h>
-#include <io/Logger.h>
 #include <scripting/ProgramEngine.h>
-
-#include "service/HomeGenie.h"
-#include "Config.h"
+#include <service/HomeGenie.h>
 #include <TaskManager.h>
 
 #define HOMEGENIE_MINI_VERSION "1.0"
@@ -60,7 +59,9 @@ void checkServiceButton() {
         // released
         elapsed = millis() - buttonPressStart;
         if (elapsed > Config::WpsModePushInterval) {
+            noInterrupts();
             homeGenie.getNetManager().getWiFiManager().startWPS();
+            interrupts();
         }
     }
 }
