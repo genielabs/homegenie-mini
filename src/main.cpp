@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -23,106 +23,30 @@
  *
  *
  * Releases:
- * - 2019-01-10 Initial release
+ * - 2019-01-10 v1.0: initial release.
+ * - 2023-12-08 v1,1: added BLE support; targeting ESP32 by default.
  *
  */
 
-#include <Arduino.h>
+#include "HomeGenie.h"
 
-#include <Config.h>
-#include <io/Logger.h>
-#include <net/WiFiManager.h>
-#include <net/NetManager.h>
-#include <scripting/ProgramEngine.h>
-#include <service/HomeGenie.h>
-#include <TaskManager.h>
-
-#define HOMEGENIE_MINI_VERSION "1.0"
-
-using namespace IO;
 using namespace Net;
 using namespace Service;
 
-HomeGenie homeGenie;
+HomeGenie* homeGenie;
 
-volatile int64_t buttonPressStart = -1;
-volatile bool buttonPressed = false;
-void buttonChange() {
-    buttonPressed = (digitalRead(Config::ServiceButtonPin) == LOW);
-    if (buttonPressed) {
-        buttonPressStart = millis();
-    }
-}
-void checkServiceButton() {
-    int64_t elapsed = 0;
-    if (buttonPressed) {
-        // released
-        elapsed = millis() - buttonPressStart;
-        if (elapsed > Config::WpsModePushInterval) {
-            noInterrupts();
-            homeGenie.getNetManager().getWiFiManager().startWPS();
-            interrupts();
-        }
-    }
-}
-bool statusLedOn = false;
-uint64_t statusLedTs = 0;
-void statusLedLoop() {
-    if (WiFi.isConnected()) {
-        // when connected the led will blink quickly every 2 seconds
-        if (millis() - statusLedTs > 1950 && !statusLedOn) {
-            statusLedOn = true;
-            digitalWrite(Config::StatusLedPin, HIGH);
-            statusLedTs = millis();
-        } else if (statusLedOn && millis() - statusLedTs > 50) {
-            statusLedOn = false;
-            digitalWrite(Config::StatusLedPin, LOW);
-            statusLedTs = millis();
-        }
-    } else {
-        // if not connected the led will blink quickly every 200ms
-        if (millis() - statusLedTs > 100 && !statusLedOn) {
-            statusLedOn = true;
-            digitalWrite(Config::StatusLedPin, HIGH);
-            statusLedTs = millis();
-        } else if (statusLedOn && millis() - statusLedTs > 100) {
-            statusLedOn = false;
-            digitalWrite(Config::StatusLedPin, LOW);
-            statusLedTs = millis();
-        }
-    }
-}
-
-/// This gets called just before the main application loop()
 void setup() {
 
-    // Setup status led
-    pinMode(Config::StatusLedPin, OUTPUT);
-    // Setup button
-    pinMode(Config::ServiceButtonPin, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(Config::ServiceButtonPin), buttonChange, CHANGE);
+    homeGenie = HomeGenie::getInstance();
 
-    // Logger initialization
-    Logger::begin(LOG_LEVEL_TRACE);
+    // TODO: configure your I/O and API handlers here
+    // See examples folder.
 
-    // Welcome message
-    Logger::info("HomeGenie-Mini %s", HOMEGENIE_MINI_VERSION);
-    Logger::info("Booting...");
-
-    Logger::info("+ Starting HomeGenie service");
-    homeGenie.begin();
-
-    Logger::info("READY.");
+    homeGenie->begin();
 
 }
 
-/// Main application loop
 void loop()
 {
-    statusLedLoop();
-    checkServiceButton();
-    // TODO: sort of system load index could be obtained by measuring time elapsed for `TaskManager::loop()` method
-    TaskManager::loop();
+    homeGenie->loop();
 }
-
-//////////////////////////////////////////

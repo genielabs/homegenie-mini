@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,9 +30,7 @@
 #ifndef HOMEGENIE_MINI_TASK_H
 #define HOMEGENIE_MINI_TASK_H
 
-#include <Arduino.h>
-
-#include <io/Logger.h>
+#include "Config.h"
 
 // Task interface
 
@@ -47,7 +45,7 @@ public:
      * If the task loop() is scheduled.
      * @return `true` if scheduled, `false` otherwise.
      */
-    bool willLoop();
+    bool willLoop() const;
     /**
      * Set task loop() schedule interval.
      * @param interval_ms schedule interval in milliseconds.
@@ -55,12 +53,12 @@ public:
     void setLoopInterval(uint64_t interval_ms) { loopInterval = interval_ms; };
 
     /// Pointer to the next task
-    Task* nextTask = NULL;
+    Task* nextTask = nullptr;
     /// Pointer to the previous task
-    Task* previousTask = NULL;
+    Task* previousTask = nullptr;
 
     void loopExit();
-    uint64_t taskIdleTime();
+    uint64_t taskIdleTime() const;
     uint64_t uptime() {
         return millis() - creationTs;
     }
@@ -68,7 +66,7 @@ public:
 private:
     uint64_t creationTs;
     uint64_t lastLoopTs;
-    uint64_t loopInterval;
+    uint64_t loopInterval = 0;
 };
 
 

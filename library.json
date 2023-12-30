@@ -1,0 +1,21 @@
+{
+  "name": "HomeGenie",
+  "description": "Library for creating easily smart devices based on ESP32 or ESP8266 chip.",
+  "keywords": "iot,esp32,esp8266,mqtt,sse,http,websocket,homegenie,smarthome,",
+  "authors": {
+    "name": "genielabs",
+    "url": "https://github.com/genielabs",
+    "maintainer": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/genielabs/homegenie-mini.git"
+  },
+  "version": "1.2.0",
+  "frameworks": ["arduino", "espidf", "*"],
+  "platforms": ["espressif32", "espressif8266"],
+  "headers": "HomeGenie.h",
+  "build": {
+    "libArchive": false
+  }
+}

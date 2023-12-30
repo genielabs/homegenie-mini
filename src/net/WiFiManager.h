@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,21 +30,27 @@
 #ifndef HOMEGENIE_MINI_WIFIMANAGER_H
 #define HOMEGENIE_MINI_WIFIMANAGER_H
 
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
 #include <include/wl_definitions.h>
+#else
+#include <WiFi.h>
+#include <Preferences.h>
+#endif
+#include <WiFiUdp.h>
 
-#include <Config.h>
-#include <Task.h>
-#include <io/Logger.h>
+#include "Config.h"
+#include "Task.h"
+#include "io/Logger.h"
 
 namespace Net {
 
     class WiFiManager : Task {
     public:
         WiFiManager();
-        void loop();
+        void loop() override;
         void initWiFi();
-        bool startWPS();
+        bool configure();
         bool checkWiFiStatus();
     private:
         wl_status_t wiFiStatus;

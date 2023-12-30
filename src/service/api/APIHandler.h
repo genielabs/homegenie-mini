@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,10 +30,10 @@
 #ifndef HOMEGENIE_MINI_APIHANDLER_H
 #define HOMEGENIE_MINI_APIHANDLER_H
 
-#include <Arduino.h>
+#include "io/IOEvent.h"
+#include "service/Module.h"
 
-#include <io/IOEvent.h>
-#include <service/HomeGenie.h>
+#include "APIRequest.h"
 
 namespace Service { namespace API {
 
@@ -46,11 +46,28 @@ namespace Service { namespace API {
     };
 
     class APIHandler {
-        virtual bool canHandleDomain(String &domain) = 0;
-        virtual bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server) = 0;
-        virtual bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) = 0;
-        virtual void getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address) = 0;
-        virtual void getModuleListJSON(OutputStreamCallback *outputCallback) = 0;
+    public:
+        virtual void init() = 0;
+        virtual bool canHandleDomain(String* domain) = 0;
+        virtual bool handleRequest(APIRequest *request, WebServer &server) = 0;
+        virtual bool handleEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) = 0;
+        virtual Module* getModule(const char* domain, const char* address) = 0;
+        virtual LinkedList<Module*>* getModuleList() = 0;
+    };
+
+    class APIHandlerOutputCallback : public OutputStreamCallback {
+        WebServer *server;
+    public:
+        unsigned int outputLength = 0;
+        APIHandlerOutputCallback(WebServer *server) {
+            this->server = server;
+        }
+        void write(String &s) {
+            outputLength += s.length();
+            if (server != nullptr) {
+                server->sendContent(s);
+            }
+        }
     };
 
 }}

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,7 +30,6 @@
 #ifndef HOMEGENIE_MINI_LOGGER_H
 #define HOMEGENIE_MINI_LOGGER_H
 
-#include <Arduino.h>
 #include <ArduinoLog.h>
 
 #define FORMAT_STRING_VARGS char formatted[1024]; \

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -34,6 +34,7 @@ namespace IO {
     namespace IOEventDomains {
         const char HomeAutomation_HomeGenie[] = "HomeAutomation.HomeGenie";
         const char HomeAutomation_X10[] = "HomeAutomation.X10";
+        const char HomeAutomation_RCS[] = "HomeAutomation.RCS";
     };
 }
 

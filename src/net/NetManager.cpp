@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -36,15 +36,39 @@ namespace Net {
     // Time sync
     WiFiUDP ntpUDP;
     NTPClient timeClient(ntpUDP);
+#ifdef ESP32
+    ESP32Time rtc(0);
+#endif
     // Variables to save date and time
     String formattedDate;
     String dayStamp;
     String timeStamp;
+#ifdef ESP32
+    bool rtcTimeSet = (esp_reset_reason() != ESP_RST_POWERON && esp_reset_reason() != ESP_RST_UNKNOWN);
+#else
+    bool rtcTimeSet = false;
+#endif
+    long lastTimeCheck = -100000;
+#ifndef CONFIGURE_WITH_WPA
+    BluetoothSerial SerialBT;
+#endif
+
+    NetManager::NetManager() {
+        // TODO: ...
+    }
+    NetManager::~NetManager() {
+        // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
+        delete httpServer;
+        delete mqttServer;
+        delete webSocket;
+    }
 
     bool NetManager::begin() {
 
         Logger::info("+ Starting NetManager");
-
+#ifndef DISABLE_BLE
+        bleManager = new BLEManager();
+#endif
         wiFiManager = new WiFiManager();
         bool wpsSuccess = wiFiManager->checkWiFiStatus();
 
@@ -83,27 +107,111 @@ namespace Net {
         // GMT 0 = 0
         timeClient.setTimeOffset(0);
 
+
+#ifndef CONFIGURE_WITH_WPA
+        Preferences preferences;
+        preferences.begin(CONFIG_SYSTEM_NAME, true);
+        String ssid = preferences.getString("wifi:ssid");
+        String pass = preferences.getString("wifi:password");
+        // start SerialBT only if Wi-Fi is not configured
+        if (ssid.isEmpty() || pass.isEmpty()) {
+            SerialBT.begin(CONFIG_BUILTIN_MODULE_NAME);
+        }
+        preferences.end();
+#endif
+
+
+
         return wpsSuccess;
     }
 
     void NetManager::loop() {
         Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
 
+#ifndef CONFIGURE_WITH_WPA
+
+        // CONFIGURE WITH BLUETOOTH
+        if (SerialBT.available()) {
+            String message = SerialBT.readStringUntil('\n');
+            if (message != nullptr) {
+
+                Serial.println(message);
+
+                // ECHO? --> SerialBT.println(message);
+
+                Preferences preferences;
+                preferences.begin(CONFIG_SYSTEM_NAME, false);
+
+                if (message.startsWith("#CONFIG:device-name ")) {
+                    preferences.putString("device:name", message.substring(20));
+                }
+                if (message.startsWith("#CONFIG:wifi-ssid ")) {
+                    preferences.putString("wifi:ssid", message.substring(18));
+                }
+                if (message.startsWith("#CONFIG:wifi-password ")) {
+                    preferences.putString("wifi:password", message.substring(22));
+                }
+                if (message.startsWith("#CONFIG:system-time ")) {
+                    String time = message.substring(20);
+                    long seconds = time.substring(0, time.length() - 3).toInt();
+                    long ms = time.substring(time.length() - 3).toInt();
+                    rtc.setTime(seconds, ms);
+                }
+
+                preferences.end();
+
+                if (message.equals("#RESET")) {
+                    SerialBT.disconnect();
+                    SerialBT.end();
+                    IO::Logger::info("RESET!");
+                    delay(2000);
+                    esp_restart();
+                }
+
+            }
+        }
+
+#endif
+
         webSocket->loop();
 
-        if (WiFi.isConnected() && !timeClient.update()) {
-            digitalWrite(Config::StatusLedPin, HIGH);
-            timeClient.forceUpdate();
-            // The formattedDate comes with the following format:
-            // 2018-05-28T16:00:13Z
-            // We need to extract date and time
-            formattedDate = timeClient.getFormattedDate();
-            Logger::info("NTP Time: %s", formattedDate.c_str());
-            digitalWrite(Config::StatusLedPin, LOW);
+        if (rtcTimeSet) {
+#ifdef ESP32
+            if (millis() - lastTimeCheck > 60000) {
+                lastTimeCheck = millis();
+                if (!timeClient.isUpdated()) {
+                    // sync TimeClient with RTC
+                    timeClient.setEpochTime(rtc.getLocalEpoch());
+                    Logger::info("|  - TimeClient: synced with RTC");
+                }
+            }
+#endif
+        } else if (WiFi.isConnected() && WiFi.status() == WL_CONNECTED && millis() - lastTimeCheck > 60000) {
+            lastTimeCheck = millis();
+            if (!timeClient.isUpdated()) {
+                if (timeClient.update()) {
+                    // TimeClient synced with NTP
+#ifdef ESP32
+                    rtc.setTime(timeClient.getEpochTime(), 0);
+                    rtcTimeSet = true;
+                    Logger::info("|  - RTC updated via TimeClient (NTP)");
+#endif
+                } else {
+                    // NTP Update failed
+                    digitalWrite(Config::StatusLedPin, HIGH);
+                    Logger::warn("|  x TimeClient: NTP update failed!");
+                }
+            }
         }
 
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }
+
+#ifndef DISABLE_BLE
+    BLEManager& NetManager::getBLEManager() {
+        return *bleManager;
+    }
+#endif
 
     WiFiManager& NetManager::getWiFiManager() {
         return *wiFiManager;
@@ -119,16 +227,6 @@ namespace Net {
 
     WebSocketsServer& NetManager::getWebSocketServer() {
         return *webSocket;
-    }
-
-    NetManager::NetManager() {
-        // TODO: ...
-    }
-    NetManager::~NetManager() {
-        // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
-        delete httpServer;
-        delete mqttServer;
-        delete webSocket;
     }
 
     NTPClient& NetManager::getTimeClient() {

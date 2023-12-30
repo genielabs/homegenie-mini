@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -32,12 +32,13 @@
 
 #include <Arduino.h>
 
+#include "defs.h"
+
 class Config {
 public:
-    const static uint8_t ServiceButtonPin = D4;
-    const static uint8_t StatusLedPin = D0;
+    const static uint8_t ServiceButtonPin = CONFIG_ServiceButtonPin;
+    const static uint8_t StatusLedPin = CONFIG_StatusLedPin;
     const static uint16_t WpsModePushInterval = 2500;
-    const static bool X10RFReceiverEnabled = false;
 };
 
 #endif //HOMEGENIE_MINI_CONFIG_H

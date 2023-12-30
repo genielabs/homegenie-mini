@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -31,144 +31,186 @@
 
 namespace Service { namespace API {
 
-    static IOModule moduleList[P1PORT_GPIO_COUNT];
-
-    bool HomeGenieHandler::canHandleDomain(String &domain) {
-        return domain == (IO::IOEventDomains::HomeAutomation_HomeGenie);
+    HomeGenieHandler::HomeGenieHandler(GPIOPort* gpioPort) {
+        this->gpioPort = gpioPort;
+        // HomeGenie Mini module (default module)
+        auto miniModule = new Module();
+        miniModule->domain = IO::IOEventDomains::HomeAutomation_HomeGenie;
+        miniModule->address = CONFIG_BUILTIN_MODULE_ADDRESS;
+        miniModule->type = "Sensor";
+        miniModule->name = CONFIG_BUILTIN_MODULE_NAME;
+        miniModule->description = "HomeGenie Mini node";
+        moduleList.add(miniModule);
     }
 
-    bool HomeGenieHandler::handleRequest(Service::HomeGenie &homeGenie, Service::APIRequest *request, ESP8266WebServer &server) {
-        if (request->Address.length() == 2 && request->Address.startsWith("D")) {
-            uint8_t pinNumber = request->Address.substring(1).toInt()-4;
-            if (pinNumber >= 1 && pinNumber <= P1PORT_GPIO_COUNT) {
-                QueuedMessage m = QueuedMessage(request->Domain, request->Address, (IOEventPaths::Status_Level), "");
-                auto module = &moduleList[pinNumber];
-                auto gpioPort = homeGenie.getIOManager().getExpansionPort();
-                if (request->Command == "Control.On") {
-                    gpioPort.setOutput(pinNumber, P1PORT_GPIO_LEVEL_MAX);
-                    module->Level = 1;
-                } else if (request->Command == "Control.Off") {
-                    gpioPort.setOutput(pinNumber, P1PORT_GPIO_LEVEL_MIN);
-                    module->Level = 0;
-                } else if (request->Command == "Control.Level") {
-                    uint8_t level = (uint8_t)request->getOption(0).toInt();
-                    gpioPort.setOutput(pinNumber, level);
-                    module->Level = (level/P1PORT_GPIO_LEVEL_MAX);
-                } else if (request->Command == "Control.Toggle") {
-                    if (module->Level == 0) {
-                        gpioPort.setOutput(pinNumber, P1PORT_GPIO_LEVEL_MAX);
-                        module->Level = 1;
-                    } else {
-                        gpioPort.setOutput(pinNumber, P1PORT_GPIO_LEVEL_MIN);
-                        module->Level = 0;
-                    }
-                }
-                m.value = String(module->Level);
-                homeGenie.getEventRouter().signalEvent(m);
-                request->Response = R"({ "ResponseText": "OK" })";
-                return  true;
-            } else return false;
-        } else if (request->Address == "Config") {
+    void HomeGenieHandler::init() {
+        // Add GPIO modules
+        // Output GPIO pins
+        uint8_t gpio[] = CONFIG_GPIO_OUT;
+        uint8_t gpio_count = *(&gpio + 1) - gpio;
+        for (int m = 0; m < gpio_count; m++) {
+            auto address = String(gpio[m]);
+            auto module = new Module();
+            module->domain = IO::IOEventDomains::HomeAutomation_HomeGenie;
+            module->address = address;
+            module->type = "Dimmer";
+            module->name = "GPIO " + address;
+            module->description = "";
+
+            // init pins with current level
+            float level = GPIOPort::loadLevel(gpio[m]);
+            level > 0 ? gpioPort->on(gpio[m]) : gpioPort->off(gpio[m]);
+            auto propLevel = new ModuleParameter(IOEventPaths::Status_Level, String(level));
+            module->properties.add(propLevel);
+
+            moduleList.add(module);
+        }
+
+        // TODO: implement Input GPIO pins as well (CONFIG_GPIO_IN)
+
+    }
+
+    bool HomeGenieHandler::canHandleDomain(String* domain) {
+        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+    }
+
+    bool HomeGenieHandler::handleRequest(Service::APIRequest *request, WebServer &server) {
+        auto homeGenie = HomeGenie::getInstance();
+        if (request->Address == "Config") {
             if (request->Command == "Modules.List") {
-                // HG Mini multi-sensor module
-                auto contentLength = (size_t)homeGenie.writeModuleListJSON(NULL);
+                auto contentLength = (size_t)homeGenie->writeModuleListJSON(nullptr);
                 server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
                 server.sendHeader("Pragma", "no-cache");
                 server.sendHeader("Expires", "0");
                 server.setContentLength(contentLength);
                 server.send(200, "application/json; charset=utf-8", "");
-                homeGenie.writeModuleListJSON(&server);
+                homeGenie->writeModuleListJSON(&server);
                 //server.client().flush();
                 return true;
             } else if (request->Command == "Modules.Get") {
                 String domain = request->getOption(0);
                 String address = request->getOption(1);
-                auto contentLength = (size_t)homeGenie.writeModuleJSON(NULL, domain, address);
+                auto contentLength = (size_t)homeGenie->writeModuleJSON(nullptr, &domain, &address);
                 if (contentLength == 0) return false;
                 server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
                 server.sendHeader("Pragma", "no-cache");
                 server.sendHeader("Expires", "0");
                 server.setContentLength(contentLength);
                 server.send(200, "application/json; charset=utf-8", "");
-                homeGenie.writeModuleJSON(&server, domain, address);
+                homeGenie->writeModuleJSON(&server, &domain, &address);
                 return true;
             } else if (request->Command == "Groups.List") {
-                auto contentLength = (size_t ) homeGenie.writeGroupListJSON(NULL);
+                auto contentLength = (size_t ) homeGenie->writeGroupListJSON(nullptr);
                 server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
                 server.sendHeader("Pragma", "no-cache");
                 server.sendHeader("Expires", "0");
                 server.setContentLength(contentLength);
                 server.send(200, "application/json; charset=utf-8", "");
-                homeGenie.writeGroupListJSON(&server);
+                homeGenie->writeGroupListJSON(&server);
                 //server.client().flush();
                 return true;
+            } else if (request->Command == "WebSocket.GetToken") {
+
+                // TODO: implement random token with expiration (like in HG server) for websocket client verification
+
+                request->Response = R"({ "ResponseValue": "e046f885-1d51-4dd2-b952-38e7134a9c0f" })";
+                return true;
+            }
+        } else {
+            uint8_t gpio[] = CONFIG_GPIO_OUT;
+            uint8_t pinNumber = request->Address.toInt();
+            bool validPin = std::find(std::begin(gpio), std::end(gpio), pinNumber) != std::end(gpio);
+            if (validPin) {
+
+                // TODO: move to utility class -- lookup module by domain/address
+
+                Module* module;
+                for (int m = 0; m < moduleList.size(); m++) {
+                    module = moduleList[m];
+                    if (module->domain.equals(request->Domain) && module->address.equals(request->Address)) {
+                        break;
+                    }
+                    module = nullptr;
+                }
+
+                if (module) {
+
+                    auto levelProperty = module->getProperty(IOEventPaths::Status_Level);
+                    if (levelProperty->value.toFloat() > 0) {
+                        GPIOPort::saveLastOnLevel(pinNumber, levelProperty->value.toFloat());
+                    }
+
+                    float level = 0;
+                    if (request->Command == "Control.On") {
+                        level = gpioPort->on(pinNumber);
+                    } else if (request->Command == "Control.Off") {
+                        level = gpioPort->off(pinNumber);
+                    } else if (request->Command == "Control.Level") {
+                        level = gpioPort->level(pinNumber, (uint8_t)request->getOption(0).toFloat());
+                    } else if (request->Command == "Control.Toggle") {
+                        if (levelProperty->value.toFloat() == 0) {
+                            level = gpioPort->on(pinNumber);
+                        } else {
+                            level = gpioPort->off(pinNumber);
+                        }
+                    }
+
+                    levelProperty->setValue(String(level).c_str());
+                    GPIOPort::saveLevel(pinNumber, levelProperty->value.toFloat());
+
+                    request->Response = R"({ "ResponseText": "OK" })";
+                    return  true;
+                }
             }
         }
         return false;
     }
 
-    bool HomeGenieHandler::handleEvent(Service::HomeGenie &homeGenie, IO::IIOEventSender *sender,
+    bool HomeGenieHandler::handleEvent(IO::IIOEventSender *sender,
+                                       const char* domain, const char* address,
                                        const unsigned char *eventPath, void *eventData,
                                        IO::IOEventDataType dataType) {
-
-        auto domain = String((char*)sender->getDomain());
-        auto address = String((char*)sender->getAddress());
-        auto event = String((char*)eventPath);
-
-        // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-        QueuedMessage m = QueuedMessage(domain, address, event, "");
-        // Data type handling
-        switch (dataType) {
-            case SensorLight:
-                m.value = String(*(uint16_t *)eventData);
-                break;
-            case SensorTemperature:
-                m.value = String(*(float_t *)eventData);
-                break;
-            case UnsignedNumber:
-                m.value = String(*(uint32_t *)eventData);
-                break;
-            case Number:
-                m.value = String(*(int32_t *)eventData);
-                break;
-            case Float:
-                m.value = String(*(float *)eventData);
-                break;
-            default:
-                m.value = String(*(int32_t *)eventData);
+        auto module = getModule(domain, address);
+        if (module) {
+            auto event = String((char *) eventPath);
+            // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
+            auto m = QueuedMessage(domain, address, event.c_str(), "");
+            // Data type handling
+            switch (dataType) {
+                case SensorLight:
+                    m.value = String(*(uint16_t *) eventData);
+                    break;
+                case SensorTemperature:
+                    m.value = String(*(float_t *) eventData);
+                    break;
+                case UnsignedNumber:
+                    m.value = String(*(uint32_t *) eventData);
+                    break;
+                case Number:
+                    m.value = String(*(int32_t *) eventData);
+                    break;
+                case Float:
+                    m.value = String(*(float *) eventData);
+                    break;
+                default:
+                    m.value = String(*(int32_t *) eventData);
+            }
+            module->setProperty(event, m.value);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(m);
         }
-        homeGenie.getEventRouter().signalEvent(m);
-
         return false;
     }
 
-    void HomeGenieHandler::getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address) {
-        if (address.length() != 2) return;
-        int pinNumber = address.substring(1).toInt()-P1PORT_GPIO_COUNT;
-        if (pinNumber >= 1 && pinNumber <= P1PORT_GPIO_COUNT) {
-            auto module = &moduleList[pinNumber];
-            auto paramLevel = String(module->Level);
-            auto deviceType = String("Dimmer"); // TODO: DeviceTypes[module->Type];
-            if (module->UpdateTime.startsWith("1970-")) {
-                module->UpdateTime = NetManager::getTimeClient().getFormattedDate();
-            }
-            paramLevel = HomeGenie::createModuleParameter(IOEventPaths::Status_Level, paramLevel.c_str(), module->UpdateTime.c_str());
-            auto moduleJSON = HomeGenie::createModule(domain.c_str(), address.c_str(),
-                                                      "", "P1 Module", deviceType.c_str(),
-                                                      paramLevel.c_str());
-            outputCallback->write(moduleJSON);
+    Module* HomeGenieHandler::getModule(const char* domain, const char* address) {
+        for (int i = 0; i < moduleList.size(); i++) {
+            Module* module = moduleList.get(i);
+            if (module->domain.equals(domain) && module->address.equals(address))
+                return module;
         }
+        return nullptr;
     }
-
-    void HomeGenieHandler::getModuleListJSON(OutputStreamCallback *outputCallback) {
-        auto domain = String((IOEventDomains::HomeAutomation_HomeGenie));
-        auto separator = String(",\n");
-        // P1 Expansion Port modules
-        for (int m = 0; m < P1PORT_GPIO_COUNT; m++) {
-            auto address = "D"+String(m+1+P1PORT_GPIO_COUNT);
-            if (m != 0) outputCallback->write(separator);
-            getModuleJSON(outputCallback, domain, address);
-        }
+    LinkedList<Module*>* HomeGenieHandler::getModuleList() {
+        return &moduleList;
     }
 
 }}

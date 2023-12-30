@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -27,24 +27,28 @@
  *
  */
 
-#include <service/api/HomeGenieHandler.h>
 #include "Diagnostics.h"
 
 namespace IO { namespace System {
 
     Diagnostics::Diagnostics() {
-        // IEventSender members
-        domain = (const uint8_t *)(IOEventDomains::HomeAutomation_HomeGenie);
-        address = (const uint8_t*)HOMEGENIE_BUILTIN_MODULE_ADDRESS;
         // update interval
         setLoopInterval(DIAGNOSTICS_SAMPLING_RATE);
     }
 
+    void Diagnostics::begin() {
+
+    }
+
     void Diagnostics::loop() {
+#ifdef ESP8266
         uint32_t freeMem = system_get_free_heap_size();
+#else
+        uint32_t freeMem = esp_get_free_heap_size();
+#endif
         if (currentFreeMemory != freeMem) {
             Logger::trace("@%s [%s %lu]", DIAGNOSTICS_NS_PREFIX, (IOEventPaths::System_BytesFree), freeMem, UnsignedNumber);
-            sendEvent((const uint8_t*)(IOEventPaths::System_BytesFree), &freeMem, UnsignedNumber);
+            sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::System_BytesFree), &freeMem, UnsignedNumber);
             currentFreeMemory = freeMem;
         }
     }

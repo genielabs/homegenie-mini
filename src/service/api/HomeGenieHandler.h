@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,36 +30,25 @@
 #ifndef HOMEGENIE_MINI_HOMEGENIEHANDLER_H
 #define HOMEGENIE_MINI_HOMEGENIEHANDLER_H
 
-#include <Utility.h>
-#include <io/IOEventDomains.h>
-#include <service/HomeGenie.h>
-#include <service/api/APIHandler.h>
+#include "HomeGenie.h"
 
 namespace Service { namespace API {
 
-    class APIHandlerOutputCallback : public OutputStreamCallback {
-        ESP8266WebServer *server;
-    public:
-        int outputLength = 0;
-        APIHandlerOutputCallback(ESP8266WebServer *server) {
-            this->server = server;
-        }
-        void write(String &s) {
-            outputLength += s.length();
-            if (server != NULL) {
-                server->sendContent(s);
-            }
-        }
-    };
+    using namespace IO::GPIO;
 
     class HomeGenieHandler : public APIHandler {
+    private:
+        GPIOPort* gpioPort;
+        LinkedList<Module*> moduleList;
     public:
-        bool canHandleDomain(String &domain);
-        bool handleRequest(HomeGenie &homeGenie, APIRequest *request, ESP8266WebServer &server);
-        bool handleEvent(HomeGenie &homeGenie, IIOEventSender *sender, const unsigned char *eventPath, void *eventData,
-                    IOEventDataType dataType);
-        void getModuleJSON(OutputStreamCallback *outputCallback, String &domain, String &address);
-        void getModuleListJSON(OutputStreamCallback *outputCallback);
+        HomeGenieHandler(GPIOPort* gpioPort);
+        void init() override;
+        bool canHandleDomain(String* domain) override;
+        bool handleRequest(APIRequest *request, WebServer &server) override;
+        bool handleEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData,
+                    IOEventDataType dataType) override;
+        Module* getModule(const char* domain, const char* address) override;
+        LinkedList<Module*>* getModuleList() override;
     };
 
 }}

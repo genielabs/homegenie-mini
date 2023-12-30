@@ -1,41 +1,70 @@
+# !!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE
+# https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+#
+# If you need to override existing CMake configuration or add extra,
+# please create `CMakeListsUser.txt` in the root of project.
+# The `CMakeListsUser.txt` will not be overwritten by PlatformIO.
+
 cmake_minimum_required(VERSION 3.2)
-project(homegenie-mini)
+project("homegenie-mini")
 
 include(CMakeListsPrivate.txt)
 
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeListsUser.txt)
+include(CMakeListsUser.txt)
+endif()
+
 add_custom_target(
     PLATFORMIO_BUILD ALL
-    COMMAND ${PLATFORMIO_CMD} -f -c clion run
+    COMMAND ${PLATFORMIO_CMD} -f -c clion run "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    PLATFORMIO_BUILD_VERBOSE ALL
+    COMMAND ${PLATFORMIO_CMD} -f -c clion run --verbose "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
     PLATFORMIO_UPLOAD ALL
-    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target upload
+    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target upload "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
     PLATFORMIO_CLEAN ALL
-    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target clean
+    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target clean "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    PLATFORMIO_MONITOR ALL
+    COMMAND ${PLATFORMIO_CMD} -f -c clion device monitor "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
     PLATFORMIO_TEST ALL
-    COMMAND ${PLATFORMIO_CMD} -f -c clion test
+    COMMAND ${PLATFORMIO_CMD} -f -c clion test "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
     PLATFORMIO_PROGRAM ALL
-    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target program
+    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target program "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
     PLATFORMIO_UPLOADFS ALL
-    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target uploadfs
+    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target uploadfs "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    PLATFORMIO_BUILD_DEBUG ALL
+    COMMAND ${PLATFORMIO_CMD} -f -c clion run --target debug "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -51,12 +80,10 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} src/io/IOManager.cpp src/io/IOManager.h src/net/HTTPServer.cpp src/net/HTTPServer.h src/net/NetManager.cpp src/net/NetManager.h src/io/Logger.cpp src/io/Logger.h src/scripting/ProgramEngine.cpp src/scripting/ProgramEngine.h src/io/env/LightSensor.cpp src/io/env/LightSensor.h src/io/env/DS18B20.cpp src/io/env/DS18B20.h src/service/api/APIRequest.cpp src/service/api/APIRequest.h src/TaskManager.cpp src/TaskManager.h src/Task.cpp src/Task.h src/net/MQTTServer.cpp src/net/MQTTServer.h src/net/mqtt/MQTTBrokerConfig.cpp src/net/mqtt/MQTTBrokerConfig.h src/io/rf/x10/X10Message.cpp src/io/rf/x10/X10Message.h src/io/sys/Diagnostics.cpp src/io/sys/Diagnostics.h src/io/IOEvent.h src/io/IOEventDomains.h src/io/IOEventPaths.h src/service/EventRouter.cpp src/service/EventRouter.h src/service/api/APIHandler.h src/service/api/X10Handler.cpp src/service/api/X10Handler.h src/Utility.cpp src/Utility.h src/service/api/HomeGenieHandler.cpp src/service/api/HomeGenieHandler.h src/service/defs.h src/io/gpio/P1Port.cpp src/io/gpio/P1Port.h src/io/IOModule.cpp src/io/IOModule.h src/net/WiFiManager.cpp src/net/WiFiManager.h src/Config.h)
+add_custom_target(
+    PLATFORMIO_DEVICE_LIST ALL
+    COMMAND ${PLATFORMIO_CMD} -f -c clion device list
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-include_directories(./.piolibdeps/ArduinoJson_ID64)
-include_directories(./.piolibdeps/ArduinoLog_ID1532)
-include_directories(./.piolibdeps/ESP8266UPnP_ID2048)
-include_directories(./.piolibdeps/LinkedList_ID443)
-include_directories(./.piolibdeps/WebSockets_ID549/src)
-include_directories(./.piolibdeps/OneWire_ID1)
-include_directories(lib/NTPClient-master)
+#add_executable(Z_DUMMY_TARGET ${SRC_LIST})

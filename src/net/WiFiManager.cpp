@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -34,13 +34,15 @@ namespace Net {
     WiFiManager::WiFiManager() {
         setLoopInterval(1000);
         wiFiStatus = WL_DISCONNECTED;
+#ifdef ESP8266
         // WI-FI will not boot without this delay!!!
         delay(2000);
+#endif
         initWiFi();
     }
 
     void WiFiManager::loop() {
-        wl_status_t status = WiFi.status();
+        auto status = WiFi.status();
         if (status != wiFiStatus) {
             wiFiStatus = status;
             checkWiFiStatus();
@@ -51,30 +53,67 @@ namespace Net {
         IO::Logger::info("|  - Connecting to WI-FI .");
         // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
         WiFi.mode(WIFI_STA);
+#ifdef CONFIGURE_WITH_WPA
         delay(1000); // TODO: is this delay necessary?
         WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
+#else
+        Preferences preferences;
+        preferences.begin(CONFIG_SYSTEM_NAME, true);
+        String ssid = preferences.getString("wifi:ssid");
+        String pass = preferences.getString("wifi:password");
+
+        if (!ssid.isEmpty() && !pass.isEmpty()) {
+            IO::Logger::info("|  - WI-FI SSID: %s", ssid.c_str());
+            IO::Logger::info("|  - WI-FI Password: *"); // pass.c_str()
+            WiFi.begin(ssid.c_str(), pass.c_str());
+        }
+        preferences.end();
+#endif
     }
 
     bool WiFiManager::checkWiFiStatus() {
         bool wpsSuccess = false;
-        wl_status_t status = WiFi.status();
+        auto status = WiFi.status();
         if (status == WL_CONNECTED) {
             digitalWrite(Config::StatusLedPin, LOW);
-            IO::Logger::info("|  ✔ Connected to '%s'", WiFi.SSID().c_str());
-            IO::Logger::info("|  ✔ IP: %s", WiFi.localIP().toString().c_str());
+            IO::Logger::info("|  - Connected to '%s'", WiFi.SSID().c_str());
+            IO::Logger::info("|  - IP: %s", WiFi.localIP().toString().c_str());
             wpsSuccess = true;
-        } else if (status == WL_CONNECTION_LOST || status == WL_NO_SSID_AVAIL || status == WL_CONNECT_FAILED) {
-            digitalWrite(Config::StatusLedPin, HIGH);
-            IO::Logger::error("|  x Lost connection to WiFi");
-            initWiFi();
         } else {
             digitalWrite(Config::StatusLedPin, HIGH);
-            IO::Logger::error("|  x Not connected to WiFi (state='%d')", status);
+            switch (status) {
+                case WL_NO_SSID_AVAIL:
+                    IO::Logger::error("|  x WiFi SSID not available");
+                    initWiFi();
+                    break;
+                case WL_CONNECT_FAILED:
+                    IO::Logger::error("|  x WiFi connection failed");
+                    initWiFi();
+                    break;
+                case WL_CONNECTION_LOST:
+                    IO::Logger::error("|  x WiFi connection lost");
+                    initWiFi();
+                    break;
+                case WL_DISCONNECTED:
+                    IO::Logger::error("|  x WiFi disconnected");
+                    break;
+                case WL_NO_SHIELD:
+                    IO::Logger::error("|  x WiFi initialization failed");
+                    break;
+                case WL_SCAN_COMPLETED:
+                    IO::Logger::error("|  x Not connected to WiFi (state='%d')", status);
+                    break;
+                case WL_IDLE_STATUS:
+                    break;
+            }
         }
         return wpsSuccess;
     }
 
-    bool WiFiManager::startWPS() {
+    bool WiFiManager::configure() {
+#ifdef CONFIGURE_WITH_WPA
+#ifdef ESP8266
+        // WPA currently only works for ESP8266
         digitalWrite(Config::StatusLedPin, LOW);
         WiFi.disconnect();
         delay(100);
@@ -84,6 +123,24 @@ namespace Net {
         IO::Logger::info ("|  >> Press WPS button on your router <<");
         bool wpsSuccess = WiFi.beginWPSConfig();
         return wpsSuccess;
+#else
+        // WPA only works with ESP8266
+        return true;
+#endif
+#else
+        Preferences preferences;
+        preferences.begin(CONFIG_SYSTEM_NAME, false);
+        preferences.putString("wifi:ssid", "");
+        preferences.putString("wifi:password", "");
+        preferences.end();
+        preferences.clear();
+        IO::Logger::info("|  - WI-FI credentials reset!");
+        delay(2000);
+        IO::Logger::info("REBOOT!");
+        // Reboot
+        esp_restart();
+        return true;
+#endif
     }
 
 }

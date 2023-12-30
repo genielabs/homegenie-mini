@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,15 +30,17 @@
 #ifndef HOMEGENIE_MINI_DIAGNOSTICS_H
 #define HOMEGENIE_MINI_DIAGNOSTICS_H
 
+#ifdef ESP8266
 extern "C" {
 #include "user_interface.h"
 }
+#endif
 
-#include <Task.h>
-#include <io/Logger.h>
-#include <io/IOEvent.h>
-#include <io/IOEventDomains.h>
-#include <io/IOEventPaths.h>
+#include "Task.h"
+#include "io/Logger.h"
+#include "io/IOEvent.h"
+#include "io/IOEventDomains.h"
+#include "io/IOEventPaths.h"
 
 #define DIAGNOSTICS_NS_PREFIX          "IO::Sys::Diagnostics"
 #define DIAGNOSTICS_SAMPLING_RATE       5000L
@@ -48,9 +50,12 @@ namespace IO { namespace System {
     class Diagnostics : Task, public IIOEventSender {
     public:
         Diagnostics();
+        void begin();
         void loop();
 
     private:
+        String domain = IOEventDomains::HomeAutomation_HomeGenie;
+        String address = CONFIG_BUILTIN_MODULE_ADDRESS;
         uint32_t currentFreeMemory;
     };
 

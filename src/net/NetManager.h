@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,7 +30,14 @@
 #ifndef HOMEGENIE_MINI_NETMANAGER_H
 #define HOMEGENIE_MINI_NETMANAGER_H
 
+#ifdef ESP8266
 #include <ESP8266mDNS.h>
+#else
+#include <ESPmDNS.h>
+#ifdef ESP32
+#include <ESP32Time.h>
+#endif
+#endif
 #include <WiFiUdp.h>
 #include <WiFiServer.h>
 #include <WiFiClient.h>
@@ -38,12 +45,18 @@
 #include <LinkedList.h>
 #include <NTPClient.h>
 
-#include <Config.h>
-#include <Task.h>
-#include <io/Logger.h>
-#include <net/HTTPServer.h>
-#include <net/MQTTServer.h>
-#include <net/WiFiManager.h>
+#include "Config.h"
+#include "net/HTTPServer.h"
+#include "net/MQTTServer.h"
+#include "net/WiFiManager.h"
+
+#ifndef DISABLE_BLE
+#include <net/BLEManager.h>
+#endif
+#ifndef CONFIGURE_WITH_WPA
+#include <BluetoothSerial.h>
+#include <Preferences.h>
+#endif
 
 #define NETMANAGER_LOG_PREFIX           "@Net::NetManager"
 
@@ -55,7 +68,10 @@ namespace Net {
         NetManager();
         ~NetManager();
         bool begin();
-        void loop();
+        void loop() override;
+#ifndef DISABLE_BLE
+        BLEManager& getBLEManager();
+#endif
         WiFiManager& getWiFiManager();
         HTTPServer& getHttpServer();
         MQTTServer& getMQTTServer();
@@ -63,6 +79,9 @@ namespace Net {
         static NTPClient& getTimeClient();
 
     private:
+#ifndef DISABLE_BLE
+        BLEManager *bleManager;
+#endif
         WiFiManager *wiFiManager;
         HTTPServer *httpServer;
         MQTTServer *mqttServer;

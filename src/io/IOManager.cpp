@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -27,45 +27,34 @@
  *
  */
 
-#include <io/IOManager.h>
+#include "IOManager.h"
 
 namespace IO {
 
     IOManager::IOManager() {
         systemDiagnostics = new System::Diagnostics();
         systemDiagnostics->setEventReceiver(this);
-        // Instantiate the X10 RFReceiver Class
-        RFReceiverConfig x10ReceiverConfig = RFReceiverConfig(CONFIG_RF_RX_PIN);
-        x10Receiver = new RFReceiver(&x10ReceiverConfig);
-        x10Receiver->setEventReceiver(this);
-        // X10 RF RFReceiver and RFTransmitter objects
-        RFTransmitterConfig x10TransmitterConfig = RFTransmitterConfig(CONFIG_RF_TX_PIN);
-        x10Transmitter = new RFTransmitter(&x10TransmitterConfig);
-        // DS18B20 Temperature Sensor
-        temperatureSensor = new DS18B20();
-        temperatureSensor->setEventReceiver(this);
-        // Light Sensor
-        lightSensor = new LightSensor();
-        lightSensor->setEventReceiver(this);
-        // P1 expansion port
-        p1Port = new P1Port();
-        p1Port->setEventReceiver(this);
     }
 
     void IOManager::begin() {
-        x10Receiver->begin();
-        x10Transmitter->begin();
-        temperatureSensor->begin();
-        lightSensor->begin();
+        for(int i = 0; i < eventSenders.size(); i++) {
+            eventSenders[i]->begin();
+        }
+    }
+
+    bool IOManager::addEventSender(IIOEventSender* sender) {
+        eventSenders.add(sender);
+        sender->setEventReceiver(this);
+        return true;
     }
 
     void IOManager::setOnEventCallback(IIOEventReceiver *callback) {
         ioEventCallback = callback;
     }
 
-    void IOManager::onIOEvent(IIOEventSender *sender, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
+    void IOManager::onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
         // route event to HomeGenie
-        ioEventCallback->onIOEvent(sender, eventPath, eventData, dataType);
+        ioEventCallback->onIOEvent(sender, domain, address, eventPath, eventData, dataType);
     }
 
 }

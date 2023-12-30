@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -33,10 +33,9 @@
 #ifndef MQTTBROKER_H_
 #define MQTTBROKER_H_
 
-#include <Arduino.h>
 #include <WebSocketsServer.h>
 
-#include <io/Logger.h>
+#include "io/Logger.h"
 
 #define MQTT_VERSION_3_1_1              4
 
@@ -104,6 +103,8 @@ namespace Net { namespace MQTT {
 
         typedef void(*callback_t)(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
                                   uint16_t length_payload);
+
+        using namespace IO;
 
         class MQTTBrokerMini {
         public:

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -32,7 +32,8 @@
 
 namespace IO {
     namespace IOEventPaths {
-        const char Sensor_RawData[] = "Sensor.RawData";
+        const char Receiver_RawData[] = "Receiver.RawData";
+        const char Receiver_Command[] = "Receiver.Command";
         const char Status_Level[] = "Status.Level";
         const char Sensor_Luminance[] = "Sensor.Luminance";
         const char Sensor_Temperature[] = "Sensor.Temperature";

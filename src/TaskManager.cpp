@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -29,11 +29,11 @@
 
 #include "TaskManager.h"
 
-static Task *taskList = NULL, *currentTask = NULL;
+static Task *taskList = nullptr, *currentTask = nullptr;
 
 TaskManager::TaskManager() {
-    taskList = NULL;
-    currentTask = NULL;
+    taskList = nullptr;
+    currentTask = nullptr;
 }
 
 void TaskManager::loop() {
@@ -42,7 +42,7 @@ void TaskManager::loop() {
     IO::Logger::verbose("%s loop() >> BEGIN", TASKMANAGER_LOG_PREFIX);
     Task *t = taskList;
     uint c = 0;
-    while (t != NULL) {
+    while (t != nullptr) {
         IO::Logger::verbose("%s - running task %d", TASKMANAGER_LOG_PREFIX, c++);
         if (t->willLoop()) {
             t->loop();
@@ -54,14 +54,14 @@ void TaskManager::loop() {
 }
 
 void TaskManager::addTask(Task *task) {
-    if (taskList == NULL) {
+    if (taskList == nullptr) {
         taskList = currentTask = task;
-        taskList->nextTask = NULL;
-        taskList->previousTask = NULL;
+        taskList->nextTask = nullptr;
+        taskList->previousTask = nullptr;
     } else {
         currentTask->nextTask = task;
         task->previousTask = currentTask;
-        task->nextTask = NULL;
+        task->nextTask = nullptr;
         currentTask = task;
     }
 }

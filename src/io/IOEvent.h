@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,8 +30,6 @@
 #ifndef HOMEGENIE_MINI_IIOEVENT_H
 #define HOMEGENIE_MINI_IIOEVENT_H
 
-#include <Arduino.h>
-
 namespace IO {
 
     class IIOEventSender;
@@ -45,30 +43,29 @@ namespace IO {
         SensorTemperature
     };
 
-// IIOEventReceiver interface
+    // IIOEventReceiver interface
     class IIOEventReceiver {
     public:
-        virtual void onIOEvent(IIOEventSender *, const uint8_t *, void *, IOEventDataType dataType = Undefined) = 0; // pure virtual
+        virtual void onIOEvent(IIOEventSender *, const char *, const char *, const uint8_t *, void *, IOEventDataType dataType = Undefined) = 0; // pure virtual
     };
 
-// IIOEventSender interface
+    // IIOEventSender interface
     class IIOEventSender {
     public:
-        const uint8_t* getDomain() { return domain; }
-        const uint8_t* getAddress() { return address; }
+//        const uint8_t* getDomain() { return domain; }
+//        const uint8_t* getAddress() { return address; }
+        virtual void begin() = 0;
         void setEventReceiver(IIOEventReceiver *receiver) {
             eventReceiver = receiver;
         }
-        virtual void sendEvent(const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
-            if (eventReceiver != NULL) {
-                eventReceiver->onIOEvent(this, eventPath, eventData, dataType);
+        virtual void sendEvent(const char *domain, const char *address, const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
+            if (eventReceiver != nullptr) {
+                eventReceiver->onIOEvent(this, domain, address, eventPath, eventData, dataType);
             }
         };
 
     protected:
-        const uint8_t *domain;
-        const uint8_t *address;
-        IIOEventReceiver *eventReceiver;
+        IIOEventReceiver *eventReceiver = nullptr;
     };
 
 }

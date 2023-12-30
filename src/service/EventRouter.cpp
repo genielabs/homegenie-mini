@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -29,7 +29,7 @@
 
 #include "EventRouter.h"
 
-#include <service/HomeGenie.h>
+#include "HomeGenie.h"
 
 namespace Service {
 
@@ -38,24 +38,23 @@ namespace Service {
         for (int i = 0; i < eventsQueue.size(); i++) {
             // route event through MQTT
             auto m = eventsQueue.pop();
-            Logger::trace(":%s de-queued event >> [domain '%s' address '%s' event '%s']", EVENTROUTER_NS_PREFIX, m.domain.c_str(), m.sender.c_str(), m.event.c_str());
+            Logger::verbose(":%s dequeued event >> [domain '%s' address '%s' event '%s']", EVENTROUTER_NS_PREFIX, m.domain.c_str(), m.sender.c_str(), m.event.c_str());
 
-            auto currentTime = NetManager::getTimeClient().getFormattedDate().c_str();
-
+            auto date = NetManager::getTimeClient().getFormattedDate();
             // MQTT
-            auto topic = String("hg-mini/"+m.domain+"/" + m.sender + "/event");
-            auto details = Service::HomeGenie::createModuleParameter(m.event.c_str(), m.value.c_str(), currentTime);
+            auto topic = String(String(CONFIG_SYSTEM_NAME) + "/" + m.domain + "/" + m.sender + "/event");
+            auto details = Service::HomeGenie::createModuleParameter(m.event.c_str(), m.value.c_str(), date.c_str());
             netManager->getMQTTServer().broadcast(&topic, &details);
 
             // SSE
+// TODO: "sendSSSEvent" is BUGGED - memory leak
             netManager->getHttpServer().sendSSEvent(m.domain, m.sender, m.event, m.value);
 
             // WS
             if (netManager->getWebSocketServer().connectedClients() > 0) {
-                String date = Net::NetManager::getTimeClient().getFormattedDate();
                 unsigned long epoch = Net::NetManager::getTimeClient().getEpochTime();
                 int ms = Net::NetManager::getTimeClient().getMilliseconds();
-                int sz = 1+snprintf(NULL, 0, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
+                int sz = 1+snprintf(nullptr, 0, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
                                     date.c_str(), epoch, ms, m.domain.c_str(), m.sender.c_str(), m.event.c_str(), m.value.c_str());
                 char msg[sz];
                 snprintf(msg, sz, R"({"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
@@ -68,7 +67,9 @@ namespace Service {
     }
 
     void EventRouter::signalEvent(QueuedMessage m) {
+//        if (WiFi.isConnected()) {
         eventsQueue.add(m);
+//        }
     }
 
     void EventRouter::withNetManager(NetManager &manager) {

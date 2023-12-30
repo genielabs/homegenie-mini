@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,9 +30,8 @@
 #ifndef HOMEGENIE_MINI_TASKMANAGER_H
 #define HOMEGENIE_MINI_TASKMANAGER_H
 
-
-#include <Task.h>
-#include <io/Logger.h>
+#include "Task.h"
+#include "io/Logger.h"
 
 #define TASKMANAGER_LOG_PREFIX           "@ROOT::TaskManager"
 

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -40,7 +40,7 @@ void Utility::getBytes(const String &rawBytes, uint8_t *data) {
     {
         tmp[0] = msg[i * 2];
         tmp[1] = msg[(i * 2) + 1];
-        data[i] = strtol(tmp, NULL, 16);
+        data[i] = strtol(tmp, nullptr, 16);
     }
 }
 String Utility::byteToHex(byte b) {

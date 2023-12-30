@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -29,71 +29,89 @@
 
 #include "HTTPServer.h"
 
-#include <net/NetManager.h>
-#include <service/HomeGenie.h>
+#include "net/NetManager.h"
+#include "service/EventRouter.h"
 
 namespace Net {
 
     using namespace IO;
     using namespace Service;
 
-    const char SSDP_Description[] PROGMEM = "description.xml";
-    const char SSDP_Name[] PROGMEM = "HomeGenie:mini V1.0";
-    const char SSDP_SerialNumber[] PROGMEM = "ABC0123456789";
-    const char SSDP_ModelName[] PROGMEM = "HomeGenie:mini 2019";
-    const char SSDP_ModelNumber[] PROGMEM = "2134567890";
-    const char SSDP_ModelURL[] PROGMEM = "http://homegenie.it";
+    const char SSDP_SchemaURL[] PROGMEM = "description.xml";
+    const char SSDP_Name[] PROGMEM = CONFIG_DEVICE_MODEL_NAME;
+    const char SSDP_SerialNumber[] PROGMEM = CONFIG_DEVICE_SERIAL_NUMBER;
+    const char SSDP_ModelName[] PROGMEM = CONFIG_DEVICE_MODEL_NAME;
+    const char SSDP_ModelNumber[] PROGMEM = CONFIG_DEVICE_MODEL_NUMBER;
+    const char SSDP_ModelDescription[] PROGMEM = "HomeGenie Mini Device";
+    const char SSDP_ModelURL[] PROGMEM = "https://homegenie.it";
     const char SSDP_Manufacturer[] PROGMEM = "G-Labs";
     const char SSDP_ManufacturerURL[] PROGMEM = "https://glabs.it";
 
-    static ESP8266WebServer httpServer(HTTP_SERVER_PORT);
+    static WebServer httpServer(HTTP_SERVER_PORT);
 
     LinkedList<WiFiClient> wifiClients;
     LinkedList<QueuedMessage> events;
 
-    HTTPServer::HTTPServer() {
-
-    }
+    String ipAddress;
 
     void HTTPServer::begin() {
         httpServer.on("/start.html", HTTP_GET, []() {
             httpServer.send(200, "text/plain", "Hello World!");
         });
         httpServer.on("/description.xml", HTTP_GET, []() {
-            SSDP.schema(httpServer.client());
+            SSDPDevice.schema(httpServer.client());
         });
         static HTTPServer* i = this;
         httpServer.on("/api/HomeAutomation.HomeGenie/Logging/RealTime.EventStream/", HTTP_GET, []() {
-            WiFiClient sseClient = httpServer.client();
-            wifiClients.add(sseClient);
-            // TODO: check out this "keepAlive"
-            sseClient.keepAlive(65535);
-            i->serverSentEventHeader(sseClient);
-            //sseClient.flush();
-            // connection: CLOSE
+            i->sseClientAccept();
+        });
+        // alias of "../Logging/RealTime.EventStream"
+        httpServer.on("/events", HTTP_GET, []() {
+            i->sseClientAccept();
         });
         httpServer.addHandler(this);
 
         httpServer.begin();
         Logger::info("|  ✔ HTTP service");
 
-        SSDP.setSchemaURL(FPSTR(SSDP_Description));
-        SSDP.setHTTPPort(80);
-        SSDP.setName(FPSTR(SSDP_Name));
-        SSDP.setSerialNumber(FPSTR(SSDP_SerialNumber));
-        SSDP.setURL(WiFi.localIP().toString());
-        SSDP.setModelName(FPSTR(SSDP_ModelName));
-        SSDP.setModelNumber(FPSTR(SSDP_ModelNumber));
-        SSDP.setModelURL(FPSTR(SSDP_ModelURL));
-        SSDP.setManufacturer(FPSTR(SSDP_Manufacturer));
-        SSDP.setManufacturerURL(FPSTR(SSDP_ManufacturerURL));
-        SSDP.begin();
-        Logger::info("|  ✔ SSDP service");
+//        ipAddress = WiFi.localIP().toString();
     }
 
     void HTTPServer::loop() {
         Logger::verbose("%s loop() >> BEGIN", HTTPSERVER_LOG_PREFIX);
+
+        String localIP = WiFi.localIP().toString();
+        if (!ipAddress.equals(localIP) && !localIP.equals("0.0.0.0")) {
+            ipAddress = localIP;
+            //Logger::info("|  ✔ New IP address %s", ipAddress.c_str());
+
+            SSDPDevice.setSchemaURL(FPSTR(SSDP_SchemaURL));
+            SSDPDevice.setHTTPPort(80);
+            SSDPDevice.setName(FPSTR(SSDP_Name));
+            SSDPDevice.setSerialNumber(FPSTR(SSDP_SerialNumber));
+            SSDPDevice.setURL(ipAddress);
+            SSDPDevice.setModelName(FPSTR(SSDP_ModelName));
+            SSDPDevice.setModelNumber(FPSTR(SSDP_ModelNumber));
+            SSDPDevice.setModelDescription(FPSTR(SSDP_ModelDescription));
+            SSDPDevice.setModelURL(FPSTR(SSDP_ModelURL));
+            SSDPDevice.setManufacturer(FPSTR(SSDP_Manufacturer));
+            SSDPDevice.setManufacturerURL(FPSTR(SSDP_ManufacturerURL));
+
+#ifndef CONFIGURE_WITH_WPA
+            // Read friendly name from prefs
+            Preferences preferences;
+            preferences.begin(CONFIG_SYSTEM_NAME, true);
+            String friendlyName = preferences.getString("device:name", CONFIG_BUILTIN_MODULE_NAME);
+            preferences.end();
+            SSDPDevice.setFriendlyName(friendlyName);
+            Logger::info("|  ✔ UPnP friendly name: %s", friendlyName.c_str());
+#endif
+
+            Logger::info("|  ✔ SSDP service");
+        }
+
         httpServer.handleClient();
+        SSDPDevice.handleClient();
 
         // TODO: "if (millis() % 50 == 0) ..." lower priority routine
         if (events.size() > 0) {
@@ -118,7 +136,8 @@ namespace Net {
     bool HTTPServer::canHandle(HTTPMethod method, String uri) {
         return false;
     }
-    bool HTTPServer::handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri) {
+
+    bool HTTPServer::handle(WebServer& server, HTTPMethod requestMethod, String requestUri) {
         return false;
     }
     // END RequestHandler interface methods
@@ -154,5 +173,13 @@ namespace Net {
         client.println();
         client.println();
         //client.flush();
+    }
+
+    void HTTPServer::sseClientAccept() {
+        WiFiClient sseClient = httpServer.client();
+        wifiClients.add(sseClient);
+        this->serverSentEventHeader(sseClient);
+        //sseClient.flush();
+        // connection: CLOSE
     }
 }

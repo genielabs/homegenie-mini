@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -27,15 +27,15 @@
  *
  */
 
-#include <Task.h>
-#include <TaskManager.h>
+#include "Task.h"
+#include "TaskManager.h"
 
 Task::Task() {
     creationTs = millis();
     TaskManager::addTask(this);
 }
 
-bool Task::willLoop() {
+bool Task::willLoop() const {
 
     unsigned long now = millis();
     return now - lastLoopTs >= loopInterval;
@@ -46,6 +46,6 @@ void Task::loopExit() {
     lastLoopTs = millis();
 }
 
-uint64_t Task::taskIdleTime() {
+uint64_t Task::taskIdleTime() const {
     return millis()-lastLoopTs;
 };

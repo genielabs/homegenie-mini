@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -43,7 +43,7 @@ namespace Net { namespace MQTT {
     }
 
     void MQTTBrokerMini::unsetCallback(void) {
-        callback = NULL;
+        callback = nullptr;
     }
 
     void MQTTBrokerMini::runCallback(uint8_t num, Events_t event, uint8_t *topic_name, uint16_t length_topic_name,
@@ -59,6 +59,7 @@ namespace Net { namespace MQTT {
         for (auto &MQTTclient : MQTTclients) {
             MQTTclient.status = false;
         }
+        Logger::info("|  ✔ MQTT service");
     }
 
     void MQTTBrokerMini::parsing(uint8_t num, uint8_t *payload, uint16_t length) {
@@ -116,7 +117,7 @@ namespace Net { namespace MQTT {
                 //Length_topic_name = MSB_LSB(&payload[len]);
                 Length_topic_name = (payload[len + 1] * 256) + payload[len + 2];
 
-                uint8_t *Packet_identifier = NULL;
+                uint8_t *Packet_identifier = nullptr;
                 uint8_t Packet_identifier_length = 0;
 
                 if (QoS > 0) {

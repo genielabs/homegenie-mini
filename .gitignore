@@ -3,6 +3,9 @@
 .piolibdeps
 .clang_complete
 .gcc-flags.json
+cmake-build-debug
+CMakeFiles
+.idea
 
 # Clion
 

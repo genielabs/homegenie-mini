@@ -1,8 +1,8 @@
-set(ENV{PATH} "/home/gene/.nvm/versions/node/v8.1.0/bin:/home/gene/Scrivania/Work/mcu/esp/esp-open-sdk/xtensa-lx106-elf/bin:/home/gene/bin:/home/gene/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/gene/.platformio/penv/bin")
-set(PLATFORMIO_CMD "/home/gene/.local/bin/platformio")
+set(ENV{PATH} "$ENV{HOME}/.nvm/versions/node/v8.1.0/bin:$ENV{HOME}/.platformio/penv/bin")
+set(PLATFORMIO_CMD "$ENV{HOME}/.platformio/penv/bin/platformio")
 
-SET(CMAKE_C_COMPILER "/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gcc")
-SET(CMAKE_CXX_COMPILER "/home/gene/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++")
+SET(CMAKE_C_COMPILER "$ENV{HOME}/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gcc")
+SET(CMAKE_CXX_COMPILER "$ENV{HOME}/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-g++")
 SET(CMAKE_CXX_FLAGS_DISTRIBUTION "-fno-rtti -fno-exceptions -std=c++11 -Os -mlongcalls -mtext-section-literals -falign-functions=4 -U__STRICT_ANSI__ -ffunction-sections -fdata-sections -Wall")
 SET(CMAKE_C_FLAGS_DISTRIBUTION "-std=gnu99 -Wpointer-arith -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -Os -mlongcalls -mtext-section-literals -falign-functions=4 -U__STRICT_ANSI__ -ffunction-sections -fdata-sections -Wall")
 set(CMAKE_CXX_STANDARD 11)
@@ -57,7 +57,8 @@ include_directories("$ENV{HOME}/.platformio/packages/toolchain-xtensa/xtensa-lx1
 include_directories("$ENV{HOME}/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include")
 include_directories("$ENV{HOME}/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include-fixed")
 include_directories("$ENV{HOME}/.platformio/packages/tool-unity")
-include_directories("$ENV{HOME}/Documents/PlatformIO/Projects/homegenie-mini/include")
-include_directories("$ENV{HOME}/Documents/PlatformIO/Projects/homegenie-mini/src")
+
+include_directories("./include")
+include_directories("./src")
 
 FILE(GLOB_RECURSE SRC_LIST "./src/*.*" "./lib/*.*" "./.piolibdeps/*.*")

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,13 +30,11 @@
 #ifndef HOMEGENIE_MINI_MQTTSERVER_H
 #define HOMEGENIE_MINI_MQTTSERVER_H
 
-#include <Arduino.h>
-
 #include <ArduinoJson.h>
 #include <WebSocketsServer.h>
 
-#include <Task.h>
-#include <net/mqtt/MQTTBrokerMini.h>
+#include "Task.h"
+#include "net/mqtt/MQTTBrokerMini.h"
 
 namespace Net {
     using namespace MQTT;
@@ -45,15 +43,15 @@ namespace Net {
     class MQTTServer : Task {
     public:
         void begin();
-        void loop();
+        void loop() override;
 
         void broadcast(String *topic, String *payload);
 
         static void webSocketEventStatic(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
         static void mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t * payload, uint16_t length_payload);
     private:
-        WebSocketsServer *webSocket;
-        MQTTBrokerMini *mqttBroker;
+        WebSocketsServer *webSocket = nullptr;
+        MQTTBrokerMini *mqttBroker = nullptr;
     };
 
 }

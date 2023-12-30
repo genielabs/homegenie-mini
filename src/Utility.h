@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,7 +30,7 @@
 #ifndef HOMEGENIE_MINI_UTILITY_H
 #define HOMEGENIE_MINI_UTILITY_H
 
-#include <Arduino.h>
+#include "Config.h"
 
 class Utility {
 public:
@@ -39,6 +39,5 @@ public:
     static uint32_t reverseBits(uint32_t n);
     static uint8_t reverseByte(uint8_t n);
 };
-
 
 #endif //HOMEGENIE_MINI_UTILITY_H

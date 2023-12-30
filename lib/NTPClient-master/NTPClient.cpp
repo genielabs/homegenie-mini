@@ -25,7 +25,7 @@ NTPClient::NTPClient(UDP& udp) {
   this->_udp            = &udp;
 }
 
-NTPClient::NTPClient(UDP& udp, int timeOffset) {
+NTPClient::NTPClient(UDP& udp, long timeOffset) {
   this->_udp            = &udp;
   this->_timeOffset     = timeOffset;
 }
@@ -35,13 +35,13 @@ NTPClient::NTPClient(UDP& udp, const char* poolServerName) {
   this->_poolServerName = poolServerName;
 }
 
-NTPClient::NTPClient(UDP& udp, const char* poolServerName, int timeOffset) {
+NTPClient::NTPClient(UDP& udp, const char* poolServerName, long timeOffset) {
   this->_udp            = &udp;
   this->_timeOffset     = timeOffset;
   this->_poolServerName = poolServerName;
 }
 
-NTPClient::NTPClient(UDP& udp, const char* poolServerName, int timeOffset, unsigned long updateInterval) {
+NTPClient::NTPClient(UDP& udp, const char* poolServerName, long timeOffset, unsigned long updateInterval) {
   this->_udp            = &udp;
   this->_timeOffset     = timeOffset;
   this->_poolServerName = poolServerName;
@@ -52,7 +52,7 @@ void NTPClient::begin() {
   this->begin(NTP_DEFAULT_LOCAL_PORT);
 }
 
-void NTPClient::begin(int port) {
+void NTPClient::begin(unsigned int port) {
   this->_port = port;
 
   this->_udp->begin(this->_port);
@@ -60,7 +60,7 @@ void NTPClient::begin(int port) {
   this->_udpSetup = true;
 }
 
-bool NTPClient::isValid(byte * ntpPacket)
+bool NTPClient::isValid(const byte * ntpPacket)
 {
 	//Perform a few validity checks on the packet
 	if((ntpPacket[0] & 0b11000000) == 0b11000000)		//Check for LI=UNSYNC
@@ -117,40 +117,44 @@ bool NTPClient::forceUpdate() {
   // this is NTP time (seconds since Jan 1 1900):
   unsigned long secsSince1900 = highWord << 16 | lowWord;
 
-  this->_currentEpoc = secsSince1900 - SEVENZYYEARS;
+  this->_currentEpoc = secsSince1900 - SEVENTY_YEARS;
 
   return true;
 }
 
+bool NTPClient::isUpdated() const {
+    return (millis() - this->_lastUpdate < this->_updateInterval)
+           && this->_lastUpdate != 0; // if there was no update yet.
+}
+
 bool NTPClient::update() {
-  if ((millis() - this->_lastUpdate >= this->_updateInterval)     // Update after _updateInterval
-    || this->_lastUpdate == 0) {                                // Update if there was no update yet.
-    if (!this->_udpSetup) this->begin();                         // setup the UDP client if needed
+  if (!isUpdated()) {
+    if (!this->_udpSetup) this->begin(); // setup the UDP client if needed
     return this->forceUpdate();
   }
   return true;
 }
 
-unsigned long NTPClient::getEpochTime() {
+unsigned long NTPClient::getEpochTime() const {
   return this->_timeOffset + // User offset
-         this->_currentEpoc + // Epoc returned by the NTP server
+         this->_currentEpoc + // Epoch returned by the NTP server
          ((millis() - this->_lastUpdate) / 1000); // Time since last update
 }
 
-int NTPClient::getDay() {
+int NTPClient::getDay() const {
   return (((this->getEpochTime()  / 86400L) + 4 ) % 7); //0 is Sunday
 }
-int NTPClient::getHours() {
+int NTPClient::getHours() const {
   return ((this->getEpochTime()  % 86400L) / 3600);
 }
-int NTPClient::getMinutes() {
+int NTPClient::getMinutes() const {
   return ((this->getEpochTime() % 3600) / 60);
 }
-int NTPClient::getSeconds() {
+int NTPClient::getSeconds() const {
   return (this->getEpochTime() % 60);
 }
 
-String NTPClient::getFormattedTime(unsigned long secs) {
+String NTPClient::getFormattedTime(unsigned long secs) const {
   unsigned long rawTime = secs ? secs : this->getEpochTime();
   unsigned long hours = (rawTime % 86400L) / 3600;
   String hoursStr = hours < 10 ? "0" + String(hours) : String(hours);
@@ -191,14 +195,14 @@ String NTPClient::getFormattedDate(unsigned long secs) {
   return String(year) + "-" + monthStr + "-" + dayStr + "T" + this->getFormattedTime(secs ? secs : 0) + getFormattedMilliseconds() + "Z";
 }
 
-int NTPClient::getMilliseconds() {
+int NTPClient::getMilliseconds() const {
     return (int)((millis() - this->_lastUpdate) % 1000);
 }
 
-String NTPClient::getFormattedMilliseconds() {
+String NTPClient::getFormattedMilliseconds() const {
     char ms[5];
     snprintf(ms, 5, ".%03d", getMilliseconds());
-    return String(ms);
+    return {ms};
 }
 
 void NTPClient::end() {
@@ -239,4 +243,5 @@ void NTPClient::sendNTPPacket() {
 
 void NTPClient::setEpochTime(unsigned long secs) {
   this->_currentEpoc = secs;
+  this->_lastUpdate = millis();
 }

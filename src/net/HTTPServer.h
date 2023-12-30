@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2019 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,14 +30,19 @@
 #ifndef HOMEGENIE_MINI_HTTPSERVER_H
 #define HOMEGENIE_MINI_HTTPSERVER_H
 
+#ifdef ESP8266
+#define WebServer ESP8266WebServer
 #include <ESP8266WebServer.h>
-#include <ESP8266SSDP.h>
-#include <detail/RequestHandler.h>
+#else
+#include <WebServer.h>
+#endif
 
+#include <detail/RequestHandler.h>
 #include <LinkedList.h>
 
-#include <Task.h>
-#include <io/Logger.h>
+#include "Task.h"
+
+#include "SSDPDevice.h"
 
 #define HTTPSERVER_LOG_PREFIX           "@Net::HTTPServer"
 #define HTTP_SERVER_PORT 80
@@ -47,15 +52,15 @@ namespace Net {
     /// Implements HTTP and SSDP services
     class HTTPServer : Task, RequestHandler {
     public:
-        HTTPServer();
         void begin();
-        void loop();
+        void loop() override;
         void addHandler(RequestHandler* handler);
         // RequestHandler interface methods
-        bool canHandle(HTTPMethod method, String uri);
-        bool handle(ESP8266WebServer& server, HTTPMethod requestMethod, String requestUri);
+        bool canHandle(HTTPMethod method, String uri) override;
+        bool handle(WebServer& server, HTTPMethod requestMethod, String requestUri) override;
         void sendSSEvent(String domain, String address, String event, String value);
     private:
+        void sseClientAccept();
         void serverSentEventHeader(WiFiClient &client);
         void serverSentEvent(WiFiClient &client, String &domain, String &address, String &event, String &value);
     };
