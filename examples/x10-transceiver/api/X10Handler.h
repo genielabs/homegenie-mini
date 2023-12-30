@@ -30,7 +30,8 @@
 #ifndef HOMEGENIE_MINI_X10APIHANDLER_H
 #define HOMEGENIE_MINI_X10APIHANDLER_H
 
-#include "HomeGenie.h"
+#include <HomeGenie.h>
+#include <Utility.h>
 
 #include "../configuration.h"
 #include "../io/X10Message.h"

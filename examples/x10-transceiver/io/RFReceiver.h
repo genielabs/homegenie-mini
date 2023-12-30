@@ -31,6 +31,7 @@
 #define HOMEGENIE_MINI_X10_RFRECEIVER_H_
 
 #include <HomeGenie.h>
+#include <Utility.h>
 
 #include "RFReceiverConfig.h"
 
