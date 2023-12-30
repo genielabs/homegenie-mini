@@ -1,4 +1,4 @@
-[![Travis Build Status](https://travis-ci.org/genielabs/homegenie-mini.svg?branch=master)](https://travis-ci.org/genielabs/homegenie-mini)
+![homegenie-mini workflow](https://github.com/genielabs/homegenie-mini/actions/workflows/platformio.yml/badge.svg)
 
 # HomeGenie Mini v1.2 <small>`ESP32 / ESP8266`</small>
 

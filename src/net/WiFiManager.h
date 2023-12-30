@@ -32,7 +32,6 @@
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
-#include <include/wl_definitions.h>
 #else
 #include <WiFi.h>
 #include <Preferences.h>
