@@ -31,24 +31,30 @@
 
 #include "configuration.h"
 
+#include "api/ShutterHandler.h"
+
 using namespace IO;
 using namespace Service;
 
 HomeGenie* homeGenie;
 
 void setup() {
+
     homeGenie = HomeGenie::getInstance();
+
     //auto miniModule = homeGenie->getDefaultModule();
 
-    // TODO: ..
+    auto shutterControl = new ShutterControl();
+
+    homeGenie->addIOHandler(shutterControl);
+    homeGenie->addAPIHandler(new ShutterHandler(shutterControl));
 
     homeGenie->begin();
+
 }
 
 void loop()
 {
     homeGenie->loop();
-
-    // TODO: ..
 
 }

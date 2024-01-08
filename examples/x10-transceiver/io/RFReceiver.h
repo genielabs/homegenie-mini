@@ -44,7 +44,7 @@ namespace IO { namespace X10 {
         RFReceiver();
         RFReceiver(RFReceiverConfig *);
 
-        void begin();
+        void begin() override;
         void receive();
 
     private:

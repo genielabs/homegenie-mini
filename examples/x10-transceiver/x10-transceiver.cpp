@@ -24,7 +24,6 @@
  *
  * Releases:
  * - 2019-01-10 v1.0: initial release.
- * - 2023-12-08 v1,1: added BLE support; targeting ESP32 by default.
  *
  */
 

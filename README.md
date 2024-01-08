@@ -182,6 +182,15 @@ pio run -e smart-sensor-d1-mini -t upload
 pio run -e smart-sensor-d1-mini-esp32 -t upload
 ```
 
+### Shutter control example
+
+Wi-Fi controlled shutter motor.
+
+**Generic ESP32**
+```bash
+pio run -e shutter -t upload
+```
+
 
 ### X10 transceiver example
 

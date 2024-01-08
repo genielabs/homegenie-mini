@@ -23,32 +23,21 @@
  *
  *
  * Releases:
- * - 2019-01-10 v1.0: initial release.
+ * - 2024-01-06 Initial release
  *
  */
 
-#include <HomeGenie.h>
+#ifndef HOMEGENIE_MINI_ISHUTTERDRIVER_H
+#define HOMEGENIE_MINI_ISHUTTERDRIVER_H
 
-#include "configuration.h"
+namespace IO { namespace Components {
+    class IShutterDriver {
+    public:
+        virtual void init() = 0;
+        virtual void stop() = 0;
+        virtual void open() = 0;
+        virtual void close() = 0;
+    };
+}}
 
-using namespace IO;
-using namespace Service;
-
-HomeGenie* homeGenie;
-
-void setup() {
-    homeGenie = HomeGenie::getInstance();
-    //auto miniModule = homeGenie->getDefaultModule();
-
-    // TODO: ..
-
-    homeGenie->begin();
-}
-
-void loop()
-{
-    homeGenie->loop();
-
-    // TODO: ..
-
-}
+#endif //HOMEGENIE_MINI_ISHUTTERDRIVER_H

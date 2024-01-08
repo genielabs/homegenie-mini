@@ -53,6 +53,7 @@ namespace Net {
         bool checkWiFiStatus();
     private:
         wl_status_t wiFiStatus;
+        bool initialized = false;
     };
 
 }

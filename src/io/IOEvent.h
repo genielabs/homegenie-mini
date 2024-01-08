@@ -30,6 +30,8 @@
 #ifndef HOMEGENIE_MINI_IIOEVENT_H
 #define HOMEGENIE_MINI_IIOEVENT_H
 
+#include "Config.h"
+
 namespace IO {
 
     class IIOEventSender;
@@ -46,7 +48,7 @@ namespace IO {
     // IIOEventReceiver interface
     class IIOEventReceiver {
     public:
-        virtual void onIOEvent(IIOEventSender *, const char *, const char *, const uint8_t *, void *, IOEventDataType dataType = Undefined) = 0; // pure virtual
+        virtual void onIOEvent(IIOEventSender *, const char *, const char *, const uint8_t *, void *, IOEventDataType dataType) = 0; // pure virtual
     };
 
     // IIOEventSender interface
@@ -61,11 +63,13 @@ namespace IO {
         virtual void sendEvent(const char *domain, const char *address, const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
             if (eventReceiver != nullptr) {
                 eventReceiver->onIOEvent(this, domain, address, eventPath, eventData, dataType);
+                lastEventMs = millis();
             }
         };
 
     protected:
         IIOEventReceiver *eventReceiver = nullptr;
+        unsigned long lastEventMs = 0;
     };
 
 }

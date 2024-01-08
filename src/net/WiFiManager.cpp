@@ -32,7 +32,7 @@
 namespace Net {
 
     WiFiManager::WiFiManager() {
-        setLoopInterval(1000);
+        setLoopInterval(5000);
         wiFiStatus = WL_DISCONNECTED;
 #ifdef ESP8266
         // WI-FI will not boot without this delay!!!
@@ -43,19 +43,24 @@ namespace Net {
 
     void WiFiManager::loop() {
         auto status = WiFi.status();
-        if (status != wiFiStatus) {
+        if (status != wiFiStatus || status != WL_CONNECTED) {
             wiFiStatus = status;
             checkWiFiStatus();
         }
     }
 
     void WiFiManager::initWiFi() {
+        if (initialized) {
+            WiFi.reconnect();
+            return;
+        }
         IO::Logger::info("|  - Connecting to WI-FI .");
         // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
         WiFi.mode(WIFI_STA);
 #ifdef CONFIGURE_WITH_WPA
         delay(1000); // TODO: is this delay necessary?
         WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
+        initialized = true;
 #else
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, true);
@@ -63,6 +68,7 @@ namespace Net {
         String pass = preferences.getString("wifi:password");
 
         if (!ssid.isEmpty() && !pass.isEmpty()) {
+            initialized = true;
             IO::Logger::info("|  - WI-FI SSID: %s", ssid.c_str());
             IO::Logger::info("|  - WI-FI Password: *"); // pass.c_str()
             WiFi.begin(ssid.c_str(), pass.c_str());

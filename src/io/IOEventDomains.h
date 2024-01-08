@@ -35,6 +35,7 @@ namespace IO {
         const char HomeAutomation_HomeGenie[] = "HomeAutomation.HomeGenie";
         const char HomeAutomation_X10[] = "HomeAutomation.X10";
         const char HomeAutomation_RCS[] = "HomeAutomation.RCS";
+        const char Automation_Components[] = "Automation.Components";
     };
 }
 
