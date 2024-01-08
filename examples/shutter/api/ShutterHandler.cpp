@@ -105,9 +105,6 @@ namespace Service { namespace API {
                 case Float:
                     m.value = String(*(float *) eventData);
                     break;
-                case Integer:
-                    m.value = String(*(int16_t *) eventData);
-                    break;
                 default:
                     m.value = String(*(int32_t *) eventData);
             }
