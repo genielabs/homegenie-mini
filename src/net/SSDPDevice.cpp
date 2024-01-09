@@ -4,6 +4,7 @@
 
 
 #include "SSDPDevice.h"
+#include "defs.h"
 
 static const char* PROGMEM SSDP_RESPONSE_TEMPLATE =
         "HTTP/1.1 200 OK\r\n"
@@ -323,7 +324,7 @@ void SSDPDeviceClass::schema(WiFiClient client) {
 }
 
 void SSDPDeviceClass::handleClient() {
-    if (WiFiClass::status() != WL_CONNECTED) {
+    if (ESP_WIFI_STATUS != WL_CONNECTED) {
         return;
     }
 	IPAddress current = WiFi.localIP();

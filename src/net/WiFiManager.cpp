@@ -42,7 +42,7 @@ namespace Net {
     }
 
     void WiFiManager::loop() {
-        auto status = WiFiClass::status();
+        auto status = ESP_WIFI_STATUS;
         if (status != wiFiStatus) {
             wiFiStatus = status;
             checkWiFiStatus();
@@ -73,7 +73,7 @@ namespace Net {
 
     bool WiFiManager::checkWiFiStatus() {
         bool wpsSuccess = false;
-        auto status = WiFiClass::status();
+        auto status = ESP_WIFI_STATUS;
         if (status == WL_CONNECTED) {
             digitalWrite(Config::StatusLedPin, LOW);
             IO::Logger::info("|  - Connected to '%s'", WiFi.SSID().c_str());

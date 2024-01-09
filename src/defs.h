@@ -38,6 +38,12 @@
 
 #define DISABLE_BLE
 
+#ifndef ESP8266
+#define ESP_WIFI_STATUS WiFiClass::status()
+#else
+#define ESP_WIFI_STATUS WiFi.status()
+#endif
+
 #ifdef ESP8266
     #define CONFIGURE_WITH_WPA
     #define WebServer ESP8266WebServer

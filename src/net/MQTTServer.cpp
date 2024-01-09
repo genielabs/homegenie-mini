@@ -52,7 +52,7 @@ namespace Net {
     }
 
     void MQTTServer::loop() {
-        if (WiFiClass::status() == WL_CONNECTED) {
+        if (ESP_WIFI_STATUS == WL_CONNECTED) {
             webSocket->loop();
         }
     }
