@@ -32,35 +32,30 @@
 namespace Net {
 
     WiFiManager::WiFiManager() {
-        setLoopInterval(5000);
+        setLoopInterval(1000);
         wiFiStatus = WL_DISCONNECTED;
 #ifdef ESP8266
         // WI-FI will not boot without this delay!!!
         delay(2000);
 #endif
-        initWiFi();
+        connect();
     }
 
     void WiFiManager::loop() {
-        auto status = WiFi.status();
-        if (status != wiFiStatus || status != WL_CONNECTED) {
+        auto status = WiFiClass::status();
+        if (status != wiFiStatus) {
             wiFiStatus = status;
             checkWiFiStatus();
         }
     }
 
-    void WiFiManager::initWiFi() {
-        if (initialized) {
-            WiFi.reconnect();
-            return;
-        }
+    void WiFiManager::connect() {
         IO::Logger::info("|  - Connecting to WI-FI .");
         // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
         WiFi.mode(WIFI_STA);
 #ifdef CONFIGURE_WITH_WPA
         delay(1000); // TODO: is this delay necessary?
         WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
-        initialized = true;
 #else
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, true);
@@ -68,7 +63,6 @@ namespace Net {
         String pass = preferences.getString("wifi:password");
 
         if (!ssid.isEmpty() && !pass.isEmpty()) {
-            initialized = true;
             IO::Logger::info("|  - WI-FI SSID: %s", ssid.c_str());
             IO::Logger::info("|  - WI-FI Password: *"); // pass.c_str()
             WiFi.begin(ssid.c_str(), pass.c_str());
@@ -79,7 +73,7 @@ namespace Net {
 
     bool WiFiManager::checkWiFiStatus() {
         bool wpsSuccess = false;
-        auto status = WiFi.status();
+        auto status = WiFiClass::status();
         if (status == WL_CONNECTED) {
             digitalWrite(Config::StatusLedPin, LOW);
             IO::Logger::info("|  - Connected to '%s'", WiFi.SSID().c_str());
@@ -90,15 +84,15 @@ namespace Net {
             switch (status) {
                 case WL_NO_SSID_AVAIL:
                     IO::Logger::error("|  x WiFi SSID not available");
-                    initWiFi();
+                    connect();
                     break;
                 case WL_CONNECT_FAILED:
                     IO::Logger::error("|  x WiFi connection failed");
-                    initWiFi();
+                    connect();
                     break;
                 case WL_CONNECTION_LOST:
                     IO::Logger::error("|  x WiFi connection lost");
-                    initWiFi();
+                    connect();
                     break;
                 case WL_DISCONNECTED:
                     IO::Logger::error("|  x WiFi disconnected");

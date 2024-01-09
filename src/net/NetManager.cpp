@@ -173,7 +173,9 @@ namespace Net {
 
 #endif
 
-        webSocket->loop();
+        if (WiFiClass::status() == WL_CONNECTED) {
+            webSocket->loop();
+        }
 
         if (rtcTimeSet) {
 #ifdef ESP32
@@ -186,7 +188,7 @@ namespace Net {
                 }
             }
 #endif
-        } else if (WiFi.isConnected() && WiFi.status() == WL_CONNECTED && millis() - lastTimeCheck > 60000) {
+        } else if (WiFi.isConnected() && millis() - lastTimeCheck > 60000) {
             lastTimeCheck = millis();
             if (!timeClient.isUpdated()) {
                 if (timeClient.update()) {

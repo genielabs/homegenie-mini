@@ -48,12 +48,11 @@ namespace Net {
     public:
         WiFiManager();
         void loop() override;
-        void initWiFi();
-        bool configure();
-        bool checkWiFiStatus();
+        static void connect();
+        static bool configure();
+        static bool checkWiFiStatus();
     private:
         wl_status_t wiFiStatus;
-        bool initialized = false;
     };
 
 }

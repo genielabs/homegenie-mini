@@ -323,6 +323,9 @@ void SSDPDeviceClass::schema(WiFiClient client) {
 }
 
 void SSDPDeviceClass::handleClient() {
+    if (WiFiClass::status() != WL_CONNECTED) {
+        return;
+    }
 	IPAddress current = WiFi.localIP();
 
 	if (m_last != current) {
@@ -334,16 +337,14 @@ void SSDPDeviceClass::handleClient() {
 
 		if (current != INADDR_NONE) {
 			if (!m_server) m_server = new WiFiUDP();
-
 #ifdef ESP8266
 			m_server->beginMulticast(current, SSDP_MULTICAST_ADDR, SSDP_PORT);
 #else
-      m_server->beginMulticast(SSDP_MULTICAST_ADDR, SSDP_PORT);
-      m_server->beginMulticastPacket();
+            m_server->beginMulticast(SSDP_MULTICAST_ADDR, SSDP_PORT);
+            m_server->beginMulticastPacket();
 #endif
 			postNotifyALive();
-		}
-		else if (m_server) {
+		} else if (m_server) {
 			m_server->stop();
 		}
 	}

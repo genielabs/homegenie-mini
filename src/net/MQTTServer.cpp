@@ -52,7 +52,9 @@ namespace Net {
     }
 
     void MQTTServer::loop() {
-        webSocket->loop();
+        if (WiFiClass::status() == WL_CONNECTED) {
+            webSocket->loop();
+        }
     }
 
     void MQTTServer::mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
