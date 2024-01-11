@@ -162,6 +162,7 @@ namespace Net {
             if (!netRequestHandler->onNetRequest(&server, requestUri.c_str(), responseCallback)) {
                 responseCallback->error("Invalid request.");
             };
+            delete responseCallback;
             return true;
         }
 

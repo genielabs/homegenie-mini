@@ -88,9 +88,9 @@ namespace Service {
     }
 
     void EventRouter::signalEvent(QueuedMessage m) {
-//        if (WiFi.isConnected()) {
-        eventsQueue.add(m);
-//        }
+        if (WiFi.isConnected()) {
+          eventsQueue.add(m);
+        }
     }
 
     void EventRouter::withNetManager(NetManager &manager) {
