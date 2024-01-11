@@ -68,7 +68,7 @@ namespace Service { namespace API {
             noInterrupts();
             transmitter->sendCommand(data, 24, 1, 0);
             interrupts();
-            command->Response = R"({ "ResponseText": "OK" })";
+            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 
             return true;
         }

@@ -96,7 +96,7 @@ namespace Service { namespace API {
             noInterrupts();
             transmitter->sendCommand(data, sizeof(data));
             interrupts();
-            command->Response = R"({ "ResponseText": "OK" })";
+            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 
             return true;
         } else if (command->Domain == (IOEventDomains::HomeAutomation_X10)) {
@@ -173,7 +173,7 @@ namespace Service { namespace API {
                 transmitter->sendCommand(&data[1], sizeof(data)-1, sendRepeat);
                 interrupts();
             }
-            command->Response = R"({ "ResponseText": "OK" })";
+            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 
             return true;
         }
