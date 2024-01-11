@@ -44,6 +44,7 @@
 
 #include <LinkedList.h>
 #include <NTPClient.h>
+#include <MsgPack.h>
 
 #include "Config.h"
 #include "net/HTTPServer.h"
@@ -62,8 +63,79 @@
 
 namespace Net {
 
+    // ResponseCallback
+    class ResponseCallback {
+    public:
+        unsigned int contentLength = 0;
+        virtual void beginGetLength() = 0;
+        virtual void endGetLength() = 0;
+        virtual void write(const char* s) = 0;
+        virtual void writeAll(const char* s) = 0;
+        virtual void error(const char* s) = 0;
+    };
+
+    // WebSocketResponseCallback
+    class WebSocketResponseCallback : public ResponseCallback {
+    public:
+        void beginGetLength() override {};
+        void endGetLength() override {};
+        void write(const char* s) override {};
+        void writeAll(const char* s) override {};
+        void error(const char* s) override {};
+    };
+
+    // WebServerResponseCallback
+    class WebServerResponseCallback : public ResponseCallback {
+    private:
+        WebServer* server;
+        bool disableOutput = false;
+        void sendHeaders() {
+            server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            server->sendHeader("Pragma", "no-cache");
+            server->sendHeader("Expires", "0");
+            server->setContentLength(contentLength);
+            server->send(200, "application/json; charset=utf-8", "");
+        }
+    public:
+        WebServerResponseCallback(WebServer* server) {
+            this->server = server;
+        }
+        void beginGetLength() override {
+            contentLength = 0;
+            disableOutput = true;
+        }
+        void endGetLength() override {
+            sendHeaders();
+            disableOutput = false;
+        }
+        void write(const char* s) override {
+            contentLength += strlen(s);
+            if (server != nullptr && !disableOutput) {
+                server->sendContent(s);
+            }
+        }
+        void writeAll(const char* s) override {
+            contentLength += strlen(s);
+            if (server != nullptr && !disableOutput) {
+                sendHeaders();
+                server->sendContent(s);
+            }
+        }
+        void error(const char* s) override {
+            server->send(400, "application/json", s);
+        }
+    };
+
+
+    // NetRequestHandler interface
+    class NetRequestHandler {
+    public:
+        virtual bool onNetRequest(void* sender, const char* requestMessage, ResponseCallback* responseCallback) = 0; // pure virtual
+    };
+
+
     /// Network services management
-    class NetManager : Task {
+    class NetManager : Task, RequestHandler {
     public:
         NetManager();
         ~NetManager();
@@ -78,6 +150,23 @@ namespace Net {
         WebSocketsServer& getWebSocketServer();
         static NTPClient& getTimeClient();
 
+        void setRequestHandler(NetRequestHandler *);
+
+        // BEGIN HTTP RequestHandler interface methods
+
+        bool canHandle(HTTPMethod method, String uri) override {
+            return uri != nullptr && uri.startsWith("/api/");
+        }
+        bool handle(WebServer &server, HTTPMethod requestMethod, String requestUri) override {
+            auto responseCallback = new WebServerResponseCallback(&server);
+            if (!netRequestHandler->onNetRequest(&server, requestUri.c_str(), responseCallback)) {
+                responseCallback->error("Invalid request.");
+            };
+            return true;
+        }
+
+        // END HTTP RequestHandler interface methods
+
     private:
 #ifndef DISABLE_BLE
         BLEManager *bleManager;
@@ -86,7 +175,7 @@ namespace Net {
         HTTPServer *httpServer;
         MQTTServer *mqttServer;
         WebSocketsServer *webSocket;
-        //void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght);
+        NetRequestHandler* netRequestHandler;
     };
 
 }

@@ -53,7 +53,7 @@ namespace Service { namespace API {
     }
 
 
-    bool ShutterHandler::handleRequest(APIRequest *command, WebServer &server) {
+    bool ShutterHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
 
         if (command->Domain == (IOEventDomains::Automation_Components)
             && command->Address == SERVO_MODULE_ADDRESS) {
@@ -64,7 +64,7 @@ namespace Service { namespace API {
 
                 servoControl->setLevel(level);
 
-                command->Response = R"({ "ResponseText": "OK" })";
+                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 
             } else if (command->Command == "Control.Close" || command->Command == "Control.Off") {
 

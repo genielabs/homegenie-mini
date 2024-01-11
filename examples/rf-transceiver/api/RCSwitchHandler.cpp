@@ -57,7 +57,7 @@ namespace Service { namespace API {
 
 
 
-        bool RCSwitchHandler::handleRequest(APIRequest *command, WebServer &server) {
+        bool RCSwitchHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
         if (command->Domain == (IOEventDomains::HomeAutomation_RCS)
             && command->Address == CONFIG_RCSwitchRF_MODULE_ADDRESS
             && command->Command == "Control.SendRaw") {

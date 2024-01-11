@@ -84,7 +84,7 @@ namespace Service { namespace API {
     }
 
 
-    bool X10Handler::handleRequest(APIRequest *command, WebServer &server) {
+    bool X10Handler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
 
         if (command->Domain == (IOEventDomains::HomeAutomation_X10)
             && command->Address == CONFIG_X10RF_MODULE_ADDRESS

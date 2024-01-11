@@ -48,17 +48,17 @@ namespace IO {
 
         void begin();
 
-        bool addEventSender(IIOEventSender* sender);
+        bool addEventSender(IIOEventSender *);
 
         // IIOEventReceiver interface
         void onIOEvent(IIOEventSender *, const char*, const char*, const uint8_t *, void *, IOEventDataType);
 
-        void setOnEventCallback(IIOEventReceiver *);
+        void setEventReceiver(IIOEventReceiver *);
 
     private:
         // Diagnostics
         System::Diagnostics *systemDiagnostics;
-        IIOEventReceiver *ioEventCallback;
+        IIOEventReceiver *ioEventReceiver;
         LinkedList<IIOEventSender*> eventSenders;
     };
 

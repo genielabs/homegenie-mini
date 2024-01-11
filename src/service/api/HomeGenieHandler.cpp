@@ -74,46 +74,35 @@ namespace Service { namespace API {
         return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
     }
 
-    bool HomeGenieHandler::handleRequest(Service::APIRequest *request, WebServer &server) {
+    bool HomeGenieHandler::handleRequest(Service::APIRequest *request, ResponseCallback* responseCallback) {
         auto homeGenie = HomeGenie::getInstance();
         if (request->Address == "Config") {
             if (request->Command == "Modules.List") {
-                auto contentLength = (size_t)homeGenie->writeModuleListJSON(nullptr);
-                server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-                server.sendHeader("Pragma", "no-cache");
-                server.sendHeader("Expires", "0");
-                server.setContentLength(contentLength);
-                server.send(200, "application/json; charset=utf-8", "");
-                homeGenie->writeModuleListJSON(&server);
-                //server.client().flush();
+                responseCallback->beginGetLength();
+                homeGenie->writeModuleListJSON(responseCallback);
+                responseCallback->endGetLength();
+                homeGenie->writeModuleListJSON(responseCallback);
                 return true;
             } else if (request->Command == "Modules.Get") {
                 String domain = request->getOption(0);
                 String address = request->getOption(1);
-                auto contentLength = (size_t)homeGenie->writeModuleJSON(nullptr, &domain, &address);
+                responseCallback->beginGetLength();
+                auto contentLength = (size_t)homeGenie->writeModuleJSON(responseCallback, &domain, &address);
+                responseCallback->endGetLength();
                 if (contentLength == 0) return false;
-                server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-                server.sendHeader("Pragma", "no-cache");
-                server.sendHeader("Expires", "0");
-                server.setContentLength(contentLength);
-                server.send(200, "application/json; charset=utf-8", "");
-                homeGenie->writeModuleJSON(&server, &domain, &address);
+                homeGenie->writeModuleJSON(responseCallback, &domain, &address);
                 return true;
             } else if (request->Command == "Groups.List") {
-                auto contentLength = (size_t ) homeGenie->writeGroupListJSON(nullptr);
-                server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-                server.sendHeader("Pragma", "no-cache");
-                server.sendHeader("Expires", "0");
-                server.setContentLength(contentLength);
-                server.send(200, "application/json; charset=utf-8", "");
-                homeGenie->writeGroupListJSON(&server);
-                //server.client().flush();
+                responseCallback->beginGetLength();
+                homeGenie->writeGroupListJSON(responseCallback);
+                responseCallback->endGetLength();
+                homeGenie->writeGroupListJSON(responseCallback);
                 return true;
             } else if (request->Command == "WebSocket.GetToken") {
 
                 // TODO: implement random token with expiration (like in HG server) for websocket client verification
 
-                request->Response = R"({ "ResponseValue": "e046f885-1d51-4dd2-b952-38e7134a9c0f" })";
+                responseCallback->writeAll(R"({ "ResponseValue": "e046f885-1d51-4dd2-b952-38e7134a9c0f" })");
                 return true;
             }
         } else {
@@ -158,7 +147,7 @@ namespace Service { namespace API {
                     levelProperty->setValue(String(level).c_str());
                     GPIOPort::saveLevel(pinNumber, levelProperty->value.toFloat());
 
-                    request->Response = R"({ "ResponseText": "OK" })";
+                    responseCallback->writeAll(R"({ "ResponseText": "OK" })");
                     return  true;
                 }
             }

@@ -48,13 +48,13 @@ namespace IO {
         return true;
     }
 
-    void IOManager::setOnEventCallback(IIOEventReceiver *callback) {
-        ioEventCallback = callback;
+    void IOManager::setEventReceiver(IIOEventReceiver *receiver) {
+        ioEventReceiver = receiver;
     }
 
     void IOManager::onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
         // route event to HomeGenie
-        ioEventCallback->onIOEvent(sender, domain, address, eventPath, eventData, dataType);
+        ioEventReceiver->onIOEvent(sender, domain, address, eventPath, eventData, dataType);
     }
 
 }

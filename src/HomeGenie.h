@@ -53,7 +53,7 @@ namespace Service {
     using namespace Net;
     using namespace Service::API;
 
-    class HomeGenie: RequestHandler, IIOEventReceiver {
+    class HomeGenie: IIOEventReceiver, NetRequestHandler {
     public:
         static HomeGenie* getInstance() {
             if (serviceInstance == nullptr) {
@@ -72,10 +72,8 @@ namespace Service {
         // IIOEventReceiver overrides
         void onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) override;
 
-        // RequestHandler overrides
-        bool canHandle(HTTPMethod method, String uri) override;
-        bool handle(WebServer& server, HTTPMethod requestMethod, String requestUri) override;
-        bool api(APIRequest *request, WebServer &server);
+        // NetRequestHandler overrides
+        bool onNetRequest(void* sender, const char* requestMessage, ResponseCallback* responseCallback) override;
 
         /**
          *
@@ -90,21 +88,27 @@ namespace Service {
          */
         bool addIOHandler(IIOEventSender* handler);
 
+        /**
+         *
+         * @param request
+         * @param responseCallback
+         * @return
+         */
+        bool api(APIRequest *request, ResponseCallback* responseCallback);
+
+
         NetManager& getNetManager();
         IOManager& getIOManager();
         EventRouter& getEventRouter();
 
-        /**
-         *
-         * @return
-         */
+
         Module* getDefaultModule();
         Module* getModule(String* domain, String* address);
 
         const char* getModuleJSON(Module* module);
-        unsigned int writeModuleListJSON(WebServer *server);
-        unsigned int writeModuleJSON(WebServer *server, String* domain, String* address);
-        unsigned int writeGroupListJSON(WebServer *server);
+        unsigned int writeModuleListJSON(ResponseCallback *outputCallback);
+        unsigned int writeModuleJSON(ResponseCallback *outputCallback, String* domain, String* address);
+        unsigned int writeGroupListJSON(ResponseCallback *outputCallback);
 
         static String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
         static String createModuleParameter(const char *name, const char* value, const char *timestamp);

@@ -31,6 +31,7 @@
 #define HOMEGENIE_MINI_EVENTROUTER_H
 
 #include <LinkedList.h>
+#include <MsgPack.h>
 
 #include "Task.h"
 #include "net/NetManager.h"

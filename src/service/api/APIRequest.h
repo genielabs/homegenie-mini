@@ -44,7 +44,6 @@ namespace Service { namespace API {
         String Address;
         String Command;
         String OptionsString;
-        String Response = R"({ "ResponseText": "ERROR" })";
         String getOption(unsigned int optionIndex);
         static APIRequest parse(String command);
     };

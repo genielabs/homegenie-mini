@@ -47,7 +47,7 @@ namespace Service { namespace API {
         RCSwitchHandler(IO::RCS::RFTransmitter* transmitter);
         void init() override;
         bool canHandleDomain(String* domain) override;
-        bool handleRequest(APIRequest *request, WebServer &server) override;
+        bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
         bool handleEvent(IIOEventSender *sender,
                          const char* domain, const char* address,
                          const unsigned char *eventPath, void *eventData, IOEventDataType dataType) override;

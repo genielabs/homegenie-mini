@@ -34,40 +34,22 @@
 #include "service/Module.h"
 
 #include "APIRequest.h"
+#include "net/NetManager.h"
 
 namespace Service { namespace API {
 
     using namespace IO;
+    using namespace Net;
     using namespace Service;
-
-    class OutputStreamCallback {
-    public:
-        virtual void write(String &s) = 0;
-    };
 
     class APIHandler {
     public:
         virtual void init() = 0;
         virtual bool canHandleDomain(String* domain) = 0;
-        virtual bool handleRequest(APIRequest *request, WebServer &server) = 0;
+        virtual bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) = 0;
         virtual bool handleEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) = 0;
         virtual Module* getModule(const char* domain, const char* address) = 0;
         virtual LinkedList<Module*>* getModuleList() = 0;
-    };
-
-    class APIHandlerOutputCallback : public OutputStreamCallback {
-        WebServer *server;
-    public:
-        unsigned int outputLength = 0;
-        APIHandlerOutputCallback(WebServer *server) {
-            this->server = server;
-        }
-        void write(String &s) {
-            outputLength += s.length();
-            if (server != nullptr) {
-                server->sendContent(s);
-            }
-        }
     };
 
 }}

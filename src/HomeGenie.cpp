@@ -59,12 +59,12 @@ namespace Service {
 
     void HomeGenie::begin() {
         netManager.begin();
-        netManager.getHttpServer().addHandler(this);
+        netManager.setRequestHandler(this);
 #ifndef DISABLE_BLE
         netManager.getBLEManager().addHandler(this);
 #endif
         ioManager.begin();
-        ioManager.setOnEventCallback(this);
+        ioManager.setEventReceiver(this);
 
         // Initialize custom API handlers
         for (int i = 0; i < handlers.size(); i++) {
@@ -117,7 +117,8 @@ namespace Service {
     }
 
 
-    // BEGIN IIOEventSender interface methods
+    // BEGIN IIOEventReceiver interface methods
+
     void HomeGenie::onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData,
                               IOEventDataType dataType) {
         String event = String((char *) eventPath);
@@ -132,35 +133,30 @@ namespace Service {
             }
         }
     }
-    // END IIOEventSender
 
-    // BEGIN RequestHandler interface methods
-    bool HomeGenie::canHandle(HTTPMethod method, String uri) {
-        return uri != nullptr && uri.startsWith("/api/");
+    // END IIOEventReceiver
+
+
+    // BEGIN NetRequestHandler interface methods
+
+    bool HomeGenie::onNetRequest(void *sender, const char* requestMessage, ResponseCallback* responseCallback) {
+        auto command = APIRequest::parse(requestMessage);
+        return api(&command, responseCallback);
     }
 
-    bool HomeGenie::handle(WebServer &server, HTTPMethod requestMethod, String requestUri) {
-        auto command = APIRequest::parse(requestUri);
-        if (api(&command, server)) {
-            if (command.Response.length() > 0) {
-                server.send(200, "application/json", command.Response);
-            }
-        } else {
-            server.send(400, "application/json", command.Response);
-        }
-        return true;
-    }
-    // END RequestHandler interface methods
+    // END NetRequestHandler
 
-    bool HomeGenie::api(APIRequest *request, WebServer &server) {
+
+    bool HomeGenie::api(APIRequest *request, ResponseCallback* responseCallback) {
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
             if (handler->canHandleDomain(&request->Domain)) {
-                return handler->handleRequest(request, server);
+                return handler->handleRequest(request, responseCallback);
             }
         }
         return false;
     }
+
 
     Module* HomeGenie::getDefaultModule() {
         auto domain = String(IOEventDomains::HomeAutomation_HomeGenie);
@@ -193,21 +189,19 @@ namespace Service {
         return out.c_str();
     }
 
-    unsigned int HomeGenie::writeModuleJSON(WebServer *server, String* domain, String* address) {
-        auto outputCallback = APIHandlerOutputCallback(server);
+    unsigned int HomeGenie::writeModuleJSON(ResponseCallback *responseCallback, String* domain, String* address) {
         auto module = getModule(domain, address);
         if (module != nullptr) {
             String out = getModuleJSON(module);
-            outputCallback.write(out);
+            responseCallback->write(out.c_str());
         }
-        return outputCallback.outputLength;
+        return responseCallback->contentLength;
     }
 
-    unsigned int HomeGenie::writeModuleListJSON(WebServer *server) {
+    unsigned int HomeGenie::writeModuleListJSON(ResponseCallback *responseCallback) {
         bool firstModule = true;
-        auto outputCallback = APIHandlerOutputCallback(server);
         String out = "[";
-        outputCallback.write(out);
+        responseCallback->write(out.c_str());
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
             auto moduleList = handler->getModuleList();
@@ -221,17 +215,16 @@ namespace Service {
                     out = "";
                 }
                 out += getModuleJSON(module);
-                outputCallback.write(out);
+                responseCallback->write(out.c_str());
             }
         }
         out = "]\n";
-        outputCallback.write(out);
-        return outputCallback.outputLength;
+        responseCallback->write(out.c_str());
+        return responseCallback->contentLength;
     }
 
-    unsigned int HomeGenie::writeGroupListJSON(WebServer *server) {
+    unsigned int HomeGenie::writeGroupListJSON(ResponseCallback *responseCallback) {
         bool firstModule = true;
-        auto outputCallback = APIHandlerOutputCallback(server);
         String defaultGroupName = "Dashboard";
 #ifndef CONFIGURE_WITH_WPA
         Preferences preferences;
@@ -243,7 +236,7 @@ namespace Service {
         }
 #endif
         String out = R"([{"Name": ")" + defaultGroupName + R"(", "Modules": [)";
-        outputCallback.write(out);
+        responseCallback->write(out.c_str());
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
             auto moduleList = handler->getModuleList();
@@ -257,13 +250,13 @@ namespace Service {
                 }
                 auto module = moduleList->get(m);
                 out += R"({"Address": ")" + module->address + R"(", "Domain": ")" + module->domain + R"("})";
-                outputCallback.write(out);
+                responseCallback->write(out.c_str());
             }
 
         }
         out = "]}]\n";
-        outputCallback.write(out);
-        return outputCallback.outputLength;
+        responseCallback->write(out.c_str());
+        return responseCallback->contentLength;
     }
 
 

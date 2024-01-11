@@ -73,22 +73,56 @@ namespace Net {
         bool wpsSuccess = wiFiManager->checkWiFiStatus();
 
         httpServer = new HTTPServer();
+        httpServer->addHandler(this);
         httpServer->begin();
 
         // start the websocket server
-        webSocket = new WebSocketsServer(88, "", "hg");
-        webSocket->onEvent([](uint8_t num, WStype_t type, uint8_t * payload, size_t lenght){
+        webSocket = new WebSocketsServer(8188, "", "hg");
+        webSocket->onEvent([this](uint8_t num, WStype_t type, uint8_t * payload, size_t length){
             switch (type) {
-                case WStype_DISCONNECTED:             // if the websocket is disconnected
+                case WStype_DISCONNECTED:
+                    // client disconnected
                     Serial.printf("[%u] Disconnected!\n", num);
                     break;
-                case WStype_CONNECTED: {              // if a new websocket connection is established
+                case WStype_CONNECTED: {
+                        // new client connected
                         IPAddress ip; // = webSocket->remoteIP(num);
                         Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
                     }
                     break;
-                case WStype_TEXT:                     // if new text data is received
-                    Serial.printf("[%u] get Text: %s\n", num, payload);
+                case WStype_TEXT: {
+                        // message received
+                        Serial.printf("[%u] TEXT\t%s\n", num, payload);
+                        char message[length + 5];
+                        sprintf(message, "api/%s", payload);
+                        netRequestHandler->onNetRequest(webSocket, message, new WebSocketResponseCallback());
+                    }
+                    break;
+                case WStype_ERROR:
+                    break;
+                case WStype_BIN: {
+                        MsgPack::Unpacker unpacker;
+                        std::array<String, 2> req;
+                        unpacker.feed(payload, length);
+                        unpacker.unpack(req); // TODO: use in WebSocketResponseCallback
+
+                        String rid = req[0];
+                        String request = "api/" + req[1];
+                        Serial.printf("[%u] BIN\t%s\t%s\n", num, rid.c_str(), request.c_str());
+                        netRequestHandler->onNetRequest(webSocket, request.c_str(), new WebSocketResponseCallback());
+                    }
+                    break;
+                case WStype_FRAGMENT_TEXT_START:
+                    break;
+                case WStype_FRAGMENT_BIN_START:
+                    break;
+                case WStype_FRAGMENT:
+                    break;
+                case WStype_FRAGMENT_FIN:
+                    break;
+                case WStype_PING:
+                    break;
+                case WStype_PONG:
                     break;
             }
         });
@@ -235,4 +269,7 @@ namespace Net {
         return timeClient;
     }
 
+    void NetManager::setRequestHandler(NetRequestHandler* handler) {
+        netRequestHandler = handler;
+    }
 }
