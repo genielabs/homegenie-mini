@@ -76,14 +76,20 @@ namespace Service { namespace API {
 
     bool HomeGenieHandler::handleRequest(Service::APIRequest *request, ResponseCallback* responseCallback) {
         auto homeGenie = HomeGenie::getInstance();
-        if (request->Address == "Config") {
-            if (request->Command == "Modules.List") {
+        if (request->Address == F("Config")) {
+            if (request->Command == F("Modules.List")) {
                 responseCallback->beginGetLength();
                 homeGenie->writeModuleListJSON(responseCallback);
                 responseCallback->endGetLength();
                 homeGenie->writeModuleListJSON(responseCallback);
                 return true;
-            } else if (request->Command == "Modules.Get") {
+            } else if (request->Command == F("Groups.List")) {
+                responseCallback->beginGetLength();
+                homeGenie->writeGroupListJSON(responseCallback);
+                responseCallback->endGetLength();
+                homeGenie->writeGroupListJSON(responseCallback);
+                return true;
+            } else if (request->Command == F("Modules.Get")) {
                 String domain = request->getOption(0);
                 String address = request->getOption(1);
                 responseCallback->beginGetLength();
@@ -92,13 +98,24 @@ namespace Service { namespace API {
                 if (contentLength == 0) return false;
                 homeGenie->writeModuleJSON(responseCallback, &domain, &address);
                 return true;
-            } else if (request->Command == "Groups.List") {
-                responseCallback->beginGetLength();
-                homeGenie->writeGroupListJSON(responseCallback);
-                responseCallback->endGetLength();
-                homeGenie->writeGroupListJSON(responseCallback);
-                return true;
-            } else if (request->Command == "WebSocket.GetToken") {
+            } else if (request->Command == F("Modules.ParameterSet")) {
+                String domain = request->getOption(0);
+                String address = request->getOption(1);
+                String propName = request->getOption(2);
+                String propValue = WebServer::urlDecode(request->getOption(3));
+                auto module = homeGenie->getModule(&domain, &address);
+                if (module != nullptr) {
+                    module->setProperty(propName, propValue, nullptr, IOEventDataType::Undefined);
+                    QueuedMessage m;
+                    m.domain = domain;
+                    m.sender = address;
+                    m.event = propName;
+                    m.value = propValue;
+                    homeGenie->getEventRouter().signalEvent(m);
+                    responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+                    return true;
+                }
+            } else if (request->Command == F("WebSocket.GetToken")) {
 
                 // TODO: implement random token with expiration (like in HG server) for websocket client verification
 
@@ -106,6 +123,7 @@ namespace Service { namespace API {
                 return true;
             }
         } else {
+
             uint8_t gpio[] = CONFIG_GPIO_OUT;
             uint8_t pinNumber = request->Address.toInt();
             bool validPin = std::find(std::begin(gpio), std::end(gpio), pinNumber) != std::end(gpio);
@@ -130,13 +148,13 @@ namespace Service { namespace API {
                     }
 
                     float level = 0;
-                    if (request->Command == "Control.On") {
+                    if (request->Command == ControlApi::Control_On) {
                         level = gpioPort->on(pinNumber);
-                    } else if (request->Command == "Control.Off") {
+                    } else if (request->Command == ControlApi::Control_Off) {
                         level = gpioPort->off(pinNumber);
-                    } else if (request->Command == "Control.Level") {
+                    } else if (request->Command == ControlApi::Control_Level) {
                         level = gpioPort->level(pinNumber, (uint8_t)request->getOption(0).toFloat());
-                    } else if (request->Command == "Control.Toggle") {
+                    } else if (request->Command == ControlApi::Control_Toggle) {
                         if (levelProperty->value.toFloat() == 0) {
                             level = gpioPort->on(pinNumber);
                         } else {
@@ -163,13 +181,16 @@ namespace Service { namespace API {
         if (module) {
             auto event = String((char *) eventPath);
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto m = QueuedMessage(domain, address, event.c_str(), "");
+            auto m = QueuedMessage(domain, address, event.c_str(), "", eventData, dataType);
             // Data type handling
             switch (dataType) {
                 case SensorLight:
                     m.value = String(*(uint16_t *) eventData);
                     break;
                 case SensorTemperature:
+                    m.value = String(*(float_t *) eventData);
+                    break;
+                case SensorHumidity:
                     m.value = String(*(float_t *) eventData);
                     break;
                 case UnsignedNumber:
@@ -184,7 +205,7 @@ namespace Service { namespace API {
                 default:
                     m.value = String(*(int32_t *) eventData);
             }
-            module->setProperty(event, m.value);
+            module->setProperty(event, m.value, eventData, dataType);
             HomeGenie::getInstance()->getEventRouter().signalEvent(m);
         }
         return false;

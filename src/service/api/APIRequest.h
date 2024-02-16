@@ -35,7 +35,20 @@
 
 #define APIREQUEST_LOG_PREFIX           "@Service::ApiRequest"
 
+
 namespace Service { namespace API {
+
+    namespace ControlApi {
+        // generic switch / light
+        static const char Control_On[] PROGMEM = {"Control.On"};
+        static const char Control_Off[] PROGMEM = {"Control.Off"};
+        static const char Control_Toggle[] PROGMEM = {"Control.Toggle"};
+        static const char Control_Level[] PROGMEM = {"Control.Level"};
+        static const char Control_ColorHsb[] PROGMEM = {"Control.ColorHsb"};
+        // shutters / door locks
+        static const char Control_Open[] PROGMEM = {"Control.Open"};
+        static const char Control_Close[] PROGMEM = {"Control.Close"};
+    }
 
     class APIRequest {
     public:

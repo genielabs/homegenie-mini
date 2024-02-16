@@ -21,37 +21,39 @@
  * Authors:
  * - Generoso Martello <gene@homegenie.it>
  *
- *
- * Releases:
- * - 2023-12-08 Initial release
- *
  */
 
-#include <Config.h>
+#ifndef HOMEGENIE_MINI_EVENTS_H
+#define HOMEGENIE_MINI_EVENTS_H
 
-#ifndef DISABLE_BLE
+struct Event {
+public:
+    bool handled = false;
+    void* target = nullptr;
+};
 
-#ifndef HOMEGENIE_MINI_BLEMANAGER_H
-#define HOMEGENIE_MINI_BLEMANAGER_H
-
-#include <io/IOEvent.h>
-#include <NimBLEDevice.h>
-
-static NimBLECharacteristic *characteristic;
-static NimBLEAdvertising *advertising;
-
-namespace Net {
-
-    class BLEManager : Task, IO::IIOEventSender {
-    public:
-        BLEManager();
-        void begin() override;
-        void loop() override;
-        void addHandler(IO::IIOEventReceiver* handler);
+struct PointerEvent: public Event {
+public:
+    PointerEvent(float x, float y, void* sender = nullptr) : Event() {
+        this->x = x;
+        this->y = y;
     };
+    float x;
+    float y;
+};
 
-} // Net
+class PointerHandler {
+public:
+    virtual void pointerDown(float x, float y) = 0;
+    virtual void pointerMove(float x, float y) = 0;
+    virtual void pointerUp(float x, float y) = 0;
+};
 
-#endif //HOMEGENIE_MINI_BLEMANAGER_H
+class PointerListener {
+public:
+    virtual void onPointerDown(PointerEvent e) = 0;
+    virtual void onPointerUp(PointerEvent e) = 0;
+    virtual void onPointerMove(PointerEvent e) = 0;
+};
 
-#endif
+#endif //HOMEGENIE_MINI_EVENTS_H

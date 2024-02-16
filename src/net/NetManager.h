@@ -34,9 +34,6 @@
 #include <ESP8266mDNS.h>
 #else
 #include <ESPmDNS.h>
-#ifdef ESP32
-#include <ESP32Time.h>
-#endif
 #endif
 #include <WiFiUdp.h>
 #include <WiFiServer.h>
@@ -45,18 +42,18 @@
 #include <LinkedList.h>
 #include <NTPClient.h>
 #include <MsgPack.h>
+#include <WebSocketsServer.h>
 
 #include "Config.h"
 #include "net/HTTPServer.h"
-#include "net/MQTTServer.h"
 #include "net/WiFiManager.h"
 
-#ifndef DISABLE_BLE
-#include <net/BLEManager.h>
+#ifndef DISABLE_MQTT
+#include "net/MQTTServer.h"
 #endif
-#ifndef CONFIGURE_WITH_WPA
-#include <BluetoothSerial.h>
-#include <Preferences.h>
+
+#ifndef DISABLE_BLUETOOTH
+#include <net/BluetoothManager.h>
 #endif
 
 #define NETMANAGER_LOG_PREFIX           "@Net::NetManager"
@@ -139,16 +136,20 @@ namespace Net {
     public:
         NetManager();
         ~NetManager();
-        bool begin();
+        void begin();
         void loop() override;
-#ifndef DISABLE_BLE
-        BLEManager& getBLEManager();
+#ifndef DISABLE_BLUETOOTH
+        BluetoothManager& getBLEManager();
 #endif
         WiFiManager& getWiFiManager();
         HTTPServer& getHttpServer();
+
+#ifndef DISABLE_MQTT
         MQTTServer& getMQTTServer();
+#endif
         WebSocketsServer& getWebSocketServer();
         static NTPClient& getTimeClient();
+
 
         void setRequestHandler(NetRequestHandler *);
 
@@ -169,14 +170,17 @@ namespace Net {
         // END HTTP RequestHandler interface methods
 
     private:
-#ifndef DISABLE_BLE
-        BLEManager *bleManager;
+#ifndef DISABLE_BLUETOOTH
+        BluetoothManager *bluetoothManager;
 #endif
         WiFiManager *wiFiManager;
         HTTPServer *httpServer;
+#ifndef DISABLE_MQTT
         MQTTServer *mqttServer;
+#endif
         WebSocketsServer *webSocket;
         NetRequestHandler* netRequestHandler;
+
     };
 
 }

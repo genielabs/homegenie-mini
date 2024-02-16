@@ -37,21 +37,11 @@ namespace Net {
     WiFiUDP ntpUDP;
     NTPClient timeClient(ntpUDP);
 #ifdef ESP32
-    ESP32Time rtc(0);
-#endif
-    // Variables to save date and time
-    String formattedDate;
-    String dayStamp;
-    String timeStamp;
-#ifdef ESP32
     bool rtcTimeSet = (esp_reset_reason() != ESP_RST_POWERON && esp_reset_reason() != ESP_RST_UNKNOWN);
 #else
     bool rtcTimeSet = false;
 #endif
     long lastTimeCheck = -100000;
-#ifndef CONFIGURE_WITH_WPA
-    BluetoothSerial SerialBT;
-#endif
 
     NetManager::NetManager() {
         // TODO: ...
@@ -59,18 +49,20 @@ namespace Net {
     NetManager::~NetManager() {
         // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
         delete httpServer;
-        delete mqttServer;
         delete webSocket;
+#ifndef DISABLE_MQTT
+        delete mqttServer;
+#endif
     }
 
-    bool NetManager::begin() {
+    void NetManager::begin() {
 
         Logger::info("+ Starting NetManager");
-#ifndef DISABLE_BLE
-        bleManager = new BLEManager();
+#ifndef DISABLE_BLUETOOTH
+        bluetoothManager = new BluetoothManager();
+        bluetoothManager->begin();
 #endif
         wiFiManager = new WiFiManager();
-        bool wpsSuccess = wiFiManager->checkWiFiStatus();
 
         httpServer = new HTTPServer();
         httpServer->addHandler(this);
@@ -129,8 +121,10 @@ namespace Net {
         webSocket->begin();
         Logger::info("|  ✔ WebSocket server");
 
+#ifndef DISABLE_MQTT
         mqttServer = new MQTTServer();
         mqttServer->begin();
+#endif
 
         // Initialize a NTPClient to get time
         timeClient.begin();
@@ -140,72 +134,11 @@ namespace Net {
         // GMT -1 = -3600
         // GMT 0 = 0
         timeClient.setTimeOffset(0);
-
-
-#ifndef CONFIGURE_WITH_WPA
-        Preferences preferences;
-        preferences.begin(CONFIG_SYSTEM_NAME, true);
-        String ssid = preferences.getString("wifi:ssid");
-        String pass = preferences.getString("wifi:password");
-        // start SerialBT only if Wi-Fi is not configured
-        if (ssid.isEmpty() || pass.isEmpty()) {
-            SerialBT.begin(CONFIG_BUILTIN_MODULE_NAME);
-        }
-        preferences.end();
-#endif
-
-
-
-        return wpsSuccess;
     }
+
 
     void NetManager::loop() {
         Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
-
-#ifndef CONFIGURE_WITH_WPA
-
-        // CONFIGURE WITH BLUETOOTH
-        if (SerialBT.available()) {
-            String message = SerialBT.readStringUntil('\n');
-            if (message != nullptr) {
-
-                Serial.println(message);
-
-                // ECHO? --> SerialBT.println(message);
-
-                Preferences preferences;
-                preferences.begin(CONFIG_SYSTEM_NAME, false);
-
-                if (message.startsWith("#CONFIG:device-name ")) {
-                    preferences.putString("device:name", message.substring(20));
-                }
-                if (message.startsWith("#CONFIG:wifi-ssid ")) {
-                    preferences.putString("wifi:ssid", message.substring(18));
-                }
-                if (message.startsWith("#CONFIG:wifi-password ")) {
-                    preferences.putString("wifi:password", message.substring(22));
-                }
-                if (message.startsWith("#CONFIG:system-time ")) {
-                    String time = message.substring(20);
-                    long seconds = time.substring(0, time.length() - 3).toInt();
-                    long ms = time.substring(time.length() - 3).toInt();
-                    rtc.setTime(seconds, ms);
-                }
-
-                preferences.end();
-
-                if (message.equals("#RESET")) {
-                    SerialBT.disconnect();
-                    SerialBT.end();
-                    IO::Logger::info("RESET!");
-                    delay(2000);
-                    esp_restart();
-                }
-
-            }
-        }
-
-#endif
 
         if (ESP_WIFI_STATUS == WL_CONNECTED) {
             webSocket->loop();
@@ -217,7 +150,7 @@ namespace Net {
                 lastTimeCheck = millis();
                 if (!timeClient.isUpdated()) {
                     // sync TimeClient with RTC
-                    timeClient.setEpochTime(rtc.getLocalEpoch());
+                    timeClient.setEpochTime(Config::getRTC()->getLocalEpoch());
                     Logger::info("|  - TimeClient: synced with RTC");
                 }
             }
@@ -228,7 +161,7 @@ namespace Net {
                 if (timeClient.update()) {
                     // TimeClient synced with NTP
 #ifdef ESP32
-                    rtc.setTime(timeClient.getEpochTime(), 0);
+                    Config::getRTC()->setTime(timeClient.getEpochTime(), 0);
                     rtcTimeSet = true;
                     Logger::info("|  - RTC updated via TimeClient (NTP)");
 #endif
@@ -243,9 +176,9 @@ namespace Net {
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }
 
-#ifndef DISABLE_BLE
-    BLEManager& NetManager::getBLEManager() {
-        return *bleManager;
+#ifndef DISABLE_BLUETOOTH
+    BluetoothManager& NetManager::getBLEManager() {
+        return *bluetoothManager;
     }
 #endif
 
@@ -257,9 +190,11 @@ namespace Net {
         return *httpServer;
     }
 
+#ifndef DISABLE_MQTT
     MQTTServer& NetManager::getMQTTServer() {
         return *mqttServer;
     }
+#endif
 
     WebSocketsServer& NetManager::getWebSocketServer() {
         return *webSocket;

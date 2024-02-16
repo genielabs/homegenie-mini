@@ -39,13 +39,13 @@ namespace Service {
             // route event through MQTT
             auto m = eventsQueue.pop();
             Logger::verbose(":%s dequeued event >> [domain '%s' address '%s' event '%s']", EVENTROUTER_NS_PREFIX, m.domain.c_str(), m.sender.c_str(), m.event.c_str());
-
-            auto date = NetManager::getTimeClient().getFormattedDate();
+#ifndef DISABLE_MQTT
             // MQTT
+            auto date = NetManager::getTimeClient().getFormattedDate();
             auto topic = String(String(CONFIG_SYSTEM_NAME) + "/" + m.domain + "/" + m.sender + "/event");
             auto details = Service::HomeGenie::createModuleParameter(m.event.c_str(), m.value.c_str(), date.c_str());
             netManager->getMQTTServer().broadcast(&topic, &details);
-
+#endif
             // SSE
             netManager->getHttpServer().sendSSEvent(m.domain, m.sender, m.event, m.value);
 

@@ -45,7 +45,7 @@ namespace Net {
     const char SSDP_ModelDescription[] PROGMEM = "HomeGenie Mini Device";
     const char SSDP_ModelURL[] PROGMEM = "https://homegenie.it";
     const char SSDP_Manufacturer[] PROGMEM = "G-Labs";
-    const char SSDP_ManufacturerURL[] PROGMEM = "https://glabs.it";
+    const char SSDP_ManufacturerURL[] PROGMEM = "https://github.com/genielabs";
 
     static WebServer httpServer(HTTP_SERVER_PORT);
 
@@ -97,11 +97,11 @@ namespace Net {
             SSDPDevice.setManufacturer(FPSTR(SSDP_Manufacturer));
             SSDPDevice.setManufacturerURL(FPSTR(SSDP_ManufacturerURL));
 
-#ifndef CONFIGURE_WITH_WPA
+#ifndef DISABLE_PREFERENCES
             // Read friendly name from prefs
             Preferences preferences;
             preferences.begin(CONFIG_SYSTEM_NAME, true);
-            String friendlyName = preferences.getString("device:name", CONFIG_BUILTIN_MODULE_NAME);
+            String friendlyName = preferences.getString(CONFIG_KEY_device_name, CONFIG_BUILTIN_MODULE_NAME);
             preferences.end();
             SSDPDevice.setFriendlyName(friendlyName);
             Logger::info("|  ✔ UPnP friendly name: %s", friendlyName.c_str());
@@ -147,7 +147,7 @@ namespace Net {
     }
 
     void HTTPServer::sendSSEvent(String domain, String address, String event, String value) {
-        auto m = QueuedMessage(domain, address, event, value);
+        auto m = QueuedMessage(domain, address, event, value, nullptr, IOEventDataType::Undefined);
         events.add(m);
     }
 

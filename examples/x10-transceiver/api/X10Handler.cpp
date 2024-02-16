@@ -26,7 +26,6 @@
  * - 2019-01-28 Initial release
  *
  */
-#include "config.h"
 
 #include "X10Handler.h"
 
@@ -126,16 +125,17 @@ namespace Service { namespace API {
 
 
             if (module) {
-                QueuedMessage m = QueuedMessage(command->Domain, command->Address, (IOEventPaths::Status_Level), "");
+                QueuedMessage m = QueuedMessage(command->Domain, command->Address, (IOEventPaths::Status_Level), "",
+                                                nullptr, IOEventDataType::Undefined);
                 auto levelProperty = module->getProperty(IOEventPaths::Status_Level);
 
-                if (command->Command == "Control.On") {
+                if (command->Command == ControlApi::Control_On) {
                     x10Message.command = X10::Command::CMD_ON;
                     levelProperty->setValue("1");
-                } else if (command->Command == "Control.Off") {
+                } else if (command->Command == ControlApi::Control_Off) {
                     x10Message.command = X10::Command::CMD_OFF;
                     levelProperty->setValue("0");
-                } else if (command->Command == "Control.Level") {
+                } else if (command->Command == ControlApi::Control_Level) {
                     float level = command->getOption(0).toFloat() / 100.0f;
                     float prevLevel = levelProperty->value.toFloat();
                     sendRepeat = abs((level - prevLevel) / X10_DIM_BRIGHT_STEP);
@@ -153,7 +153,7 @@ namespace Service { namespace API {
                     } else {
                         sendRepeat += 2; // improve initial burst detection
                     }
-                } else if (command->Command == "Control.Toggle") {
+                } else if (command->Command == ControlApi::Control_Toggle) {
                     if (levelProperty->value.toFloat() > 0) {
                         x10Message.command = X10::Command::CMD_OFF;
                         levelProperty->setValue("0");
@@ -227,10 +227,12 @@ namespace Service { namespace API {
                 Logger::trace(":%s %s", HOMEGENIEMINI_NS_PREFIX, commandString.c_str());
 
                 receiverRawData->setValue(rawDataString.c_str());
-                HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString));
+                HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString,
+                                                                                     nullptr, IOEventDataType::Undefined));
 
                 receiverCommand->setValue(commandString.c_str());
-                HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString));
+                HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString,
+                                                                                     nullptr, IOEventDataType::Undefined));
 /*
                 QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, (IOEventPaths::Status_Level), "");
                 switch (decodedMessage->command) {

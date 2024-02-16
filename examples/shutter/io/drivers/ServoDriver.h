@@ -44,8 +44,10 @@
 #define SERVO_DRIVER_NS_PREFIX "IO::Components:ShutterControl::ServoDriver"
 
 namespace IO { namespace Components {
-    class ServoDriver: public IShutterDriver {
+    class ServoDriver: public Task, public IShutterDriver {
     private:
+        String domain = IO::IOEventDomains::Automation_Components;
+        String address = SERVO_MODULE_ADDRESS;
         Servo* servoDriver;
         const int frequency = 330; // Hz // Standard is 50(hz) servo
         const int servoPin = 15;
@@ -53,24 +55,110 @@ namespace IO { namespace Components {
         int maxUs = 2500;
         int stopUs = 1500;
         int stepSpeed = 300; // [1 .. 1000] microseconds
+
+        int lastCommand = 0;
+        long lastCommandTs = 0;
+        unsigned long lastEventMs = 0;
+        float currentLevel = 0;
+
+        float totalTimeSpanMs = 20000.0f;
+        bool stopRequested = false;
+        float stopTime;
+
     public:
         ServoDriver() {}
-        void init() {
+        void init() override {
             Logger::info("|  - %s (PIN=%d MIN=%d MAX=%d)", SERVO_DRIVER_NS_PREFIX, servoPin, minUs, maxUs);
             servoDriver = new Servo();
             servoDriver->setPeriodHertz(frequency);
             servoDriver->attach(servoPin, minUs, maxUs);
             Logger::info("|  ✔ %s", SERVO_DRIVER_NS_PREFIX);
         }
-        void stop() {
+        void stop() override {
             servoDriver->write(stopUs);
         }
-        void open() {
-            servoDriver->write(stopUs + stepSpeed);
+        void open() override {
+            if (lastCommand != SHUTTER_COMMAND_NONE) {
+                stopRequested = true;
+            } else {
+                servoDriver->write(stopUs + stepSpeed);
+                lastCommand = SHUTTER_COMMAND_OPEN;
+                lastCommandTs = millis();
+            }
         }
-        void close() {
-            servoDriver->write(stopUs - stepSpeed);
+        void close() override {
+            if (lastCommand != SHUTTER_COMMAND_NONE) {
+                stopRequested = true;
+            } else {
+                servoDriver->write(stopUs - stepSpeed);
+                lastCommand = SHUTTER_COMMAND_CLOSE;
+                lastCommandTs = millis();
+            }
         }
+        void level(float level) override {
+            float levelDiff = (level / 100.f) - currentLevel;
+            if (levelDiff < 0) {
+                stopTime = millis() - (totalTimeSpanMs * levelDiff);
+                close();
+            } else if (levelDiff > 0) {
+                stopTime = millis() + (totalTimeSpanMs * levelDiff);
+                open();
+            }
+        }
+
+        void loop() override {
+
+            long elapsed = millis() - lastCommandTs;
+            float percent = ((float)elapsed / totalTimeSpanMs);
+            if (stopRequested || (stopTime != 0 && millis() >= stopTime)) {
+
+                stopRequested = false;
+                stopTime = 0;
+                stop();
+                if (lastCommand == SHUTTER_COMMAND_OPEN) {
+                    currentLevel += percent;
+                } else if (lastCommand == SHUTTER_COMMAND_CLOSE) {
+                    currentLevel -= percent;
+                }
+                lastCommand = SHUTTER_COMMAND_NONE;
+                Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
+                eventSender->sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::Status_Level), &currentLevel, IOEventDataType::Float);
+
+            } else if (lastCommand == SHUTTER_COMMAND_OPEN) {
+
+                if (elapsed > (totalTimeSpanMs - (currentLevel * totalTimeSpanMs))) {
+                    lastCommand = SHUTTER_COMMAND_NONE;
+                    stop();
+                    currentLevel = 1;
+                    Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
+                    eventSender->sendEvent(domain.c_str(), address.c_str(), (const uint8_t *) (IOEventPaths::Status_Level),
+                              &currentLevel, IOEventDataType::Float);
+                } else if (millis() - lastEventMs > EVENT_EMIT_FREQUENCY) {
+                    float level = currentLevel + percent;
+                    Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), level);
+                    eventSender->sendEvent(domain.c_str(), address.c_str(), (const uint8_t *) (IOEventPaths::Status_Level),
+                              &level, IOEventDataType::Float);
+                }
+
+            } else if (lastCommand == SHUTTER_COMMAND_CLOSE) {
+
+                if (elapsed > (currentLevel * totalTimeSpanMs)) {
+                    lastCommand = SHUTTER_COMMAND_NONE;
+                    stop();
+                    currentLevel = 0;
+                    Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
+                    eventSender->sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::Status_Level), &currentLevel, IOEventDataType::Float);
+                } else if (millis() - lastEventMs > EVENT_EMIT_FREQUENCY) {
+                    float level = currentLevel - percent;
+                    Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), level);
+                    eventSender->sendEvent(domain.c_str(), address.c_str(), (const uint8_t *) (IOEventPaths::Status_Level),
+                              &level, IOEventDataType::Float);
+                }
+
+            }
+
+        }
+
     };
 }}
 

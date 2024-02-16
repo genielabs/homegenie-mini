@@ -34,6 +34,7 @@
 #include <MsgPack.h>
 
 #include "Task.h"
+#include "io/IOEvent.h"
 #include "net/NetManager.h"
 
 #define EVENTROUTER_NS_PREFIX            "Service::EventRouter"
@@ -43,11 +44,13 @@ namespace Service {
     class QueuedMessage {
     public:
         QueuedMessage(){};
-        QueuedMessage(String domain, String sender, String event, String value) {
+        QueuedMessage(String domain, String sender, String event, String value, void* data, IO::IOEventDataType type) {
             this->domain = domain;
             this->sender = sender;
             this->event = event;
             this->value = value;
+            this->data = data;
+            this->type = type;
         }
         ~QueuedMessage() {
         }
@@ -55,6 +58,8 @@ namespace Service {
         String sender;
         String event;
         String value;
+        void* data;
+        IO::IOEventDataType type;
     };
 
     using namespace Net;

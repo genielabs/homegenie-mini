@@ -45,7 +45,7 @@ public:
      * If the task loop() is scheduled.
      * @return `true` if scheduled, `false` otherwise.
      */
-    bool willLoop() const;
+    virtual bool willLoop();
     /**
      * Set task loop() schedule interval.
      * @param interval_ms schedule interval in milliseconds.
@@ -65,8 +65,9 @@ public:
 
 private:
     uint64_t creationTs;
-    uint64_t lastLoopTs;
     uint64_t loopInterval = 0;
+protected:
+    uint64_t lastLoopTs = 0;
 };
 
 

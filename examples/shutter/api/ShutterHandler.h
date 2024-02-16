@@ -43,9 +43,9 @@ namespace Service { namespace API {
             LinkedList<Module*> moduleList;
             Module* shutterModule;
             ModuleParameter* shutterLevel;
-            ShutterControl* servoControl;
+            ShutterControl* shutterControl;
         public:
-            ShutterHandler(ShutterControl* servoControl);
+            ShutterHandler(ShutterControl* shutterControl);
             void init() override;
             bool canHandleDomain(String* domain) override;
             bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;

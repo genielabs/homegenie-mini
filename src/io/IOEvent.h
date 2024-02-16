@@ -42,7 +42,8 @@ namespace IO {
         Float,
         UnsignedNumber,
         SensorLight,
-        SensorTemperature
+        SensorTemperature,
+        SensorHumidity
     };
 
     // IIOEventReceiver interface

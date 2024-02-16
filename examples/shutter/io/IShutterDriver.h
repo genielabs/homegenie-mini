@@ -30,6 +30,15 @@
 #ifndef HOMEGENIE_MINI_ISHUTTERDRIVER_H
 #define HOMEGENIE_MINI_ISHUTTERDRIVER_H
 
+#define SHUTTER_CONTROL_NS_PREFIX "IO::Components:ShutterControl"
+#define SERVO_MODULE_ADDRESS "S1"
+
+#define SHUTTER_COMMAND_NONE 0
+#define SHUTTER_COMMAND_OPEN 1
+#define SHUTTER_COMMAND_CLOSE 2
+
+#define EVENT_EMIT_FREQUENCY 500
+
 namespace IO { namespace Components {
     class IShutterDriver {
     public:
@@ -37,6 +46,8 @@ namespace IO { namespace Components {
         virtual void stop() = 0;
         virtual void open() = 0;
         virtual void close() = 0;
+        virtual void level(float) = 0;
+        IIOEventSender* eventSender = nullptr;
     };
 }}
 

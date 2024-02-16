@@ -5,6 +5,7 @@
 #ifndef HOMEGENIE_MINI_MODULE_H
 #define HOMEGENIE_MINI_MODULE_H
 
+#include "io/IOEvent.h"
 #include "net/NetManager.h"
 
 namespace Service {
@@ -24,6 +25,8 @@ namespace Service {
         String name;
         String value;
         String updateTime;
+        void* data;
+        IO::IOEventDataType dataType;
 
         ModuleParameter() {
             updateTime = NetManager::getTimeClient().getFormattedDate();
@@ -42,6 +45,10 @@ namespace Service {
             value = v;
             updateTime = NetManager::getTimeClient().getFormattedDate();
         }
+        void setData(void* d, IO::IOEventDataType t) {
+            data = d;
+            dataType = t;
+        }
     };
 
     class Module {
@@ -52,11 +59,12 @@ namespace Service {
         String name;
         String description;
         LinkedList<ModuleParameter*> properties;
-        bool setProperty(String pn, String pv) {
+        bool setProperty(String pn, String pv, void* data, IO::IOEventDataType dataType) {
             for(int p = 0; p < properties.size(); p++) {
                 auto param = properties.get(p);
                 if (param->is(pn.c_str())) {
                     param->setValue(pv.c_str());
+                    param->setData(data, dataType);
                     return true;
                 }
             }

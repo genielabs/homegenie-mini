@@ -32,12 +32,13 @@
 
 namespace IO {
     namespace IOEventPaths {
-        const char Receiver_RawData[] = "Receiver.RawData";
-        const char Receiver_Command[] = "Receiver.Command";
-        const char Status_Level[] = "Status.Level";
-        const char Sensor_Luminance[] = "Sensor.Luminance";
-        const char Sensor_Temperature[] = "Sensor.Temperature";
-        const char System_BytesFree[] = "System.BytesFree";
+        const char Receiver_RawData[] PROGMEM = "Receiver.RawData";
+        const char Receiver_Command[] PROGMEM = "Receiver.Command";
+        const char Status_Level[] PROGMEM = "Status.Level";
+        const char Sensor_Luminance[] PROGMEM = "Sensor.Luminance";
+        const char Sensor_Temperature[] PROGMEM = "Sensor.Temperature";
+        const char Sensor_Humidity[] PROGMEM = "Sensor.Humidity";
+        const char System_BytesFree[] PROGMEM = "System.BytesFree";
     }
 }
 

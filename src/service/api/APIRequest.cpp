@@ -44,7 +44,7 @@ namespace Service { namespace API {
             currentIndex++;
             oi = OptionsString.indexOf('/', ci);
         } while (currentIndex < optionIndex);
-        if (currentIndex == optionIndex) return OptionsString.substring(ci);
+        if (currentIndex == optionIndex) return OptionsString.substring(ci, oi);
         return "";
     }
 

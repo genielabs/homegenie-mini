@@ -2,7 +2,7 @@
 
 # HomeGenie Mini v1.2 <small>`ESP32 / ESP8266`</small>
 
-HomeGenie mini *(code name **Sbirulino**)* is an **open source library** for building custom firmwares for smart devices
+HomeGenie mini *(code name **Sbirulino**)* is an **open source library** for building custom firmware for smart devices
 based on *ESP32* or *ESP8266* chip.
 
 
@@ -74,7 +74,7 @@ different hardware and functionality as explained later in this file.
 ## Connecting the device
 
 Once the firmware is installed you can configure and control the device using
-the [HomeGenie Panel](https://play.google.com/store/apps/details?id=com.glabs.homegenieplus) app available from Google PlayStore.
+the [HomeGenie Panel](https://play.google.com/store/apps/details?id=com.glabs.homegenieplus) app available on Google Play.
 
 The device status LED will blink continuously indicating that the device is not
 connected to Wi-Fi, and is in pairing mode accepting connections via Bluetooth.
@@ -103,13 +103,13 @@ firmware that implements temperature and light sensor and 4 GPIO switches.
 
 ### Connecting to HomeGenie Automation Server
 
-HG-Mini devices can also be connected to [HomeGenie Automation Server](https://github.com/genielabs/HomeGenie)
+HG-Mini devices can also be connected to [HomeGenie Server](https://github.com/genielabs/HomeGenie)
 configuring the *MQTT client* as shown in the following picture.
 
 ![HomeGenie Server - MQTT configuration](data/images/phone/hg_server_mqtt_config.png)
  
 Is then possible to use HG-mini device for automation tasks, logging, statistics and use of all other
-features of *HomeGenie*.
+features available in *HomeGenie Server*.
 
 ![HomeGenie Server - Dashboard](data/images/phone/hg_server_dashboard.png)
 
@@ -162,7 +162,7 @@ pio device monitor -b 115200
 
 In the examples folder you can find some smart device projects using *HomeGenie Mini* library.
 
-### Smart sensor example
+### Smart sensor
 
 This example implements a smart sensor with temperature and luminance sensing. It can also control
 4 GPIO switches.
@@ -182,7 +182,20 @@ pio run -e smart-sensor-d1-mini -t upload
 pio run -e smart-sensor-d1-mini-esp32 -t upload
 ```
 
-### Shutter control example
+
+### Smart sensor with touch display
+
+
+- `smart-sensor-display`  
+  Humidity and temperature sensor with touch display. For generic *ESP32*,
+  GC9A01 240x240 round display, and CST816S capacitive touch
+- `smart-sensor-display-s3`  
+  Like above but with 1.28" round display and integrated ESP32-S3 on board.
+
+
+
+
+### Shutter control
 
 Wi-Fi controlled shutter motor.
 
@@ -192,7 +205,7 @@ pio run -e shutter -t upload
 ```
 
 
-### X10 transceiver example
+### X10 transceiver
 
 Smart Wi-Fi connected X10 transceiver. 
 
@@ -203,7 +216,7 @@ The data pins number can be modified from the `configuration.h` file.
 pio run -e  x10-transceiver -t upload
 ```
 
-### RF transceiver example
+### RF transceiver
 
 Smart Wi-Fi connected RF transceiver with RF commands capturing and playback.
 
@@ -222,6 +235,14 @@ Just a generic playground project to mess with the library =)
 ```bash
 pio run -e  playground -t upload
 ```
+
+
+
+  -`playground-c3`  
+  Same as above but compiling for *ESP32-C3*
+
+
+
 
 
 
@@ -321,20 +342,10 @@ Where `<pin_name>` can be `D5`, `D6`, `D7` or `D8` and `<level>` a integer betwe
 /api/HomeAutomation.HomeGenie/D8/Control.Off
 ```
 
-### [HomeAutomation.X10](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html) API (x10-transceiver firmware)
-
-Implemented subset:
-
-- [`/api/HomeAutomation.X10/<module_address>/Control.On`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#1)
-- [`/api/HomeAutomation.X10/<module_address>/Control.Off`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#2)
-- [`/api/HomeAutomation.X10/<module_address>/Control.Level`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#5)
-- [`/api/HomeAutomation.X10/<module_address>/Control.Toggle`](https://genielabs.github.io/HomeGenie/api/mig/mig_api_x10.html#6)
-
-
 
 ---
 
-## Disclaimer
+# Disclaimer
 
 <small><code>
 THIS PROJECT IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS PROJECT, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

@@ -33,43 +33,26 @@
 #include <HomeGenie.h>
 #include <Utility.h>
 
-#include "IShutterDriver.h"
-#include "examples/shutter/io/drivers/ServoDriver.h"
-// TODO: --> StepperDriver.h
-
-#define SHUTTER_CONTROL_NS_PREFIX "IO::Components:ShutterControl"
-#define SERVO_MODULE_ADDRESS "S1"
-
-#define SHUTTER_COMMAND_NONE 0
-#define SHUTTER_COMMAND_OPEN 1
-#define SHUTTER_COMMAND_CLOSE 2
-
-#define EVENT_EMIT_FREQUENCY 500
+#include "drivers/ServoDriver.h"
+#include "drivers/StepperDriver.h"
 
 namespace IO { namespace Components {
 
     using namespace Service;
 
-    class ShutterControl : Task, public IIOEventSender {
+    class ShutterControl : public IIOEventSender {
     private:
         IShutterDriver* shutterDriver;
-        int lastCommand = 0;
-        long lastCommandTs = 0;
         String domain = IO::IOEventDomains::Automation_Components;
         String address = SERVO_MODULE_ADDRESS;
-        float currentLevel = 0;
-        //
-        float totalTimeSpanMs = 10000.0f;
-        bool stopRequested = false;
-        float stopTime;
     public:
         ShutterControl() {
             shutterDriver = new ServoDriver();
-//            setLoopInterval(33); // see Task.h
+            //shutterDriver = new StepperDriver();
+            shutterDriver->eventSender = this;
         }
 
         void begin() override;
-        void loop() override;
 
         void open();
         void close();

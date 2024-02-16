@@ -31,7 +31,6 @@
 #define HOMEGENIE_MINI_MQTTSERVER_H
 
 #include <ArduinoJson.h>
-#include <WebSocketsServer.h>
 
 #include "Task.h"
 #include "net/mqtt/MQTTBrokerMini.h"

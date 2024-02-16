@@ -60,7 +60,7 @@ namespace Service {
     void HomeGenie::begin() {
         netManager.begin();
         netManager.setRequestHandler(this);
-#ifndef DISABLE_BLE
+#ifndef DISABLE_BLUETOOTH_LE
         netManager.getBLEManager().addHandler(this);
 #endif
         ioManager.begin();
@@ -226,10 +226,10 @@ namespace Service {
     unsigned int HomeGenie::writeGroupListJSON(ResponseCallback *responseCallback) {
         bool firstModule = true;
         String defaultGroupName = "Dashboard";
-#ifndef CONFIGURE_WITH_WPA
+#ifndef DISABLE_PREFERENCES
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, true);
-        String deviceName = preferences.getString("device:name", "");
+        String deviceName = preferences.getString(CONFIG_KEY_device_name, "");
         preferences.end();
         if (deviceName.length() > 0) {
             defaultGroupName = deviceName;

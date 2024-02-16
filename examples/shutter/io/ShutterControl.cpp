@@ -32,92 +32,17 @@
 namespace IO { namespace Components {
 
     void ShutterControl::begin() {
-
         shutterDriver->init();
-
-    }
-
-    void ShutterControl::loop() {
-
-        long elapsed = millis() - lastCommandTs;
-        float percent = ((float)elapsed / totalTimeSpanMs);
-        if (stopRequested || (stopTime != 0 && millis() >= stopTime)) {
-
-            stopRequested = false;
-            stopTime = 0;
-            shutterDriver->stop();
-            if (lastCommand == SHUTTER_COMMAND_OPEN) {
-                currentLevel += percent;
-            } else if (lastCommand == SHUTTER_COMMAND_CLOSE) {
-                currentLevel -= percent;
-            }
-            lastCommand = SHUTTER_COMMAND_NONE;
-            Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
-            sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::Status_Level), &currentLevel, IOEventDataType::Float);
-
-        } else if (lastCommand == SHUTTER_COMMAND_OPEN) {
-
-            if (elapsed > (totalTimeSpanMs - (currentLevel * totalTimeSpanMs))) {
-                lastCommand = SHUTTER_COMMAND_NONE;
-                shutterDriver->stop();
-                currentLevel = 1;
-                Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
-                sendEvent(domain.c_str(), address.c_str(), (const uint8_t *) (IOEventPaths::Status_Level),
-                          &currentLevel, IOEventDataType::Float);
-            } else if (millis() - lastEventMs > EVENT_EMIT_FREQUENCY) {
-                float level = currentLevel + percent;
-                Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), level);
-                sendEvent(domain.c_str(), address.c_str(), (const uint8_t *) (IOEventPaths::Status_Level),
-                          &level, IOEventDataType::Float);
-            }
-
-        } else if (lastCommand == SHUTTER_COMMAND_CLOSE) {
-
-            if (elapsed > (currentLevel * totalTimeSpanMs)) {
-                lastCommand = SHUTTER_COMMAND_NONE;
-                shutterDriver->stop();
-                currentLevel = 0;
-                Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
-                sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::Status_Level), &currentLevel, IOEventDataType::Float);
-            } else if (millis() - lastEventMs > EVENT_EMIT_FREQUENCY) {
-                float level = currentLevel - percent;
-                Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), level);
-                sendEvent(domain.c_str(), address.c_str(), (const uint8_t *) (IOEventPaths::Status_Level),
-                          &level, IOEventDataType::Float);
-            }
-
-        }
-
     }
 
     void ShutterControl::open() {
-        if (lastCommand != SHUTTER_COMMAND_NONE) {
-            stopRequested = true;
-        } else {
-            shutterDriver->open();
-            lastCommand = SHUTTER_COMMAND_OPEN;
-            lastCommandTs = millis();
-        }
+        shutterDriver->open();
     }
     void ShutterControl::close() {
-        if (lastCommand != SHUTTER_COMMAND_NONE) {
-            stopRequested = true;
-        } else {
-            shutterDriver->close();
-            lastCommand = SHUTTER_COMMAND_CLOSE;
-            lastCommandTs = millis();
-        }
+        shutterDriver->close();
     }
     void ShutterControl::setLevel(float level) {
-
-        float levelDiff = (level / 100.f) - currentLevel;
-        if (levelDiff < 0) {
-            stopTime = millis() - (totalTimeSpanMs * levelDiff);
-            close();
-        } else if (levelDiff > 0) {
-            stopTime = millis() + (totalTimeSpanMs * levelDiff);
-            open();
-        }
+        shutterDriver->level(level);
     }
 
     void ShutterControl::calibrate() {

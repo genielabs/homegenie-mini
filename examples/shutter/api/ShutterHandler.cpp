@@ -31,8 +31,8 @@
 
 namespace Service { namespace API {
 
-    ShutterHandler::ShutterHandler(ShutterControl* servoControl) {
-        this->servoControl = servoControl;
+    ShutterHandler::ShutterHandler(ShutterControl* shutterControl) {
+        this->shutterControl = shutterControl;
 
         auto domain = IO::IOEventDomains::Automation_Components;
         // Shutter module
@@ -62,17 +62,17 @@ namespace Service { namespace API {
 
                 float level = command->OptionsString.toFloat();
 
-                servoControl->setLevel(level);
+                shutterControl->setLevel(level);
 
                 responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 
             } else if (command->Command == "Control.Close" || command->Command == "Control.Off") {
 
-                servoControl->close();
+                shutterControl->close();
 
             } else if (command->Command == "Control.Open" || command->Command == "Control.On") {
 
-                servoControl->open();
+                shutterControl->open();
 
             } else {
 
@@ -96,7 +96,8 @@ namespace Service { namespace API {
         if (module) {
             auto event = String((char *) eventPath);
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto m = QueuedMessage(domain, address, event.c_str(), "");
+            auto m = QueuedMessage(domain, address, event.c_str(), "",
+                                   nullptr, IOEventDataType::Undefined);
             // Data type handling
             switch (dataType) {
                 case Number:
@@ -108,7 +109,8 @@ namespace Service { namespace API {
                 default:
                     m.value = String(*(int32_t *) eventData);
             }
-            module->setProperty(event, m.value);
+            module->setProperty(event, m.value,
+                                nullptr, IOEventDataType::Undefined);
             HomeGenie::getInstance()->getEventRouter().signalEvent(m);
         }
         return false;

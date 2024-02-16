@@ -101,7 +101,6 @@ namespace Service {
         IOManager& getIOManager();
         EventRouter& getEventRouter();
 
-
         Module* getDefaultModule();
         Module* getModule(String* domain, String* address);
 

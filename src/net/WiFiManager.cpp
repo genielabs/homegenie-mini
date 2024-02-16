@@ -34,14 +34,19 @@ namespace Net {
     WiFiManager::WiFiManager() {
         setLoopInterval(1000);
         wiFiStatus = WL_DISCONNECTED;
+        // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
+        WiFi.mode(WIFI_STA);
+        if (Config::isDeviceConfigured()) {
 #ifdef ESP8266
-        // WI-FI will not boot without this delay!!!
-        delay(2000);
+            // WI-FI will not boot without this delay!!!
+            delay(2000);
 #endif
-        connect();
+            connect();
+        }
     }
 
     void WiFiManager::loop() {
+        if (!Config::isDeviceConfigured()) return;
         auto status = ESP_WIFI_STATUS;
         if (status != wiFiStatus) {
             wiFiStatus = status;
@@ -51,28 +56,28 @@ namespace Net {
 
     void WiFiManager::connect() {
         IO::Logger::info("|  - Connecting to WI-FI .");
-        // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
-        WiFi.mode(WIFI_STA);
-#ifdef CONFIGURE_WITH_WPA
+#ifdef CONFIGURE_WITH_WPS
         delay(1000); // TODO: is this delay necessary?
         WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
 #else
+        String ssid, pass;
         Preferences preferences;
-        preferences.begin(CONFIG_SYSTEM_NAME, true);
-        String ssid = preferences.getString("wifi:ssid");
-        String pass = preferences.getString("wifi:password");
-
+        if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
+            ssid = preferences.getString(CONFIG_KEY_wifi_ssid);
+            pass = preferences.getString(CONFIG_KEY_wifi_password);
+            preferences.end();
+        }
         if (!ssid.isEmpty() && !pass.isEmpty()) {
             IO::Logger::info("|  - WI-FI SSID: %s", ssid.c_str());
             IO::Logger::info("|  - WI-FI Password: *"); // pass.c_str()
             WiFi.begin(ssid.c_str(), pass.c_str());
         }
-        preferences.end();
 #endif
     }
 
     bool WiFiManager::checkWiFiStatus() {
         bool wpsSuccess = false;
+        WiFi.waitForConnectResult();
         auto status = ESP_WIFI_STATUS;
         if (status == WL_CONNECTED) {
             digitalWrite(Config::StatusLedPin, LOW);
@@ -96,6 +101,7 @@ namespace Net {
                     break;
                 case WL_DISCONNECTED:
                     IO::Logger::error("|  x WiFi disconnected");
+                    connect();
                     break;
                 case WL_NO_SHIELD:
                     IO::Logger::error("|  x WiFi initialization failed");
@@ -111,7 +117,7 @@ namespace Net {
     }
 
     bool WiFiManager::configure() {
-#ifdef CONFIGURE_WITH_WPA
+#ifdef CONFIGURE_WITH_WPS
 #ifdef ESP8266
         // WPA currently only works for ESP8266
         digitalWrite(Config::StatusLedPin, LOW);
@@ -125,13 +131,15 @@ namespace Net {
         return wpsSuccess;
 #else
         // WPA only works with ESP8266
-        return true;
+        IO::Logger::error("|  x WPA only works with ESP8266");
+        return false;
 #endif
 #else
+    #ifndef DISABLE_PREFERENCES
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, false);
-        preferences.putString("wifi:ssid", "");
-        preferences.putString("wifi:password", "");
+        preferences.putString(CONFIG_KEY_wifi_ssid, "");
+        preferences.putString(CONFIG_KEY_wifi_password, "");
         preferences.end();
         preferences.clear();
         IO::Logger::info("|  - WI-FI credentials reset!");
@@ -140,6 +148,7 @@ namespace Net {
         // Reboot
         esp_restart();
         return true;
+    #endif
 #endif
     }
 

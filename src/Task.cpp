@@ -35,7 +35,7 @@ Task::Task() {
     TaskManager::addTask(this);
 }
 
-bool Task::willLoop() const {
+bool Task::willLoop() {
 
     unsigned long now = millis();
     return now - lastLoopTs >= loopInterval;
