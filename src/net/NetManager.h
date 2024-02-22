@@ -35,12 +35,9 @@
 #else
 #include <ESPmDNS.h>
 #endif
-#include <WiFiUdp.h>
 #include <WiFiServer.h>
-#include <WiFiClient.h>
 
 #include <LinkedList.h>
-#include <NTPClient.h>
 #include <MsgPack.h>
 #include <WebSocketsServer.h>
 
@@ -55,6 +52,8 @@
 #ifndef DISABLE_BLUETOOTH
 #include <net/BluetoothManager.h>
 #endif
+
+#include "TimeClient.h"
 
 #define NETMANAGER_LOG_PREFIX           "@Net::NetManager"
 
@@ -148,7 +147,6 @@ namespace Net {
         MQTTServer& getMQTTServer();
 #endif
         WebSocketsServer& getWebSocketServer();
-        static NTPClient& getTimeClient();
 
 
         void setRequestHandler(NetRequestHandler *);
@@ -180,6 +178,8 @@ namespace Net {
 #endif
         WebSocketsServer *webSocket;
         NetRequestHandler* netRequestHandler;
+
+        TimeClient* timeClient;
 
     };
 

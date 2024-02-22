@@ -183,16 +183,20 @@ pio run -e smart-sensor-d1-mini-esp32 -t upload
 ```
 
 
-### Smart sensor with touch display
+### Smart sensor with display
 
+A humidity and temperature sensor with touch display. Supports
+GC9A01 240x240 round display and CST816S capacitive touch.
 
-- `smart-sensor-display`  
-  Humidity and temperature sensor with touch display. For generic *ESP32*,
-  GC9A01 240x240 round display, and CST816S capacitive touch
-- `smart-sensor-display-s3`  
-  Like above but with 1.28" round display and integrated ESP32-S3 on board.
+**Generic ESP32**
+```bash
+pio run -e smart-sensor-display -t upload
+```
 
-
+**Round display with integrated ESP32-S3**
+```bash
+pio run -e smart-sensor-display-s3 -t upload
+```
 
 
 ### Shutter control
@@ -236,13 +240,10 @@ Just a generic playground project to mess with the library =)
 pio run -e  playground -t upload
 ```
 
-
-
-  -`playground-c3`  
-  Same as above but compiling for *ESP32-C3*
-
-
-
+**Generic ESP32 C3**
+```bash
+pio run -e  playground-c3 -t upload
+```
 
 
 

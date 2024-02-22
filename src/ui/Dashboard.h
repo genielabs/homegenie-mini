@@ -34,6 +34,7 @@
 #include <LinkedList.h>
 
 #include "Task.h"
+#include "PowerManager.h"
 #include "io/Logger.h"
 
 #include "drivers/RoundDisplay.h"
@@ -72,6 +73,8 @@ public:
 
     Activity* getForegroundActivity();
     void setForegroundActivity(Activity*);
+    Activity* getNextActivity();
+    Activity* getPreviousActivity();
     void addActivity(Activity* activity);
 
     void onTap(PointerEvent e) override;

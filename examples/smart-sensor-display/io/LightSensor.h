@@ -46,13 +46,17 @@ namespace IO { namespace Env {
         LightSensor() {
             setLoopInterval(LIGHTSENSOR_SAMPLING_RATE);
         }
+        void setModule(Module* m) override {
+            IIOEventSender::setModule(m);
+            auto luminance = new ModuleParameter(IOEventPaths::Sensor_Luminance);
+            m->properties.add(luminance);
+        }
+
         void begin() override;
         void loop() override;
         void setInputPin(uint8_t number);
         uint16_t getLightLevel();
     private:
-        String domain = IOEventDomains::HomeAutomation_HomeGenie;
-        String address = CONFIG_BUILTIN_MODULE_ADDRESS;
         uint8_t inputPin = CONFIG_LightSensorPin; // Analogic input pin A0 (0)
         uint16_t currentLevel = 0;
     };

@@ -34,14 +34,16 @@
 namespace Service {
 
     void EventRouter::loop() {
+        if (!WiFi.isConnected()) return;
+
         // MQTT & SSE Events Queue (dequeue)
         for (int i = 0; i < eventsQueue.size(); i++) {
-            // route event through MQTT
+
             auto m = eventsQueue.pop();
-            Logger::verbose(":%s dequeued event >> [domain '%s' address '%s' event '%s']", EVENTROUTER_NS_PREFIX, m.domain.c_str(), m.sender.c_str(), m.event.c_str());
+            Logger::info(":%s dequeued event >> [domain '%s' address '%s' event '%s']", EVENTROUTER_NS_PREFIX, m.domain.c_str(), m.sender.c_str(), m.event.c_str());
 #ifndef DISABLE_MQTT
             // MQTT
-            auto date = NetManager::getTimeClient().getFormattedDate();
+            auto date = TimeClient::getTimeClient().getFormattedDate();
             auto topic = String(String(CONFIG_SYSTEM_NAME) + "/" + m.domain + "/" + m.sender + "/event");
             auto details = Service::HomeGenie::createModuleParameter(m.event.c_str(), m.value.c_str(), date.c_str());
             netManager->getMQTTServer().broadcast(&topic, &details);
@@ -51,8 +53,8 @@ namespace Service {
 
             // WS
             if (netManager->getWebSocketServer().connectedClients() > 0) {
-                unsigned long epoch = Net::NetManager::getTimeClient().getEpochTime();
-                int ms = Net::NetManager::getTimeClient().getMilliseconds();
+                unsigned long epoch = TimeClient::getTimeClient().getEpochTime();
+                int ms = TimeClient::getTimeClient().getMilliseconds();
                 /*
                 // Send as clear text
                 int sz = 1+snprintf(nullptr, 0, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
@@ -74,7 +76,7 @@ namespace Service {
                 };
                 packer.packTimestamp(t);
                 auto epochs = String(epoch) + ms;
-                packer.packFloat((Net::NetManager::getTimeClient().getEpochTime() * 1000.0f) + ms);
+                packer.packFloat((TimeClient::getTimeClient().getEpochTime() * 1000.0f) + ms);
                 packer.pack(m.domain.c_str());
                 packer.pack(m.sender.c_str());
                 packer.pack("");

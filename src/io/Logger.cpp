@@ -29,7 +29,7 @@
 
 #include "Logger.h"
 
-#include "net/NetManager.h"
+#include "net/TimeClient.h"
 
 namespace IO {
 
@@ -112,7 +112,7 @@ namespace IO {
     }
 
     void Logger::timestamp() {
-        Serial.printf("[%s] ", Net::NetManager::getTimeClient().getFormattedDate().c_str());
+        Serial.printf("[%s] ", Net::TimeClient::getTimeClient().getFormattedDate().c_str());
     }
 
     void Logger::trace(const char *s, ...) {

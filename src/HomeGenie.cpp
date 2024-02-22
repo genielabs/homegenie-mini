@@ -53,7 +53,10 @@ namespace Service {
         addIOHandler(gpioPort);
         auto homeGenieHandler = new HomeGenieHandler(gpioPort);
         addAPIHandler(homeGenieHandler);
-
+#ifdef CONFIG_ENABLE_POWER_MANAGER
+        PowerManager::setWakeUpInterval(0);
+        PowerManager::init();
+#endif
         Logger::info("+ Starting HomeGenie service");
     }
 
@@ -91,6 +94,15 @@ namespace Service {
 
         // TODO: sort of system load index could be obtained by measuring time elapsed for `TaskManager::loop()` method
         TaskManager::loop();
+
+#ifdef CONFIG_ENABLE_POWER_MANAGER
+        if (Config::isDeviceConfigured() && PowerManager::canEnterSleepMode()) {
+
+            // TODO: should gracefully stop all activities and drivers
+
+            PowerManager::sleep();
+        }
+#endif
 
         Logger::verbose(":%s loop() << END", HOMEGENIEMINI_NS_PREFIX);
     }

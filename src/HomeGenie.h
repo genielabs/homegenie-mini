@@ -31,9 +31,14 @@
 #define HOMEGENIE_MINI_HOMEGENIE_H
 
 
+#ifdef CONFIG_ENABLE_POWER_MANAGER
+#include "PowerManager.h"
+#endif
+
 #include "Task.h"
 #include "TaskManager.h"
 
+#include "data/Module.h"
 #include "io/gpio/GPIOPort.h"
 #include "io/IOEventPaths.h"
 #include "io/IOManager.h"
@@ -42,7 +47,6 @@
 #include "service/api/APIHandler.h"
 #include "service/api/HomeGenieHandler.h"
 #include "service/EventRouter.h"
-#include "service/Module.h"
 
 
 #define HOMEGENIEMINI_NS_PREFIX            "Service::HomeGenie"
@@ -50,6 +54,7 @@
 namespace Service {
 
     using namespace IO;
+    using namespace Data;
     using namespace Net;
     using namespace Service::API;
 

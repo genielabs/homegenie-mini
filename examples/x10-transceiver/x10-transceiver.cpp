@@ -51,14 +51,11 @@ void setup() {
     homeGenie->addAPIHandler(apiHandler);
 
     // X10 RF RFReceiver
+    auto rfModule = apiHandler->getModule(IO::IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
     auto x10ReceiverConfig = new X10::RFReceiverConfig(CONFIG_X10RFReceiverPin);
     auto x10Receiver = new X10::RFReceiver(x10ReceiverConfig);
+    x10Receiver->setModule(rfModule);
     homeGenie->addIOHandler(x10Receiver);
-
-    auto propRawData = new ModuleParameter(IOEventPaths::Receiver_RawData);
-    auto propCommand = new ModuleParameter(IOEventPaths::Receiver_Command);
-    miniModule->properties.add(propRawData);
-    miniModule->properties.add(propCommand);
 
     homeGenie->begin();
 

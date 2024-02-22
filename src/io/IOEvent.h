@@ -32,19 +32,14 @@
 
 #include "Config.h"
 
+#include "data/Module.h"
+#include "IOEventData.h"
+
 namespace IO {
 
-    class IIOEventSender;
+    using namespace Data;
 
-    enum IOEventDataType {
-        Undefined = 0,
-        Number,
-        Float,
-        UnsignedNumber,
-        SensorLight,
-        SensorTemperature,
-        SensorHumidity
-    };
+    class IIOEventSender;
 
     // IIOEventReceiver interface
     class IIOEventReceiver {
@@ -55,11 +50,13 @@ namespace IO {
     // IIOEventSender interface
     class IIOEventSender {
     public:
-//        const uint8_t* getDomain() { return domain; }
-//        const uint8_t* getAddress() { return address; }
         virtual void begin() = 0;
         void setEventReceiver(IIOEventReceiver *receiver) {
             eventReceiver = receiver;
+        }
+
+        virtual void setModule(Module* m) {
+            module = m;
         }
         virtual void sendEvent(const char *domain, const char *address, const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
             if (eventReceiver != nullptr) {
@@ -67,10 +64,17 @@ namespace IO {
                 lastEventMs = millis();
             }
         };
+        virtual void sendEvent(const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
+            if (eventReceiver != nullptr && module != nullptr) {
+                eventReceiver->onIOEvent(this, module->domain.c_str(), module->address.c_str(), eventPath, eventData, dataType);
+                lastEventMs = millis();
+            }
+        };
 
     protected:
         IIOEventReceiver *eventReceiver = nullptr;
         unsigned long lastEventMs = 0;
+        const Module* module = nullptr;
     };
 
 }

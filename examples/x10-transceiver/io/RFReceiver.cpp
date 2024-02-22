@@ -95,7 +95,7 @@ namespace IO { namespace X10 {
                 if (isStandardCode || isSecurityCode) {
                     messageType = isStandardCode ? (uint8_t) 0x20 : (uint8_t) 0x29;
                     uint8_t data[] = { messageType, byteBuffer[0], byteBuffer[1], (byteBuffer[2]), (byteBuffer[3]) };
-                    sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::Receiver_RawData), data, IOEventDataType::Undefined);
+                    sendEvent((const uint8_t*)(IOEventPaths::Receiver_RawData), data, IOEventDataType::Undefined);
                 }
 
                 receivedCount = -1;

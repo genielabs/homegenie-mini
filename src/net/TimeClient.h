@@ -21,40 +21,44 @@
  * Authors:
  * - Generoso Martello <gene@homegenie.it>
  *
- *
- * Releases:
- * - 2019-01-10 v1.0: initial release.
- *
  */
 
-#include <HomeGenie.h>
+#ifndef HOMEGENIE_MINI_TIMECLIENT_H
+#define HOMEGENIE_MINI_TIMECLIENT_H
 
-#include "configuration.h"
-#include "io/RFTransmitter.h"
-#include "api/RCSwitchHandler.h"
+#include "Config.h"
 
-using namespace Service;
+#include <NTPClient.h>
+#ifdef ESP8266
+#include <ESP8266WiFi.h>
+#else
+#include <WiFi.h>
+#endif
+#include <WiFiUdp.h>
 
-HomeGenie* homeGenie;
+#include "io/Logger.h"
+#include "Task.h"
 
-void setup() {
+namespace Net {
+    using namespace IO;
 
-    homeGenie = HomeGenie::getInstance();
-    auto miniModule = homeGenie->getDefaultModule();
-
-    // RCSwitch RF Transmitter
-    auto rcsTransmitterConfig = new RCS::RFTransmitterConfig(CONFIG_RCSwitchTransmitterPin);
-    auto rcsTransmitter = new RCS::RFTransmitter(rcsTransmitterConfig);
-    homeGenie->addAPIHandler(new RCSwitchHandler(rcsTransmitter));
-
-    // TODO:    homeGenie->addIOHandler(new RCS::RFReceiver());
-
-
-    homeGenie->begin();
+    class TimeClient: Task {
+    public:
+        TimeClient() {
+            setLoopInterval(1000);
+        }
+        void begin();
+        void loop() override;
+        static NTPClient& getTimeClient();
+    private:
+#ifdef ESP32
+        bool rtcTimeSet = (esp_reset_reason() != ESP_RST_POWERON && esp_reset_reason() != ESP_RST_UNKNOWN);
+#else
+        bool rtcTimeSet = false;
+#endif
+        long lastTimeCheck = -100000;
+    };
 
 }
 
-void loop()
-{
-    homeGenie->loop();
-}
+#endif //HOMEGENIE_MINI_TIMECLIENT_H

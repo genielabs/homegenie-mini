@@ -38,6 +38,8 @@ namespace IO {
         const char Sensor_Luminance[] PROGMEM = "Sensor.Luminance";
         const char Sensor_Temperature[] PROGMEM = "Sensor.Temperature";
         const char Sensor_Humidity[] PROGMEM = "Sensor.Humidity";
+        const char Sensor_MotionDetect[] PROGMEM = "Sensor.MotionDetect";
+        const char Status_Battery[] PROGMEM = "Status.Battery";
         const char System_BytesFree[] PROGMEM = "System.BytesFree";
     }
 }

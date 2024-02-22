@@ -92,6 +92,7 @@ void Dashboard::loop() {
                 activity->pointerMove(tp.x, tp.y);
             }
         }
+        Service::PowerManager::setActive();
     } else if (pointerDown) {
         pointerDown = false;
         gestureHelper->pointerUp(tp.x, tp.y);
@@ -160,25 +161,10 @@ void Dashboard::onPan(PanEvent e) {
         activity->pan(e);
 
         if (activityList.size() > 1 && (e.touchPoint.direction == TOUCH_DIRECTION_LEFT || e.touchPoint.direction == TOUCH_DIRECTION_RIGHT)) {
-            int nextActivityIndex = 0;
-
-            if (e.touchPoint.shiftX > 0) {
-                if (currentActivityIndex + 1 < activityList.size()) {
-                    nextActivityIndex = currentActivityIndex + 1;
-                }
-            } else {
-                if (currentActivityIndex - 1 >= 0) {
-                    nextActivityIndex = currentActivityIndex - 1;
-                } else {
-                    nextActivityIndex = activityList.size() - 1;
-                }
-            }
-
-            auto next = activityList.get(nextActivityIndex);
+            auto next = (e.touchPoint.shiftX > 0) ? getNextActivity() : getPreviousActivity();
             if (next != nextActivity && nextActivity != nullptr) {
                 nextActivity->pause();
             }
-
             nextActivity = next;
             nextActivity->resume();
             nextActivity->setDrawOffset(e.touchPoint.shiftX + (float)display->width()*(e.touchPoint.shiftX > 0 ? -1 : 1), 0);
@@ -194,6 +180,22 @@ void Dashboard::onTouch(PointerEvent e) {
 }
 void Dashboard::onRelease(PointerEvent e) {
 
+}
+Activity* Dashboard::getNextActivity() {
+    int nextActivityIndex = 0;
+    if (currentActivityIndex + 1 < activityList.size()) {
+        nextActivityIndex = currentActivityIndex + 1;
+    }
+    return activityList.get(nextActivityIndex);
+}
+Activity* Dashboard::getPreviousActivity() {
+    unsigned int prevActivityIndex;
+    if (currentActivityIndex - 1 >= 0) {
+        prevActivityIndex = currentActivityIndex - 1;
+    } else {
+        prevActivityIndex = activityList.size() - 1;
+    }
+    return activityList.get(prevActivityIndex);
 }
 
 #endif // DISABLE_UI

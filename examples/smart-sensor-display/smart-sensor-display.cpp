@@ -27,12 +27,12 @@
  *
  */
 
+#include "configuration.h"
 
 #include <HomeGenie.h>
 
 #include <ui/Dashboard.h>
 #include <ui/drivers/RoundDisplay.h>
-
 //#include <ui/activities/examples//GaugeExampleActivity.h>
 #include <ui/activities/control/SwitchControlActivity.h>
 //#include <ui/activities/utilities/AnalogClockActivity.h>
@@ -41,7 +41,13 @@
 
 #include "display/activities/SensorValuesActivity.h"
 #include "io/DHTxx.h"
-//#include "io/LightSensor.h"
+//#include "../smart-sensor/io/LightSensor.h"
+//#include "io/BatterySensor.h"
+#include "io/MotionSensor.h"
+
+// Accelerometer and Gyroscope
+//#include "io/QMI8658.h"
+
 
 using namespace IO::Env;
 using namespace Service;
@@ -57,34 +63,49 @@ ModuleParameter* controlModuleParameter = nullptr;
 
 SwitchControlActivity* switchControl;
 
+Dashboard* dashboard;
+
 void setup() {
 
-    homeGenie = HomeGenie::getInstance();
+    //uint8_t batterySensorPin = 1;
+    uint8_t motionSensorPin = 16;
 
+    PowerManager::setWakeUpGPIO((gpio_num_t)motionSensorPin);
+
+    homeGenie = HomeGenie::getInstance();
     miniModule = homeGenie->getDefaultModule();
 
-    /*
-    // Light sensor
-    homeGenie->addIOHandler(new LightSensor());
-    auto luminance = new ModuleParameter(IOEventPaths::Sensor_Luminance);
-    miniModule->properties.add(luminance);
-    //*/
-
     auto roundDisplay = (new UI::Drivers::RoundDisplay())->getDisplay();
-    auto dashboard =
+    dashboard =
         new Dashboard(roundDisplay);
 
     if (Config::isDeviceConfigured()) {
 
-        // Temperature and humidity sensor
-        auto dht = new DHTxx(22);
-        homeGenie->addIOHandler(dht);
-        auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature);
-        miniModule->properties.add(temperature);
-        auto humidity = new ModuleParameter(IOEventPaths::Sensor_Humidity);
-        miniModule->properties.add(humidity);
+        /*
+        // Battery sensor
+        auto batterySensor = new BatterySensor(batterySensorPin);
+        batterySensor->setModule(miniModule);
+        homeGenie->addIOHandler(batterySensor);
+        //*/
 
-        // add custom properties
+        // Motion sensor
+        auto motionSensor = new MotionSensor(motionSensorPin);
+        motionSensor->setModule(miniModule);
+        homeGenie->addIOHandler(motionSensor);
+
+        /*
+        // Light sensor
+        auto lightSensor = new LightSensor();
+        lightSensor->setModule(miniModule);
+        homeGenie->addIOHandler(lightSensor);
+        //*/
+
+        // Temperature and humidity sensor
+        auto dhtSensor = new DHTxx(22);
+        dhtSensor->setModule(miniModule);
+        homeGenie->addIOHandler(dhtSensor);
+
+        // add custom properties to default module
         controlModuleParameter = new ModuleParameter("RemoteControl.EndPoint", Config::getSetting("ctrl-mod"));
         miniModule->properties.add(controlModuleParameter);
         miniModule->properties.add(new ModuleParameter(
@@ -92,6 +113,7 @@ void setup() {
                 "module.text:any:switch,light,dimmer,color,shutter:any:uri" // last option can be "uri" or "id"
         ));
 
+        // Add activities to UI
 
         auto systemInfo = new SystemInfoActivity();
         dashboard->addActivity(systemInfo);
@@ -112,6 +134,9 @@ void setup() {
 
     } else {
 
+        // On devices with default RAM, activating
+        // Bluetooth will get most of the available RAM,
+        // so we just start the configuration activity
         auto systemInfo = new SystemInfoActivity();
         dashboard->addActivity(systemInfo);
         dashboard->setForegroundActivity(systemInfo);
@@ -120,17 +145,35 @@ void setup() {
 
     homeGenie->begin();
 
+    /*
+    // Init accel./gyro chip
+    Wire.begin(DEV_SDA_PIN, DEV_SCL_PIN, 400000);
+
+    QMI8658_enableSensors(QMI8658_CONFIG_AE_ENABLE);
+    //QMI8658_enableWakeOnMotion();
+
+    QMI8658_init();
+    //*/
 }
 
 void loop()
 {
     homeGenie->loop();
 
+    // check if configuration parameters changed
     if (controlModuleParameter != nullptr && controlModuleParameter->value != controlModuleUrl) {
         controlModuleUrl = controlModuleParameter->value;
         switchControl->setModuleUrl(controlModuleUrl);
         Config::saveSetting("ctrl-mod", controlModuleUrl);
-        IO::Logger::info("Control module set to: %s\n", controlModuleUrl.c_str());
+        IO::Logger::info("Control module set to: %s", controlModuleUrl.c_str());
     }
 
+    /*
+    // Test reading accel/gyro data
+    float acc[3], gyro[3];
+    unsigned int count = 0;
+    QMI8658_read_xyz(acc, gyro, &count);
+    Serial.printf("ACC X %.2f Y %.2f Z %.2f ", acc[0], acc[1], acc[2]);
+    Serial.printf("GYR X %.2f Y %.2f Z %.2f\n", gyro[0], gyro[1], gyro[2]);
+    //*/
 }

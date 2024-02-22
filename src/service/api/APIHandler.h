@@ -31,7 +31,7 @@
 #define HOMEGENIE_MINI_APIHANDLER_H
 
 #include "io/IOEvent.h"
-#include "service/Module.h"
+#include "data/Module.h"
 
 #include "APIRequest.h"
 #include "net/NetManager.h"
@@ -39,6 +39,7 @@
 namespace Service { namespace API {
 
     using namespace IO;
+    using namespace Data;
     using namespace Net;
     using namespace Service;
 

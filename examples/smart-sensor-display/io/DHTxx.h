@@ -57,15 +57,20 @@ namespace IO { namespace Env {
     class DHTxx : Task, public IIOEventSender {
     public:
         DHTxx(uint8_t dhtType) {
-            setLoopInterval(SENSOR_SAMPLING_RATE);
+            setLoopInterval(2000); // initial reading delay
             dht = new DHTNEW(inputPin);
             dht->setType(dhtType);
+        }
+        void setModule(Module* m) override {
+            IIOEventSender::setModule(m);
+            auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature);
+            m->properties.add(temperature);
+            auto humidity = new ModuleParameter(IOEventPaths::Sensor_Humidity);
+            m->properties.add(humidity);
         }
         void begin() override;
         void loop() override;
     private:
-        String domain = IOEventDomains::HomeAutomation_HomeGenie;
-        String address = CONFIG_BUILTIN_MODULE_ADDRESS;
         // Set DHTxx pin number
         uint8_t inputPin = CONFIG_DHTxx_DataPin;
         // Temperature and humidity sensor

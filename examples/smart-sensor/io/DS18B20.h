@@ -50,6 +50,11 @@ namespace IO { namespace Env {
         DS18B20() {
             setLoopInterval(DS18B20_SAMPLING_RATE);
         }
+        void setModule(Module* m) override {
+            IIOEventSender::setModule(m);
+            auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature);
+            m->properties.add(temperature);
+        }
         void begin() override;
         void loop() override;
         void setInputPin(uint8_t);

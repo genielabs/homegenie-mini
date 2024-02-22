@@ -90,8 +90,8 @@ namespace UI { namespace Drivers {
                 cfg.x_max      = 239;
                 cfg.y_min      = 0;
                 cfg.y_max      = 239;
-                cfg.pin_int    = CONFIG_TOUCH_INT; // N.C.
-                //cfg.bus_shared = true;
+                cfg.pin_int    = CONFIG_TOUCH_INT;
+                cfg.bus_shared = true;
                 cfg.offset_rotation = 0;
 
                 // SPI
@@ -108,7 +108,7 @@ namespace UI { namespace Drivers {
                 cfg.pin_sda  = CONFIG_TOUCH_SDA;
                 cfg.pin_scl  = CONFIG_TOUCH_SCL;
                 cfg.pin_rst  = CONFIG_TOUCH_RST;
-                //cfg.freq = 400000;
+                cfg.freq = 400000;
 
                 _touch_instance.config(cfg);
                 _panel_instance.setTouch(&_touch_instance);

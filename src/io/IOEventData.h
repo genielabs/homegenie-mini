@@ -21,40 +21,22 @@
  * Authors:
  * - Generoso Martello <gene@homegenie.it>
  *
- *
- * Releases:
- * - 2019-01-10 v1.0: initial release.
- *
  */
 
-#include <HomeGenie.h>
+#ifndef HOMEGENIE_MINI_IOEVENTDATA_H
+#define HOMEGENIE_MINI_IOEVENTDATA_H
 
-#include "configuration.h"
-#include "io/RFTransmitter.h"
-#include "api/RCSwitchHandler.h"
+namespace IO {
 
-using namespace Service;
-
-HomeGenie* homeGenie;
-
-void setup() {
-
-    homeGenie = HomeGenie::getInstance();
-    auto miniModule = homeGenie->getDefaultModule();
-
-    // RCSwitch RF Transmitter
-    auto rcsTransmitterConfig = new RCS::RFTransmitterConfig(CONFIG_RCSwitchTransmitterPin);
-    auto rcsTransmitter = new RCS::RFTransmitter(rcsTransmitterConfig);
-    homeGenie->addAPIHandler(new RCSwitchHandler(rcsTransmitter));
-
-    // TODO:    homeGenie->addIOHandler(new RCS::RFReceiver());
-
-
-    homeGenie->begin();
-
+    enum IOEventDataType {
+        Undefined = 0,
+        Number,
+        Float,
+        UnsignedNumber,
+        SensorLight,
+        SensorTemperature,
+        SensorHumidity
+    };
 }
 
-void loop()
-{
-    homeGenie->loop();
-}
+#endif //HOMEGENIE_MINI_IOEVENTDATA_H

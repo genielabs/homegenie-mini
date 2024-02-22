@@ -33,16 +33,6 @@ namespace Net {
 
     using namespace IO;
 
-    // Time sync
-    WiFiUDP ntpUDP;
-    NTPClient timeClient(ntpUDP);
-#ifdef ESP32
-    bool rtcTimeSet = (esp_reset_reason() != ESP_RST_POWERON && esp_reset_reason() != ESP_RST_UNKNOWN);
-#else
-    bool rtcTimeSet = false;
-#endif
-    long lastTimeCheck = -100000;
-
     NetManager::NetManager() {
         // TODO: ...
     }
@@ -125,15 +115,8 @@ namespace Net {
         mqttServer = new MQTTServer();
         mqttServer->begin();
 #endif
-
-        // Initialize a NTPClient to get time
-        timeClient.begin();
-        // Set offset time in seconds to adjust for your timezone, for example:
-        // GMT +1 = 3600
-        // GMT +8 = 28800
-        // GMT -1 = -3600
-        // GMT 0 = 0
-        timeClient.setTimeOffset(0);
+        timeClient = new TimeClient();
+        timeClient->begin();
     }
 
 
@@ -142,35 +125,6 @@ namespace Net {
 
         if (ESP_WIFI_STATUS == WL_CONNECTED) {
             webSocket->loop();
-        }
-
-        if (rtcTimeSet) {
-#ifdef ESP32
-            if (millis() - lastTimeCheck > 60000) {
-                lastTimeCheck = millis();
-                if (!timeClient.isUpdated()) {
-                    // sync TimeClient with RTC
-                    timeClient.setEpochTime(Config::getRTC()->getLocalEpoch());
-                    Logger::info("|  - TimeClient: synced with RTC");
-                }
-            }
-#endif
-        } else if (WiFi.isConnected() && millis() - lastTimeCheck > 60000) {
-            lastTimeCheck = millis();
-            if (!timeClient.isUpdated()) {
-                if (timeClient.update()) {
-                    // TimeClient synced with NTP
-#ifdef ESP32
-                    Config::getRTC()->setTime(timeClient.getEpochTime(), 0);
-                    rtcTimeSet = true;
-                    Logger::info("|  - RTC updated via TimeClient (NTP)");
-#endif
-                } else {
-                    // NTP Update failed
-                    digitalWrite(Config::StatusLedPin, HIGH);
-                    Logger::warn("|  x TimeClient: NTP update failed!");
-                }
-            }
         }
 
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
@@ -198,10 +152,6 @@ namespace Net {
 
     WebSocketsServer& NetManager::getWebSocketServer() {
         return *webSocket;
-    }
-
-    NTPClient& NetManager::getTimeClient() {
-        return timeClient;
     }
 
     void NetManager::setRequestHandler(NetRequestHandler* handler) {

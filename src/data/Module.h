@@ -5,12 +5,15 @@
 #ifndef HOMEGENIE_MINI_MODULE_H
 #define HOMEGENIE_MINI_MODULE_H
 
-#include "io/IOEvent.h"
-#include "net/NetManager.h"
+#include <LinkedList.h>
 
-namespace Service {
+#include "Config.h"
+#include "net/TimeClient.h"
+#include "io/IOEventData.h"
 
-    using namespace Net;
+namespace Data {
+
+    using namespace IO;
 
     enum ModuleTypes {
         Generic = 0,
@@ -26,10 +29,10 @@ namespace Service {
         String value;
         String updateTime;
         void* data;
-        IO::IOEventDataType dataType;
+        IOEventDataType dataType;
 
         ModuleParameter() {
-            updateTime = NetManager::getTimeClient().getFormattedDate();
+            updateTime = getFormattedDate();
         }
         ModuleParameter(String name): ModuleParameter() {
             this->name = name;
@@ -43,11 +46,15 @@ namespace Service {
         }
         void setValue(const char* v) {
             value = v;
-            updateTime = NetManager::getTimeClient().getFormattedDate();
+            updateTime = getFormattedDate();
         }
-        void setData(void* d, IO::IOEventDataType t) {
+        void setData(void* d, IOEventDataType t) {
             data = d;
             dataType = t;
+        }
+    private:
+        String getFormattedDate() {
+            return Net::TimeClient::getTimeClient().getFormattedDate();
         }
     };
 
@@ -59,7 +66,7 @@ namespace Service {
         String name;
         String description;
         LinkedList<ModuleParameter*> properties;
-        bool setProperty(String pn, String pv, void* data, IO::IOEventDataType dataType) {
+        bool setProperty(String pn, String pv, void* data, IOEventDataType dataType) {
             for(int p = 0; p < properties.size(); p++) {
                 auto param = properties.get(p);
                 if (param->is(pn.c_str())) {

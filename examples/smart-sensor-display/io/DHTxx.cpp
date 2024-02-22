@@ -45,26 +45,31 @@ namespace IO { namespace Env {
         // signal value changes
         if (currentData.temperature != t) {
             Logger::info("@%s [%s %0.2f]", DHTXX_NS_PREFIX, (IOEventPaths::Sensor_Temperature), currentData.temperature);
-            sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::Sensor_Temperature), (float_t *)&currentData.temperature, SensorTemperature);
+            sendEvent((const uint8_t*)(IOEventPaths::Sensor_Temperature), (float_t *)&currentData.temperature, SensorTemperature);
         }
         if (currentData.humidity != h) {
             Logger::info("@%s [%s %0.2f]", DHTXX_NS_PREFIX, (IOEventPaths::Sensor_Humidity), currentData.humidity);
-            sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::Sensor_Humidity), (float_t *)&currentData.humidity, SensorHumidity);
+            sendEvent((const uint8_t*)(IOEventPaths::Sensor_Humidity), (float_t *)&currentData.humidity, SensorHumidity);
         }
 
         Logger::verbose("  > %s::loop() << END", DHTXX_NS_PREFIX);
+        setLoopInterval(SENSOR_SAMPLING_RATE);
     }
 
     /// Read temperature and humidity values from one DHTxx.
     void DHTxx::readSensorData() {
-        dht->read();
-        float h = dht->getHumidity();
-        float t = dht->getTemperature();
-        if (h != DHT_READ_ERROR && t != DHT_READ_ERROR) {
-            currentData.temperature = t;
-            currentData.humidity = h;
-        } else {
+        uint8_t attempts = 5;
+        while (attempts > 0) {
+            dht->read();
+            float h = dht->getHumidity();
+            float t = dht->getTemperature();
+            if (h != DHT_READ_ERROR && t != DHT_READ_ERROR) {
+                currentData.temperature = t;
+                currentData.humidity = h;
+                break;
+            }
             // TODO: report error reading sensor data
+            attempts--;
         }
     }
 

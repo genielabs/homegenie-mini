@@ -48,8 +48,6 @@ namespace IO { namespace X10 {
         void receive();
 
     private:
-        String domain = IOEventDomains::HomeAutomation_X10;
-        String address = CONFIG_X10RF_MODULE_ADDRESS;
         RFReceiverConfig *configuration;
         // 32-bit RF message decoding
         volatile uint8_t messageType = 0x00;

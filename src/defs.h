@@ -61,13 +61,17 @@
     #define DISABLE_BLUETOOTH_CLASSIC
     #define CONFIG_ServiceButtonPin 4
     #define CONFIG_StatusLedPin 0
-    #define CONFIG_GPIO_OUT {6}
+    #ifndef CONFIG_GPIO_OUT
+        #define CONFIG_GPIO_OUT {6}
+    #endif
 #elif ESP32_S3
     #undef DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
     #define CONFIG_ServiceButtonPin 21
     #define CONFIG_StatusLedPin 33
-    #define CONFIG_GPIO_OUT {15,16,17,18}
+    #ifndef CONFIG_GPIO_OUT
+        #define CONFIG_GPIO_OUT {15,16,17,18}
+    #endif
 #else
     #define DISABLE_BLUETOOTH_LE
 //    #define DISABLE_BLUETOOTH_CLASSIC
@@ -103,12 +107,12 @@
 #define CONFIG_DISPLAY_DC 8
 #define CONFIG_DISPLAY_CS 9
 
-#define CONFIG_DISPLAY_BL 2 // backlight
+#define CONFIG_DISPLAY_BL (2) // backlight
 
 #define CONFIG_TOUCH_PORT 1
 #define CONFIG_TOUCH_ADDRESS 0x15
 
-#define CONFIG_TOUCH_INT 5
+#define CONFIG_TOUCH_INT (-1) /* -1 disabled, or pin 5 */
 #define CONFIG_TOUCH_SDA 6
 #define CONFIG_TOUCH_SCL 7
 #define CONFIG_TOUCH_RST 13
@@ -123,12 +127,12 @@
 #define CONFIG_DISPLAY_DC 27
 #define CONFIG_DISPLAY_CS 14
 
-#define CONFIG_DISPLAY_BL 32 // backlight
+#define CONFIG_DISPLAY_BL (32) // backlight
 
 #define CONFIG_TOUCH_PORT 1
 #define CONFIG_TOUCH_ADDRESS 0x15
 
-#define CONFIG_TOUCH_INT 35
+#define CONFIG_TOUCH_INT (-1) /* -1 disabled, or pin 35 */
 #define CONFIG_TOUCH_SDA 25
 #define CONFIG_TOUCH_SCL 26
 #define CONFIG_TOUCH_RST 34

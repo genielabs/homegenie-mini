@@ -21,46 +21,37 @@
  * Authors:
  * - Generoso Martello <gene@homegenie.it>
  *
- *
- * Releases:
- * - 2019-01-10 v1.0: initial release.
- *
  */
 
+#ifndef HOMEGENIE_MINI_BATTERYSENSOR_H
+#define HOMEGENIE_MINI_BATTERYSENSOR_H
 
 #include <HomeGenie.h>
 
-#include "io/DS18B20.h"
-#include "io/LightSensor.h"
+#include "../configuration.h"
 
-using namespace IO::Env;
-using namespace Service;
+#define BATTERY_SENSOR_NS_PREFIX           "IO::Env::BatterySensor"
 
-HomeGenie* homeGenie;
+namespace IO { namespace Env {
 
-void setup() {
+    class BatterySensor: Task, public IIOEventSender {
+    public:
+        BatterySensor(uint8_t analogPin) {
+            setLoopInterval(5000); // update every 15 seconds
+            sensorPin = analogPin;
+        }
+        void setModule(Module* m) override {
+            IIOEventSender::setModule(m);
+            auto statusBattery = new ModuleParameter(IOEventPaths::Status_Battery);
+            m->properties.add(statusBattery);
+        }
+        void begin() override;
+        void loop() override;
+    private:
+        uint8_t sensorPin;
+        float lastBatteryLevel = 0;
+    };
 
-    homeGenie = HomeGenie::getInstance();
+}}
 
-    auto miniModule = homeGenie->getDefaultModule();
-
-    // Temperature sensor
-    auto temperatureSensor = new DS18B20();
-    temperatureSensor->setModule(miniModule);
-    homeGenie->addIOHandler(temperatureSensor);
-
-    // Light sensor
-    auto lightSensor = new LightSensor();
-    lightSensor->setModule(miniModule);
-    homeGenie->addIOHandler(lightSensor);
-
-    homeGenie->begin();
-
-}
-
-void loop()
-{
-
-    homeGenie->loop();
-
-}
+#endif //HOMEGENIE_MINI_BATTERYSENSOR_H
