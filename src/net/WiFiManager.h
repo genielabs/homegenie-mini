@@ -52,7 +52,8 @@ namespace Net {
         static bool configure();
         static bool checkWiFiStatus();
     private:
-        wl_status_t wiFiStatus;
+        static wl_status_t wiFiStatus;
+        static unsigned long lastStatusCheckTs;
     };
 
 }

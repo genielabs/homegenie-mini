@@ -37,6 +37,7 @@ TaskManager::TaskManager() {
 }
 
 void TaskManager::loop() {
+    // Very basic task scheduler
     // TODO: (maybe) implement a simple `Priority` mechanism
     // TODO: (maybe) implement a "loop() Load" index by measuring time elapsed till end of `loop()` method
     IO::Logger::verbose("%s loop() >> BEGIN", TASKMANAGER_LOG_PREFIX);

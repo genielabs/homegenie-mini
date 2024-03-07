@@ -77,7 +77,8 @@ namespace Net {
                         Serial.printf("[%u] TEXT\t%s\n", num, payload);
                         char message[length + 5];
                         sprintf(message, "api/%s", payload);
-                        netRequestHandler->onNetRequest(webSocket, message, new WebSocketResponseCallback());
+                        auto cb = WebSocketResponseCallback(webSocket, num, nullptr);
+                        netRequestHandler->onNetRequest(webSocket, message, &cb);
                     }
                     break;
                 case WStype_ERROR:
@@ -86,12 +87,14 @@ namespace Net {
                         MsgPack::Unpacker unpacker;
                         std::array<String, 2> req;
                         unpacker.feed(payload, length);
-                        unpacker.unpack(req); // TODO: use in WebSocketResponseCallback
+                        unpacker.unpack(req);
+                        unpacker.clear();
 
                         String rid = req[0];
                         String request = "api/" + req[1];
                         Serial.printf("[%u] BIN\t%s\t%s\n", num, rid.c_str(), request.c_str());
-                        netRequestHandler->onNetRequest(webSocket, request.c_str(), new WebSocketResponseCallback());
+                        auto cb = WebSocketResponseCallback(webSocket, num, &rid);
+                        netRequestHandler->onNetRequest(webSocket, request.c_str(), &cb);
                     }
                     break;
                 case WStype_FRAGMENT_TEXT_START:

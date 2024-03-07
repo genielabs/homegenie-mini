@@ -23,29 +23,16 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_IOEVENTDATA_H
-#define HOMEGENIE_MINI_IOEVENTDATA_H
+#include "IRTransmitterConfig.h"
 
-namespace IO {
-
-    enum IOEventDataType {
-        Undefined = 0,
-        Text,
-        Binary,
-        Number,
-        Float,
-        UnsignedNumber,
-        SensorLight,
-        SensorTemperature,
-        SensorHumidity
-    };
-
-    class IOEventBinaryData {
-    public:
-        size_t length;
-        void* data;
-        size_t type_size;
-    };
-}
-
-#endif //HOMEGENIE_MINI_IOEVENTDATA_H
+namespace IO { namespace IR {
+    IRTransmitterConfig::IRTransmitterConfig()
+    {
+        pin = CONFIG_IRTransmitterPin;
+    }
+    IRTransmitterConfig::IRTransmitterConfig(uint8_t pin) : IRTransmitterConfig()
+    {
+        this->pin = pin;
+    }
+    uint8_t IRTransmitterConfig::getPin() { return pin; };
+}} // ns

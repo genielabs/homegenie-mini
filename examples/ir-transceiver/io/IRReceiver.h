@@ -23,29 +23,39 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_IOEVENTDATA_H
-#define HOMEGENIE_MINI_IOEVENTDATA_H
+#ifndef HOMEGENIE_MINI_IRRECEIVER_H_
+#define HOMEGENIE_MINI_IRRECEIVER_H_
 
-namespace IO {
+#include <HomeGenie.h>
+#include <Utility.h>
 
-    enum IOEventDataType {
-        Undefined = 0,
-        Text,
-        Binary,
-        Number,
-        Float,
-        UnsignedNumber,
-        SensorLight,
-        SensorTemperature,
-        SensorHumidity
-    };
+#include <IRrecv.h>
+#include <IRutils.h>
 
-    class IOEventBinaryData {
+#include "IRReceiverConfig.h"
+
+#define IR_IRRECEIVER_NS_PREFIX                  "IO::IR::IrReceiver"
+
+namespace IO { namespace IR {
+
+    class IRReceiver : Task, public IIOEventSender {
     public:
-        size_t length;
-        void* data;
-        size_t type_size;
-    };
-}
+        IRReceiver();
+        IRReceiver(IRReceiverConfig *);
 
-#endif //HOMEGENIE_MINI_IOEVENTDATA_H
+        void begin() override;
+        void loop() override;
+
+        bool enabled();
+        void enabled(bool);
+
+    private:
+        IRReceiverConfig *configuration;
+        IRrecv* irReceiver = nullptr;
+        decode_results results;  // Somewhere to store the results
+        bool isEnabled = false;
+    };
+
+}} // ns
+
+#endif // HOMEGENIE_MINI_IRRECEIVER_H_

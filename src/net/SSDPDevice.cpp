@@ -97,7 +97,12 @@ SSDPDeviceClass::SSDPDeviceClass() :
 	uint32_t chipId = ESP.getEfuseMac();
 #endif
 
-	sprintf(m_uuid, "38323636-4558-4dda-9188-cda0e6%02x%02x%02x",
+    String prefix = WiFi.macAddress();
+    prefix.toLowerCase();
+    prefix.replace(":", "");
+	sprintf(m_uuid, "%s-%s-6e69-654d-696e69%02x%02x%02x",
+        prefix.substring(0, 7).c_str(),
+        prefix.substring(8).c_str(),
 		(uint16_t)((chipId >> 16) & 0xff),
 		(uint16_t)((chipId >> 8) & 0xff),
 		(uint16_t)chipId & 0xff);

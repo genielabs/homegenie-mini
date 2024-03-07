@@ -52,9 +52,9 @@ const static char CONFIG_KEY_screen_rotation[] PROGMEM = {"screen:rotation"};
 
 class Config {
 public:
-    const static uint8_t ServiceButtonPin = CONFIG_ServiceButtonPin;
-    const static uint8_t StatusLedPin = CONFIG_StatusLedPin;
-    const static uint16_t WpsModePushInterval = 2500;
+    const static short ServiceButtonPin = CONFIG_ServiceButtonPin;
+    const static short StatusLedPin = CONFIG_StatusLedPin;
+    const static uint16_t ConfigureButtonPushInterval = 2500;
 #ifdef ESP32
     static ESP32Time* getRTC() {
         static ESP32Time rtc(0);
@@ -146,6 +146,17 @@ public:
         return value;
     }
 
+    static std::function<void(bool)> ledCallback;
+    static bool isStatusLedOn;
+    static void statusLedOn();
+    static void statusLedOff();
+
+    static void statusLedCallback(std::function<void(bool)> new_func);
+
+    static void init() {
+        // Setup status led
+        if (Config::StatusLedPin >= 0) pinMode(Config::StatusLedPin, OUTPUT);
+    }
 };
 
 #endif //HOMEGENIE_MINI_CONFIG_H

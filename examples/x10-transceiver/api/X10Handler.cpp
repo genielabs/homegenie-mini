@@ -92,9 +92,7 @@ namespace Service { namespace API {
             uint8_t data[command->OptionsString.length() / 2];
             Utility::getBytes(command->OptionsString, data);
             // Disable RFTransmitter callbacks during transmission to prevent echo
-            noInterrupts();
             transmitter->sendCommand(data, sizeof(data));
-            interrupts();
             responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 
             return true;
@@ -169,9 +167,7 @@ namespace Service { namespace API {
 
             if (!ignoreCommand) {
                 X10::X10Message::encodeCommand(&x10Message, data);
-                noInterrupts();
                 transmitter->sendCommand(&data[1], sizeof(data)-1, sendRepeat);
-                interrupts();
             }
             responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 

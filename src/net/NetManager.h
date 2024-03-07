@@ -73,11 +73,57 @@ namespace Net {
     // WebSocketResponseCallback
     class WebSocketResponseCallback : public ResponseCallback {
     public:
+        WebSocketResponseCallback(WebSocketsServer *websocket, uint8_t clientId, String* rid) {
+            ws = websocket;
+            cid = clientId;
+            requestId = rid;
+        }
         void beginGetLength() override {};
         void endGetLength() override {};
         void write(const char* s) override {};
-        void writeAll(const char* s) override {};
+        void writeAll(const char* s) override {
+            if (requestId != nullptr) {
+                //auto date = TimeClient::getTimeClient().getFormattedDate();
+                unsigned long epoch = TimeClient::getTimeClient().getEpochTime();
+                int ms = TimeClient::getTimeClient().getMilliseconds();
+                //"#", requestId, "", "Response.Data", migRequest.ResponseData
+                // Send as clear text
+                //int sz = 1+snprintf(nullptr, 0, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
+                //                    date.c_str(), epoch, ms, "#", requestId->c_str(), "Response.Data", s);
+                //char msg[sz];
+                //snprintf(msg, sz, R"({"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
+                //         date.c_str(), epoch, ms, "#", requestId->c_str(), "Response.Data", s);
+                //ws->sendTXT(cid, msg);
+
+                // Send binary packed message
+
+                MsgPack::Packer packer;
+                struct timeval tv_now{};
+                gettimeofday(&tv_now, nullptr);
+                MsgPack::object::timespec t = {
+                        .tv_sec  = tv_now.tv_sec, /* int64_t  */
+                        .tv_nsec = static_cast<uint32_t>(tv_now.tv_usec) / 10000  /* uint32_t */
+                };
+                packer.packTimestamp(t);
+                auto epochs = String(epoch) + ms;
+                packer.packFloat((epoch * 1000.0f) + ms);
+                packer.pack(F("#"));
+                packer.pack(requestId->c_str());
+                packer.pack("");
+                packer.pack(F("Response.Data"));
+                packer.pack(s);
+                ws->sendBIN(cid, packer.data(), packer.size());
+                packer.clear();
+
+                requestId->clear();
+                requestId = nullptr;
+            }
+        };
         void error(const char* s) override {};
+    private:
+        WebSocketsServer* ws;
+        uint8_t cid;
+        String* requestId;
     };
 
     // WebServerResponseCallback
@@ -157,6 +203,14 @@ namespace Net {
             return uri != nullptr && uri.startsWith("/api/");
         }
         bool handle(WebServer &server, HTTPMethod requestMethod, String requestUri) override {
+            // append POST data to requestUri
+            for (int a = 0; a < server.args(); a++) {
+                if (server.argName(a).length() > 0) {
+                    requestUri += String("/") + server.argName(a);
+                }
+                requestUri += String ("/") + server.arg(a);
+            }
+            // create response callback
             auto responseCallback = new WebServerResponseCallback(&server);
             if (!netRequestHandler->onNetRequest(&server, requestUri.c_str(), responseCallback)) {
                 responseCallback->error("Invalid request.");

@@ -8,7 +8,7 @@ based on *ESP32* or *ESP8266* chip.
 
 ## Features
 
-- Easy Wi-Fi configuration using Bluetooth (ESP32) or WPA (ESP8266)
+- Easy Wi-Fi configuration using Bluetooth (ESP32) or WPS (ESP8266)
 - Does not require an Internet connection to be configured or to work properly
 - Time synchronization using internal RTC (ESP32), mobile app time or NTP
 - Device discovery through SNMP/UPnP advertising with customizable name
@@ -25,8 +25,8 @@ based on *ESP32* or *ESP8266* chip.
 
 ## Building and flashing the firmware
 
-The firmware can be easily installed using [Platform.IO core](https://docs.platformio.org/en/latest/installation.html) CLI.
-After installing *Platform.IO core*, download [HomeGenie Mini](https://github.com/genielabs/homegenie-mini/archive/refs/heads/master.zip) source code,
+The firmware can be installed using [Platform.IO core](https://docs.platformio.org/en/latest/installation.html) CLI.
+After installing *Platform.IO core*, download [HomeGenie Mini](https://github.com/genielabs/homegenie-mini/releases) source code,
 unzip it and open a terminal with the current directory set to `homegenie-mini` folder.  
 Then enter the following commands to install libraries required to build the firmware:
 
@@ -47,28 +47,17 @@ pio run -e default -t upload
 
 ## Configuration environments
 
-The option `-e default` shown in the above command is used to specify the configuration environment.
-The **default** environment is for building the base firmware for a generic *ESP32* board.  
+The option `-e default` shown in the previous command is used to specify the configuration environment.
+The **default** environment is for building the base firmware for a generic *ESP32* board.
 
-The following configurations are available:
-
-- `default`  
-Generic *ESP32* board.
-- `d1-mini`  
-D1-Mini board with *ESP8266*.
-- `d1-mini-esp32`  
-D1-Mini board with *ESP32*.
-- `sonoff`  
-Configuration for *Sonoff 2-Gang Wi-Fi Smart Switch (DUALR3)*.
-
-For example, to install *HomeGenie Mini* on a **Sonoff DUALR3 Smart Switch** device, the following command is used:
+To list all available configurations enter the following command:
 
 ```bash
-pio run -e sonoff -t upload
+pio project config
 ```
 
-It's possible to add custom configuration environment to build your own version of the firmware to support
-different hardware and functionality as explained later in this file.
+By editing the `platformio.ini` file is possible to add custom configurations to build your own version
+of the firmware to support different hardware and functionality.
 
 
 ## Connecting the device
@@ -101,7 +90,7 @@ firmware that implements temperature and light sensor and 4 GPIO switches.
 ![HomeGenie Panel - Dashboard](data/images/phone/hg_panel_dashboard.png)
 
 
-### Connecting to HomeGenie Automation Server
+### Connecting to HomeGenie Server
 
 HG-Mini devices can also be connected to [HomeGenie Server](https://github.com/genielabs/HomeGenie)
 configuring the *MQTT client* as shown in the following picture.
@@ -244,29 +233,6 @@ pio run -e  playground -t upload
 ```bash
 pio run -e  playground-c3 -t upload
 ```
-
-
-
-
-
-
-
-
-<!-- TODO: ..
-
-## Creating a smart device with HomeGenie Mini library
-
-```
-pio project init -b esp32dev --project-option="lib_deps=HomeGenieMini"
-```
-
-// TODO: brief API/SDK docs
-
--->
-
-
-
-
 
 
 

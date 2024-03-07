@@ -32,20 +32,48 @@
 /// Convert byte to hex string taking care of leading-zero
 /// \param b
 void Utility::getBytes(const String &rawBytes, uint8_t *data) {
-    uint len = rawBytes.length();
-    char msg[len+1]; rawBytes.toCharArray(msg, len+1, 0);
-    char tmp[3] = "00";
-    len = (len / 2);
-    for (uint i = 0; i < len; i++)
-    {
-        tmp[0] = msg[i * 2];
-        tmp[1] = msg[(i * 2) + 1];
-        data[i] = strtol(tmp, nullptr, 16);
+    uint16_t dataSize = rawBytes.length() / 2;
+    for (int h = 0; h < dataSize; h++) {
+        String hex = rawBytes.substring(h*2, (h*2) + 2);
+        auto v = (uint8_t)strtol(hex.c_str(), nullptr, 16);
+        data[h] = v;
+    }
+}
+void Utility::getBytes(const String &rawBytes, uint16_t *data) {
+    uint16_t dataSize = rawBytes.length() / 4;
+    for (int h = 0; h < dataSize; h++) {
+        String hex = rawBytes.substring(h*4, (h*4) + 4);
+        auto v = (uint16_t)strtol(hex.c_str(), nullptr, 16);
+        data[h] = v;
     }
 }
 String Utility::byteToHex(byte b) {
     String formatted = String(b, HEX);
     if (b < 16) return "0"+formatted;
+    return formatted;
+}
+String Utility::byteToHex(int16_t b) {
+    String formatted = String(b, HEX);
+    while (formatted.length() < 4) formatted = String("0") + formatted;
+    return formatted;
+}
+String Utility::byteToHex(uint16_t b) {
+    String formatted = String(b, HEX);
+    while (formatted.length() < 4) formatted = String("0") + formatted;
+    return formatted;
+}
+String Utility::byteToHex(uint32_t b) {
+    String formatted = String(b, HEX);
+    while (formatted.length() < 8) formatted = String("0") + formatted;
+    return formatted;
+}
+String Utility::byteToHex(uint64_t b) {
+#ifndef ESP8266
+    String formatted = String(b, HEX);
+#else
+    String formatted = String((uint32_t)b, HEX);
+#endif
+    while (formatted.length() < 16) formatted = String("0") + formatted;
     return formatted;
 }
 
@@ -64,4 +92,57 @@ uint32_t Utility::reverseBits(uint32_t n) {
         --i;
     }
     return x;
+}
+
+String Utility::getByteString(uint16_t *data, uint16_t length) {
+    String stringData;
+    for(int i = 0; i < length ; i++)
+    {
+        stringData += byteToHex(data[i]);
+    }
+    return stringData;
+}
+
+String Utility::getByteString(uint8_t *data, uint16_t length) {
+    String stringData;
+    for(int i = 0; i < length ; i++)
+    {
+        stringData += byteToHex(data[i]);
+    }
+    return stringData;
+}
+
+String Utility::getByteString(uint64_t *data, uint16_t length) {
+    String stringData;
+    for(int i = 0; i < length ; i++)
+    {
+        stringData += byteToHex(data[i]);
+    }
+    return stringData;
+}
+
+RGBColor Utility::hsv2rgb(float h, float s, float v) {
+    float r, g, b;
+
+    int i = floor(h * 6);
+    float f = h * 6 - i;
+    float p = v * (1 - s);
+    float q = v * (1 - f * s);
+    float t = v * (1 - (1 - f) * s);
+
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+
+    RGBColor color;
+    color.r = r * 255;
+    color.g = g * 255;
+    color.b = b * 255;
+
+    return color;
 }

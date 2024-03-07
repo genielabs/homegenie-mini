@@ -21,31 +21,28 @@
  * Authors:
  * - Generoso Martello <gene@homegenie.it>
  *
+ *
+ * Releases:
+ * - 2019-01-10 Initial release
+ *
  */
 
-#ifndef HOMEGENIE_MINI_IOEVENTDATA_H
-#define HOMEGENIE_MINI_IOEVENTDATA_H
+#include "Config.h"
 
-namespace IO {
+#include <utility>
 
-    enum IOEventDataType {
-        Undefined = 0,
-        Text,
-        Binary,
-        Number,
-        Float,
-        UnsignedNumber,
-        SensorLight,
-        SensorTemperature,
-        SensorHumidity
-    };
-
-    class IOEventBinaryData {
-    public:
-        size_t length;
-        void* data;
-        size_t type_size;
-    };
+bool Config::isStatusLedOn = false;
+void Config::statusLedOn() {
+    isStatusLedOn = true;
+    if (Config::StatusLedPin >= 0) digitalWrite(Config::StatusLedPin, HIGH);
+    if (ledCallback != nullptr) ledCallback(true);
 }
-
-#endif //HOMEGENIE_MINI_IOEVENTDATA_H
+void Config::statusLedOff() {
+    isStatusLedOn = false;
+    if (Config::StatusLedPin >= 0) digitalWrite(Config::StatusLedPin, LOW);
+    if (ledCallback != nullptr) ledCallback(false);
+}
+std::function<void(bool)> Config::ledCallback = nullptr;
+void Config::statusLedCallback(std::function<void(bool)> callback) {
+    ledCallback = std::move(callback);
+}

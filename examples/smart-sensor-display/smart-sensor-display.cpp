@@ -75,6 +75,16 @@ void setup() {
     homeGenie = HomeGenie::getInstance();
     miniModule = homeGenie->getDefaultModule();
 
+    /*
+    // Init accel./gyro chip
+    Wire.begin(DEV_SDA_PIN, DEV_SCL_PIN, 400000);
+
+    QMI8658_enableSensors(QMI8658_CONFIG_AE_ENABLE);
+    //QMI8658_enableWakeOnMotion();
+
+    QMI8658_init();
+    //*/
+
     auto roundDisplay = (new UI::Drivers::RoundDisplay())->getDisplay();
     dashboard =
         new Dashboard(roundDisplay);
@@ -145,15 +155,6 @@ void setup() {
 
     homeGenie->begin();
 
-    /*
-    // Init accel./gyro chip
-    Wire.begin(DEV_SDA_PIN, DEV_SCL_PIN, 400000);
-
-    QMI8658_enableSensors(QMI8658_CONFIG_AE_ENABLE);
-    //QMI8658_enableWakeOnMotion();
-
-    QMI8658_init();
-    //*/
 }
 
 void loop()

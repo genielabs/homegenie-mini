@@ -1,0 +1,81 @@
+/*
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
+ *
+ *
+ * This file is part of HomeGenie-Mini (HGM).
+ *
+ *  HomeGenie-Mini is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HomeGenie-Mini is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with HomeGenie-Mini.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * Authors:
+ * - Generoso Martello <gene@homegenie.it>
+ *
+ */
+
+#ifndef HOMEGENIE_MINI_DIMMER_H
+#define HOMEGENIE_MINI_DIMMER_H
+
+#include <HomeGenie.h>
+
+#include "Switch.h"
+
+using namespace Service;
+
+class DimmerLevel {
+public:
+    unsigned long duration;
+    bool isAnimating = false;
+    void setLevel(float l, unsigned long transitionMs) {
+        duration = transitionMs;
+        ol = level;
+        level = l;
+        startTime = millis();
+        isAnimating = true;
+    }
+    float getProgress() {
+        float p = (float)(millis() - startTime) / (float)duration;
+        if (p >= 1) {
+            isAnimating = false;
+            p = 1;
+        }
+        return p;
+    }
+    float getLevel() {
+        return ol + ((level - ol) * getProgress());
+    }
+private:
+    float level;
+    float ol;
+    unsigned long startTime;
+
+};
+
+class Dimmer: public Switch {
+public:
+    Dimmer(const char* domain, const char* address, const char* name);
+    void loop() override;
+
+    bool handleRequest(APIRequest*, ResponseCallback*) override;
+
+    void onSetLevel(std::function<void(float)> callback) {
+        setLevelCallback = std::move(callback);
+    }
+private:
+    DimmerLevel level;
+    std::function<void(float)> setLevelCallback = nullptr;
+protected:
+    const unsigned long defaultTransitionMs = 500;
+};
+
+#endif //HOMEGENIE_MINI_DIMMER_H

@@ -129,46 +129,42 @@ namespace Service {
         volatile int64_t buttonPressStart = 0;
         volatile bool buttonPressed = false;
         static void buttonChange() {
+            bool wasPressed = getInstance()->buttonPressed;
             getInstance()->buttonPressed = (digitalRead(Config::ServiceButtonPin) == LOW);
-            if (getInstance()->buttonPressed) {
+            if (!wasPressed && getInstance()->buttonPressed) {
                 getInstance()->buttonPressStart = millis();
             }
         }
         static void checkServiceButton() {
+            buttonChange();
             int64_t elapsed = 0;
             if (getInstance()->buttonPressed) {
                 // released
                 elapsed = millis() - getInstance()->buttonPressStart;
-                if (elapsed > Config::WpsModePushInterval) {
-                    noInterrupts();
+                if (elapsed > Config::ConfigureButtonPushInterval) {
                     getInstance()->getNetManager().getWiFiManager().configure();
-                    interrupts();
                 }
             }
         }
-        bool statusLedOn = false;
-        uint64_t statusLedTs = 0;
+
+        uint64_t statusLedTs;
         void statusLedLoop() {
             if (WiFi.isConnected()) {
                 // when connected the LED will blink quickly every 2 seconds
-                if (millis() - statusLedTs > 1950 && !statusLedOn) {
-                    statusLedOn = true;
-                    digitalWrite(Config::StatusLedPin, HIGH);
+                if (millis() - statusLedTs > 1950 && !Config::isStatusLedOn) {
+                    Config::statusLedOn();
                     statusLedTs = millis();
-                } else if (statusLedOn && millis() - statusLedTs > 50) {
-                    statusLedOn = false;
-                    digitalWrite(Config::StatusLedPin, LOW);
+                } else if (Config::isStatusLedOn && millis() - statusLedTs > 50) {
+                    Config::statusLedOff();
                     statusLedTs = millis();
                 }
             } else {
                 // if not connected the LED will blink quickly every 200ms
-                if (millis() - statusLedTs > 100 && !statusLedOn) {
-                    statusLedOn = true;
-                    digitalWrite(Config::StatusLedPin, HIGH);
+                if (millis() - statusLedTs > 100 && !Config::isStatusLedOn) {
+                    Config::statusLedOn();
                     statusLedTs = millis();
-                } else if (statusLedOn && millis() - statusLedTs > 100) {
-                    statusLedOn = false;
-                    digitalWrite(Config::StatusLedPin, LOW);
+                } else if (Config::isStatusLedOn && millis() - statusLedTs > 100) {
+                    Config::statusLedOff();
                     statusLedTs = millis();
                 }
             }

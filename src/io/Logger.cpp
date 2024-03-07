@@ -56,17 +56,6 @@ namespace IO {
         Log.begin(level, &Serial, false);
     }
 
-    void Logger::loop() {
-
-    }
-
-    void Logger::blink() {
-        // Initialize RX/TX activity LED
-        //pinMode(LED_BUILTIN, OUTPUT);
-        // ESP D1-mini has LED HIGH/LOW inverted
-        //digitalWrite(LED_BUILTIN, HIGH);
-    }
-
     void Logger::info(const char *s, ...) {
         if (logLevel >= LOG_LEVEL_NOTICE) {
             timestamp();

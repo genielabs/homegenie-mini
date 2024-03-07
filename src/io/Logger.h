@@ -52,7 +52,6 @@ namespace IO {
     class Logger {
     public:
         static void begin(int level);
-        static void loop();
 
         static void error(const char *s, ...);
         static void warn(const char *s, ...);
@@ -61,7 +60,6 @@ namespace IO {
         static void trace(const char *s, ...);
         static void traceN(const char *s, ...);
         static void verbose(const char *s, ...);
-        static void blink();
 
     private:
         Logger();

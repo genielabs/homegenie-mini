@@ -30,10 +30,11 @@
 #include "WiFiManager.h"
 
 namespace Net {
+    wl_status_t WiFiManager::wiFiStatus = WL_DISCONNECTED;
+    unsigned long WiFiManager::lastStatusCheckTs = 0;
 
     WiFiManager::WiFiManager() {
         setLoopInterval(1000);
-        wiFiStatus = WL_DISCONNECTED;
         // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
         WiFi.mode(WIFI_STA);
         if (Config::isDeviceConfigured()) {
@@ -48,14 +49,15 @@ namespace Net {
     void WiFiManager::loop() {
         if (!Config::isDeviceConfigured()) return;
         auto status = ESP_WIFI_STATUS;
-        if (status != wiFiStatus) {
-            wiFiStatus = status;
+        if (status != wiFiStatus || millis() - lastStatusCheckTs > 10000) {
             checkWiFiStatus();
+            wiFiStatus = status;
+            lastStatusCheckTs = millis();
         }
     }
 
     void WiFiManager::connect() {
-        IO::Logger::info("|  - Connecting to WI-FI .");
+        IO::Logger::info("|  - Connecting to WI-FI");
 #ifdef CONFIGURE_WITH_WPS
         delay(1000); // TODO: is this delay necessary?
         WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
@@ -68,8 +70,8 @@ namespace Net {
             preferences.end();
         }
         if (!ssid.isEmpty() && !pass.isEmpty()) {
-            IO::Logger::info("|  - WI-FI SSID: %s", ssid.c_str());
-            IO::Logger::info("|  - WI-FI Password: *"); // pass.c_str()
+            IO::Logger::info("|  - WI-FI SSID: \"%s\"", ssid.c_str());
+            IO::Logger::info("|  - WI-FI Password: ***"); // pass.c_str()
             WiFi.begin(ssid.c_str(), pass.c_str());
         }
 #endif
@@ -77,15 +79,17 @@ namespace Net {
 
     bool WiFiManager::checkWiFiStatus() {
         bool wpsSuccess = false;
-        WiFi.waitForConnectResult();
+        WiFi.waitForConnectResult(1500);
         auto status = ESP_WIFI_STATUS;
         if (status == WL_CONNECTED) {
-            digitalWrite(Config::StatusLedPin, LOW);
-            IO::Logger::info("|  - Connected to '%s'", WiFi.SSID().c_str());
-            IO::Logger::info("|  - IP: %s", WiFi.localIP().toString().c_str());
+            Config::statusLedOff();
+            if (status != wiFiStatus) {
+                IO::Logger::info("|  - Connected to '%s'", WiFi.SSID().c_str());
+                IO::Logger::info("|  - IP: %s", WiFi.localIP().toString().c_str());
+            }
             wpsSuccess = true;
         } else {
-            digitalWrite(Config::StatusLedPin, HIGH);
+            Config::statusLedOn();
             switch (status) {
                 case WL_NO_SSID_AVAIL:
                     IO::Logger::error("|  x WiFi SSID not available");
@@ -119,19 +123,19 @@ namespace Net {
     bool WiFiManager::configure() {
 #ifdef CONFIGURE_WITH_WPS
 #ifdef ESP8266
-        // WPA currently only works for ESP8266
-        digitalWrite(Config::StatusLedPin, LOW);
+        // WPS currently only works for ESP8266
+        Config::statusLedOff();
         WiFi.disconnect();
         delay(100);
         WiFi.disconnect();
         delay(400);
-        digitalWrite(Config::StatusLedPin, HIGH);
+        Config::statusLedOn();
         IO::Logger::info ("|  >> Press WPS button on your router <<");
         bool wpsSuccess = WiFi.beginWPSConfig();
         return wpsSuccess;
 #else
-        // WPA only works with ESP8266
-        IO::Logger::error("|  x WPA only works with ESP8266");
+        // WPS only works with ESP8266
+        IO::Logger::error("|  x WPS only works with ESP8266");
         return false;
 #endif
 #else

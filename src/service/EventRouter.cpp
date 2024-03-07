@@ -44,7 +44,7 @@ namespace Service {
 #ifndef DISABLE_MQTT
             // MQTT
             auto date = TimeClient::getTimeClient().getFormattedDate();
-            auto topic = String(String(CONFIG_SYSTEM_NAME) + "/" + m.domain + "/" + m.sender + "/event");
+            auto topic = String(WiFi.macAddress() + "/" + m.domain + "/" + m.sender + "/event");
             auto details = Service::HomeGenie::createModuleParameter(m.event.c_str(), m.value.c_str(), date.c_str());
             netManager->getMQTTServer().broadcast(&topic, &details);
 #endif
@@ -76,13 +76,14 @@ namespace Service {
                 };
                 packer.packTimestamp(t);
                 auto epochs = String(epoch) + ms;
-                packer.packFloat((TimeClient::getTimeClient().getEpochTime() * 1000.0f) + ms);
+                packer.packFloat((epoch * 1000.0f) + ms);
                 packer.pack(m.domain.c_str());
                 packer.pack(m.sender.c_str());
                 packer.pack("");
                 packer.pack(m.event.c_str());
                 packer.pack(m.value.c_str());
                 netManager->getWebSocketServer().broadcastBIN(packer.data(), packer.size());
+                packer.clear();
             }
 
             // TODO: route event to the console as well

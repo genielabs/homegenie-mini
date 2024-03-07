@@ -34,7 +34,7 @@ namespace Service { namespace API {
         RCSwitchHandler::RCSwitchHandler(RFTransmitter* transmitter) {
             this->transmitter = transmitter;
 
-            auto domain = IO::IOEventDomains::HomeAutomation_RCS;
+            auto domain = IO::IOEventDomains::HomeAutomation_RemoteControl;
             // HomeGenie Mini module
             auto rfModule = new Module();
             rfModule->domain = domain;
@@ -49,25 +49,17 @@ namespace Service { namespace API {
 
         }
 
-
         void RCSwitchHandler::init() {
         }
 
-
-
-
-
         bool RCSwitchHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
-        if (command->Domain == (IOEventDomains::HomeAutomation_RCS)
+        if (command->Domain == (IOEventDomains::HomeAutomation_RemoteControl)
             && command->Address == CONFIG_RCSwitchRF_MODULE_ADDRESS
             && command->Command == "Control.SendRaw") {
 
             // parse long data from options string
             long data = atol(command->OptionsString.c_str());
-            // Disable RFTransmitter callbacks during transmission to prevent echo
-            noInterrupts();
             transmitter->sendCommand(data, 24, 1, 0);
-            interrupts();
             responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 
             return true;
@@ -76,7 +68,7 @@ namespace Service { namespace API {
     }
 
     bool RCSwitchHandler::canHandleDomain(String* domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_RCS);
+        return domain->equals(IO::IOEventDomains::HomeAutomation_RemoteControl);
     }
 
     bool RCSwitchHandler::handleEvent(IIOEventSender *sender,

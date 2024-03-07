@@ -35,6 +35,7 @@ namespace IO {
         const char Receiver_RawData[] PROGMEM = "Receiver.RawData";
         const char Receiver_Command[] PROGMEM = "Receiver.Command";
         const char Status_Level[] PROGMEM = "Status.Level";
+        const char Status_ColorHsb[] PROGMEM = "Status.ColorHsb";
         const char Sensor_Luminance[] PROGMEM = "Sensor.Luminance";
         const char Sensor_Temperature[] PROGMEM = "Sensor.Temperature";
         const char Sensor_Humidity[] PROGMEM = "Sensor.Humidity";

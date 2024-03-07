@@ -36,10 +36,10 @@ namespace Service {
         eventRouter.withNetManager(netManager);
 
         // Setup status led
-        pinMode(Config::StatusLedPin, OUTPUT);
+        Config::init();
         // Setup button
         pinMode(Config::ServiceButtonPin, INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(Config::ServiceButtonPin), buttonChange, CHANGE);
+//        attachInterrupt(digitalPinToInterrupt(Config::ServiceButtonPin), buttonChange, CHANGE);
 
         // Logger initialization
         Logger::begin(LOG_LEVEL_TRACE);
@@ -160,13 +160,15 @@ namespace Service {
 
 
     bool HomeGenie::api(APIRequest *request, ResponseCallback* responseCallback) {
+        bool handled;
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
             if (handler->canHandleDomain(&request->Domain)) {
-                return handler->handleRequest(request, responseCallback);
+                handled = handled || handler->handleRequest(request, responseCallback);
             }
+            //if (handled) break;
         }
-        return false;
+        return handled;
     }
 
 

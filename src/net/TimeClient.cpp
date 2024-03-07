@@ -70,7 +70,7 @@ namespace Net {
 #endif
                 } else {
                     // NTP Update failed
-                    digitalWrite(Config::StatusLedPin, HIGH);
+                    Config::statusLedOn();
                     Logger::warn("|  x TimeClient: NTP update failed!");
                 }
             }

@@ -56,10 +56,10 @@ namespace IO { namespace RCS {
     }
 
     void RFTransmitter::begin() {
-        Logger::info("|  - IO::RCS::RFTransmitter (PIN=%d)", configuration->getPin());
+        Logger::info("|  - IO::RemoteControl::RFTransmitter (PIN=%d)", configuration->getPin());
         RF.enableTransmit(configuration->getPin());   // Set RF transmit pin
         RF.setProtocol(protocol);                     // Set RF protocal
-        Logger::info("|  ✔ IO::RCS::RFTransmitter");
+        Logger::info("|  ✔ IO::RemoteControl::RFTransmitter");
     }
 
     /*

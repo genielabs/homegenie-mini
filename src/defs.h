@@ -60,7 +60,9 @@
     #undef DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
     #define CONFIG_ServiceButtonPin 4
+    #if CONFIG_StatusLedPin != -1
     #define CONFIG_StatusLedPin 0
+    #endif
     #ifndef CONFIG_GPIO_OUT
         #define CONFIG_GPIO_OUT {6}
     #endif
@@ -68,7 +70,9 @@
     #undef DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
     #define CONFIG_ServiceButtonPin 21
+    #if CONFIG_StatusLedPin != -1
     #define CONFIG_StatusLedPin 33
+    #endif
     #ifndef CONFIG_GPIO_OUT
         #define CONFIG_GPIO_OUT {15,16,17,18}
     #endif

@@ -52,6 +52,14 @@ namespace Service {
             this->data = data;
             this->type = type;
         }
+        QueuedMessage(Data::Module* sender, String event, String value, void* data, IO::IOEventDataType type) {
+            this->domain = sender->domain;
+            this->sender = sender->address;
+            this->event = event;
+            this->value = value;
+            this->data = data;
+            this->type = type;
+        }
         ~QueuedMessage() {
         }
         String domain;

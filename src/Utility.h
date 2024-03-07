@@ -32,12 +32,29 @@
 
 #include "Config.h"
 
+
+typedef struct RGBColor {
+    int r;
+    int g;
+    int b;
+} RGBColor;
+
+
 class Utility {
 public:
     static void getBytes(const String &rawBytes, uint8_t *data);
+    static void getBytes(const String &rawBytes, uint16_t *data);
+    static String getByteString(uint8_t *data, uint16_t length);
+    static String getByteString(uint16_t *data, uint16_t length);
+    static String getByteString(uint64_t *data, uint16_t length);
     static String byteToHex(byte b);
+    static String byteToHex(int16_t b);
+    static String byteToHex(uint16_t b);
+    static String byteToHex(uint32_t b);
+    static String byteToHex(uint64_t b);
     static uint32_t reverseBits(uint32_t n);
     static uint8_t reverseByte(uint8_t n);
+    static RGBColor hsv2rgb(float H, float S, float V);
 };
 
 #endif //HOMEGENIE_MINI_UTILITY_H
