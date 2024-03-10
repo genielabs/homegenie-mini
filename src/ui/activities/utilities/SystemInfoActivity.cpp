@@ -95,7 +95,7 @@ namespace UI { namespace Activities { namespace Utilities {
             canvas->setCursor(27, 120);
             canvas->setTextColor(ActivityColors::ACCENT);
             canvas->print("WI-FI ");
-            if (WiFiClass::status() == WL_CONNECTED) {
+            if (ESP_WIFI_STATUS == WL_CONNECTED) {
                 canvas->setTextColor(ActivityColors::TEXT);
                 canvas->print("CONNECTED");
             } else {

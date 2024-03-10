@@ -53,6 +53,8 @@
 #include <net/BluetoothManager.h>
 #endif
 
+#include "io/IOEventDomains.h"
+
 #include "TimeClient.h"
 
 #define NETMANAGER_LOG_PREFIX           "@Net::NetManager"
@@ -68,6 +70,31 @@ namespace Net {
         virtual void write(const char* s) = 0;
         virtual void writeAll(const char* s) = 0;
         virtual void error(const char* s) = 0;
+    };
+
+    class MQTTResponseCallback : public ResponseCallback {
+    public:
+        MQTTResponseCallback(MQTTServer *server, uint8_t clientId, String* destinationTopic) {
+            mq = server;
+            cid = clientId;
+            topic = destinationTopic;
+        }
+        void beginGetLength() override {
+            buffer = "";
+        };
+        void endGetLength() override {
+            mq->broadcast(topic, &buffer);
+        };
+        void write(const char* s) override {
+            buffer += s;
+        };
+        void writeAll(const char* s) override {};
+        void error(const char* s) override {};
+    private:
+        MQTTServer* mq;
+        uint8_t cid;
+        String* topic;
+        String buffer;
     };
 
     // WebSocketResponseCallback

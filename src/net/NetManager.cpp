@@ -73,7 +73,7 @@ namespace Net {
                     }
                     break;
                 case WStype_TEXT: {
-                        // message received
+                        // clear-text message received
                         Serial.printf("[%u] TEXT\t%s\n", num, payload);
                         char message[length + 5];
                         sprintf(message, "api/%s", payload);
@@ -84,12 +84,13 @@ namespace Net {
                 case WStype_ERROR:
                     break;
                 case WStype_BIN: {
+                        // binary-packed message received
                         MsgPack::Unpacker unpacker;
                         std::array<String, 2> req;
                         unpacker.feed(payload, length);
                         unpacker.unpack(req);
                         unpacker.clear();
-
+                        // route message with response callback
                         String rid = req[0];
                         String request = "api/" + req[1];
                         Serial.printf("[%u] BIN\t%s\t%s\n", num, rid.c_str(), request.c_str());
@@ -116,6 +117,21 @@ namespace Net {
 
 #ifndef DISABLE_MQTT
         mqttServer = new MQTTServer();
+        mqttServer->onRequest([this](uint8_t num, const char* domain, const char* address, const char* command) {
+
+            auto c = String(command);
+            if (c == "Module.Describe") {
+                String topic = WiFi.macAddress() + "/" + domain + "/" + address + "/description";
+                String apiCommand = "/api/" + String(IOEventDomains::HomeAutomation_HomeGenie) + "/Config/Modules.Get/" + domain + "/" + address;
+                auto cb = MQTTResponseCallback(mqttServer, num, &topic);
+                netRequestHandler->onNetRequest(mqttServer, apiCommand.c_str(), &cb);
+            } else {
+                String apiCommand = "/api/" + String(domain) + "/" + String(address) + "/" + c;
+                auto cb = MQTTResponseCallback(mqttServer, 0, nullptr);
+                netRequestHandler->onNetRequest(mqttServer, apiCommand.c_str(), &cb);
+            }
+
+        });
         mqttServer->begin();
 #endif
         timeClient = new TimeClient();

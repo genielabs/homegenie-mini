@@ -77,19 +77,19 @@ namespace Service { namespace API {
     bool HomeGenieHandler::handleRequest(Service::APIRequest *request, ResponseCallback* responseCallback) {
         auto homeGenie = HomeGenie::getInstance();
         if (request->Address == F("Config")) {
-            if (request->Command == F("Modules.List")) {
-                responseCallback->beginGetLength();
-                homeGenie->writeModuleListJSON(responseCallback);
-                responseCallback->endGetLength();
-                homeGenie->writeModuleListJSON(responseCallback);
-                return true;
-            } else if (request->Command == F("Groups.List")) {
+            if (request->Command == ConfigApi::Groups_List) {
                 responseCallback->beginGetLength();
                 homeGenie->writeGroupListJSON(responseCallback);
                 responseCallback->endGetLength();
                 homeGenie->writeGroupListJSON(responseCallback);
                 return true;
-            } else if (request->Command == F("Modules.Get")) {
+            } else if (request->Command == ConfigApi::Modules_List) {
+                responseCallback->beginGetLength();
+                homeGenie->writeModuleListJSON(responseCallback);
+                responseCallback->endGetLength();
+                homeGenie->writeModuleListJSON(responseCallback);
+                return true;
+            } else if (request->Command == ConfigApi::Modules_Get) {
                 String domain = request->getOption(0);
                 String address = request->getOption(1);
                 responseCallback->beginGetLength();
@@ -98,7 +98,7 @@ namespace Service { namespace API {
                 if (contentLength == 0) return false;
                 homeGenie->writeModuleJSON(responseCallback, &domain, &address);
                 return true;
-            } else if (request->Command == F("Modules.ParameterSet")) {
+            } else if (request->Command == ConfigApi::Modules_ParameterSet) {
                 String domain = request->getOption(0);
                 String address = request->getOption(1);
                 String propName = request->getOption(2);
@@ -115,7 +115,7 @@ namespace Service { namespace API {
                     responseCallback->writeAll(R"({ "ResponseText": "OK" })");
                     return true;
                 }
-            } else if (request->Command == F("WebSocket.GetToken")) {
+            } else if (request->Command == ConfigApi::WebSocket_GetToken) {
 
                 // TODO: implement random token with expiration (like in HG server) for websocket client verification
 

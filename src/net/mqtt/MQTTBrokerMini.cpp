@@ -49,8 +49,9 @@ namespace Net { namespace MQTT {
     void MQTTBrokerMini::runCallback(uint8_t num, Events_t event, uint8_t *topic_name, uint16_t length_topic_name,
                                       uint8_t *payload, uint16_t length_payload) {
         if (callback) {
-            delay(0);
-            callback(num, event, data_to_string(topic_name, length_topic_name), payload, length_payload);
+            delay(0); // TODO: <-- not sure what this delay is for
+            String topic = data_to_string(topic_name, length_topic_name);
+            callback(num, &event, &topic, payload, length_payload);
         }
     }
 

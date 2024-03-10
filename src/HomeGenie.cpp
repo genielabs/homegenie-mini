@@ -87,9 +87,10 @@ namespace Service {
         // HomeGenie-Mini Terminal CLI
         if (Serial.available() > 0) {
             String cmd = Serial.readStringUntil('\n');
-            auto apiCommand = APIRequest::parse(cmd);
-            // TODO: implement API commands from console input as well
-            //      - see `HomeGenie::api(...)` method
+            if (!cmd.isEmpty()) {
+                // TODO: implement SerialCallback
+                onNetRequest(this, cmd.c_str(), nullptr);
+            }
         }
 
         // TODO: sort of system load index could be obtained by measuring time elapsed for `TaskManager::loop()` method

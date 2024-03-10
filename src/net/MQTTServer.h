@@ -38,19 +38,27 @@
 namespace Net {
     using namespace MQTT;
 
-/// Simple MQTT Broker implementation over WebSockets
+    typedef std::function<void(uint8_t num, const char* domain, const char* address, const char* command)> ApiRequestEvent;
+
+    /// Simple MQTT Broker implementation over WebSockets
     class MQTTServer : Task {
     public:
         void begin();
         void loop() override;
 
-        void broadcast(String *topic, String *payload);
+        void broadcast(uint8_t num, String* topic, String* payload);
+        void broadcast(String* topic, String* payload);
+        void onRequest(ApiRequestEvent cb) {
+            apiCallback = cb;
+        }
 
-        static void webSocketEventStatic(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
-        static void mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t * payload, uint16_t length_payload);
+        void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
+        void mqttCallback(uint8_t num, const Events_t* event, const String* topic_name, uint8_t* payload, uint16_t length_payload);
+
     private:
-        WebSocketsServer *webSocket = nullptr;
-        MQTTBrokerMini *mqttBroker = nullptr;
+        WebSocketsServer* webSocket = nullptr;
+        MQTTBrokerMini* mqttBroker = nullptr;
+        ApiRequestEvent apiCallback = nullptr;
     };
 
 }

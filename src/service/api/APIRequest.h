@@ -50,6 +50,14 @@ namespace Service { namespace API {
         static const char Control_Close[] PROGMEM = {"Control.Close"};
     }
 
+    namespace ConfigApi {
+        static const char Modules_List[] PROGMEM = {"Modules.List"};
+        static const char Modules_Get[] PROGMEM = {"Modules.Get"};
+        static const char Modules_ParameterSet[] PROGMEM = {"Modules.ParameterSet"};
+        static const char Groups_List[] PROGMEM = {"Groups.List"};
+        static const char WebSocket_GetToken[] PROGMEM = {"WebSocket.GetToken"};
+    }
+
     class APIRequest {
     public:
         String Prefix;

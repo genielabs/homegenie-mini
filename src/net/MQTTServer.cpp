@@ -31,8 +31,11 @@
 
 namespace Net {
 
-    WebSocketsServer *ws;
-    MQTTBrokerMini *mb;
+    WebSocketsServer* ws;
+    MQTTBrokerMini* mb;
+
+    uint8_t* buf = nullptr;
+    size_t totalLength = 0;
 
     void MQTTServer::begin() {
 
@@ -44,10 +47,14 @@ namespace Net {
         mb = mqttBroker;
 
         webSocket->begin();
-        webSocket->onEvent(webSocketEventStatic);
+        webSocket->onEvent([this](uint8_t n, WStype_t t, uint8_t * p, size_t l) {
+            webSocketEvent(n, t, p, l);
+        });
 
         mqttBroker->begin();
-        mqttBroker->setCallback(mqttCallbackStatic);
+        mqttBroker->setCallback([this](uint8_t n, const Net::MQTT::Events_t* e, const String* topic_name, uint8_t* payload, uint16_t payload_length) {
+            mqttCallback(n, e, topic_name, payload, payload_length);
+        });
 
     }
 
@@ -57,41 +64,111 @@ namespace Net {
         }
     }
 
-    void MQTTServer::mqttCallbackStatic(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
+    void MQTTServer::mqttCallback(uint8_t num, const Events_t* event, const String* topic_name, uint8_t *payload,
                                         uint16_t length_payload) {
-        auto msg = String((char*)payload);
-        switch (event){
-            case EVENT_CONNECT:
-                IO::Logger::trace(":%s [%d] >> CONNECT from '%s'", MQTTBROKER_NS_PREFIX, num, topic_name.c_str());
+        switch (*event){
+            case EVENT_CONNECT: {
+                IO::Logger::trace(":%s [%d] >> CONNECT from '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
                 break;
-            case EVENT_SUBSCRIBE:
-                IO::Logger::trace(":%s [%d] >> SUBSCRIBE to '%s'", MQTTBROKER_NS_PREFIX, num, topic_name.c_str());
+            }
+            case EVENT_SUBSCRIBE: {
+                IO::Logger::trace(":%s [%d] >> SUBSCRIBE to '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
                 break;
-            case EVENT_PUBLISH:
-                IO::Logger::trace(":%s [%d] >> PUBLISH to '%s'", MQTTBROKER_NS_PREFIX, num, topic_name.c_str());
-                // TODO: ... IMPLEMENT HG API HANDLE TOPIC
-                if (topic_name == "TODO_CHANGE_WITH_MY_ID/control") {
-                    // TODO: Control API
+            }
+            case EVENT_PUBLISH: {
+                IO::Logger::trace(":%s [%d] >> PUBLISH to '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
+
+                auto controlTopic = String ("/") + WiFi.macAddress() + String("/command");
+                auto msg = String(payload, length_payload);
+                if ((*topic_name).endsWith(controlTopic)) { // initial part is the source node id, ending part is the destination node
+
+                    JsonDocument doc;
+                    deserializeJson(doc, msg);
+                    if (apiCallback != nullptr && doc.containsKey("Domain") && doc.containsKey("Address") && doc.containsKey("Command")) {
+                        auto domain = String((const char*)doc["Domain"]);
+                        auto address = String((const char*)doc["Address"]);
+                        auto command = String((const char*)doc["Command"]);
+                        apiCallback(num, domain.c_str(), address.c_str(), command.c_str());
+                    }
+                    doc.clear();
+
                 } else {
-                    // broadcast message  to subscribed clients
-                    mb->broadcast(num, (topic_name).c_str(), payload, length_payload);
+
+                    // broadcast message to subscribed clients
+                    mb->broadcast((*topic_name).c_str(), payload, length_payload);
+
                 }
+
                 break;
-            case EVENT_DISCONNECT:
-               IO::Logger::trace(":%s [%d] >> DISCONNECT =/", MQTTBROKER_NS_PREFIX, num);
+            }
+            case EVENT_DISCONNECT: {
+                IO::Logger::trace(":%s [%d] >> DISCONNECT =/", MQTTBROKER_NS_PREFIX, num);
                 break;
+            }
         }
     }
 
-    void MQTTServer::webSocketEventStatic(uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
+    void MQTTServer::webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
         switch(type) {
-            case WStype_DISCONNECTED:
+            case WStype_DISCONNECTED: {
                 if (mb->clientIsConnected(num)) mb->disconnect(num);
+            }
+            break;
+            case WStype_TEXT: {
+            }
+            break;
+            case WStype_FRAGMENT_BIN_START: {
+                if (buf != nullptr) {
+                    free(buf);
+                }
+                buf = (uint8_t*)malloc(sizeof(uint8_t) * length);
+                if (buf != nullptr) {
+                    memcpy(buf, payload, length);
+                    totalLength = length;
+                }
+            }
                 break;
-            case WStype_BIN:
-                mb->parsing(num, payload, (uint16_t)length);
+            case WStype_FRAGMENT: {
+                if (buf != nullptr) {
+                    uint8_t* old = buf;
+                    buf = (uint8_t*) malloc(sizeof(uint8_t) * (totalLength + length));
+                    if (buf != nullptr) {
+                        memcpy(buf, old, totalLength);
+                        memcpy(&buf[totalLength], payload, length);
+                        totalLength += length;
+                    }
+                    free(old);
+                }
+            }
                 break;
+            case WStype_FRAGMENT_FIN: {
+                if (buf != nullptr) {
+                    uint8_t* old = buf;
+                    buf = (uint8_t*) malloc(sizeof(uint8_t) * (totalLength + length));
+                    if (buf != nullptr) {
+                        memcpy(buf, old, totalLength);
+                        memcpy(&buf[totalLength], payload, length);
+                        totalLength += length;
+                    }
+                    free(old);
+                }
+                if (buf != nullptr && totalLength > 0) {
+                    mb->parsing(num, buf, (uint16_t) totalLength);
+                }
+                totalLength = 0;
+                free(buf);
+                buf = nullptr;
+            }
+                break;
+            case WStype_BIN: {
+                mb->parsing(num, payload, (uint16_t) length);
+            }
+            break;
         }
+    }
+
+    void MQTTServer::broadcast(uint8_t num, String *topic, String *payload) {
+        mb->broadcast(num, *topic, (uint8_t *)payload->c_str(), (uint16_t)payload->length());
     }
 
     void MQTTServer::broadcast(String *topic, String *payload) {

@@ -101,8 +101,8 @@ namespace Net { namespace MQTT {
             EVENT_DISCONNECT,
         } Events_t;
 
-        typedef void(*callback_t)(uint8_t num, Events_t event, String topic_name, uint8_t *payload,
-                                  uint16_t length_payload);
+        typedef std::function<void(uint8_t num, const Events_t* event, const String* topic_name, uint8_t *payload,
+                                  uint16_t length_payload)> callback_t;
 
         using namespace IO;
 
