@@ -30,8 +30,8 @@ ColorLight::ColorLight(const char* domain, const char* address, const char* name
     module->type = "Color";
 
     // add properties
-//    auto propStatusColorHsb = new ModuleParameter(IOEventPaths::Status_ColorHsb);
-//    module->properties.add(propStatusColorHsb);
+    auto propStatusColorHsb = new ModuleParameter(IOEventPaths::Status_ColorHsb);
+    module->properties.add(propStatusColorHsb);
 
     onSetLevel([this](float l) {
         color.setColor(color.getHue(), color.getSaturation(), l, defaultTransitionMs);

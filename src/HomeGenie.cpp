@@ -180,13 +180,15 @@ namespace Service {
     }
 
     Module* HomeGenie::getModule(String* domain, String* address) {
+        Module* module = nullptr;
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
             if (handler->canHandleDomain(domain)) {
-                return handler->getModule(domain->c_str(), address->c_str());
+                module = handler->getModule(domain->c_str(), address->c_str());
+                if (module != nullptr) break;
             }
         }
-        return nullptr;
+        return module;
     }
 
     const char* HomeGenie::getModuleJSON(Module* module) {

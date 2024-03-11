@@ -32,8 +32,8 @@ Switch::Switch(const char* domain, const char* address, const char* name) {
     module->type = "Switch";
     module->name = name;
     // add properties
-//    auto propStatusLevel = new ModuleParameter(IOEventPaths::Status_Level);
-//    module->properties.add(propStatusLevel);
+    auto propStatusLevel = new ModuleParameter(IOEventPaths::Status_Level);
+    module->properties.add(propStatusLevel);
 
     moduleList.add(module);
 }
