@@ -64,7 +64,7 @@ namespace Net {
         }
     }
 
-    void MQTTServer::mqttCallback(uint8_t num, const Events_t* event, const String* topic_name, uint8_t *payload,
+    void MQTTServer::mqttCallback(uint8_t num, const Events_t* event, const String* topic_name, uint8_t* payload,
                                         uint16_t length_payload) {
         switch (*event){
             case EVENT_CONNECT: {
@@ -79,7 +79,11 @@ namespace Net {
                 IO::Logger::trace(":%s [%d] >> PUBLISH to '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
 
                 auto controlTopic = String ("/") + WiFi.macAddress() + String("/command");
+#if ESP8266
+                auto msg = mb->data_to_string(payload, length_payload);
+#else
                 auto msg = String(payload, length_payload);
+#endif
                 if ((*topic_name).endsWith(controlTopic)) { // initial part is the source node id, ending part is the destination node
 
                     JsonDocument doc;

@@ -35,7 +35,7 @@ using namespace Service;
 
 HomeGenie* homeGenie;
 
-Adafruit_NeoPixel pixels(1, 10, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels(1, CONFIG_StatusLedNeoPixelPin, NEO_GRB + NEO_KHZ800);
 
 void statusLedCallback(bool isLedOn) {
     if (isLedOn) {

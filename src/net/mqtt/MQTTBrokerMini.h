@@ -131,6 +131,8 @@ namespace Net { namespace MQTT {
 
             MQTTBrokerClient_t *getClients();
 
+            String data_to_string(uint8_t *data, uint16_t length);
+
         private:
             WebSocketsServer *WS;
             callback_t callback;
@@ -148,8 +150,6 @@ namespace Net { namespace MQTT {
             void connect(uint8_t num);
 
             bool numIsIncorrect(uint8_t num);
-
-            String data_to_string(uint8_t *data, uint16_t length);
 
             uint16_t MSB_LSB(uint8_t *msb_byte);
         };

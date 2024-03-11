@@ -207,7 +207,7 @@ namespace Net { namespace MQTT {
         String str;
         str.reserve(length);
         for (uint16_t i = 0; i < length; i++)
-            str += (char) data[i];
+            str += (char)data[i];
         return str;
     }
 
