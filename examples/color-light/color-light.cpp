@@ -24,14 +24,15 @@
  */
 
 #include <HomeGenie.h>
+#include <service/api/devices/ColorLight.h>
 
 #include <Adafruit_NeoPixel.h>
 
 #include "configuration.h"
 
-#include "api/ColorLight.h"
 
 using namespace Service;
+using namespace Service::API::devices;
 
 HomeGenie* homeGenie;
 

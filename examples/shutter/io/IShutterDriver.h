@@ -47,6 +47,8 @@ namespace IO { namespace Components {
         virtual void open() = 0;
         virtual void close() = 0;
         virtual void level(float) = 0;
+        virtual void calibrate() = 0;
+        virtual void speed(float) = 0;
         IIOEventSender* eventSender = nullptr;
     };
 }}

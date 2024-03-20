@@ -45,6 +45,8 @@ namespace Service { namespace API {
         shutterLevel = new ModuleParameter(IOEventPaths::Status_Level);
         shutterModule->properties.add(shutterLevel);
 
+        shutterControl->setModule(shutterModule);
+
         moduleList.add(shutterModule);
     }
 
@@ -70,9 +72,23 @@ namespace Service { namespace API {
 
                 shutterControl->close();
 
+                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+
             } else if (command->Command == "Control.Open" || command->Command == "Control.On") {
 
                 shutterControl->open();
+
+                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+
+            } else if (command->Command == "Shutter.Speed") {
+
+                shutterControl->setSpeed(command->OptionsString.toFloat());
+
+                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+
+            } else if (command->Command == "Shutter.Calibrate") {
+
+                // TODO: ...
 
             } else {
 
@@ -105,6 +121,9 @@ namespace Service { namespace API {
                     break;
                 case Float:
                     m.value = String(*(float *) eventData);
+                    break;
+                case Text:
+                    m.value = String(*(String *) eventData);
                     break;
                 default:
                     m.value = String(*(int32_t *) eventData);

@@ -68,7 +68,7 @@ Dashboard* dashboard;
 void setup() {
 
     //uint8_t batterySensorPin = 1;
-    uint8_t motionSensorPin = 16;
+    uint8_t motionSensorPin = CONFIG_MotionSensorPin;
 
     PowerManager::setWakeUpGPIO((gpio_num_t)motionSensorPin);
 

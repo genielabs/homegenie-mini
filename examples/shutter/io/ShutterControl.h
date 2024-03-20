@@ -43,8 +43,6 @@ namespace IO { namespace Components {
     class ShutterControl : public IIOEventSender {
     private:
         IShutterDriver* shutterDriver;
-        String domain = IO::IOEventDomains::Automation_Components;
-        String address = SERVO_MODULE_ADDRESS;
     public:
         ShutterControl() {
             shutterDriver = new ServoDriver();
@@ -57,6 +55,7 @@ namespace IO { namespace Components {
         void open();
         void close();
         void setLevel(float level);
+        void setSpeed(float speed);
 
         void calibrate(); // TODO:....
     };

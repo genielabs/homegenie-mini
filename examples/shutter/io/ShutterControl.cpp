@@ -44,14 +44,12 @@ namespace IO { namespace Components {
     void ShutterControl::setLevel(float level) {
         shutterDriver->level(level);
     }
+    void ShutterControl::setSpeed(float s) {
+        shutterDriver->speed(s);
+    }
 
     void ShutterControl::calibrate() {
-        // TODO: CALIBRATE WILL set the value of "totalTimeSpanMs" variable:
-        // TODO:     --> after starting "calibration" the shutter will go up
-        // TODO:     --> until the user confirms with any input (e.g. the "open" button)
-        // TODO:     --> that the roller/shades are fully open.
-        // TODO:     --> the time that the shutter took to go from position 0 to 100% will
-        // TODO:     ---> be stored to "totalTimeSpanMs" and calibration process will be complete
+        // TODO: ...
     }
 
 }}

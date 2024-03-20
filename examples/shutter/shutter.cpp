@@ -27,27 +27,67 @@
  *
  */
 
-#include <HomeGenie.h>
-
 #include "configuration.h"
 
+#include <HomeGenie.h>
+
 #include "api/ShutterHandler.h"
+
+#ifdef ESP32_C3
+#include <service/api/devices/ColorLight.h>
+#endif
 
 using namespace IO;
 using namespace Service;
 
 HomeGenie* homeGenie;
 
+
+#ifdef ESP32_C3
+using namespace Service::API::devices;
+#include <Adafruit_NeoPixel.h>
+// Custom status led (builtin NeoPixel RGB on pin 10)
+Adafruit_NeoPixel pixels(1, CONFIG_StatusLedNeoPixelPin, NEO_GRB + NEO_KHZ800);
+void statusLedCallback(bool isLedOn) {
+    if (isLedOn) {
+        pixels.setPixelColor(0, Adafruit_NeoPixel::Color(50, 50, 0));
+    } else {
+        pixels.setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
+    }
+    pixels.show();
+}
+unsigned long helloWorldDuration = 10000;
+bool helloWorldActive = true;
+#endif
+
+
 void setup() {
+#ifdef ESP32_C3
+    // Custom status led (builtin NeoPixel RGB on pin 10)
+//    if (!Config::isDeviceConfigured()) {
+        Config::statusLedCallback(&statusLedCallback);
+//    }
+    pixels.begin();
+#endif
 
     homeGenie = HomeGenie::getInstance();
 
     //auto miniModule = homeGenie->getDefaultModule();
 
     auto shutterControl = new ShutterControl();
+    auto shutterHandler = new ShutterHandler(shutterControl);
 
     homeGenie->addIOHandler(shutterControl);
-    homeGenie->addAPIHandler(new ShutterHandler(shutterControl));
+    homeGenie->addAPIHandler(shutterHandler);
+
+#ifdef ESP32_C3
+    auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Demo Light");
+    colorLight->onSetColor([](float r, float g, float b) {
+        pixels.setPixelColor(0, r, g, b);
+        pixels.show();
+    });
+    homeGenie->addAPIHandler(colorLight);
+#endif
 
     homeGenie->begin();
 
@@ -56,5 +96,10 @@ void setup() {
 void loop()
 {
     homeGenie->loop();
-
+#ifdef ESP32_C3
+    if (helloWorldActive && millis() > helloWorldDuration && Config::isDeviceConfigured()) {
+        helloWorldActive = false;
+        Config::statusLedCallback(nullptr);
+    }
+#endif
 }

@@ -14,3 +14,5 @@
     #define CONFIG_LightSensorPin 34
 
 #endif
+
+#define CONFIG_MotionSensorPin 16

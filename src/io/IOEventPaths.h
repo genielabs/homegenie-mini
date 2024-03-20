@@ -41,6 +41,7 @@ namespace IO {
         const char Sensor_Humidity[] PROGMEM = "Sensor.Humidity";
         const char Sensor_MotionDetect[] PROGMEM = "Sensor.MotionDetect";
         const char Status_Battery[] PROGMEM = "Status.Battery";
+        const char Status_Error[] PROGMEM = "Status.Error";
         const char System_BytesFree[] PROGMEM = "System.BytesFree";
     }
 }
