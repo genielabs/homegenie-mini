@@ -61,20 +61,20 @@ namespace IO {
         virtual void sendEvent(const char *domain, const char *address, const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
             if (eventReceiver != nullptr) {
                 eventReceiver->onIOEvent(this, domain, address, eventPath, eventData, dataType);
-                lastEventMs = millis();
             }
         };
         virtual void sendEvent(const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
             if (eventReceiver != nullptr && module != nullptr) {
-                eventReceiver->onIOEvent(this, module->domain.c_str(), module->address.c_str(), eventPath, eventData, dataType);
-                lastEventMs = millis();
+                auto eventsDisable = module->getProperty("Events.Disable");
+                if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
+                    eventReceiver->onIOEvent(this, module->domain.c_str(), module->address.c_str(), eventPath, eventData, dataType);
+                }
             }
         };
 
     protected:
         IIOEventReceiver *eventReceiver = nullptr;
-        unsigned long lastEventMs = 0;
-        const Module* module = nullptr;
+        Module* module = nullptr;
     };
 
 }

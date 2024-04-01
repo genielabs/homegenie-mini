@@ -57,11 +57,14 @@ namespace Service { namespace API { namespace devices {
             level.setLevel(l, transition);
 
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto eventPath = IOEventPaths::Status_Level;
-            auto eventValue = String(l);
-            auto msg = QueuedMessage(m, eventPath, eventValue, &l, IOEventDataType::Float);
-            m->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
-            HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+            auto eventsDisable = module->getProperty("Events.Disable");
+            if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
+                auto eventPath = IOEventPaths::Status_Level;
+                auto eventValue = String(l);
+                auto msg = QueuedMessage(m, eventPath, eventValue, &l, IOEventDataType::Float);
+                m->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
+                HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+            }
 
             if (l > 0) {
                 Switch::status = SWITCH_STATUS_ON;

@@ -143,7 +143,8 @@ namespace Net {
         Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
 
         if (ESP_WIFI_STATUS == WL_CONNECTED) {
-            webSocket->loop();
+            for (int i = 0; i < 5; i++) // higher priority
+                webSocket->loop();
         }
 
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);

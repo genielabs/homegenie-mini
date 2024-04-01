@@ -36,19 +36,27 @@ using namespace Service::API::devices;
 
 HomeGenie* homeGenie;
 
-Adafruit_NeoPixel pixels(1, CONFIG_StatusLedNeoPixelPin, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel statusLED(1, CONFIG_StatusLedNeoPixelPin, NEO_GRB + NEO_KHZ800);
+
+#ifdef LED_ARRAY_COUNT
+int num = LED_ARRAY_COUNT;  // 90 = 3mt // 30 LEDs per meter (3 mt. strip)
+int pin = LED_ARRAY_PIN;
+Adafruit_NeoPixel pixels(num, pin, NEO_RGB + NEO_KHZ800);
+#endif
+
+bool changed = false;
 
 void statusLedCallback(bool isLedOn) {
     if (isLedOn) {
-        pixels.setPixelColor(0, Adafruit_NeoPixel::Color(50, 50, 0));
+        statusLED.setPixelColor(0, Adafruit_NeoPixel::Color(50, 50, 0));
     } else {
-        pixels.setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
+        statusLED.setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
     }
-    pixels.show();
+    statusLED.show();
 }
 
 void setup() {
-    pixels.begin();
+    statusLED.begin();
 
     homeGenie = HomeGenie::getInstance();
 
@@ -61,10 +69,27 @@ void setup() {
 
         auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Demo Light");
         colorLight->onSetColor([](float r, float g, float b) {
-            pixels.setPixelColor(0, r, g, b);
-            pixels.show();
+            statusLED.setPixelColor(0, g, r, b);
+#ifdef LED_ARRAY_COUNT
+            for (int i = 0; i < num; i++) {
+                pixels.setPixelColor(i, r, g, b);
+            }
+#endif
+            changed = true;
         });
         homeGenie->addAPIHandler(colorLight);
+
+#ifdef LED_ARRAY_COUNT
+        for (int i = 0; i < num; i++) {
+            auto address = String("L") + String(i + 1);
+            auto cl = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), "Demo Light");
+            cl->onSetColor([i](float r, float g, float b) {
+                pixels.setPixelColor(i, r, g, b);
+                changed = true;
+            });
+            homeGenie->addAPIHandler(cl);
+        }
+#endif
 
         // TODO: implement color/status recall on start
         // TODO: implement color/status recall on start
@@ -75,7 +100,18 @@ void setup() {
     homeGenie->begin();
 }
 
+unsigned long ts = 0;
+
 void loop()
 {
     homeGenie->loop();
+
+    if (changed) { //&& millis()-ts > 50) { // force 20fps max
+        changed = false;
+        statusLED.show();
+#ifdef LED_ARRAY_COUNT
+        pixels.show();
+#endif
+        ts = millis();
+    }
 }

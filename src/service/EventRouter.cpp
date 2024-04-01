@@ -92,7 +92,19 @@ namespace Service {
 
     void EventRouter::signalEvent(QueuedMessage m) {
         if (WiFi.isConnected()) {
-          eventsQueue.add(m);
+            bool updated = false;
+            for (int i = 0; i < eventsQueue.size(); i++) {
+                auto qm = eventsQueue.get(i);
+                if (qm.domain == m.domain && qm.sender == m.sender && qm.event == m.event && qm.type == m.type) {
+                    qm.data = m.data;
+                    qm.value = m.value;
+                    updated = true;
+                    break;
+                }
+            }
+            if (!updated) {
+                eventsQueue.add(m);
+            }
         }
     }
 

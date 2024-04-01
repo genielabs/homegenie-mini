@@ -66,11 +66,14 @@ namespace Service { namespace API { namespace devices {
                 }
 
                 // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-                float l = status == SWITCH_STATUS_ON ? onLevel : 0;
-                auto eventValue = String(l);
-                auto msg = QueuedMessage(m, eventPath, eventValue, &l, IOEventDataType::Float);
-                m->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
-                HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+                auto eventsDisable = module->getProperty("Events.Disable");
+                if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
+                    float l = status == SWITCH_STATUS_ON ? onLevel : 0;
+                    auto eventValue = String(l);
+                    auto msg = QueuedMessage(m, eventPath, eventValue, &l, IOEventDataType::Float);
+                    m->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
+                    HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+                }
 
                 responseCallback->writeAll(R"({ "ResponseText": "OK" })");
 

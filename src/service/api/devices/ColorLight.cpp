@@ -74,17 +74,20 @@ namespace Service { namespace API { namespace devices {
 
             color.setColor(o[0], o[1], o[2], o[3]*1000);
 
-
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto eventValue = command->getOption(0);
-            auto msg = QueuedMessage(m, IOEventPaths::Status_ColorHsb, eventValue, nullptr, IOEventDataType::Undefined);
-            m->setProperty(IOEventPaths::Status_ColorHsb, eventValue, nullptr, IOEventDataType::Undefined);
-            HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
-            // level prop
-            auto levelValue = String(o[2]); // TODO: use sprintf %.6f
-            auto msg2 = QueuedMessage(m, IOEventPaths::Status_Level, levelValue, nullptr, IOEventDataType::Undefined);
-            m->setProperty(IOEventPaths::Status_Level, levelValue, nullptr, IOEventDataType::Undefined);
-            HomeGenie::getInstance()->getEventRouter().signalEvent(msg2);
+            auto eventsDisable = module->getProperty("Events.Disable");
+            if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
+                // color
+                auto eventValue = command->getOption(0);
+                auto msg = QueuedMessage(m, IOEventPaths::Status_ColorHsb, eventValue, nullptr, IOEventDataType::Undefined);
+                m->setProperty(IOEventPaths::Status_ColorHsb, eventValue, nullptr, IOEventDataType::Undefined);
+                HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+                // level
+                auto levelValue = String(o[2]); // TODO: use sprintf %.6f
+                auto msg2 = QueuedMessage(m, IOEventPaths::Status_Level, levelValue, nullptr, IOEventDataType::Undefined);
+                m->setProperty(IOEventPaths::Status_Level, levelValue, nullptr, IOEventDataType::Undefined);
+                HomeGenie::getInstance()->getEventRouter().signalEvent(msg2);
+            }
 
             if (o[2] > 0) {
                 Switch::status = SWITCH_STATUS_ON;
