@@ -34,6 +34,7 @@
 
 #include "data/Module.h"
 #include "IOEventData.h"
+#include "IOEventPaths.h"
 
 namespace IO {
 
@@ -65,7 +66,7 @@ namespace IO {
         };
         virtual void sendEvent(const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
             if (eventReceiver != nullptr && module != nullptr) {
-                auto eventsDisable = module->getProperty("Events.Disable");
+                auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
                 if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
                     eventReceiver->onIOEvent(this, module->domain.c_str(), module->address.c_str(), eventPath, eventData, dataType);
                 }

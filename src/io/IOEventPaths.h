@@ -43,6 +43,7 @@ namespace IO {
         const char Status_Battery[] PROGMEM = "Status.Battery";
         const char Status_Error[] PROGMEM = "Status.Error";
         const char System_BytesFree[] PROGMEM = "System.BytesFree";
+        const char Events_Disabled[] PROGMEM = "Events.Disable";
     }
 }
 

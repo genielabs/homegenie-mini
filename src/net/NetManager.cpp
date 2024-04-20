@@ -74,7 +74,7 @@ namespace Net {
                     break;
                 case WStype_TEXT: {
                         // clear-text message received
-                        Serial.printf("[%u] TEXT\t%s\n", num, payload);
+//                        Serial.printf("[%u] TEXT\t%s\n", num, payload);
                         char message[length + 5];
                         sprintf(message, "api/%s", payload);
                         auto cb = WebSocketResponseCallback(webSocket, num, nullptr);
@@ -93,7 +93,7 @@ namespace Net {
                         // route message with response callback
                         String rid = req[0];
                         String request = "api/" + req[1];
-                        Serial.printf("[%u] BIN\t%s\t%s\n", num, rid.c_str(), request.c_str());
+//                        Serial.printf("[%u] BIN\t%s\t%s\n", num, rid.c_str(), request.c_str());
                         auto cb = WebSocketResponseCallback(webSocket, num, &rid);
                         netRequestHandler->onNetRequest(webSocket, request.c_str(), &cb);
                     }
@@ -142,12 +142,13 @@ namespace Net {
     void NetManager::loop() {
         Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
 
-        if (ESP_WIFI_STATUS == WL_CONNECTED) {
-            for (int i = 0; i < 5; i++) // higher priority
-                webSocket->loop();
-        }
+        webSocket->loop();
 
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
+    }
+
+    NTPClient& NetManager::getTimeClient() {
+        return timeClient->getTimeClient();
     }
 
 #ifndef DISABLE_BLUETOOTH

@@ -46,7 +46,9 @@ namespace IO { namespace Env {
 
         if (batteryLevel > 100) {
             // Charging
+#ifdef CONFIG_ENABLE_POWER_MANAGER
             Service::PowerManager::setActive();
+#endif
         }
     }
 

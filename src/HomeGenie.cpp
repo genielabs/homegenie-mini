@@ -75,6 +75,34 @@ namespace Service {
             handler->init();
         }
 
+#ifndef DISABLE_AUTOMATION
+        // init automation programs engine
+        Automation::ProgramEngine::begin([this](void* sender, const char* apiCommand, ResponseCallback* callback){
+            this->onNetRequest(sender, apiCommand, callback);
+        });
+        // set scheduler callback
+        Automation::Scheduler::setListener(this);
+        /*
+        xTaskCreate(
+            reinterpret_cast<TaskFunction_t>(Scheduler::loop),
+            "Scheduler",
+            ESP_TASK_TIMER_STACK,
+            nullptr,
+            ESP_TASK_TIMER_PRIO - 1,
+            nullptr
+        );*/
+        /*
+        xTaskCreate(
+            reinterpret_cast<TaskFunction_t>(ProgramEngine::worker),
+            "ScheduledTask",
+            20480, // this might require some adjustments
+            nullptr,
+            tskIDLE_PRIORITY + 1,
+            nullptr
+        );
+        //*/
+#endif
+
         Logger::info("READY.");
     }
 
@@ -89,7 +117,8 @@ namespace Service {
             String cmd = Serial.readStringUntil('\n');
             if (!cmd.isEmpty()) {
                 // TODO: implement SerialCallback
-                onNetRequest(this, cmd.c_str(), nullptr);
+                auto callback = DummyResponseCallback();
+                onNetRequest(this, cmd.c_str(), &callback);
             }
         }
 
@@ -107,6 +136,21 @@ namespace Service {
 
         Logger::verbose(":%s loop() << END", HOMEGENIEMINI_NS_PREFIX);
     }
+
+#ifndef DISABLE_AUTOMATION
+    void HomeGenie::onSchedule(Automation::Schedule *schedule) {
+        if (netManager.getTimeClient().isUpdated()) {
+
+            ProgramEngine::run(schedule);
+
+        } else {
+
+            Logger::trace(":%s [Scheduler::Event] >> ['%s' skipped because time client is not updated]", HOMEGENIEMINI_NS_PREFIX,
+                          schedule->name.c_str());
+
+        }
+    }
+#endif
 
     bool HomeGenie::addAPIHandler(APIHandler* handler) {
         handlers.add(handler);

@@ -60,7 +60,7 @@ namespace Service { namespace API {
             // parse long data from options string
             long data = atol(command->OptionsString.c_str());
             transmitter->sendCommand(data, 24, 1, 0);
-            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+            responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             return true;
         }

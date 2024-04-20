@@ -27,34 +27,35 @@
  *
  */
 
-#include "ProgramEngine.h"
+#ifndef HOMEGENIE_MINI_PROGRAMENGINE_H
+#define HOMEGENIE_MINI_PROGRAMENGINE_H
 
-namespace Scripting {
+#include "Task.h"
 
-    using namespace IO;
+#include "automation/Scheduler.h"
+#include "io/Logger.h"
+#include "net/NetManager.h"
 
-    ProgramEngine::ProgramEngine() {
+#define PROGRAMENGINE_NS_PREFIX            "Automation::ProgramEngine"
 
-    }
+namespace Automation {
 
-    void ProgramEngine::begin() {
+    using namespace Net;
 
-    }
-
-    void ProgramEngine::test() {
-/*
-        CTinyJS s;
-        registerFunctions(&s);
-        registerMathFunctions(&s);
-        s.root->addChild("result", new CScriptVar("0",SCRIPTVAR_INTEGER));
-        try {
-            s.execute("var abd = '123'; return false;");
-        } catch (CScriptException *e) {
-            Logger::error("ERROR: %s\n", e->text.c_str());
-        }
-        bool pass = s.root->getParameter("result")->getBool();
-        Logger::info("PASS = %s", pass ? "OK" : "ERROR");
-*/
-    }
+    class ProgramEngine
+            : Task
+            {
+    public:
+        ProgramEngine();
+        static void begin(std::function<void(void*, const char* , ResponseCallback*)>);
+//        [[noreturn]] static void worker();
+        void loop() override;
+        static void run(Schedule*);
+        static std::function<void(void*, const char* , ResponseCallback*)> apiRequest;
+    private:
+        static LinkedList<Schedule*> scheduleList;
+    };
 
 }
+
+#endif //HOMEGENIE_MINI_PROGRAMENGINE_H

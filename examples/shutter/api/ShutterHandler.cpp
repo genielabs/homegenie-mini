@@ -66,25 +66,25 @@ namespace Service { namespace API {
 
                 shutterControl->setLevel(level);
 
-                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+                responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             } else if (command->Command == "Control.Close" || command->Command == "Control.Off") {
 
                 shutterControl->close();
 
-                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+                responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             } else if (command->Command == "Control.Open" || command->Command == "Control.On") {
 
                 shutterControl->open();
 
-                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+                responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             } else if (command->Command == "Shutter.Speed") {
 
                 shutterControl->setSpeed(command->OptionsString.toFloat());
 
-                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+                responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             } else if (command->Command == "Shutter.Calibrate") {
 

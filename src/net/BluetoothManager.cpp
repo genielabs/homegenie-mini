@@ -119,6 +119,11 @@ namespace Net {
             long ms = time.substring(time.length() - 3).toInt();
             Config::getRTC()->setTime(seconds, ms);
         }
+        if (message.startsWith("#CONFIG:system-zone ")) {
+            int zoneMs = message.substring(20).toInt();
+            preferences.putInt(CONFIG_KEY_system_zone, zoneMs);
+            Config::setTimeZone(zoneMs);
+        }
         preferences.end();
 
         if (message.equals("#RESET")) {

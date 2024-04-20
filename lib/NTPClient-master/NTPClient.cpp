@@ -124,12 +124,12 @@ bool NTPClient::forceUpdate() {
 
 bool NTPClient::isUpdated() const {
     return (millis() - this->_lastUpdate < this->_updateInterval)
-           && this->_lastUpdate != 0; // if there was no update yet.
+           && this->_lastUpdate != 0 && this->_currentEpoc > 1712031624; // if there was no update yet.
 }
 
 bool NTPClient::update() {
   if (!isUpdated()) {
-    if (!this->_udpSetup) this->begin(); // setup the UDP client if needed
+    if (!this->_udpSetup) this->begin(); // set up the UDP client if needed
     return this->forceUpdate();
   }
   return true;

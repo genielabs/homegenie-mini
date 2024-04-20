@@ -12,6 +12,7 @@ https://homegenie.it/mini
 - Easy Wi-Fi configuration using Bluetooth (ESP32) or WPS (ESP8266)
 - Does not require an Internet connection to be configured or to work properly
 - Time synchronization using internal RTC (ESP32), mobile app time or NTP
+- Integrated actions scheduler supporting *cron expressions* with seconds field
 - Device discovery through SNMP/UPnP advertising with customizable name
 - Multi-channel I/O: HTTP, WebSocket, SSE, MQTT
 - Status LED
@@ -152,89 +153,14 @@ pio device monitor -b 115200
 
 In the examples folder you can find some smart device projects using *HomeGenie Mini* library.
 
-### Smart sensor
+You can use the following command to list all possible configurations to build the examples:
 
-This example implements a smart sensor with temperature and luminance sensing. It can also control
-4 GPIO switches.
-
-The data pins number can be modified from the `configuration.h` file.
-
-**Generic ESP32**
-```bash
-pio run -e smart-sensor -t upload
-```
-**D1 Mini - ESP8266**
-```bash
-pio run -e smart-sensor-d1-mini -t upload
-```
-**D1 Mini - ESP32**
-```bash
-pio run -e smart-sensor-d1-mini-esp32 -t upload
+```shell
+pio project config
 ```
 
-
-### Smart sensor with display
-
-A humidity and temperature sensor with touch display. Supports
-GC9A01 240x240 round display and CST816S capacitive touch.
-
-**Generic ESP32**
-```bash
-pio run -e smart-sensor-display -t upload
-```
-
-**Round display with integrated ESP32-S3**
-```bash
-pio run -e smart-sensor-display-s3 -t upload
-```
-
-
-### Shutter control
-
-Wi-Fi controlled shutter motor.
-
-**Generic ESP32**
-```bash
-pio run -e shutter -t upload
-```
-
-
-### X10 transceiver
-
-Smart Wi-Fi connected X10 transceiver. 
-
-The data pins number can be modified from the `configuration.h` file.
-
-**Generic ESP32**
-```bash
-pio run -e  x10-transceiver -t upload
-```
-
-### RF transceiver
-
-Smart Wi-Fi connected RF transceiver with RF commands capturing and playback.
-
-The data pins number can be modified from the `configuration.h` file.
-
-**Generic ESP32**
-```bash
-pio run -e  rf-transceiver -t upload
-```
-
-### Playground project
-
-Just a generic playground project to mess with the library =)
-
-**Generic ESP32**
-```bash
-pio run -e  playground -t upload
-```
-
-**Generic ESP32 C3**
-```bash
-pio run -e  playground-c3 -t upload
-```
-
+See also [HomeGenie Mini Documentation](https://homegenie.it/mini/1.2/) for further information
+about included examples.
 
 
 

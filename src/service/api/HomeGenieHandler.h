@@ -36,12 +36,16 @@ namespace Service { namespace API {
 
     using namespace IO::GPIO;
 
+    namespace HomeGenieHandlerResponseStatus {
+        static const char* ERROR_NO_SCHEDULE_WITH_THE_GIVEN_NAME = R"({ "ResponseStatus": "ERROR", "ResponseMessage": "No schedule with the given name" })";
+    }
+
     class HomeGenieHandler : public APIHandler {
     private:
         GPIOPort* gpioPort;
         LinkedList<Module*> moduleList;
     public:
-        HomeGenieHandler(GPIOPort* gpioPort);
+        explicit HomeGenieHandler(GPIOPort* gpioPort);
         void init() override;
         bool canHandleDomain(String* domain) override;
         bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
@@ -50,6 +54,75 @@ namespace Service { namespace API {
         Module* getModule(const char* domain, const char* address) override;
         LinkedList<Module*>* getModuleList() override;
     };
+
+    static const char* SCHEDULER_ACTION_TEMPLATES PROGMEM = "[\n"
+                                                   "  {\n"
+                                                   "    \"id\": \"command_turn_on\",\n"
+                                                   "    \"script\": \"$$.boundModules.on();\\n\"\n"
+                                                   "  },\n"
+                                                   "  {\n"
+                                                   "    \"id\": \"command_turn_off\",\n"
+                                                   "    \"script\": \"$$.boundModules.off();\\n\"\n"
+                                                   "  },\n"
+                                                   "  {\n"
+                                                   "    \"id\": \"command_set_level\",\n"
+                                                   "    \"script\": \"$$.boundModules.level = $level$;\\n\",\n"
+                                                   "    \"config\": {\n"
+                                                   "      \"level\": {\n"
+                                                   "        \"type\": \"slider\",\n"
+                                                   "        \"options\": {\n"
+                                                   "          \"min\": 0,\n"
+                                                   "          \"max\": 100,\n"
+                                                   "          \"step\": 1\n"
+                                                   "        },\n"
+                                                   "        \"value\": 0\n"
+                                                   "      }\n"
+                                                   "    }\n"
+                                                   "  },\n"
+                                                   "  {\n"
+                                                   "    \"id\": \"command_set_color\",\n"
+                                                   "    \"script\": \"$$.boundModules.colorHsb = '$color$';\\n\",\n"
+                                                   "    \"config\": {\n"
+                                                   "      \"color\": {\n"
+                                                   "        \"type\": \"color\",\n"
+                                                   "        \"value\": \"#ff0000\",\n"
+                                                   "        \"transform\": \"rgb:hsb\"\n"
+                                                   "      }\n"
+                                                   "    }\n"
+                                                   "  },\n"
+                                                   "  {\n"
+                                                   "    \"id\": \"command_thermostat_mode\",\n"
+                                                   "    \"script\": \"$$.boundModules\\n  .command('Thermostat.ModeSet')\\n  .submit('$mode$');\\n\",\n"
+                                                   "    \"config\": {\n"
+                                                   "      \"mode\": {\n"
+                                                   "        \"type\": \"select\",\n"
+                                                   "        \"options\": [\n"
+                                                   "          {\n"
+                                                   "            \"id\": \"off\",\n"
+                                                   "            \"value\": \"Off\"\n"
+                                                   "          },\n"
+                                                   "          {\n"
+                                                   "            \"id\": \"heat\",\n"
+                                                   "            \"value\": \"Heat\"\n"
+                                                   "          },\n"
+                                                   "          {\n"
+                                                   "            \"id\": \"heat_eco\",\n"
+                                                   "            \"value\": \"HeatEconomy\"\n"
+                                                   "          },\n"
+                                                   "          {\n"
+                                                   "            \"id\": \"cool\",\n"
+                                                   "            \"value\": \"Cool\"\n"
+                                                   "          },\n"
+                                                   "          {\n"
+                                                   "            \"id\": \"cool_eco\",\n"
+                                                   "            \"value\": \"CoolEconomy\"\n"
+                                                   "          }\n"
+                                                   "        ],\n"
+                                                   "        \"value\": \"Off\"\n"
+                                                   "      }\n"
+                                                   "    }\n"
+                                                   "  }\n"
+                                                   "]";
 
 }}
 

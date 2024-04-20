@@ -33,6 +33,7 @@
 #include "defs.h"
 
 #include <Arduino.h>
+#include <FreeRTOSConfig.h>
 #ifdef ESP32
 #include <ESP32Time.h>
 #else
@@ -48,6 +49,7 @@ const static char CONFIG_KEY_wifi_ssid[] PROGMEM = {"wifi:ssid"};
 const static char CONFIG_KEY_wifi_password[] PROGMEM = {"wifi:password"};
 const static char CONFIG_KEY_device_name[] PROGMEM = {"device:name"};
 const static char CONFIG_KEY_system_mode[] PROGMEM = {"system:mode"};
+const static char CONFIG_KEY_system_zone[] PROGMEM = {"system:zone"};
 const static char CONFIG_KEY_screen_rotation[] PROGMEM = {"screen:rotation"};
 
 class Config {
@@ -55,10 +57,14 @@ public:
     const static short ServiceButtonPin = CONFIG_ServiceButtonPin;
     const static short StatusLedPin = CONFIG_StatusLedPin;
     const static uint16_t ConfigureButtonPushInterval = 2500;
+    static int TimeZone; // tz diff in milliseconds
 #ifdef ESP32
     static ESP32Time* getRTC() {
-        static ESP32Time rtc(0);
+        static ESP32Time rtc(TimeZone);
         return &rtc;
+    }
+    static void setTimeZone(int tz) {
+        TimeZone = tz;
     }
 #endif
 
@@ -156,6 +162,14 @@ public:
     static void init() {
         // Setup status led
         if (Config::StatusLedPin >= 0) pinMode(Config::StatusLedPin, OUTPUT);
+#ifndef DISABLE_PREFERENCES
+        // Time zone
+        Preferences preferences;
+        if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
+            Config::TimeZone = preferences.getInt(CONFIG_KEY_system_zone, 0);
+        }
+        preferences.end();
+#endif
     }
 };
 

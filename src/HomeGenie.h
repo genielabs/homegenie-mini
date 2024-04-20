@@ -38,6 +38,11 @@
 #include "Task.h"
 #include "TaskManager.h"
 
+#ifndef DISABLE_AUTOMATION
+#include "automation/ProgramEngine.h"
+#include "automation/Scheduler.h"
+#endif
+
 #include "data/Module.h"
 #include "io/gpio/GPIOPort.h"
 #include "io/IOEventPaths.h"
@@ -57,8 +62,15 @@ namespace Service {
     using namespace Data;
     using namespace Net;
     using namespace Service::API;
+#ifndef DISABLE_AUTOMATION
+    using namespace Automation;
+#endif
 
-    class HomeGenie: IIOEventReceiver, NetRequestHandler {
+    class HomeGenie: IIOEventReceiver, NetRequestHandler
+#ifndef DISABLE_AUTOMATION
+            , SchedulerListener
+#endif
+            {
     public:
         static HomeGenie* getInstance() {
             if (serviceInstance == nullptr) {
@@ -79,6 +91,11 @@ namespace Service {
 
         // NetRequestHandler overrides
         bool onNetRequest(void* sender, const char* requestMessage, ResponseCallback* responseCallback) override;
+
+#ifndef DISABLE_AUTOMATION
+        // SchedulerListener events
+        void onSchedule(Schedule* schedule) override;
+#endif
 
         /**
          *
@@ -123,6 +140,11 @@ namespace Service {
         IOManager ioManager;
         EventRouter eventRouter;
         LinkedList<APIHandler*> handlers;
+
+#ifndef DISABLE_AUTOMATION
+        Scheduler scheduler;
+        ProgramEngine programEngine;
+#endif
 
         // Service Button handling
 

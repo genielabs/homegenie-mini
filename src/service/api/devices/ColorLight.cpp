@@ -71,11 +71,10 @@ namespace Service { namespace API { namespace devices {
                 hsvString = hsvString.substring(ci + 1);
             } while (oi < 4);
 
-
             color.setColor(o[0], o[1], o[2], o[3]*1000);
 
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto eventsDisable = module->getProperty("Events.Disable");
+            auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
             if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
                 // color
                 auto eventValue = command->getOption(0);
@@ -96,7 +95,7 @@ namespace Service { namespace API { namespace devices {
                 Switch::status = SWITCH_STATUS_OFF;
             }
 
-            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+            responseCallback->writeAll(ApiHandlerResponseText::OK);
             return true;
 
         }

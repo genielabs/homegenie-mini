@@ -43,6 +43,13 @@ namespace Service { namespace API {
     using namespace Net;
     using namespace Service;
 
+    namespace ApiHandlerResponseStatus {
+        static const char* OK = R"({ "ResponseStatus": "OK", Message: "" })";
+    }
+    namespace ApiHandlerResponseText {
+        static const char* OK = R"({ "ResponseText": "OK" })";
+    }
+
     class APIHandler {
     public:
         virtual void init() = 0;

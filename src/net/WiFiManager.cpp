@@ -37,6 +37,7 @@ namespace Net {
         setLoopInterval(1000);
         // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
         WiFi.mode(WIFI_STA);
+        WiFi.setAutoReconnect(true);
         if (Config::isDeviceConfigured()) {
 #ifdef ESP8266
             // WI-FI will not boot without this delay!!!

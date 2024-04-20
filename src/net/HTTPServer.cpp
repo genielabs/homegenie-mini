@@ -55,9 +55,10 @@ namespace Net {
     String ipAddress;
 
     void HTTPServer::begin() {
-        httpServer.on("/start.html", HTTP_GET, []() {
-            httpServer.send(200, "text/plain", "Hello World!");
-        });
+        //httpServer.on("/start.html", HTTP_GET, []() {
+        //    httpServer.send(200, "text/plain", "Hello World!");
+        //});
+
         httpServer.on("/description.xml", HTTP_GET, []() {
             SSDPDevice.schema(httpServer.client());
         });

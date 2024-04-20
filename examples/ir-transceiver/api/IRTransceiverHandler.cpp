@@ -68,7 +68,7 @@ namespace Service { namespace API {
 
             }
 
-            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+            responseCallback->writeAll(ApiHandlerResponseStatus::OK);
             return true;
         }
         return false;

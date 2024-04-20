@@ -38,8 +38,13 @@
 
 #define DEBUGLOG_DEFAULT_LOG_LEVEL_ERROR
 
+//#define DISABLE_AUTOMATION
+
 #ifdef ESP8266
 #define ESP_WIFI_STATUS WiFi.status()
+#define FILE_READ       "r"
+#define FILE_WRITE      "w"
+#define FILE_APPEND     "a"
 #else
 #define ESP_WIFI_STATUS WiFiClass::status()
 #endif

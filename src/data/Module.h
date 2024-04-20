@@ -90,8 +90,16 @@ namespace Data {
         }
     };
 
+    class ModuleReference {
+    public:
+        String domain;
+        String address;
+        ModuleReference(const char* d, const char* a) {
+            domain = d;
+            address = a;
+        }
+    };
+
 }
-
-
 
 #endif //HOMEGENIE_MINI_MODULE_H

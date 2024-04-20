@@ -76,7 +76,115 @@ namespace Service { namespace API {
 
     bool HomeGenieHandler::handleRequest(Service::APIRequest *request, ResponseCallback* responseCallback) {
         auto homeGenie = HomeGenie::getInstance();
-        if (request->Address == F("Config")) {
+        if (request->Address == F("Automation")) {
+#ifndef DISABLE_AUTOMATION
+            if (request->Command == AutomationApi::Scheduling_Add || request->Command == AutomationApi::Scheduling_Update) {
+                JsonDocument doc;
+                DeserializationError error = deserializeJson(doc, request->Data);
+
+                // TODO: verify if cronExpression is parsed correctly
+
+                if (!error.code()) {
+                    if (doc.containsKey(ScheduleField::name)
+                        && doc.containsKey(ScheduleField::description)
+                        && doc.containsKey(ScheduleField::data)
+                        && doc.containsKey(ScheduleField::cronExpression)
+                        && doc.containsKey(ScheduleField::script)) {
+
+                        // TODO: return a bool value for success/error
+                        Scheduler::addSchedule(Scheduler::getScheduleFromJson(doc));
+
+                        responseCallback->writeAll(ApiHandlerResponseText::OK);
+                        return true;
+                    }
+                }
+
+                return false;
+            } else if (request->Command == AutomationApi::Scheduling_Get) {
+                auto schedule = Scheduler::get(request->getOption(0).c_str());
+                if (schedule != nullptr) {
+                    JsonDocument doc;
+                    auto obj = doc.add<JsonObject>();
+                    Scheduler::getJson(&obj, schedule);
+                    String output;
+                    serializeJson(obj, output);
+
+                    responseCallback->writeAll(output.c_str());
+                    return true;
+                } else {
+                    responseCallback->writeAll(HomeGenieHandlerResponseStatus::ERROR_NO_SCHEDULE_WITH_THE_GIVEN_NAME);
+                    return true;
+                }
+            } else if (request->Command == AutomationApi::Scheduling_ModuleUpdate) {
+                auto domain = request->getOption(0);
+                auto address = request->getOption(1);
+                auto module = homeGenie->getModule(&domain, &address);
+                if (module != nullptr) {
+                    JsonDocument doc;
+                    deserializeJson(doc, request->Data);
+                    auto include = doc["include"].as<JsonArray>();
+                    for (auto s: include) {
+                        auto scheduleName = s["Value"].as<const char*>();
+                        auto schedule = Scheduler::get(scheduleName);
+                        if (schedule != nullptr) {
+                            bool exits = false;
+                            auto boundModules = &schedule->boundModules;
+                            for (int i = 0; i < boundModules->size(); i++) {
+                                if (boundModules->get(i)->domain == domain && boundModules->get(i)->address == address) {
+                                    exits = true;
+                                    break;
+                                }
+                            }
+                            if (!exits) {
+                                auto mr = new ModuleReference(domain.c_str(), address.c_str());
+                                boundModules->add(mr);
+                            }
+                            Scheduler::save();
+                        } else {
+                            responseCallback->writeAll(HomeGenieHandlerResponseStatus::ERROR_NO_SCHEDULE_WITH_THE_GIVEN_NAME);
+                            return true;
+                        }
+                    }
+                    auto exclude = doc["exclude"].as<JsonArray>();
+                    for (auto s: exclude) {
+                        auto scheduleName = s["Value"].as<const char*>();
+                        auto schedule = Scheduler::get(scheduleName);
+                        if (schedule != nullptr) {
+                            auto boundModules = &schedule->boundModules;
+                            for (int i = 0; i < boundModules->size(); i++) {
+                                if (boundModules->get(i)->domain == domain && boundModules->get(i)->address == address) {
+                                    auto mr = boundModules->remove(i);
+                                    delete mr;
+                                    break;
+                                }
+                            }
+                            Scheduler::save();
+                        } else {
+                            responseCallback->writeAll(HomeGenieHandlerResponseStatus::ERROR_NO_SCHEDULE_WITH_THE_GIVEN_NAME);
+                            return true;
+                        }
+                    }
+
+                    responseCallback->writeAll(ApiHandlerResponseText::OK);
+                    return true;
+                } else {
+                    // TODO: report error (module not found)
+                }
+                return false;
+            } else if (request->Command == AutomationApi::Scheduling_Delete) {
+                // TODO: return -1 or the index of deleted item
+                Scheduler::deleteSchedule(request->getOption(0).c_str());
+                responseCallback->writeAll(ApiHandlerResponseText::OK);
+                return true;
+            } else if (request->Command == AutomationApi::Scheduling_List) {
+                responseCallback->writeAll(Scheduler::getJsonList().c_str());
+                return true;
+            } else if (request->Command == AutomationApi::Scheduling_Templates) {
+                responseCallback->writeAll(SCHEDULER_ACTION_TEMPLATES);
+                return true;
+            }
+#endif
+        } else if (request->Address == F("Config")) {
             if (request->Command == ConfigApi::Groups_List) {
                 responseCallback->beginGetLength();
                 homeGenie->writeGroupListJSON(responseCallback);
@@ -112,7 +220,7 @@ namespace Service { namespace API {
                     m.event = propName;
                     m.value = propValue;
                     homeGenie->getEventRouter().signalEvent(m);
-                    responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+                    responseCallback->writeAll(ApiHandlerResponseText::OK);
                     return true;
                 }
             } else if (request->Command == ConfigApi::WebSocket_GetToken) {
@@ -129,18 +237,8 @@ namespace Service { namespace API {
             bool validPin = std::find(std::begin(gpio), std::end(gpio), pinNumber) != std::end(gpio);
             if (validPin) {
 
-                // TODO: move to utility class -- lookup module by domain/address
-
-                Module* module;
-                for (int m = 0; m < moduleList.size(); m++) {
-                    module = moduleList[m];
-                    if (module->domain.equals(request->Domain) && module->address.equals(request->Address)) {
-                        break;
-                    }
-                    module = nullptr;
-                }
-
-                if (module) {
+                Module* module = getModule(request->Domain.c_str(), request->Address.c_str());
+                if (module != nullptr) {
 
                     auto levelProperty = module->getProperty(IOEventPaths::Status_Level);
                     if (levelProperty->value.toFloat() > 0) {
@@ -165,7 +263,7 @@ namespace Service { namespace API {
                     levelProperty->setValue(String(level).c_str());
                     GPIOPort::saveLevel(pinNumber, levelProperty->value.toFloat());
 
-                    responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+                    responseCallback->writeAll(ApiHandlerResponseText::OK);
                     return  true;
                 }
             }

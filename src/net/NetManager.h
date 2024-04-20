@@ -72,6 +72,15 @@ namespace Net {
         virtual void error(const char* s) = 0;
     };
 
+    class DummyResponseCallback : public ResponseCallback {
+    public:
+        void beginGetLength() override {};
+        void endGetLength() override {};
+        void write(const char* s) override {};
+        void writeAll(const char* s) override {};
+        void error(const char* s) override {};
+    };
+
     class MQTTResponseCallback : public ResponseCallback {
     public:
         MQTTResponseCallback(MQTTServer *server, uint8_t clientId, String* destinationTopic) {
@@ -208,8 +217,11 @@ namespace Net {
     public:
         NetManager();
         ~NetManager();
+
         void begin();
         void loop() override;
+
+        NTPClient& getTimeClient();
 #ifndef DISABLE_BLUETOOTH
         BluetoothManager& getBLEManager();
 #endif

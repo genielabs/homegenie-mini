@@ -57,7 +57,7 @@ namespace Service { namespace API { namespace devices {
             level.setLevel(l, transition);
 
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto eventsDisable = module->getProperty("Events.Disable");
+            auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
             if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
                 auto eventPath = IOEventPaths::Status_Level;
                 auto eventValue = String(l);
@@ -73,7 +73,7 @@ namespace Service { namespace API { namespace devices {
                 Switch::status = SWITCH_STATUS_OFF;
             }
 
-            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+            responseCallback->writeAll(ApiHandlerResponseText::OK);
             return true;
 
         }

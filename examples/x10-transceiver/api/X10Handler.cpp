@@ -93,7 +93,7 @@ namespace Service { namespace API {
             Utility::getBytes(command->OptionsString, data);
             // Disable RFTransmitter callbacks during transmission to prevent echo
             transmitter->sendCommand(data, sizeof(data));
-            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+            responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             return true;
         } else if (command->Domain == (IOEventDomains::HomeAutomation_X10)) {
@@ -169,7 +169,7 @@ namespace Service { namespace API {
                 X10::X10Message::encodeCommand(&x10Message, data);
                 transmitter->sendCommand(&data[1], sizeof(data)-1, sendRepeat);
             }
-            responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+            responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             return true;
         }

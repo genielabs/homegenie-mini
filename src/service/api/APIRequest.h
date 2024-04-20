@@ -50,6 +50,18 @@ namespace Service { namespace API {
         static const char Control_Close[] PROGMEM = {"Control.Close"};
     }
 
+    namespace AutomationApi {
+        static const char Scheduling_Add[] PROGMEM = {"Scheduling.Add"};
+        static const char Scheduling_Update[] PROGMEM = {"Scheduling.Update"};
+        static const char Scheduling_Get[] PROGMEM = {"Scheduling.Get"};
+        static const char Scheduling_ModuleUpdate[] PROGMEM = {"Scheduling.ModuleUpdate"};
+        static const char Scheduling_Enable[] PROGMEM = {"Scheduling.Enable"};
+        static const char Scheduling_Disable[] PROGMEM = {"Scheduling.Disable"};
+        static const char Scheduling_Delete[] PROGMEM = {"Scheduling.Delete"};
+        static const char Scheduling_List[] PROGMEM = {"Scheduling.List"};
+        static const char Scheduling_Templates[] PROGMEM = {"Scheduling.Templates"};
+    }
+
     namespace ConfigApi {
         static const char Modules_List[] PROGMEM = {"Modules.List"};
         static const char Modules_Get[] PROGMEM = {"Modules.Get"};
@@ -65,6 +77,7 @@ namespace Service { namespace API {
         String Address;
         String Command;
         String OptionsString;
+        String Data;
         String getOption(unsigned int optionIndex);
         static APIRequest parse(String command);
     };

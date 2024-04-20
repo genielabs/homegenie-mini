@@ -57,7 +57,7 @@ namespace Service { namespace API {
         int i = command.indexOf('/', 1);
         while (i > 0) {
             auto arg = command.substring(0, i);
-            command = command.substring(i+1);
+            command = command.substring(i + 1);
             switch (argIndex++) {
                 // case 0: is the "/api" prefix
                 case 0:
@@ -77,8 +77,15 @@ namespace Service { namespace API {
                 case 3:
                     apiCommand.Command = arg;
                     apiCommand.OptionsString = command;
-                    IO::Logger::trace("%s parse() >> [Command = '%s']", APIREQUEST_LOG_PREFIX, arg.c_str());
-                    IO::Logger::trace("%s parse() >> [Options = '%s']", APIREQUEST_LOG_PREFIX, command.c_str());
+                    // POST data is prefixed with 'plain/' string
+                    if (command.startsWith("plain/"))  {
+                        apiCommand.Data = command.substring(6);
+                    } else if (command.indexOf("/plain/") > 0) {
+                        apiCommand.Data = command.substring(command.indexOf("/plain/") + 7);
+                    }
+                    IO::Logger::trace("%s parse() >> [Command = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.Command.c_str());
+                    IO::Logger::trace("%s parse() >> [Options = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.OptionsString.c_str());
+                    IO::Logger::trace("%s parse() >> [Data = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.Data.c_str());
                     return apiCommand;
             }
             i = command.indexOf('/');

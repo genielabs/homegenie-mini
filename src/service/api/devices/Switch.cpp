@@ -66,7 +66,7 @@ namespace Service { namespace API { namespace devices {
                 }
 
                 // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-                auto eventsDisable = module->getProperty("Events.Disable");
+                auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
                 if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
                     float l = status == SWITCH_STATUS_ON ? onLevel : 0;
                     auto eventValue = String(l);
@@ -75,7 +75,7 @@ namespace Service { namespace API { namespace devices {
                     HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
                 }
 
-                responseCallback->writeAll(R"({ "ResponseText": "OK" })");
+                responseCallback->writeAll(ApiHandlerResponseText::OK);
 
                 return true;
             }
