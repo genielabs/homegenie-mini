@@ -76,12 +76,16 @@ namespace Service {
         }
 
 #ifndef DISABLE_AUTOMATION
+
         // init automation programs engine
         Automation::ProgramEngine::begin([this](void* sender, const char* apiCommand, ResponseCallback* callback){
             this->onNetRequest(sender, apiCommand, callback);
         });
+
         // set scheduler callback
         Automation::Scheduler::setListener(this);
+
+#ifdef CONFIG_CREATE_AUTOMATION_TASK
         /*
         xTaskCreate(
             reinterpret_cast<TaskFunction_t>(Scheduler::loop),
@@ -91,7 +95,6 @@ namespace Service {
             ESP_TASK_TIMER_PRIO - 1,
             nullptr
         );*/
-        /*
         xTaskCreate(
             reinterpret_cast<TaskFunction_t>(ProgramEngine::worker),
             "ScheduledTask",
@@ -100,7 +103,8 @@ namespace Service {
             tskIDLE_PRIORITY + 1,
             nullptr
         );
-        //*/
+#endif
+
 #endif
 
         Logger::info("READY.");

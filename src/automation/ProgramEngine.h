@@ -43,13 +43,19 @@ namespace Automation {
     using namespace Net;
 
     class ProgramEngine
+#ifndef CONFIG_CREATE_AUTOMATION_TASK
             : Task
+#endif
             {
     public:
         ProgramEngine();
         static void begin(std::function<void(void*, const char* , ResponseCallback*)>);
-//        [[noreturn]] static void worker();
+
+#ifdef CONFIG_CREATE_AUTOMATION_TASK
+        [[noreturn]] static void worker();
+#else
         void loop() override;
+#endif
         static void run(Schedule*);
         static std::function<void(void*, const char* , ResponseCallback*)> apiRequest;
     private:

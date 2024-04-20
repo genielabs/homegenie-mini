@@ -41,13 +41,16 @@ namespace Automation {
     std::function<void(void*, const char* , ResponseCallback*)> ProgramEngine::apiRequest = nullptr;
 
     ProgramEngine::ProgramEngine() {
+#ifndef CONFIG_CREATE_AUTOMATION_TASK
 //        setLoopInterval(100);
+#endif
     };
 
     void ProgramEngine::begin(std::function<void(void*, const char* , ResponseCallback*)> ar) {
         ProgramEngine::apiRequest = std::move(ar);
     }
-    /*
+
+#ifdef CONFIG_CREATE_AUTOMATION_TASK
     [[noreturn]] void ProgramEngine::worker() {
         for(;;) {
             auto jobs = &ProgramEngine::scheduleList;
@@ -58,16 +61,16 @@ namespace Automation {
             vTaskDelay(portTICK_PERIOD_MS * 100);
         }
     }
-    //*/
-    //*
+#else
     void ProgramEngine::loop() {
         auto jobs = &ProgramEngine::scheduleList;
-        while (jobs->size() > 0) {
+        if (jobs->size() > 0) {
             ScheduledScript scheduledScript(jobs->shift());
             scheduledScript.run();
         }
     }
-    //*/
+#endif
+
     void ProgramEngine::run(Schedule* schedule) {
         ProgramEngine::scheduleList.add(schedule);
     }
