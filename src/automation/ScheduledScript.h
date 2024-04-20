@@ -30,6 +30,10 @@
 #ifndef HOMEGENIE_MINI_SCHEDULEDSCRIPT_H
 #define HOMEGENIE_MINI_SCHEDULEDSCRIPT_H
 
+#include "HomeGenie.h"
+
+#ifndef DISABLE_AUTOMATION
+
 #include <lib/duktape-2.7.0/src/duktape.h>
 
 /*
@@ -56,7 +60,6 @@ Flash: [========= ]  92.1% (used 1810372 bytes from 1966080 bytes)
  */
 
 #include "automation/ProgramEngine.h"
-#include "HomeGenie.h"
 
 namespace Automation {
 
@@ -92,3 +95,5 @@ namespace Automation {
 
 
 #endif //HOMEGENIE_MINI_SCHEDULEDSCRIPT_H
+
+#endif

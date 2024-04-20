@@ -29,6 +29,8 @@
 
 #include "ProgramEngine.h"
 
+#ifndef DISABLE_AUTOMATION
+
 #include "ScheduledScript.h"
 
 namespace Automation {
@@ -71,3 +73,5 @@ namespace Automation {
     }
 
 }
+
+#endif

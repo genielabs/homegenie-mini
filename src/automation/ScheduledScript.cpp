@@ -29,6 +29,8 @@
 
 #include "ScheduledScript.h"
 
+#ifndef DISABLE_AUTOMATION
+
 namespace Automation {
 
     ScheduledScript::ScheduledScript(Schedule *s) {
@@ -211,3 +213,5 @@ namespace Automation {
     }
 
 }
+
+#endif

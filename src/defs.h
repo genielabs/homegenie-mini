@@ -50,6 +50,7 @@
 #endif
 
 #ifdef ESP8266
+    #define DISABLE_AUTOMATION
     #define DISABLE_UI
     #define DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
