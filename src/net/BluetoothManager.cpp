@@ -41,7 +41,13 @@ namespace Net {
     }
 
     void BluetoothManager::begin() {
-        if (Config::isDeviceConfigured()) return;
+        if (Config::isDeviceConfigured()) {
+#ifndef DISABLE_BLUETOOTH_LE
+            BLEDevice::init(CONFIG_SYSTEM_NAME);
+            BLEDevice::deinit(true);
+#endif
+            return;
+        }
 
 #ifndef DISABLE_BLUETOOTH_CLASSIC
         SerialBT.begin(CONFIG_BUILTIN_MODULE_NAME);
@@ -50,6 +56,9 @@ namespace Net {
 #endif
 
 #ifndef DISABLE_BLUETOOTH_LE
+        if (SerialBTLE == nullptr) {
+            SerialBTLE = new BleSerial();
+        }
         // Get unit MAC address
         //esp_read_mac(unitMACAddress, ESP_MAC_WIFI_STA);
         // Convert MAC address to Bluetooth MAC (add 2): https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/system.html#mac-address
@@ -58,8 +67,8 @@ namespace Net {
         //sprintf(deviceName, CONFIG_BUILTIN_MODULE_NAME, unitMACAddress[4], unitMACAddress[5]);
         //Init BLE Serial
         String bleName = String(CONFIG_BUILTIN_MODULE_NAME) + String("-LE");
-        SerialBTLE.begin(bleName.c_str());
-        SerialBTLE.setTimeout(10);
+        SerialBTLE->begin(bleName.c_str());
+        SerialBTLE->setTimeout(10);
         IO::Logger::info("|  ✔ Bluetooth LE enabled");
         initialized = true;
 #endif
@@ -70,8 +79,8 @@ namespace Net {
         if (!initialized) return;
 
 #ifndef DISABLE_BLUETOOTH_LE
-        if (SerialBTLE.available()) {
-            String message = SerialBTLE.readStringUntil('\n');
+        if (SerialBTLE->available()) {
+            String message = SerialBTLE->readStringUntil('\n');
             if (message != nullptr) {
                 handleMessage(message);
             }
@@ -128,7 +137,7 @@ namespace Net {
 
         if (message.equals("#RESET")) {
 #ifndef DISABLE_BLUETOOTH_LE
-            SerialBTLE.end();
+            SerialBTLE->end();
 #endif
 #ifndef DISABLE_BLUETOOTH_CLASSIC
             SerialBT.disconnect();

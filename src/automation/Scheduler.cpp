@@ -29,6 +29,8 @@
 
 #include "Scheduler.h"
 
+#include "ExtendedCron.h"
+
 namespace Automation {
     LinkedList<Schedule*> Scheduler::scheduleList;
     SchedulerListener* Scheduler::listener = nullptr;
@@ -73,11 +75,13 @@ namespace Automation {
     }
 
     void Scheduler::loop() {
+        auto now = time(0);
         //for(;;) {
         //    int lastRun = millis() % 1000;
             for (int i = 0; i < scheduleList.size(); i++) {
                 auto schedule = scheduleList.get(i);
-                if (schedule->check()) {
+                if (schedule->isEnabled && !schedule->wasScheduled(now) && schedule->occurs(now)) {
+                    schedule->setScheduled(now);
                     if (listener != nullptr && schedule->boundModules.size() > 0) {
                         Logger::info(":%s [Scheduler::Event] >> ['%s' triggered]", SCHEDULER_NS_PREFIX,
                                      schedule->name.c_str());

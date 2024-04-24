@@ -54,15 +54,19 @@ namespace Net {
     public:
         void begin();
         void loop() override;
-        void addHandler(RequestHandler* handler);
+        static void addHandler(RequestHandler* handler);
+#ifndef DISABLE_SSE
         // RequestHandler interface methods
         bool canHandle(HTTPMethod method, String uri) override;
         bool handle(WebServer& server, HTTPMethod requestMethod, String requestUri) override;
         void sendSSEvent(String domain, String address, String event, String value);
+#endif
     private:
+#ifndef DISABLE_SSE
         void sseClientAccept();
         void serverSentEventHeader(WiFiClient &client);
         void serverSentEvent(WiFiClient &client, String &domain, String &address, String &event, String &value);
+#endif
     };
 
 }

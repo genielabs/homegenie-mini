@@ -33,11 +33,11 @@
 #include "Config.h"
 
 
-typedef struct RGBColor {
+typedef struct ColorRGB {
     int r;
     int g;
     int b;
-} RGBColor;
+} ColorRGB; // renamed from RGBColor to ColorRGB to prevent conflicts with LGFX
 
 
 class Utility {
@@ -54,7 +54,8 @@ public:
     static String byteToHex(uint64_t b);
     static uint32_t reverseBits(uint32_t n);
     static uint8_t reverseByte(uint8_t n);
-    static RGBColor hsv2rgb(float H, float S, float V);
+    static ColorRGB hsv2rgb(float H, float S, float V);
+    static uint32_t getFreeMem();
 };
 
 #endif //HOMEGENIE_MINI_UTILITY_H

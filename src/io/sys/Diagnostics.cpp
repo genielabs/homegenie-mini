@@ -36,19 +36,13 @@ namespace IO { namespace System {
         setLoopInterval(DIAGNOSTICS_SAMPLING_RATE);
     }
 
-    void Diagnostics::begin() {
-
-    }
+    void Diagnostics::begin() { }
 
     void Diagnostics::loop() {
-#ifdef ESP8266
-        uint32_t freeMem = system_get_free_heap_size();
-#else
-        uint32_t freeMem = esp_get_free_heap_size();
-#endif
+        uint32_t freeMem = Utility::getFreeMem();
         if (currentFreeMemory != freeMem) {
             Logger::trace("@%s [%s %lu]", DIAGNOSTICS_NS_PREFIX, (IOEventPaths::System_BytesFree), freeMem, UnsignedNumber);
-            sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::System_BytesFree), &freeMem, UnsignedNumber);
+            sendEvent(domain, address, (const uint8_t*)(IOEventPaths::System_BytesFree), &freeMem, UnsignedNumber);
             currentFreeMemory = freeMem;
         }
     }

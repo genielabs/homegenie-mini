@@ -42,7 +42,7 @@ namespace Automation {
 
     ProgramEngine::ProgramEngine() {
 #ifndef CONFIG_CREATE_AUTOMATION_TASK
-//        setLoopInterval(100);
+        setLoopInterval(100);
 #endif
     };
 
@@ -62,12 +62,16 @@ namespace Automation {
         }
     }
 #else
+    bool isRunning;
     void ProgramEngine::loop() {
+        if (isRunning) return;
+        isRunning = true;
         auto jobs = &ProgramEngine::scheduleList;
         if (jobs->size() > 0) {
             ScheduledScript scheduledScript(jobs->shift());
             scheduledScript.run();
         }
+        isRunning = false;
     }
 #endif
 

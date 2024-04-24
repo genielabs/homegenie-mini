@@ -6,7 +6,7 @@ template <size_t N>
 class ByteRingBuffer
 {
 private:
-	uint8_t buffer[N];
+	uint8_t buffer[N]{};
 	int head = 0;
 	int tail = 0;
 

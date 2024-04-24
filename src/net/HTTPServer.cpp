@@ -50,7 +50,9 @@ namespace Net {
     static WebServer httpServer(HTTP_SERVER_PORT);
 
     LinkedList<WiFiClient> wifiClients;
+#ifndef DISABLE_SSE
     LinkedList<QueuedMessage> events;
+#endif
 
     String ipAddress;
 
@@ -62,6 +64,8 @@ namespace Net {
         httpServer.on("/description.xml", HTTP_GET, []() {
             SSDPDevice.schema(httpServer.client());
         });
+
+#ifndef DISABLE_SSE
         static HTTPServer* i = this;
         httpServer.on("/api/HomeAutomation.HomeGenie/Logging/RealTime.EventStream/", HTTP_GET, []() {
             i->sseClientAccept();
@@ -71,6 +75,7 @@ namespace Net {
             i->sseClientAccept();
         });
         httpServer.addHandler(this);
+#endif
 
         httpServer.begin();
         Logger::info("|  ✔ HTTP service");
@@ -114,7 +119,7 @@ namespace Net {
         httpServer.handleClient();
         SSDPDevice.handleClient();
 
-        // TODO: "if (millis() % 50 == 0) ..." lower priority routine
+#ifndef DISABLE_SSE
         if (events.size() > 0) {
 
             auto e = events.pop();
@@ -127,12 +132,15 @@ namespace Net {
             }
 
         }
-
+#endif
         Logger::verbose("%s loop() << END", HTTPSERVER_LOG_PREFIX);
     }
 
+    void HTTPServer::addHandler(RequestHandler* handler) {
+        httpServer.addHandler(handler);
+    }
 
-
+#ifndef DISABLE_SSE
     // BEGIN RequestHandler interface methods
     bool HTTPServer::canHandle(HTTPMethod method, String uri) {
         return false;
@@ -142,10 +150,6 @@ namespace Net {
         return false;
     }
     // END RequestHandler interface methods
-
-    void HTTPServer::addHandler(RequestHandler* handler) {
-        httpServer.addHandler(handler);
-    }
 
     void HTTPServer::sendSSEvent(String domain, String address, String event, String value) {
         auto m = QueuedMessage(domain, address, event, value, nullptr, IOEventDataType::Undefined);
@@ -183,4 +187,5 @@ namespace Net {
         //sseClient.flush();
         // connection: CLOSE
     }
+#endif
 }

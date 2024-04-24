@@ -34,9 +34,8 @@
 #include <LinkedList.h>
 #include <LittleFS.h>
 
-#include "Task.h"
-#include "lib/supertinycron/ccronexpr.h"
 #include "data/Module.h"
+#include "ExtendedCron.h"
 
 #define SCHEDULER_NS_PREFIX            "Automation::Scheduler"
 
@@ -74,21 +73,19 @@ namespace Automation {
                 delete bm;
             }
         }
-        bool check() {
-            bool scheduling = false;
-            cron_expr expr;
-            const char* err = nullptr;
-            memset(&expr, 0, sizeof(expr));
-            cron_parse_expr(cronExpression.c_str(), &expr, &err);
-            if (err) {
-                /* invalid expression */
-            } else {
-                time_t now = time(nullptr) + (Config::TimeZone);
-                time_t next = cron_next(&expr, now);
-                scheduling = (next - now == 1);
-            }
-            return scheduling;
+        bool occurs(time_t ts) {
+            return ExtendedCron::IsScheduling(ts, cronExpression);
         }
+        bool wasScheduled(time_t ts) {
+            if (!ExtendedCron::hasSecondsField(cronExpression.c_str())) {
+                return ExtendedCron::normalizeStartTime(lastOccurrence) == ExtendedCron::normalizeStartTime(ts);
+            }
+            return lastOccurrence == ts;
+        }
+        void setScheduled(time_t ts) {
+            lastOccurrence = ts;
+        }
+        bool isEnabled = true;
         String name;
         String description;
         String data;
@@ -96,6 +93,8 @@ namespace Automation {
         String script;
         LinkedList<String*> boundDevices; // list of device types that can use this schedule
         LinkedList<ModuleReference*> boundModules; // list of modules using this schedule
+    private:
+        time_t lastOccurrence;
     };
 
     class SchedulerListener {

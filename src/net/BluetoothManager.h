@@ -59,15 +59,12 @@ namespace Net {
 
     private:
 #ifndef DISABLE_BLUETOOTH_LE
-        BleSerial SerialBTLE;
+        BleSerial* SerialBTLE = nullptr;
 #endif
 #ifndef DISABLE_BLUETOOTH_CLASSIC
         BluetoothSerial SerialBT;
 #endif
         bool initialized = false;
-        unsigned long lastTs;
-        uint8_t devicesConnected = 0;
-        uint8_t currentClients = 0;
 
         void handleMessage(String& message);
     };

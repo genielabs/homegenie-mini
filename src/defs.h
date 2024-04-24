@@ -38,7 +38,11 @@
 
 #define DEBUGLOG_DEFAULT_LOG_LEVEL_ERROR
 
+
 #define CONFIG_CREATE_AUTOMATION_TASK
+//#define DISABLE_SSE
+//#define DISABLE_MQTT
+
 
 #ifdef ESP8266
 #define ESP_WIFI_STATUS WiFi.status()
@@ -50,7 +54,7 @@
 #endif
 
 #ifdef ESP8266
-    #define DISABLE_AUTOMATION
+    #undef CONFIG_CREATE_AUTOMATION_TASK
     #define DISABLE_UI
     #define DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC

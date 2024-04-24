@@ -126,7 +126,7 @@ namespace Service {
         Module* getDefaultModule();
         Module* getModule(String* domain, String* address);
 
-        const char* getModuleJSON(Module* module);
+        static const char* getModuleJSON(Module* module);
         unsigned int writeModuleListJSON(ResponseCallback *outputCallback);
         unsigned int writeModuleJSON(ResponseCallback *outputCallback, String* domain, String* address);
         unsigned int writeGroupListJSON(ResponseCallback *outputCallback);

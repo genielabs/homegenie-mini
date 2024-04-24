@@ -2,8 +2,8 @@
 #include <Arduino.h>
 
 #include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
+//#include <BLEUtils.h>
+//#include <BLEServer.h>
 #include <BLE2902.h>
 #include "ByteRingBuffer.h"
 
@@ -72,9 +72,9 @@ private:
 	Bluetooth LE GATT UUIDs for the Nordic UART profile
 	Change UUID here if required
 	*/
-	const char *BLE_SERIAL_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-	const char *BLE_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-	const char *BLE_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+	const char *BLE_SERIAL_SERVICE_UUID PROGMEM = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+	const char *BLE_RX_UUID PROGMEM = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+	const char *BLE_TX_UUID PROGMEM = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
 	bool started = false;
 };

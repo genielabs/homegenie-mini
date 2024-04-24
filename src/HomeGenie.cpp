@@ -98,7 +98,7 @@ namespace Service {
         xTaskCreate(
             reinterpret_cast<TaskFunction_t>(ProgramEngine::worker),
             "ScheduledTask",
-            20480, // this might require some adjustments
+            10240, // this might require some adjustments
             nullptr,
             tskIDLE_PRIORITY + 1,
             nullptr

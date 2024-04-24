@@ -171,6 +171,69 @@ namespace Service { namespace API {
                     // TODO: report error (module not found)
                 }
                 return false;
+            } else if (request->Command == AutomationApi::Scheduling_ListOccurrences) {
+                int hours = request->getOption(0).toInt();
+                auto dateStart = request->getOption(1); //YYYY-MM-DD HH:mm:ss
+                auto cronExpression = request->getOption(2);
+
+                int year, month, day, hour, min, sec;
+                if (sscanf(dateStart.c_str(), "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &min, &sec) == 6)
+                {
+                    struct tm t;
+                    time_t start, end;
+
+                    t.tm_year = year - 1900; // Year - 1900
+                    t.tm_mon = month - 1;    // Month, where 0 = jan
+                    t.tm_mday = day;         // Day of the month
+                    t.tm_hour = hour;
+                    t.tm_min = min;
+                    t.tm_sec = sec;
+                    t.tm_isdst = -1;         // Is DST on? 1 = yes, 0 = no, -1 = unknown
+
+                    start = mktime(&t);
+                    end = start + (hours * 60 * 60) - 60;
+
+                    auto list = ExtendedCron::getScheduling(start, end, cronExpression);
+                    /*
+                    String s;
+                    s += (R"([{ "CronExpression": ")");
+                    s += (cronExpression.c_str());
+                    s += (R"(", "StartDate": ")");
+                    s += (dateStart.c_str());
+                    s += (R"(", "Occurrences": [)");
+
+                    for (int i = 0; i < list.size(); i++) {
+                        auto o = list.get(i);
+                        String sv = String(o) + String("000");
+                        s += (sv.c_str());
+                        if (i < list.size() - 1) {
+                            s += (",");
+                        }
+                    }
+                    s += ("]}]");
+                    responseCallback->writeAll(s.c_str());
+                    //*/
+                    //*
+                    JsonDocument doc;
+                    auto arr = doc.add<JsonArray>();
+                    auto obj = arr.add<JsonObject>();
+                    obj["CronExpression"] = cronExpression;
+                    obj["StartDate"] = dateStart;
+                    auto occurrencesList = obj["Occurrences"] = doc.add<JsonArray>();
+                    for (time_t o : list) {
+                        occurrencesList.add((long long)o * 1000); // convert to milliseconds
+                    }
+                    String output;
+                    serializeJson(arr, output);
+
+                    responseCallback->writeAll(output.c_str());
+                    //*/
+                    return true;
+                } else {
+                    // TODO: report date format error?
+                }
+
+                return false;
             } else if (request->Command == AutomationApi::Scheduling_Delete) {
                 // TODO: return -1 or the index of deleted item
                 Scheduler::deleteSchedule(request->getOption(0).c_str());

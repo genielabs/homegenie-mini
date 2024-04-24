@@ -41,6 +41,7 @@ extern "C" {
 #include "io/IOEvent.h"
 #include "io/IOEventDomains.h"
 #include "io/IOEventPaths.h"
+#include "Utility.h"
 
 #define DIAGNOSTICS_NS_PREFIX          "IO::Sys::Diagnostics"
 #define DIAGNOSTICS_SAMPLING_RATE       5000L
@@ -54,8 +55,8 @@ namespace IO { namespace System {
         void loop();
 
     private:
-        String domain = IOEventDomains::HomeAutomation_HomeGenie;
-        String address = CONFIG_BUILTIN_MODULE_ADDRESS;
+        const char* domain = IOEventDomains::HomeAutomation_HomeGenie;
+        const char* address = CONFIG_BUILTIN_MODULE_ADDRESS;
         uint32_t currentFreeMemory;
     };
 

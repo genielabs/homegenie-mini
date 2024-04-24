@@ -48,9 +48,10 @@ namespace Service {
             auto details = Service::HomeGenie::createModuleParameter(m.event.c_str(), m.value.c_str(), date.c_str());
             netManager->getMQTTServer().broadcast(&topic, &details);
 #endif
+#ifndef DISABLE_SSE
             // SSE
             netManager->getHttpServer().sendSSEvent(m.domain, m.sender, m.event, m.value);
-
+#endif
             // WS
             if (netManager->getWebSocketServer().connectedClients() > 0) {
                 unsigned long epoch = TimeClient::getTimeClient().getEpochTime();

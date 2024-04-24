@@ -121,7 +121,7 @@ String Utility::getByteString(uint64_t *data, uint16_t length) {
     return stringData;
 }
 
-RGBColor Utility::hsv2rgb(float h, float s, float v) {
+ColorRGB Utility::hsv2rgb(float h, float s, float v) {
     float r, g, b;
 
     int i = floor(h * 6);
@@ -139,10 +139,19 @@ RGBColor Utility::hsv2rgb(float h, float s, float v) {
         case 5: r = v, g = p, b = q; break;
     }
 
-    RGBColor color;
+    ColorRGB color;
     color.r = r * 255;
     color.g = g * 255;
     color.b = b * 255;
 
     return color;
+}
+
+uint32_t Utility::getFreeMem() {
+#ifdef ESP8266
+    uint32_t freeMem = system_get_free_heap_size();
+#else
+    uint32_t freeMem = esp_get_free_heap_size();
+#endif
+    return freeMem;
 }

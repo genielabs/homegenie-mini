@@ -43,6 +43,9 @@ namespace Automation {
             return;
         }
 
+        Logger::info(":%s [Scheduler::Event] >> ['%s' running]", PROGRAMENGINE_NS_PREFIX,
+                     schedule->name.c_str());
+
         duk_context *ctx = duk_create_heap_default();
 
         duk_push_c_lightfunc(ctx, helper_log, 2, 2, 0);
@@ -119,8 +122,15 @@ namespace Automation {
     }
 
     duk_ret_t ScheduledScript::pause(duk_context *ctx) {
-        double seconds = duk_to_number(ctx, 0);
-        vTaskDelay(portTICK_PERIOD_MS * (seconds * 1000.0F));
+        double pauseMs = (1000.0F * duk_to_number(ctx, 0));
+#ifdef CONFIG_CREATE_AUTOMATION_TASK
+        vTaskDelay(portTICK_PERIOD_MS * pauseMs);
+#else
+        unsigned long start = millis();
+        while (millis() - start < pauseMs) {
+            TaskManager::loop();
+        }
+#endif
         return 0;
     }
 
@@ -132,7 +142,7 @@ namespace Automation {
 
     duk_ret_t ScheduledScript::boundModules_level_set(duk_context *ctx) {
         String level = duk_to_string(ctx, 0);
-        auto command = String("Control.Level") + String("/") + String(level);
+        auto command = String(ControlApi::Control_Level) + String("/") + String(level);
         apiCommand(ctx, command.c_str());
         return 0;
     }
@@ -183,10 +193,6 @@ namespace Automation {
     void ScheduledScript::apiCommand(duk_context *ctx, const char* command) {
         duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
         auto schedule = (Schedule*)duk_get_pointer(ctx, -1);
-
-        Logger::info(":%s [Scheduler::Event] >> ['%s' running]", PROGRAMENGINE_NS_PREFIX,
-                     schedule->name.c_str());
-
         for (auto mr: schedule->boundModules) {
             String apiCommand = String("/api/") + mr->domain + String("/") + mr->address + String("/") + String(command);
 
@@ -195,7 +201,6 @@ namespace Automation {
             auto callback = DummyResponseCallback();
             ProgramEngine::apiRequest(schedule, apiCommand.c_str(), &callback);
         }
-
     }
 
     duk_ret_t ScheduledScript::helper_log(duk_context *ctx) {

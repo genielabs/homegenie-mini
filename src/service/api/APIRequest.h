@@ -55,6 +55,7 @@ namespace Service { namespace API {
         static const char Scheduling_Update[] PROGMEM = {"Scheduling.Update"};
         static const char Scheduling_Get[] PROGMEM = {"Scheduling.Get"};
         static const char Scheduling_ModuleUpdate[] PROGMEM = {"Scheduling.ModuleUpdate"};
+        static const char Scheduling_ListOccurrences[] PROGMEM = {"Scheduling.ListOccurrences"};
         static const char Scheduling_Enable[] PROGMEM = {"Scheduling.Enable"};
         static const char Scheduling_Disable[] PROGMEM = {"Scheduling.Disable"};
         static const char Scheduling_Delete[] PROGMEM = {"Scheduling.Delete"};
@@ -80,6 +81,45 @@ namespace Service { namespace API {
         String Data;
         String getOption(unsigned int optionIndex);
         static APIRequest parse(String command);
+
+    protected:
+        static String urlDecode(String& str)
+        {
+            String encodedString = "";
+            char c;
+            char code0;
+            char code1;
+            for (int i = 0; i < str.length(); i++){
+                c=str.charAt(i);
+                if (c == '+') {
+                    encodedString += ' ';
+                } else if (c == '%') {
+                    i++;
+                    code0=str.charAt(i);
+                    i++;
+                    code1=str.charAt(i);
+                    c = (hexToInt(code0) << 4) | hexToInt(code1);
+                    encodedString += c;
+                } else {
+                    encodedString += c;
+                }
+                //yield();
+            }
+            return encodedString;
+        }
+        static unsigned char hexToInt(char c)
+        {
+            if (c >= '0' && c <='9'){
+                return((unsigned char)c - '0');
+            }
+            if (c >= 'a' && c <='f'){
+                return((unsigned char)c - 'a' + 10);
+            }
+            if (c >= 'A' && c <='F'){
+                return((unsigned char)c - 'A' + 10);
+            }
+            return(0);
+        }
     };
 
 }}

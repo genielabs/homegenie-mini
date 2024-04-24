@@ -81,6 +81,7 @@ namespace Net {
         void error(const char* s) override {};
     };
 
+#ifndef DISABLE_MQTT
     class MQTTResponseCallback : public ResponseCallback {
     public:
         MQTTResponseCallback(MQTTServer *server, uint8_t clientId, String* destinationTopic) {
@@ -105,6 +106,7 @@ namespace Net {
         String* topic;
         String buffer;
     };
+#endif
 
     // WebSocketResponseCallback
     class WebSocketResponseCallback : public ResponseCallback {

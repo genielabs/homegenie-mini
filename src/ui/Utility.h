@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_UTILITY_H
-#define HOMEGENIE_MINI_UTILITY_H
+#ifndef HOMEGENIE_MINI_UI_UTILITY_H
+#define HOMEGENIE_MINI_UI_UTILITY_H
 
 namespace UI {
 
@@ -93,4 +93,4 @@ namespace UI {
 
 }
 
-#endif //HOMEGENIE_MINI_UTILITY_H
+#endif //HOMEGENIE_MINI_UI_UTILITY_H
