@@ -51,7 +51,6 @@ protected:
 	size_t transmitBufferLength;
 
 private:
-
 	ByteRingBuffer<RX_BUFFER_SIZE> receiveBuffer;
 	size_t numAvailableLines;
 
@@ -62,13 +61,4 @@ private:
 	uint16_t peerMTU;
 	uint16_t maxTransferSize = BLE_BUFFER_SIZE;
 
-	/*
-	Bluetooth LE GATT UUIDs for the Nordic UART profile
-	Change UUID here if required
-	*/
-	const char *BLE_SERIAL_SERVICE_UUID PROGMEM = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-	const char *BLE_RX_UUID PROGMEM = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-	const char *BLE_TX_UUID PROGMEM = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-
-	bool started = false;
 };

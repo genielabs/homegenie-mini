@@ -1,6 +1,14 @@
 #include "BleSerial.h"
 using namespace std;
 
+/*
+Bluetooth LE GATT UUIDs for the Nordic UART profile
+Change UUID here if required
+*/
+const char BLE_SERIAL_SERVICE_UUID[] PROGMEM = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+const char BLE_RX_UUID[] PROGMEM = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+const char BLE_TX_UUID[] PROGMEM = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+
 bool BleSerial::connected() const
 {
 	return Server->getConnectedCount() > 0;
