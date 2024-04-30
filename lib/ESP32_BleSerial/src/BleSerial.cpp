@@ -1,21 +1,19 @@
 #include "BleSerial.h"
 using namespace std;
 
-bool BleSerial::connected()
+bool BleSerial::connected() const
 {
 	return Server->getConnectedCount() > 0;
 }
 
 void BleSerial::onConnect(BLEServer *pServer)
 {
-	bleConnected = true;
 	if (enableLed)
 		digitalWrite(ledPin, HIGH);
 }
 
 void BleSerial::onDisconnect(BLEServer *pServer)
 {
-	bleConnected = false;
 	if (enableLed)
 		digitalWrite(ledPin, LOW);
 	Server->startAdvertising();
@@ -125,7 +123,6 @@ void BleSerial::flush()
 		TxCharacteristic->setValue(this->transmitBuffer, this->transmitBufferLength);
 		this->transmitBufferLength = 0;
 	}
-	this->lastFlushTime = millis();
 	TxCharacteristic->notify(true);
 }
 
@@ -139,7 +136,6 @@ void BleSerial::begin(const char *name, bool enable_led, int led_pin)
 		pinMode(ledPin, OUTPUT);
 	}
 
-	ConnectedDeviceCount = 0;
 	BLEDevice::init(name);
 
 	Server = BLEDevice::createServer();
@@ -192,8 +188,4 @@ void BleSerial::SetupSerialService()
 	RxCharacteristic->setWriteProperty(true);
 	RxCharacteristic->setCallbacks(this);
 	SerialService->start();
-}
-
-BleSerial::BleSerial()
-{
 }

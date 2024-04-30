@@ -201,6 +201,7 @@ namespace UI { namespace Activities { namespace Control {
             invalidate();
         }
 
+        // TODO: implement with Automation::Helpers::NetHelper::httpGet
         bool sendCommand(const char* command, const char* options = "") {
             String url = moduleBaseUrl;
             if (!url.endsWith("/")) {

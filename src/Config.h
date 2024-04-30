@@ -33,7 +33,7 @@
 #include "defs.h"
 
 #include <Arduino.h>
-#ifdef CONFIG_CREATE_AUTOMATION_TASK
+#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
 #include <FreeRTOSConfig.h>
 #endif
 #ifdef ESP32

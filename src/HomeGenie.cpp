@@ -85,7 +85,7 @@ namespace Service {
         // set scheduler callback
         Automation::Scheduler::setListener(this);
 
-#ifdef CONFIG_CREATE_AUTOMATION_TASK
+#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
         /*
         xTaskCreate(
             reinterpret_cast<TaskFunction_t>(Scheduler::loop),
@@ -216,6 +216,7 @@ namespace Service {
                 handled = handled || handler->handleRequest(request, responseCallback);
             }
             //if (handled) break;
+            yield();
         }
         return handled;
     }

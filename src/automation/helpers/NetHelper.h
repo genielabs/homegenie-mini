@@ -27,41 +27,29 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_PROGRAMENGINE_H
-#define HOMEGENIE_MINI_PROGRAMENGINE_H
+#ifndef HOMEGENIE_MINI_NETHELPER_H
+#define HOMEGENIE_MINI_NETHELPER_H
 
-#include "Task.h"
-
-#include "automation/Scheduler.h"
-#include "io/Logger.h"
-#include "net/NetManager.h"
-
-#define PROGRAMENGINE_NS_PREFIX            "Automation::ProgramEngine"
-
-namespace Automation {
-
-    using namespace Net;
-
-    class ProgramEngine
-#ifndef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
-            : Task
-#endif
-            {
-    public:
-        ProgramEngine();
-        static void begin(std::function<void(void*, const char* , ResponseCallback*)>);
-
-#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
-        [[noreturn]] static void worker();
+#ifdef ESP8266
+#include <ESP8266HTTPClient.h>
 #else
-        void loop() override;
+#include <HTTPClient.h>
 #endif
-        static void run(Schedule*);
-        static std::function<void(void*, const char* , ResponseCallback*)> apiRequest;
+#include <ESPping.h>
+
+#include "Config.h"
+
+namespace Automation { namespace Helpers {
+
+    class NetHelper{
+    public:
+        static String httpGet(String& url);
+        static bool ping(String& host);
+
     private:
-        static LinkedList<Schedule*> scheduleList;
+        static HTTPClient http;
     };
 
-}
+}}
 
-#endif //HOMEGENIE_MINI_PROGRAMENGINE_H
+#endif //HOMEGENIE_MINI_NETHELPER_H

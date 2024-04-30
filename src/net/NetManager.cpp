@@ -142,8 +142,10 @@ namespace Net {
     void NetManager::loop() {
         Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
 
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 5; i++) { // higher priority task
             webSocket->loop();
+            yield();
+        }
 
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }

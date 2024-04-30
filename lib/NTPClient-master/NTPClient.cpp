@@ -92,24 +92,30 @@ bool NTPClient::forceUpdate() {
   this->sendNTPPacket();
 
   // Wait till data is there or timeout...
-  byte timeout = 0;
+  unsigned int startCheckMs = millis();
   int cb = 0;
   do {
-    delay ( 10 );
+
     cb = this->_udp->parsePacket();
-    
     if(cb > 0)
     {
       this->_udp->read(this->_packetBuffer, NTP_PACKET_SIZE);
       if(!this->isValid(this->_packetBuffer))
         cb = 0;
     }
-    
-    if (timeout > 100) return false; // timeout after 1000 ms
-    timeout++;
+    if (cb == 0) {
+        if (millis() - startCheckMs > 1000) {
+            // timeout after 1000 ms
+            return false;
+        }
+        unsigned int delayStartMs = millis();
+        while (millis() - delayStartMs < 50) {
+            yield();
+        }
+    }
   } while (cb == 0);
 
-  this->_lastUpdate = millis() - (10 * (timeout + 1)); // Account for delay in reading the time
+  this->_lastUpdate = millis();
 
   unsigned long highWord = word(this->_packetBuffer[40], this->_packetBuffer[41]);
   unsigned long lowWord = word(this->_packetBuffer[42], this->_packetBuffer[43]);

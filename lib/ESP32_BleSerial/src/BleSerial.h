@@ -2,8 +2,6 @@
 #include <Arduino.h>
 
 #include <BLEDevice.h>
-//#include <BLEUtils.h>
-//#include <BLEServer.h>
 #include <BLE2902.h>
 #include "ByteRingBuffer.h"
 
@@ -15,23 +13,25 @@
 class BleSerial : public BLECharacteristicCallbacks, public BLEServerCallbacks, public Stream
 {
 public:
-	BleSerial();
+	BleSerial() = default;
+    BleSerial(BleSerial const &other) = delete;		 // disable copy constructor
+    void operator=(BleSerial const &other) = delete; // disable assign constructor
 
 	void begin(const char *name, bool enable_led = false, int led_pin = 13);
-	void end();
-	void onWrite(BLECharacteristic *pCharacteristic);
-	int available();
-	int read();
-	size_t readBytes(uint8_t *buffer, size_t bufferSize);
-	int peek();
-	size_t write(uint8_t byte);
-	void flush();
-	size_t write(const uint8_t *buffer, size_t bufferSize);
+	static void end();
+	void onWrite(BLECharacteristic *pCharacteristic) override;
+	int available() override;
+	int read() override;
+	size_t readBytes(uint8_t *buffer, size_t bufferSize) override;
+	int peek() override;
+	size_t write(uint8_t byte) override;
+	void flush() override;
+	size_t write(const uint8_t *buffer, size_t bufferSize) override;
 	size_t print(const char *value);
-	void onConnect(BLEServer *pServer);
-	void onDisconnect(BLEServer *pServer);
+	void onConnect(BLEServer *pServer) override;
+	void onDisconnect(BLEServer *pServer) override;
 
-	bool connected();
+	bool connected() const;
 
 	BLEServer *Server;
 
@@ -49,25 +49,19 @@ public:
 	int ledPin = 13;
 protected:
 	size_t transmitBufferLength;
-	bool bleConnected;
 
 private:
-	BleSerial(BleSerial const &other) = delete;		 // disable copy constructor
-	void operator=(BleSerial const &other) = delete; // disable assign constructor
 
 	ByteRingBuffer<RX_BUFFER_SIZE> receiveBuffer;
 	size_t numAvailableLines;
 
-	unsigned long long lastFlushTime;
 	uint8_t transmitBuffer[BLE_BUFFER_SIZE];
 
-	int ConnectedDeviceCount;
 	void SetupSerialService();
 
 	uint16_t peerMTU;
 	uint16_t maxTransferSize = BLE_BUFFER_SIZE;
 
-	bool checkMTU();
 	/*
 	Bluetooth LE GATT UUIDs for the Nordic UART profile
 	Change UUID here if required

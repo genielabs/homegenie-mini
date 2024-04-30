@@ -45,6 +45,7 @@ Adafruit_NeoPixel pixels(num, pin, NEO_RGB + NEO_KHZ800);
 #endif
 
 bool changed = false;
+unsigned long lastRefreshTs = 0;
 
 void statusLedCallback(bool isLedOn) {
     if (isLedOn) {
@@ -56,8 +57,6 @@ void statusLedCallback(bool isLedOn) {
 }
 
 void setup() {
-    statusLED.begin();
-
     homeGenie = HomeGenie::getInstance();
 
     if (!Config::isDeviceConfigured()) {
@@ -76,6 +75,14 @@ void setup() {
             }
 #endif
             changed = true;
+            if (millis() - lastRefreshTs > 50) { // force 20fps max
+                statusLED.show();
+#ifdef LED_ARRAY_COUNT
+                pixels.show();
+#endif
+                lastRefreshTs = millis();
+                changed = false;
+            }
         });
         homeGenie->addAPIHandler(colorLight);
 
@@ -86,6 +93,11 @@ void setup() {
             cl->onSetColor([i](float r, float g, float b) {
                 pixels.setPixelColor(i, r, g, b);
                 changed = true;
+                if (millis() - lastRefreshTs > 50) { // force 20fps max
+                    pixels.show();
+                    lastRefreshTs = millis();
+                    changed = false;
+                }
             });
             homeGenie->addAPIHandler(cl);
         }
@@ -97,21 +109,19 @@ void setup() {
 
     }
 
+    statusLED.begin();
     homeGenie->begin();
 }
-
-unsigned long ts = 0;
 
 void loop()
 {
     homeGenie->loop();
-
-    if (changed) { //&& millis()-ts > 50) { // force 20fps max
+    if (changed) { // trailing fx
         changed = false;
         statusLED.show();
 #ifdef LED_ARRAY_COUNT
         pixels.show();
 #endif
-        ts = millis();
+        lastRefreshTs = millis();
     }
 }

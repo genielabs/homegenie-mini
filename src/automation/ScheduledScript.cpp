@@ -48,82 +48,47 @@ namespace Automation {
 
         duk_context *ctx = duk_create_heap_default();
 
-        duk_push_c_lightfunc(ctx, helper_log, 2, 2, 0);
+        duk_push_c_lightfunc(ctx, helper_log, DUK_VARARGS, 0, 0);
         duk_put_global_string(ctx, "__log");
 
         duk_push_c_lightfunc(ctx, pause, 1, 1, 0);
         duk_put_global_string(ctx, "__pause");
 
-        duk_push_c_lightfunc(ctx, boundModules_on, 0, 0, 0);
-        duk_put_global_string(ctx, "__boundModules_on");
+        duk_push_c_lightfunc(ctx, schedule_on_previous, 1, 1, 0);
+        duk_put_global_string(ctx, "__onPrevious");
 
-        duk_push_c_lightfunc(ctx, boundModules_off, 0, 0, 0);
-        duk_put_global_string(ctx, "__boundModules_off");
+        duk_push_c_lightfunc(ctx, schedule_on_next, 1, 1, 0);
+        duk_put_global_string(ctx, "__onNext");
 
-        duk_push_c_lightfunc(ctx, boundModules_toggle, 0, 0, 0);
-        duk_put_global_string(ctx, "__boundModules_toggle");
+        duk_push_c_lightfunc(ctx, netHelper_call, 0, 0, 0);
+        duk_put_global_string(ctx, "__netHelper_call");
 
-        duk_push_c_lightfunc(ctx, boundModules_level_set, 1, 1, 0);
-        duk_put_global_string(ctx, "__boundModules_level_set");
+        duk_push_c_lightfunc(ctx, netHelper_ping, 1, 1, 0);
+        duk_put_global_string(ctx, "__netHelper_ping");
 
-        duk_push_c_lightfunc(ctx, boundModules_colorHsb_set, 1, 1, 0);
-        duk_put_global_string(ctx, "__boundModules_colorHsb_set");
+        duk_push_c_lightfunc(ctx, boundModules_command, 2, 2, 0);
+        duk_put_global_string(ctx, "__boundModules_command");
 
+        duk_push_c_lightfunc(ctx, boundModules_property_avg, 1, 1, 0);
+        duk_put_global_string(ctx, "__boundModules_property_avg");
+
+        duk_push_c_lightfunc(ctx, boundModules_property_get, 1, 1, 0);
+        duk_put_global_string(ctx, "__boundModules_property_get");
 
         duk_push_pointer(ctx, schedule);
         duk_put_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
 
-
-        String scriptCode = "const $$ = {"
-                            "  boundModules: {"
-                            "    on: function() {"
-                            "      __boundModules_on();"
-                            "    },"
-                            "    off: function() {"
-                            "      __boundModules_off();"
-                            "    },"
-                            "    toggle: function() {"
-                            "      __boundModules_toggle();"
-                            "    },"
-                            "    set level(v) {"
-                            "      __boundModules_level_set(v);"
-                            "    },"
-                            "    get level() {"
-                            "      return '';" // TODO: implement getter
-                            "    },"
-                            "    set colorHsb(hsb) {"
-                            "      __boundModules_colorHsb_set(hsb);"
-                            "    },"
-                            "    get colorHsb() {"
-                            "      return '';" // TODO: implement getter
-                            "    }"
-                            "  },"
-                            "  onPrevious: function() {"
-                            "     return false;" // TODO: 2B implemented
-                            "  },"
-                            "  onNext: function() {"
-                            "     return false;" // TODO: 2B implemented
-                            "  },"
-                            "  data: function(k, v) {"
-                            "    __log(k, v);" // TODO: 2B implemented
-                            "  },"
-                            "  pause: function(seconds) {"
-                            "    __pause(seconds);"
-                            "  }"
-                            "};" +
-                            schedule->script +
-                            "\n;";
-
+        const String scriptCode = baseCode + schedule->script;
 
         duk_peval_string(ctx, scriptCode.c_str());
-        duk_pop(ctx);  // pop eval result
+        //duk_pop(ctx);  // pop eval result
 
         duk_destroy_heap(ctx);
     }
 
     duk_ret_t ScheduledScript::pause(duk_context *ctx) {
         double pauseMs = (1000.0F * duk_to_number(ctx, 0));
-#ifdef CONFIG_CREATE_AUTOMATION_TASK
+#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
         vTaskDelay(portTICK_PERIOD_MS * pauseMs);
 #else
         unsigned long start = millis();
@@ -134,45 +99,74 @@ namespace Automation {
         return 0;
     }
 
-    duk_ret_t ScheduledScript::boundModules_level_get(duk_context *ctx) {
-        const char* res = getProperty(ctx, IOEventPaths::Status_Level);
+    duk_ret_t ScheduledScript::schedule_on_previous(duk_context *ctx) {
+        duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
+        auto schedule = (Schedule*)duk_get_pointer(ctx, -1);
+        time_t ts = time(0) - 60; // check one minute before now
+        bool result = schedule->occurs(ts);
+        duk_push_boolean(ctx, result);
+        return 1;
+    }
+
+    duk_ret_t ScheduledScript::schedule_on_next(duk_context *ctx) {
+        duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
+        auto schedule = (Schedule*)duk_get_pointer(ctx, -1);
+        time_t ts = time(0) + 60; // check one minute after now
+        bool result = schedule->occurs(ts);
+        duk_push_boolean(ctx, result);
+        return 1;
+    }
+
+    duk_ret_t ScheduledScript::boundModules_property_avg(duk_context *ctx) {
+        String propertyName = duk_to_string(ctx, 0);
+        float res = getAvgPropertyValue(ctx, propertyName.c_str());
+        duk_push_number(ctx, res);
+        return 1;
+    }
+
+    duk_ret_t ScheduledScript::boundModules_property_get(duk_context *ctx) {
+        String propertyName = duk_to_string(ctx, 0);
+        const char* res = getProperty(ctx, propertyName.c_str());
         duk_push_string(ctx, res);
         return 1;
     }
 
-    duk_ret_t ScheduledScript::boundModules_level_set(duk_context *ctx) {
-        String level = duk_to_string(ctx, 0);
-        auto command = String(ControlApi::Control_Level) + String("/") + String(level);
-        apiCommand(ctx, command.c_str());
+    duk_ret_t ScheduledScript::boundModules_command(duk_context *ctx) {
+        String command = duk_to_string(ctx, 0);
+        String options = duk_to_string(ctx, 1);
+        apiCommand(ctx, command.c_str(), options.c_str());
         return 0;
     }
 
-    duk_ret_t ScheduledScript::boundModules_colorHsb_get(duk_context *ctx) {
-        const char* res = getProperty(ctx, IOEventPaths::Status_ColorHsb);
-        duk_push_string(ctx, res);
+    duk_ret_t ScheduledScript::netHelper_call(duk_context *ctx) {
+        String url = duk_to_string(ctx, 0);
+        String response = Helpers::NetHelper::httpGet(url);
+        duk_push_string(ctx, response.c_str());
         return 1;
     }
 
-    duk_ret_t ScheduledScript::boundModules_colorHsb_set(duk_context *ctx) {
-        String hsb = duk_to_string(ctx, 0);
-        auto command = String(ControlApi::Control_ColorHsb) + String("/") + String(hsb);
-        apiCommand(ctx, command.c_str());
-        return 0;
+    duk_ret_t ScheduledScript::netHelper_ping(duk_context *ctx) {
+        String host = duk_to_string(ctx, 0);
+        bool result = Helpers::NetHelper::ping(host);
+        duk_push_boolean(ctx, result);
+        return 1;
     }
 
-    duk_ret_t ScheduledScript::boundModules_on(duk_context *ctx) {
-        apiCommand(ctx, ControlApi::Control_On);
-        return 0;
-    }
-
-    duk_ret_t ScheduledScript::boundModules_off(duk_context *ctx) {
-        apiCommand(ctx, ControlApi::Control_Off);
-        return 0;
-    }
-
-    duk_ret_t ScheduledScript::boundModules_toggle(duk_context *ctx) {
-        apiCommand(ctx, ControlApi::Control_Toggle);
-        return 0;
+    float ScheduledScript::getAvgPropertyValue(duk_context *ctx, const char* propertyPath) {
+        duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
+        int vc = 0; float avg = 0;
+        auto schedule = (Schedule*)duk_get_pointer(ctx, -1);
+        for (auto mr: schedule->boundModules) {
+            auto module = HomeGenie::getInstance()->getModule(&mr->domain, &mr->address);
+            if (module != nullptr) {
+                auto property = module->getProperty(propertyPath);
+                if (property != nullptr && property->value != nullptr) {
+                    avg += property->value.toFloat();
+                    vc++;
+                }
+            }
+        }
+        return avg / (float)vc;
     }
 
     const char* ScheduledScript::getProperty(duk_context *ctx, const char* propertyPath) {
@@ -181,7 +175,7 @@ namespace Automation {
         for (auto mr: schedule->boundModules) {
             auto module = HomeGenie::getInstance()->getModule(&mr->domain, &mr->address);
             if (module != nullptr) {
-                auto property = module->getProperty(IOEventPaths::Status_ColorHsb);
+                auto property = module->getProperty(propertyPath);
                 if (property != nullptr && property->value != nullptr) {
                     return property->value.c_str();
                 }
@@ -190,11 +184,11 @@ namespace Automation {
         return "";
     }
 
-    void ScheduledScript::apiCommand(duk_context *ctx, const char* command) {
+    void ScheduledScript::apiCommand(duk_context *ctx, const char* command, const char* options) {
         duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
         auto schedule = (Schedule*)duk_get_pointer(ctx, -1);
         for (auto mr: schedule->boundModules) {
-            String apiCommand = String("/api/") + mr->domain + String("/") + mr->address + String("/") + String(command);
+            String apiCommand = String("/api/") + mr->domain + String("/") + mr->address + String("/") + String(command) + String("/") + String(options);
 
             // TODO: add support for generic HTTP commands
 
@@ -207,14 +201,10 @@ namespace Automation {
         String res = "";
         int n = duk_get_top(ctx);  // #args
         for (int i = 0; i < n; i++) {
-            res += String(":") + duk_to_string(ctx, i);
+            res += duk_to_string(ctx, i);
         }
-
-        //duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
-        //auto s = (Schedule*)duk_get_pointer(ctx, -1);
-
-        duk_push_string(ctx, res.c_str());
-        return 1;
+        Serial.println(res);
+        return 0;
     }
 
 }

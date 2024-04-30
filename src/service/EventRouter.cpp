@@ -88,6 +88,8 @@ namespace Service {
             }
 
             // TODO: route event to the console as well
+
+            yield();
         }
     }
 
@@ -102,6 +104,7 @@ namespace Service {
                     updated = true;
                     break;
                 }
+                yield();
             }
             if (!updated) {
                 eventsQueue.add(m);

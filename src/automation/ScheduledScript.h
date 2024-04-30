@@ -59,6 +59,7 @@ Flash: [========= ]  92.1% (used 1810372 bytes from 1966080 bytes)
  *
  */
 
+#include "automation/helpers/NetHelper.h"
 #include "automation/ProgramEngine.h"
 
 namespace Automation {
@@ -73,24 +74,109 @@ namespace Automation {
         void setSchedule(Schedule* s) {
             schedule = s;
         }
-        ScheduledScript(Schedule*);
+        explicit ScheduledScript(Schedule*);
         void run();
     private:
         Schedule* schedule;
 
         static duk_ret_t helper_log(duk_context *ctx);
         static duk_ret_t pause(duk_context *ctx);
-        static duk_ret_t boundModules_level_get(duk_context *ctx);
-        static duk_ret_t boundModules_level_set(duk_context *ctx);
-        static duk_ret_t boundModules_colorHsb_get(duk_context *ctx);
-        static duk_ret_t boundModules_colorHsb_set(duk_context *ctx);
-        static duk_ret_t boundModules_on(duk_context *ctx);
-        static duk_ret_t boundModules_off(duk_context *ctx);
-        static duk_ret_t boundModules_toggle(duk_context *ctx);
-        static const char* getProperty(duk_context *ctx, const char* propertyPath);
-        static void apiCommand(duk_context *ctx, const char* command);
-    };
 
+        static duk_ret_t schedule_on_previous(duk_context *ctx);
+        static duk_ret_t schedule_on_next(duk_context *ctx);
+
+        static duk_ret_t boundModules_command(duk_context *ctx);
+        static duk_ret_t boundModules_property_get(duk_context *ctx);
+        static duk_ret_t boundModules_property_avg(duk_context *ctx);
+
+        static duk_ret_t netHelper_call(duk_context *ctx);
+        static duk_ret_t netHelper_ping(duk_context *ctx);
+
+        static const char* getProperty(duk_context *ctx, const char* propertyPath);
+        static float getAvgPropertyValue(duk_context *ctx, const char* propertyPath);
+
+        static void apiCommand(duk_context *ctx, const char* command, const char* options);
+
+        const char* baseCode PROGMEM = "const $$ = {\n"
+            "  get net() {\n"
+            "    _url = '';\n"
+            "    return {\n"
+            "      webService: function(url) {\n"
+            "        _url = url;\n"
+            "        return this;\n"
+            "      },\n"
+            "      call: function() {\n"
+            "        return __netHelper_call(_url);\n"
+            "      },\n"
+            "      ping: function(host) {\n"
+            "        return __netHelper_ping(host);\n"
+            "      }\n"
+            "    }\n"
+            "  },\n"
+            "  get boundModules() {\n"
+            "    return {\n"
+            "      command: function(cmd, opts) {\n"
+            "        __boundModules_command(cmd, opts);\n"
+            "        return this;\n"
+            "      },\n"
+            "      on: function() {\n"
+            "        __boundModules_command('Control.On', '');\n"
+            "        return this;\n"
+            "      },\n"
+            "      off: function() {\n"
+            "        __boundModules_command('Control.Off', '');\n"
+            "        return this;\n"
+            "      },\n"
+            "      toggle: function() {\n"
+            "        __boundModules_command('Control.Toggle', '');\n"
+            "        return this;\n"
+            "      },\n"
+            "      set level(level) {\n"
+            "        __boundModules_command('Control.Level', level);\n"
+            "        return this;\n"
+            "      },\n"
+            "      get level() {\n"
+            "        return __boundModules_property_avg('Status.Level');\n"
+            "      },\n"
+            "      set colorHsb(hsb) {\n"
+            "        __boundModules_command('Control.ColorHsb', hsb);\n"
+            "        return this;\n"
+            "      },\n"
+            "      get colorHsb() {\n"
+            "        return __boundModules_property_get('Status.ColorHsb');\n"
+            "      },\n"
+            "      get isOn() {\n"
+            "        return parseFloat(__boundModules_property_avg('Status.Level')) > 0;\n"
+            "      },\n"
+            "      get isOff() {\n"
+            "        return parseFloat(__boundModules_property_avg('Status.Level')) === 0;\n"
+            "      },\n"
+            "      get temperature() {\n"
+            "        return parseFloat(__boundModules_property_avg('Sensor.Temperature'));\n"
+            "      },\n"
+            "      get luminance() {\n"
+            "        return parseFloat(__boundModules_property_avg('Sensor.Luminance'));\n"
+            "      },\n"
+            "      get humidity() {\n"
+            "        return parseFloat(__boundModules_property_avg('Sensor.Humidity'));\n"
+            "      }\n"
+            "    }\n"
+            "  },\n"
+            "  onPrevious: function() {\n"
+            "    return __onPrevious();\n"
+            "  },\n"
+            "  onNext: function() {\n"
+            "    return __onNext();\n"
+            "  },\n"
+            "  data: function(k, v) {\n"
+            "    __log(k, v);\n" // TODO: 2B implemented
+            "  },\n"
+            "  pause: function(seconds) {\n"
+            "    __pause(seconds);\n"
+            "    return this;\n"
+            "  }\n"
+            "};\n";
+    };
 };
 
 

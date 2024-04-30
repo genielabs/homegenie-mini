@@ -41,7 +41,7 @@ namespace Automation {
     std::function<void(void*, const char* , ResponseCallback*)> ProgramEngine::apiRequest = nullptr;
 
     ProgramEngine::ProgramEngine() {
-#ifndef CONFIG_CREATE_AUTOMATION_TASK
+#ifndef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
         setLoopInterval(100);
 #endif
     };
@@ -50,7 +50,7 @@ namespace Automation {
         ProgramEngine::apiRequest = std::move(ar);
     }
 
-#ifdef CONFIG_CREATE_AUTOMATION_TASK
+#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
     [[noreturn]] void ProgramEngine::worker() {
         for(;;) {
             auto jobs = &ProgramEngine::scheduleList;

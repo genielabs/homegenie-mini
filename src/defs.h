@@ -39,7 +39,10 @@
 #define DEBUGLOG_DEFAULT_LOG_LEVEL_ERROR
 
 
-#define CONFIG_CREATE_AUTOMATION_TASK
+// disabling FreeRTOS task saves about ~10K or RAM
+//#define CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
+
+// disabling SSE and MQTT saves only ~2K of RAM
 //#define DISABLE_SSE
 //#define DISABLE_MQTT
 
@@ -54,7 +57,7 @@
 #endif
 
 #ifdef ESP8266
-    #undef CONFIG_CREATE_AUTOMATION_TASK
+    #undef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
     #define DISABLE_UI
     #define DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
