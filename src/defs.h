@@ -40,7 +40,7 @@
 
 
 // disabling FreeRTOS task saves about ~10K or RAM
-//#define CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
+#define CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
 
 // disabling SSE and MQTT saves only ~2K of RAM
 //#define DISABLE_SSE

@@ -36,6 +36,7 @@ namespace Automation {
     const char baseCode[] PROGMEM = "const $$ = {\n"
             "  get net() {\n"
             "    _url = '';\n"
+            "    _command = '';\n"
             "    return {\n"
             "      webService: function(url) {\n"
             "        _url = url;\n"
@@ -51,10 +52,14 @@ namespace Automation {
             "  },\n"
             "  get boundModules() {\n"
             "    return {\n"
-            "      command: function(cmd, opts) {\n"
-            "        __boundModules_command(cmd, opts);\n"
+            "      command: function(cmd) {\n"
+            "        _command = cmd;"
             "        return this;\n"
             "      },\n"
+            "      submit: function(opts) {\n"
+            "        __boundModules_command(_command, opts);\n"
+            "        return this;\n"
+            "      },"
             "      on: function() {\n"
             "        __boundModules_command('Control.On', '');\n"
             "        return this;\n"
@@ -214,6 +219,7 @@ namespace Automation {
     duk_ret_t ScheduledScript::boundModules_command(duk_context *ctx) {
         String command = duk_to_string(ctx, 0);
         String options = duk_to_string(ctx, 1);
+        if (options == nullptr || options == "undefined") options = "";
         apiCommand(ctx, command.c_str(), options.c_str());
         return 0;
     }

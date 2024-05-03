@@ -68,7 +68,7 @@ void setup() {
 
         auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Demo Light");
         colorLight->onSetColor([](float r, float g, float b) {
-            statusLED.setPixelColor(0, g, r, b);
+            statusLED.setPixelColor(0, r, g, b);
 #ifdef LED_ARRAY_COUNT
             for (int i = 0; i < num; i++) {
                 pixels.setPixelColor(i, r, g, b);

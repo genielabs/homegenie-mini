@@ -34,18 +34,20 @@ namespace Service { namespace API {
 
         auto domain = IO::IOEventDomains::HomeAutomation_RemoteControl;
         // HomeGenie Mini module
-        auto rfModule = new Module();
-        rfModule->domain = domain;
-        rfModule->address = CONFIG_IR_MODULE_ADDRESS;
-        rfModule->type = "Sensor";
-        rfModule->name = CONFIG_IR_MODULE_ADDRESS; //TODO: CONFIG_IR_MODULE_NAME;
+        auto irModule = new Module();
+        irModule->domain = domain;
+        irModule->address = CONFIG_IR_MODULE_ADDRESS;
+        irModule->type = "Sensor";
+        irModule->name = CONFIG_IR_MODULE_ADDRESS; //TODO: CONFIG_IR_MODULE_NAME;
+        // explicitly enable "scheduling" features for this module
+        irModule->properties.add(new ModuleParameter("Widget.Implements.Scheduling", "1"));
         // add properties
         auto propRawData = new ModuleParameter(IOEventPaths::Receiver_RawData);
-        rfModule->properties.add(propRawData);
+        irModule->properties.add(propRawData);
 
-        moduleList.add(rfModule);
+        moduleList.add(irModule);
 
-        receiver->setModule(rfModule);
+        receiver->setModule(irModule);
     }
 
     void IRTransceiverHandler::init() {
@@ -61,8 +63,9 @@ namespace Service { namespace API {
 
                 auto commandString = command->getOption(0);
                 auto sendRepeat = command->getOption(1).toInt();
-                if (sendRepeat <= 0) sendRepeat = 1; // send at least once
+                if (sendRepeat <= 0 || sendRepeat > 100) sendRepeat = 1; // default send repeat = 1
                 auto sendDelay = command->getOption(2).toInt();
+                if (sendDelay <= 0 || sendDelay > 10000) sendDelay = 1; // default delay = 1ms
 
                 transmitter->sendCommand(commandString, sendRepeat, sendDelay);
 
