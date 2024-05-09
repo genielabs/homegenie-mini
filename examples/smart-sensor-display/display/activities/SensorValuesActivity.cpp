@@ -44,7 +44,7 @@ void SensorValuesActivity::onDraw()
     // Device name
     canvas->setFont(&fonts::Roboto_Thin_24);
     canvas->setTextColor(TFT_WHITE);
-    canvas->drawCenterString(Config::getDeviceName(), (float)canvas->width() / 2.0f, 56);
+    canvas->drawCenterString(Config::system.friendlyName, (float)canvas->width() / 2.0f, 56);
 
     // Temperature
     canvas->setFont(&fonts::Font6);

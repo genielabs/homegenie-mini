@@ -103,15 +103,8 @@ namespace Net {
             SSDPDevice.setManufacturer(FPSTR(SSDP_Manufacturer));
             SSDPDevice.setManufacturerURL(FPSTR(SSDP_ManufacturerURL));
 
-#ifndef DISABLE_PREFERENCES
-            // Read friendly name from prefs
-            Preferences preferences;
-            preferences.begin(CONFIG_SYSTEM_NAME, true);
-            String friendlyName = preferences.getString(CONFIG_KEY_device_name, CONFIG_BUILTIN_MODULE_NAME);
-            preferences.end();
-            SSDPDevice.setFriendlyName(friendlyName);
-            Logger::info("|  ✔ UPnP friendly name: %s", friendlyName.c_str());
-#endif
+            SSDPDevice.setFriendlyName(Config::system.friendlyName);
+            Logger::info("|  ✔ UPnP friendly name: %s", Config::system.friendlyName.c_str());
 
             Logger::info("|  ✔ SSDP service");
         }

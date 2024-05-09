@@ -40,6 +40,7 @@ namespace Service { namespace API {
         miniModule->type = "Sensor";
         miniModule->name = CONFIG_BUILTIN_MODULE_NAME;
         miniModule->description = "HomeGenie Mini node";
+        miniModule->properties.add(new ModuleParameter("Widget.OptionField.System.LocationInfo", "location.info:map-picker"));
         moduleList.add(miniModule);
     }
 
@@ -292,6 +293,125 @@ namespace Service { namespace API {
 
                 responseCallback->writeAll(R"({ "ResponseValue": "e046f885-1d51-4dd2-b952-38e7134a9c0f" })");
                 return true;
+            } else if (request->Command == ConfigApi::System_Configure) {
+
+                String method = request->getOption(0);
+                if (method == ConfigApi::SystemApi::Location_Get) {
+
+                    JsonDocument doc;
+                    auto obj = doc.add<JsonObject>();
+                    obj["timeZoneId"] = Config::zone.id;
+                    obj["timeZone"] = Config::zone.description;
+                    obj["name"] = Config::zone.name;
+                    obj["utcOffset"] = Config::zone.offset;
+                    obj["latitude"] = Config::zone.latitude;
+                    obj["longitude"] = Config::zone.longitude;
+                    String output;
+                    serializeJson(obj, output);
+
+                    responseCallback->writeAll(output.c_str());
+                    return true;
+
+                } else if (method == ConfigApi::SystemApi::Location_Set) {
+                    JsonDocument doc;
+                    DeserializationError error = deserializeJson(doc, request->Data);
+
+                    if (!error.code()) {
+                        if (doc.containsKey("name")
+                            && doc.containsKey("latitude")
+                            && doc.containsKey("longitude")) {
+
+                            Config::zone.id = doc["timeZoneId"].as<String>();
+                            Config::zone.description = doc["timeZone"].as<String>();
+                            Config::zone.name = doc["name"].as<String>();
+                            Config::zone.latitude = doc["latitude"].as<float>();
+                            Config::zone.longitude = doc["longitude"].as<float>();
+                            if (doc.containsKey("utcOffset")) {
+                                Config::zone.offset = doc["utcOffset"].as<int>();
+                            }
+#ifndef DISABLE_PREFERENCES
+                            Preferences preferences;
+                            preferences.begin(CONFIG_SYSTEM_NAME, false);
+
+                            preferences.putString(CONFIG_KEY_system_zone_id, Config::zone.id);
+                            preferences.putString(CONFIG_KEY_system_zone_description, Config::zone.description);
+                            preferences.putString(CONFIG_KEY_system_zone_name, Config::zone.name);
+                            preferences.putFloat(CONFIG_KEY_system_zone_lat, Config::zone.latitude);
+                            preferences.putFloat(CONFIG_KEY_system_zone_lng, Config::zone.longitude);
+                            preferences.putInt(CONFIG_KEY_system_zone_offset, Config::zone.offset);
+
+                            preferences.end();
+#endif
+                            // set new timezone
+                            Config::updateTimezone();
+
+                            responseCallback->writeAll(ApiHandlerResponseText::OK);
+                            return true;
+                        }
+                    }
+#ifndef ESP8266
+                } else if (method == ConfigApi::SystemApi::System_TimeSet) {
+
+                    String time = request->getOption(1);
+                    long seconds = time.substring(0, time.length() - 3).toInt();
+                    long ms = time.substring(time.length() - 3).toInt();
+                    Config::getRTC()->setTime(seconds, ms);
+
+                    responseCallback->writeAll(ApiHandlerResponseText::OK);
+                    return true;
+#endif
+                } else if (method == ConfigApi::SystemApi::System_Info) {
+                    JsonDocument doc;
+                    auto obj = doc.add<JsonObject>();
+                    obj["Release"] = doc.add<JsonObject>();
+                    obj["Release"]["Name"] = CONFIG_DEVICE_MODEL_NAME;
+                    obj["Release"]["Version"] = CONFIG_DEVICE_MODEL_NUMBER;
+                    obj["Release"]["ReleaseDate"] = ReleaseBuildDate;
+#ifdef ESP8266
+                    obj["Release"]["Runtime"] = "esp8266";
+                    obj["Platform"] = "espressif8266";
+                    obj["Runtime"] = "2.6.3";
+#else
+                    obj["Release"]["Runtime"] = "esp32";
+                    obj["Platform"] = "espressif32";
+                    obj["Runtime"] = "6.6.0";
+#endif
+                    obj["TimeZoneId"] = Config::zone.id;
+                    obj["TimeZone"] = Config::zone.description;
+                    obj["UtcOffset"] = Config::zone.offset;
+                    obj["LocalTime"] = homeGenie->getNetManager().getTimeClient().getFormattedDate();
+                    obj["Configuration"] = doc.add<JsonObject>();
+                    // Location info
+                    obj["Configuration"]["Location"] = doc.add<JsonObject>();
+                    obj["Configuration"]["Location"]["name"] = Config::zone.name;
+                    obj["Configuration"]["Location"]["latitude"] = Config::zone.latitude;
+                    obj["Configuration"]["Location"]["longitude"] = Config::zone.longitude;
+                    /*
+                    // Location sun data
+                    obj["Configuration"]["Location"]["sunData"] = doc.add<JsonObject>();
+                    time_t now = time(0);
+                    auto sd = gmtime(&now);
+                    // Calculate the times of sunrise, transit, and sunset, in hours (UTC) (relative from midnight of the selected day)
+                    double relTransit, relSunrise, relSunset;
+                    calcSunriseSunset(sd->tm_year + 1900, sd->tm_mon + 1, sd->tm_mday, Config::zone.latitude, Config::zone.longitude, relTransit, relSunrise, relSunset);
+                    // Translate to epoch time
+                    time_t sunrise = Utility::relativeUtcHoursToLocalTime(relSunrise, now);
+                    time_t sunset = Utility::relativeUtcHoursToLocalTime(relSunset, now);
+                    time_t solarNoon = Utility::relativeUtcHoursToLocalTime(relTransit, now);
+                    obj["Configuration"]["Location"]["sunData"]["Sunrise"] = sunrise;
+                    obj["Configuration"]["Location"]["sunData"]["Sunset"] = sunset;
+                    obj["Configuration"]["Location"]["sunData"]["SolarNoon"] = solarNoon;
+                    */
+
+                    String output;
+                    serializeJson(obj, output);
+
+                    responseCallback->writeAll(output.c_str());
+                    return true;
+
+                }
+
+                return false;
             }
         } else {
 

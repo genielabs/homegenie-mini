@@ -30,8 +30,6 @@
 #include "ExtendedCron.h"
 #include "Scheduler.h"
 
-#include "Utility.h"
-
 namespace Automation {
 
     Schedule* getCustomEvent(const char* eventName) {
@@ -45,12 +43,9 @@ namespace Automation {
     }
 
     time_t ExtendedCron::normalizeStartTime(time_t timestamp) {
-        // TODO: dateStart.AddSeconds(-dateStart.Second).AddMilliseconds(-dateStart.Millisecond)
         return timestamp - (timestamp % 60);
     }
     time_t ExtendedCron::normalizeEndTime(time_t timestamp) {
-        // TODO: dateEnd.AddSeconds(-dateEnd.Second).AddMilliseconds(-dateEnd.Millisecond)
-        //                .AddSeconds(59).AddMilliseconds(999)
         return normalizeStartTime(timestamp) + 59;
     }
 
@@ -144,7 +139,7 @@ namespace Automation {
             }
             else if (currentExpression.startsWith("@"))
             {
-                // TODO: example
+                // example:
                 //   @SolarTimes.Sunset + 30
                 auto start = dateStart;
                 int addMinutes = 0;
@@ -165,47 +160,49 @@ namespace Automation {
                 auto eventName = currentExpression.substring(1);
                 removeWhiteSpaces(eventName);
                 if (eventName == "SolarTimes.Sunrise") {
-                    // TODO: handleSunrise(evalNode, start, dateEnd, addMinutes);
+                    handleSunrise(evalNode, start, dateEnd, addMinutes);
                 } else
                 if (eventName == "SolarTimes.Sunset") {
-                    // TODO: handleSunset(evalNode, start, dateEnd, addMinutes);
+                    handleSunset(evalNode, start, dateEnd, addMinutes);
                 } else
                 if (eventName == "SolarTimes.SolarNoon") {
-                    // TODO: handleSolarNoon(evalNode, start, dateEnd, addMinutes);
+                    handleSolarNoon(evalNode, start, dateEnd, addMinutes);
                 } else {
+
                     // TODO: lookup for user-defined @ events
-                        // Check expression from scheduled item with a given name
-                        auto eventItem = getCustomEvent(eventName.c_str());
-                        if (eventItem == nullptr)
+
+                    // Check expression from scheduled item with a given name
+                    auto eventItem = getCustomEvent(eventName.c_str());
+                    if (eventItem == nullptr)
+                    {
+                        // TODO: signal error -->  "Unknown event name '" + currentExpression + "'"
+                    }
+                    else if (recursionCount >= EXTENDED_CRON_MAX_EVAL_RECURSION)
+                    {
+                        recursionCount = 0;
+                        // TODO: signal error --> "Too much recursion in expression '" + currentExpression + "'"
+                        eventItem->isEnabled = false;
+                    }
+                    else
+                    {
+                        recursionCount++;
+                        if (eventItem->isEnabled)
                         {
-                            // TODO: signal error -->  "Unknown event name '" + currentExpression + "'"
-                        }
-                        else if (recursionCount >= EXTENDED_CRON_MAX_EVAL_RECURSION)
-                        {
-                            recursionCount = 0;
-                            // TODO: signal error --> "Too much recursion in expression '" + currentExpression + "'"
-                            eventItem->isEnabled = false;
-                        }
-                        else
-                        {
-                            recursionCount++;
-                            if (eventItem->isEnabled)
+                            evalNode->Occurrences = getScheduling(dateStart - (addMinutes * 60),
+                                                                 dateEnd - (addMinutes * 60), eventItem->cronExpression, recursionCount);
+                            if (addMinutes != 0)
                             {
-                                evalNode->Occurrences = getScheduling(dateStart - (addMinutes * 60),
-                                                                     dateEnd - (addMinutes * 60), eventItem->cronExpression, recursionCount);
-                                if (addMinutes != 0)
+                                for (short o = 0; o < evalNode->Occurrences.size(); o++)
                                 {
-                                    for (short o = 0; o < evalNode->Occurrences.size(); o++)
-                                    {
-                                        evalNode->Occurrences.set(o, evalNode->Occurrences.get(o) + (addMinutes * 60));
-                                    }
+                                    evalNode->Occurrences.set(o, evalNode->Occurrences.get(o) + (addMinutes * 60));
                                 }
                             }
-
-                            recursionCount--;
-                            if (recursionCount < 0)
-                                recursionCount = 0;
                         }
+
+                        recursionCount--;
+                        if (recursionCount < 0)
+                            recursionCount = 0;
+                    }
                 }
             }
             else
@@ -220,6 +217,7 @@ namespace Automation {
             copy.add(result->get(i));
         }
         delete rootEvalNode;
+        copy.sort(occurrencesCompare);
         return copy;
     }
 
@@ -227,7 +225,7 @@ namespace Automation {
         char del = ' ';
         size_t count = 0;
         if (!str) return -1;
-        while ((str = strchr(str, del)) != NULL) {
+        while ((str = strchr(str, del)) != nullptr) {
             count++;
             do str++; while (del == *str);
         }
@@ -327,6 +325,42 @@ namespace Automation {
             }
         }
         return occurs;
+    }
+
+    void ExtendedCron::handleSunrise(EvalNode* evalNode, time_t dateStart, time_t dateEnd, time_t addMinutes) {
+        auto sd = gmtime(&dateStart);
+        // Calculate the times of sunrise, transit, and sunset, in hours (UTC) (relative from midnight of the selected day)
+        double relTransit, relSunrise, relSunset;
+        calcSunriseSunset(sd->tm_year + 1900, sd->tm_mon + 1, sd->tm_mday, Config::zone.latitude, Config::zone.longitude, relTransit, relSunrise, relSunset);
+        // Translate to local time
+        time_t sunrise = Utility::relativeUtcHoursToLocalTime(relSunrise, dateStart) + (addMinutes * 60);
+        if (sunrise >= dateStart && sunrise <= dateEnd) {
+            (&evalNode->Occurrences)->add(sunrise);
+        }
+    }
+
+    void ExtendedCron::handleSunset(EvalNode* evalNode, time_t dateStart, time_t dateEnd, time_t addMinutes) {
+        auto sd = gmtime(&dateStart);
+        // Calculate the times of sunrise, transit, and sunset, in hours (UTC) (relative from midnight of the selected day)
+        double relTransit, relSunrise, relSunset;
+        calcSunriseSunset(sd->tm_year + 1900, sd->tm_mon + 1, sd->tm_mday, Config::zone.latitude, Config::zone.longitude, relTransit, relSunrise, relSunset);
+        // Translate to local time
+        time_t sunset = Utility::relativeUtcHoursToLocalTime(relSunset, dateStart) + (addMinutes * 60);
+        if (sunset >= dateStart && sunset <= dateEnd) {
+            (&evalNode->Occurrences)->add(sunset);
+        }
+    }
+
+    void ExtendedCron::handleSolarNoon(EvalNode* evalNode, time_t dateStart, time_t dateEnd, time_t addMinutes) {
+        auto sd = gmtime(&dateStart);
+        // Calculate the times of sunrise, transit, and sunset, in hours (UTC) (relative from midnight of the selected day)
+        double relTransit, relSunrise, relSunset;
+        calcSunriseSunset(sd->tm_year + 1900, sd->tm_mon + 1, sd->tm_mday, Config::zone.latitude, Config::zone.longitude, relTransit, relSunrise, relSunset);
+        // Translate to local time
+        time_t solarNoon = Utility::relativeUtcHoursToLocalTime(relTransit, dateStart) + (addMinutes * 60);
+        if (solarNoon >= dateStart && solarNoon <= dateEnd) {
+            (&evalNode->Occurrences)->add(solarNoon);
+        }
     }
 
     void ExtendedCron::removeWhiteSpaces(String &s) {

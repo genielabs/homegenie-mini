@@ -155,3 +155,16 @@ uint32_t Utility::getFreeMem() {
 #endif
     return freeMem;
 }
+
+time_t Utility::relativeUtcHoursToLocalTime(double relativeHours, time_t dt)  {
+    relativeHours = relativeHours + ((double)Config::zone.offset / 60.0);
+    int m = int(round(relativeHours * 60));
+    int hr = (m / 60) % 24;
+    int mn = m % 60;
+    struct tm* tm_struct = localtime(&dt);
+    tm_struct->tm_hour = hr;
+    tm_struct->tm_min = mn;
+    tm_struct->tm_sec = 0;
+    // TODO: should also set DST??
+    return mktime(tm_struct);
+}

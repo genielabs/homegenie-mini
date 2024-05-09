@@ -27,10 +27,12 @@
 #ifndef HOMEGENIE_MINI_DEFS_H
 #define HOMEGENIE_MINI_DEFS_H
 
+#include "version.h"
+
 #define CONFIG_SYSTEM_NAME                 "hg-mini"
 
 #define CONFIG_DEVICE_MODEL_NAME           "HomeGenie Mini"
-#define CONFIG_DEVICE_MODEL_NUMBER         "1.2.0"
+#define CONFIG_DEVICE_MODEL_NUMBER         STRING_VALUE(VERSION_MAJOR) "." STRING_VALUE(VERSION_MINOR) "." STRING_VALUE(VERSION_PATCH)
 #define CONFIG_DEVICE_SERIAL_NUMBER        "ABC0123456789"
 
 #define CONFIG_BUILTIN_MODULE_NAME         "HG-Mini"
@@ -39,8 +41,8 @@
 #define DEBUGLOG_DEFAULT_LOG_LEVEL_ERROR
 
 
-// disabling FreeRTOS task saves about ~10K or RAM
-#define CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
+// disabling FreeRTOS task saves about ~12K or RAM
+//#define CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
 
 // disabling SSE and MQTT saves only ~2K of RAM
 //#define DISABLE_SSE

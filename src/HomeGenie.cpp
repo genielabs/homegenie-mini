@@ -35,8 +35,9 @@ namespace Service {
     HomeGenie::HomeGenie() {
         eventRouter.withNetManager(netManager);
 
-        // Setup status led
+        // Load system settings and setup status led
         Config::init();
+
         // Setup button
         pinMode(Config::ServiceButtonPin, INPUT_PULLUP);
 //        attachInterrupt(digitalPinToInterrupt(Config::ServiceButtonPin), buttonChange, CHANGE);

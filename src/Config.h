@@ -51,82 +51,79 @@ const static char CONFIG_KEY_wifi_ssid[] PROGMEM = {"wifi:ssid"};
 const static char CONFIG_KEY_wifi_password[] PROGMEM = {"wifi:password"};
 const static char CONFIG_KEY_device_name[] PROGMEM = {"device:name"};
 const static char CONFIG_KEY_system_mode[] PROGMEM = {"system:mode"};
-const static char CONFIG_KEY_system_zone[] PROGMEM = {"system:zone"};
-const static char CONFIG_KEY_screen_rotation[] PROGMEM = {"screen:rotation"};
+const static char CONFIG_KEY_system_zone_id[] PROGMEM = {"system:zn_id"};
+const static char CONFIG_KEY_system_zone_description[] PROGMEM = {"system:zn_dsc"};
+const static char CONFIG_KEY_system_zone_name[] PROGMEM = {"system:zn_nam"};
+const static char CONFIG_KEY_system_zone_offset[] PROGMEM = {"system:zn_ofs"};
+const static char CONFIG_KEY_system_zone_lat[] PROGMEM = {"system:zn_lat"};
+const static char CONFIG_KEY_system_zone_lng[] PROGMEM = {"system:zn_lng"};
+const static char CONFIG_KEY_screen_rotation[] PROGMEM = {"screen:rotate"};
+
+class ZoneConfig {
+public:
+    String id;
+    String description;
+    String name;
+    int offset; // minutes
+    float latitude;
+    float longitude;
+    ZoneConfig() {
+        String id = "UTC";
+        String description = "Coordinated Universal Time";
+        name = "";
+        offset = 0;            // UTC/GMT - Greenwich Mean Time
+        latitude = 51.477928;  // Greenwich lat
+        longitude = -0.001545; // Greenwich lng
+    }
+};
+
+class SystemConfig {
+public:
+    String friendlyName;
+    String systemMode;
+    String ssid, pass;
+    SystemConfig() {
+        friendlyName = CONFIG_BUILTIN_MODULE_NAME;
+        systemMode = "";
+        ssid = "";
+        pass = "";
+    }
+};
 
 class Config {
 public:
     const static short ServiceButtonPin = CONFIG_ServiceButtonPin;
     const static short StatusLedPin = CONFIG_StatusLedPin;
     const static uint16_t ConfigureButtonPushInterval = 2500;
-    static int TimeZone; // tz diff in milliseconds
+    static ZoneConfig zone;
+    static SystemConfig system;
 #ifdef ESP32
     static ESP32Time* getRTC() {
-        static ESP32Time rtc(TimeZone);
+        static ESP32Time rtc(0);
         return &rtc;
     }
-    static void setTimeZone(int tz) {
-        TimeZone = tz;
-    }
 #endif
+    static void updateTimezone() {
+        int tzo = zone.offset / 60;
+        int tzm = zone.offset % 60;
+        char tz[9] = "";
+        sprintf(tz, "UTC%s%02d:%02d", tzo >= 0 ? "-" : "+", abs(tzo), abs(tzm));
+        setenv("TZ", tz, 1);
+        tzset();
+    }
 
     static bool isDeviceConfigured() {
 #ifdef CONFIGURE_WITH_WPS
         return !WiFi.SSID().isEmpty() && !WiFi.psk().isEmpty();
 #else
-#ifndef DISABLE_PREFERENCES
-        String systemMode;
-        String ssid, pass;
-        Preferences preferences;
-        if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
-            systemMode = preferences.getString(CONFIG_KEY_system_mode);
-            ssid = preferences.getString(CONFIG_KEY_wifi_ssid);
-            pass = preferences.getString(CONFIG_KEY_wifi_password);
-        } else {
-            // initialize system preferences with default values
-            preferences.begin(CONFIG_SYSTEM_NAME, false);
-            preferences.putString(CONFIG_KEY_system_mode, "");
-            preferences.putString(CONFIG_KEY_wifi_ssid, "");
-            preferences.putString(CONFIG_KEY_wifi_password, "");
-        }
-        preferences.end();
-        return !systemMode.equals("config") && !ssid.isEmpty() && !pass.isEmpty();
+        return !system.systemMode.equals("config") && !system.ssid.isEmpty() && !system.pass.isEmpty();
 #endif
-#endif
-        return false;
     }
     static bool isWiFiConfigured() {
 #ifdef CONFIGURE_WITH_WPS
         return !WiFi.SSID().isEmpty() && !WiFi.psk().isEmpty();
 #else
-#ifndef DISABLE_PREFERENCES
-        String ssid, pass;
-        Preferences preferences;
-        if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
-            ssid = preferences.getString(CONFIG_KEY_wifi_ssid);
-            pass = preferences.getString(CONFIG_KEY_wifi_password);
-        }
-        preferences.end();
-        return !ssid.isEmpty() && !pass.isEmpty();
-#endif
-#endif
-        return false;
-    }
-
-    static String getDeviceName() {
-#ifndef DISABLE_PREFERENCES
-        if (isDeviceConfigured()) {
-            // Read friendly name from prefs
-            Preferences preferences;
-            preferences.begin(CONFIG_SYSTEM_NAME, true);
-            String friendlyName = preferences.getString(CONFIG_KEY_device_name, CONFIG_BUILTIN_MODULE_NAME);
-            preferences.end();
-            return friendlyName;
-        } else {
-            return CONFIG_BUILTIN_MODULE_NAME;
-        }
-#else
-        return CONFIG_BUILTIN_MODULE_NAME;
+        return !system.ssid.isEmpty() && !system.pass.isEmpty();
 #endif
     }
 
@@ -163,15 +160,42 @@ public:
 
     static void init() {
         // Setup status led
-        if (Config::StatusLedPin >= 0) pinMode(Config::StatusLedPin, OUTPUT);
+        if (StatusLedPin >= 0) pinMode(StatusLedPin, OUTPUT);
 #ifndef DISABLE_PREFERENCES
-        // Time zone
         Preferences preferences;
+
         if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
-            Config::TimeZone = preferences.getInt(CONFIG_KEY_system_zone, 0);
+            // System and WiFi settings
+            system.friendlyName = preferences.getString(CONFIG_KEY_device_name);
+            system.systemMode = preferences.getString(CONFIG_KEY_system_mode);
+            system.ssid = preferences.getString(CONFIG_KEY_wifi_ssid);
+            system.pass = preferences.getString(CONFIG_KEY_wifi_password);
+            // Time Zone
+            zone.id = preferences.getString(CONFIG_KEY_system_zone_id);
+            zone.description = preferences.getString(CONFIG_KEY_system_zone_description);
+            zone.name = preferences.getString(CONFIG_KEY_system_zone_name);
+            zone.offset = preferences.getInt(CONFIG_KEY_system_zone_offset);
+            zone.latitude = preferences.getFloat(CONFIG_KEY_system_zone_lat);
+            zone.longitude = preferences.getFloat(CONFIG_KEY_system_zone_lng);
+        } else {
+            // initialize system preferences with default values
+            preferences.begin(CONFIG_SYSTEM_NAME, false);
+            preferences.putString(CONFIG_KEY_device_name, system.friendlyName);
+            preferences.putString(CONFIG_KEY_system_mode, system.systemMode);
+            preferences.putString(CONFIG_KEY_wifi_ssid, system.ssid);
+            preferences.putString(CONFIG_KEY_wifi_password, system.pass);
+            // Time Zone
+            preferences.putString(CONFIG_KEY_system_zone_id, zone.id);
+            preferences.putString(CONFIG_KEY_system_zone_description, zone.description);
+            preferences.putString(CONFIG_KEY_system_zone_name, zone.name);
+            preferences.putInt(CONFIG_KEY_system_zone_offset, zone.offset);
+            preferences.putFloat(CONFIG_KEY_system_zone_lat, zone.latitude);
+            preferences.putFloat(CONFIG_KEY_system_zone_lng, zone.longitude);
         }
+
         preferences.end();
 #endif
+        updateTimezone();
     }
 };
 

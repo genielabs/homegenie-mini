@@ -69,6 +69,13 @@ namespace Service { namespace API {
         static const char Modules_ParameterSet[] PROGMEM = {"Modules.ParameterSet"};
         static const char Groups_List[] PROGMEM = {"Groups.List"};
         static const char WebSocket_GetToken[] PROGMEM = {"WebSocket.GetToken"};
+        static const char System_Configure[] PROGMEM = {"System.Configure"};
+        namespace SystemApi {
+            static const char Location_Get[] PROGMEM = {"Location.Get"};
+            static const char Location_Set[] PROGMEM = {"Location.Set"};
+            static const char System_Info[] PROGMEM = {"System.Info"};
+            static const char System_TimeSet[] PROGMEM = {"System.TimeSet"};
+        }
     }
 
     class APIRequest {

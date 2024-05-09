@@ -31,7 +31,8 @@
 
 #include <utility>
 
-int Config::TimeZone = 0; // tz diff in seconds
+ZoneConfig Config::zone;
+SystemConfig Config::system;
 
 bool Config::isStatusLedOn = false;
 void Config::statusLedOn() {

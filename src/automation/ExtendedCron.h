@@ -31,10 +31,12 @@
 #define HOMEGENIE_MINI_EXTENDEDCRON_H
 
 #include <LinkedList.h>
+#include <SolarCalculator.h>
 
 #include "lib/supertinycron/ccronexpr.h"
 
 #include "Config.h"
+#include "Utility.h"
 
 #define EXTENDED_CRON_MAX_EVAL_RECURSION 4
 
@@ -77,6 +79,12 @@ namespace Automation {
         static LinkedList<time_t>* evalNodes(EvalNode* currentNode);
         static void getNextOccurrences(LinkedList<time_t>& occurrences, time_t dateStart, time_t dateEnd, const String& cronExpression);
         static void removeWhiteSpaces(String& s);
+        static void handleSunrise(EvalNode* evalNode, time_t dateStart, time_t dateEnd, time_t addMinutes);
+        static void handleSunset(EvalNode* evalNode, time_t dateStart, time_t dateEnd, time_t addMinutes);
+        static void handleSolarNoon(EvalNode* evalNode, time_t dateStart, time_t dateEnd, time_t addMinutes);
+        static int occurrencesCompare(time_t& a, time_t& b) {
+            return a == b ? 0 : a > b ? 1 : -1;
+        }
     };
 
 }

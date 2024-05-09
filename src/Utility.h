@@ -56,6 +56,7 @@ public:
     static uint8_t reverseByte(uint8_t n);
     static ColorRGB hsv2rgb(float H, float S, float V);
     static uint32_t getFreeMem();
+    static time_t relativeUtcHoursToLocalTime(double relativeHours, time_t time);
 };
 
 #endif //HOMEGENIE_MINI_UTILITY_H

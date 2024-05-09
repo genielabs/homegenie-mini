@@ -128,10 +128,13 @@ namespace Net {
             long ms = time.substring(time.length() - 3).toInt();
             Config::getRTC()->setTime(seconds, ms);
         }
-        if (message.startsWith("#CONFIG:system-zone ")) {
-            int zoneMs = message.substring(20).toInt();
-            preferences.putInt(CONFIG_KEY_system_zone, zoneMs);
-            Config::setTimeZone(zoneMs);
+        if (message.startsWith("#CONFIG:system-zone-id ")) {
+            String zoneId = message.substring(23);
+            preferences.putString(CONFIG_KEY_system_zone_id, zoneId);
+        }
+        if (message.startsWith("#CONFIG:system-zone-offset ")) {
+            int utcOffset = message.substring(27).toInt(); // minutes
+            preferences.putInt(CONFIG_KEY_system_zone_offset, utcOffset);
         }
         preferences.end();
 

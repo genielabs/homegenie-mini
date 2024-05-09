@@ -89,7 +89,7 @@ namespace UI { namespace Activities { namespace Utilities {
             canvas->setTextColor(ActivityColors::ACCENT);
             canvas->print("DEVICE ");
             canvas->setTextColor(ActivityColors::TEXT);
-            canvas->print(Config::getDeviceName().c_str());
+            canvas->print(Config::system.friendlyName.c_str());
 
             // wi-fi status
             canvas->setCursor(27, 120);
