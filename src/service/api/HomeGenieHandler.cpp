@@ -356,6 +356,9 @@ namespace Service { namespace API {
                     long seconds = time.substring(0, time.length() - 3).toInt();
                     long ms = time.substring(time.length() - 3).toInt();
                     Config::getRTC()->setTime(seconds, ms);
+                    homeGenie->getNetManager()
+                        .getTimeClient()
+                        .setEpochTime(Config::getRTC()->getLocalEpoch());
 
                     responseCallback->writeAll(ApiHandlerResponseText::OK);
                     return true;

@@ -68,8 +68,8 @@ public:
     float latitude;
     float longitude;
     ZoneConfig() {
-        String id = "UTC";
-        String description = "Coordinated Universal Time";
+        id = "UTC";
+        description = "Coordinated Universal Time";
         name = "";
         offset = 0;            // UTC/GMT - Greenwich Mean Time
         latitude = 51.477928;  // Greenwich lat
@@ -106,7 +106,7 @@ public:
     static void updateTimezone() {
         int tzo = zone.offset / 60;
         int tzm = zone.offset % 60;
-        char tz[9] = "";
+        char tz[10] = "";
         sprintf(tz, "UTC%s%02d:%02d", tzo >= 0 ? "-" : "+", abs(tzo), abs(tzm));
         setenv("TZ", tz, 1);
         tzset();
@@ -166,17 +166,17 @@ public:
 
         if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
             // System and WiFi settings
-            system.friendlyName = preferences.getString(CONFIG_KEY_device_name);
-            system.systemMode = preferences.getString(CONFIG_KEY_system_mode);
-            system.ssid = preferences.getString(CONFIG_KEY_wifi_ssid);
-            system.pass = preferences.getString(CONFIG_KEY_wifi_password);
+            system.friendlyName = preferences.getString(CONFIG_KEY_device_name, system.friendlyName);
+            system.systemMode = preferences.getString(CONFIG_KEY_system_mode, system.systemMode);
+            system.ssid = preferences.getString(CONFIG_KEY_wifi_ssid, system.ssid);
+            system.pass = preferences.getString(CONFIG_KEY_wifi_password, system.pass);
             // Time Zone
-            zone.id = preferences.getString(CONFIG_KEY_system_zone_id);
-            zone.description = preferences.getString(CONFIG_KEY_system_zone_description);
-            zone.name = preferences.getString(CONFIG_KEY_system_zone_name);
-            zone.offset = preferences.getInt(CONFIG_KEY_system_zone_offset);
-            zone.latitude = preferences.getFloat(CONFIG_KEY_system_zone_lat);
-            zone.longitude = preferences.getFloat(CONFIG_KEY_system_zone_lng);
+            zone.id = preferences.getString(CONFIG_KEY_system_zone_id, zone.id);
+            zone.description = preferences.getString(CONFIG_KEY_system_zone_description, zone.description);
+            zone.name = preferences.getString(CONFIG_KEY_system_zone_name, zone.name);
+            zone.offset = preferences.getInt(CONFIG_KEY_system_zone_offset, zone.offset);
+            zone.latitude = preferences.getFloat(CONFIG_KEY_system_zone_lat, zone.latitude);
+            zone.longitude = preferences.getFloat(CONFIG_KEY_system_zone_lng, zone.longitude);
         } else {
             // initialize system preferences with default values
             preferences.begin(CONFIG_SYSTEM_NAME, false);
