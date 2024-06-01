@@ -107,7 +107,7 @@ namespace Service { namespace API {
 
     bool ShutterHandler::handleEvent(IIOEventSender *sender,
                                      const char* domain, const char* address,
-                                     const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
+                                     const char *eventPath, void *eventData, IOEventDataType dataType) {
         auto module = getModule(domain, address);
         if (module) {
             auto event = String((char *) eventPath);

@@ -52,7 +52,7 @@ namespace IO {
         ioEventReceiver = receiver;
     }
 
-    void IOManager::onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
+    void IOManager::onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const char *eventPath, void *eventData, IOEventDataType dataType) {
         // route event to HomeGenie
         ioEventReceiver->onIOEvent(sender, domain, address, eventPath, eventData, dataType);
     }

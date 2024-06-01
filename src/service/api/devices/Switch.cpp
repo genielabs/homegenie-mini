@@ -91,7 +91,7 @@ namespace Service { namespace API { namespace devices {
 
     bool Switch::handleEvent(IIOEventSender *sender,
                              const char* domain, const char* address,
-                             const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
+                             const char *eventPath, void *eventData, IOEventDataType dataType) {
         return false;
     }
 

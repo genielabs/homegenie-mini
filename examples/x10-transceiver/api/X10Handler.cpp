@@ -47,17 +47,18 @@ namespace Service { namespace API {
             "DoorWindow"
     };
 
-    X10Handler::X10Handler(RFTransmitter* transmitter) {
+    X10Handler::X10Handler(RFTransmitter* transmitter, RFReceiver* receiver) {
         this->transmitter = transmitter;
+        this->receiver = receiver;
 
-        // X10 Home Automation modules
-        auto domain = IO::IOEventDomains::HomeAutomation_X10;
         // RF module
         rfModule = new Module();
-        rfModule->domain = domain;
+        rfModule->domain = IO::IOEventDomains::HomeAutomation_X10;
         rfModule->address = CONFIG_X10RF_MODULE_ADDRESS;
         rfModule->type = "Sensor";
         rfModule->name = "RF"; //TODO: CONFIG_X10RF_MODULE_NAME;
+        // explicitly enable "scheduling" features for this module
+        rfModule->properties.add(new ModuleParameter("Widget.Implements.Scheduling", "1"));
         // add properties
         receiverRawData = new ModuleParameter(IOEventPaths::Receiver_RawData);
         rfModule->properties.add(receiverRawData);
@@ -65,7 +66,11 @@ namespace Service { namespace API {
         rfModule->properties.add(receiverCommand);
 
         moduleList.add(rfModule);
-/*
+
+#ifndef ESP8266
+        // TODO: this won't work on ESP8266 due to free RAM limit
+        // Add 16 X10 modules for house codes from 'A' to 'P'
+        // module address: "<house_code_a_p><unit_number_1_16>"
         for (int h = HOUSE_MIN; h <= HOUSE_MAX; h++) {
             for (int m = 0; m < UNIT_MAX; m++) {
                 auto address = String((char)h)+String(m+UNIT_MIN);
@@ -73,10 +78,11 @@ namespace Service { namespace API {
                 auto module = new Module();
                 module->domain = IOEventDomains::HomeAutomation_X10;
                 module->address = address;
+                module->setProperty(IOEventPaths::Status_Level, "0", 0, Number);
                 moduleList.add(module);
             }
-        }*/
-
+        }
+#endif
     }
 
     void X10Handler::init() {
@@ -89,10 +95,18 @@ namespace Service { namespace API {
             && command->Address == CONFIG_X10RF_MODULE_ADDRESS
             && command->Command == "Control.SendRaw") {
 
-            uint8_t data[command->OptionsString.length() / 2];
-            Utility::getBytes(command->OptionsString, data);
-            // Disable RFTransmitter callbacks during transmission to prevent echo
-            transmitter->sendCommand(data, sizeof(data));
+            auto commandString = command->getOption(0);
+            auto sendRepeat = command->getOption(1).toInt();
+            if (sendRepeat <= 0 || sendRepeat > 100) sendRepeat = 1; // default send repeat = 1
+            auto sendDelay = command->getOption(2).toInt();
+            if (sendDelay <= 0 || sendDelay > 10000) sendDelay = 1; // default delay = 1ms
+
+            uint8_t data[commandString.length() / 2];
+            Utility::getBytes(commandString, data);
+
+            // only 0x20 standard type message are actually supported
+            receiver->disableMs(500);
+            transmitter->sendCommand(&data[1], sizeof(data)-1, sendRepeat);
             responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             return true;
@@ -101,7 +115,7 @@ namespace Service { namespace API {
             auto hu = command->Address; hu.toLowerCase();
             int h = (int)hu.charAt(0) - (int)HOUSE_MIN; // house code 0..15
             int u = hu.substring(1).toInt() - UNIT_MIN; // unit code 0..15
-            auto moduleStatus = &moduleList[h][u];
+            //auto moduleStatus = &moduleList[h][u];
 
             auto x10Message = X10Message();
             x10Message.houseCode = HouseCodeLut[h];
@@ -110,18 +124,7 @@ namespace Service { namespace API {
             uint8_t sendRepeat = 0; // fallback to default repeat (3)
             bool ignoreCommand = false;
 
-            //auto currentTime = NetManager::getTimeClient().getFormattedDate();
-
-            Module* module;
-            for (int m = 0; m < moduleList.size(); m++) {
-                module = moduleList[m];
-                if (module->domain.equals(command->Domain) && module->address.equals(command->Address)) {
-                    break;
-                }
-                module = nullptr;
-            }
-
-
+            Module* module = getModule(command->Domain.c_str(), command->Address.c_str());
             if (module) {
                 QueuedMessage m = QueuedMessage(command->Domain, command->Address, (IOEventPaths::Status_Level), "",
                                                 nullptr, IOEventDataType::Undefined);
@@ -167,6 +170,7 @@ namespace Service { namespace API {
 
             if (!ignoreCommand) {
                 X10::X10Message::encodeCommand(&x10Message, data);
+                receiver->disableMs(500);
                 transmitter->sendCommand(&data[1], sizeof(data)-1, sendRepeat);
             }
             responseCallback->writeAll(ApiHandlerResponseStatus::OK);
@@ -183,7 +187,7 @@ namespace Service { namespace API {
 
     bool X10Handler::handleEvent(IIOEventSender *sender,
                                  const char* domain, const char* address,
-                                 const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
+                                 const char *eventPath, void *eventData, IOEventDataType dataType) {
         auto module = getModule(domain, address);
         if (module) {
             String event = String((char*)eventPath);
@@ -204,7 +208,8 @@ namespace Service { namespace API {
                 uint8_t b2 = data[3];
                 uint8_t b3 = data[4];
 
-                String rawDataString = Utility::byteToHex(type) + "-" + Utility::byteToHex((b0)) + "-" + Utility::byteToHex((b1)) + "-" + Utility::byteToHex(b2) + "-" + Utility::byteToHex(b3) + ((type == 0x29) ? "-00-00" : "");
+                //String rawDataString = Utility::byteToHex(type) + "-" + Utility::byteToHex((b0)) + "-" + Utility::byteToHex((b1)) + "-" + Utility::byteToHex(b2) + "-" + Utility::byteToHex(b3) + ((type == 0x29) ? "-00-00" : "");
+                String rawDataString = Utility::byteToHex(type) + Utility::byteToHex((b0)) + Utility::byteToHex((b1)) + Utility::byteToHex(b2) + Utility::byteToHex(b3) + ((type == 0x29) ? "0000" : "");
                 rawDataString.toUpperCase();
                 Logger::info(":%s [X10::RFReceiver] >> [%s]", HOMEGENIEMINI_NS_PREFIX, rawDataString.c_str());
 
@@ -214,21 +219,26 @@ namespace Service { namespace API {
                 X10Message::decodeCommand(encodedMessage, decodedMessage);
 
 
-                // Convert enums to string
-                String houseCode(house_code_to_char(decodedMessage->houseCode));
-                String unitCode(unit_code_to_int(decodedMessage->unitCode));
-                const char* command = cmd_code_to_str(decodedMessage->command);
-                String commandString = (houseCode + unitCode + " " + command);
-
-                Logger::trace(":%s %s", HOMEGENIEMINI_NS_PREFIX, commandString.c_str());
-
                 receiverRawData->setValue(rawDataString.c_str());
                 HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString,
                                                                                      nullptr, IOEventDataType::Undefined));
 
-                receiverCommand->setValue(commandString.c_str());
-                HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString,
-                                                                                     nullptr, IOEventDataType::Undefined));
+                if (type == 0x20) { // 0x20 = standard, 0x29 = security
+
+                    // Convert enums to string
+                    String houseCode(house_code_to_char(decodedMessage->houseCode));
+                    String unitCode(unit_code_to_int(decodedMessage->unitCode));
+                    const char* command = cmd_code_to_str(decodedMessage->command);
+                    String commandString = (houseCode + unitCode + " " + command);
+
+                    Logger::trace(":%s %s", HOMEGENIEMINI_NS_PREFIX, commandString.c_str());
+
+                    receiverCommand->setValue(commandString.c_str());
+                    HomeGenie::getInstance()->getEventRouter().signalEvent(
+                            QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command,
+                                          commandString,
+                                          nullptr, IOEventDataType::Undefined));
+                }
 /*
                 QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, (IOEventPaths::Status_Level), "");
                 switch (decodedMessage->command) {
@@ -244,11 +254,6 @@ namespace Service { namespace API {
                 }
 */
                 delete decodedMessage;
-
-                // TODO: blink led ? (visible feedback)
-                //digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
-                //delay(10);                         // wait for a blink
-                //digitalWrite(LED_BUILTIN, HIGH);
 
                 return true;
             }

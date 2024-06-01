@@ -45,4 +45,8 @@ namespace IO { namespace RCS {
     {
         this->interrupt = interrupt;
     }
+
+    uint8_t RFReceiverConfig::getPin() { return pin; };
+    uint8_t RFReceiverConfig::getInterrupt() { return interrupt; }
+
 }} // ns

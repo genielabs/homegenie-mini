@@ -32,18 +32,18 @@
 
 namespace IO {
     namespace IOEventPaths {
-        const char Receiver_RawData[] PROGMEM = "Receiver.RawData";
-        const char Receiver_Command[] PROGMEM = "Receiver.Command";
-        const char Status_Level[] PROGMEM = "Status.Level";
-        const char Status_ColorHsb[] PROGMEM = "Status.ColorHsb";
-        const char Sensor_Luminance[] PROGMEM = "Sensor.Luminance";
-        const char Sensor_Temperature[] PROGMEM = "Sensor.Temperature";
-        const char Sensor_Humidity[] PROGMEM = "Sensor.Humidity";
-        const char Sensor_MotionDetect[] PROGMEM = "Sensor.MotionDetect";
-        const char Status_Battery[] PROGMEM = "Status.Battery";
-        const char Status_Error[] PROGMEM = "Status.Error";
-        const char System_BytesFree[] PROGMEM = "System.BytesFree";
-        const char Events_Disabled[] PROGMEM = "Events.Disable";
+        const char Receiver_RawData[]  = "Receiver.RawData";
+        const char Receiver_Command[]  = "Receiver.Command";
+        const char Status_Level[]  = "Status.Level";
+        const char Status_ColorHsb[]  = "Status.ColorHsb";
+        const char Sensor_Luminance[]  = "Sensor.Luminance";
+        const char Sensor_Temperature[]  = "Sensor.Temperature";
+        const char Sensor_Humidity[]  = "Sensor.Humidity";
+        const char Sensor_MotionDetect[]  = "Sensor.MotionDetect";
+        const char Status_Battery[]  = "Status.Battery";
+        const char Status_Error[]  = "Status.Error";
+        const char System_BytesFree[]  = "System.BytesFree";
+        const char Events_Disabled[]  = "Events.Disable";
     }
 }
 

@@ -87,7 +87,7 @@ namespace Service {
         void loop();
 
         // IIOEventReceiver overrides
-        void onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) override;
+        void onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const char *eventPath, void *eventData, IOEventDataType dataType) override;
 
         // NetRequestHandler overrides
         bool onNetRequest(void* sender, const char* requestMessage, ResponseCallback* responseCallback) override;

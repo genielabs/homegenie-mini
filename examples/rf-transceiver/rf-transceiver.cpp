@@ -31,6 +31,7 @@
 
 #include "configuration.h"
 #include "io/RFTransmitter.h"
+#include "io/RFReceiver.h"
 #include "api/RCSwitchHandler.h"
 
 using namespace Service;
@@ -45,10 +46,16 @@ void setup() {
     // RCSwitch RF Transmitter
     auto rcsTransmitterConfig = new RCS::RFTransmitterConfig(CONFIG_RCSwitchTransmitterPin);
     auto rcsTransmitter = new RCS::RFTransmitter(rcsTransmitterConfig);
-    homeGenie->addAPIHandler(new RCSwitchHandler(rcsTransmitter));
 
-    // TODO:    homeGenie->addIOHandler(new RCS::RFReceiver());
+    auto apiHandler = new RCSwitchHandler(rcsTransmitter);
+    homeGenie->addAPIHandler(apiHandler);
 
+    // RCSwitch RF Receiver
+    auto rfModule = apiHandler->getModule(IO::IOEventDomains::HomeAutomation_RemoteControl, CONFIG_RCSwitchRF_MODULE_ADDRESS);
+    auto receiverConfiguration = new RCS::RFReceiverConfig(CONFIG_RCSwitchReceiverPin);
+    auto receiver = new RCS::RFReceiver(receiverConfiguration);
+    receiver->setModule(rfModule);
+    homeGenie->addIOHandler(receiver);
 
     homeGenie->begin();
 

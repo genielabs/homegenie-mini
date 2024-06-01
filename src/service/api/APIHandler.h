@@ -55,7 +55,7 @@ namespace Service { namespace API {
         virtual void init() = 0;
         virtual bool canHandleDomain(String* domain) = 0;
         virtual bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) = 0;
-        virtual bool handleEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData, IOEventDataType dataType) = 0;
+        virtual bool handleEvent(IIOEventSender *sender, const char* domain, const char* address, const char *eventPath, void *eventData, IOEventDataType dataType) = 0;
         virtual Module* getModule(const char* domain, const char* address) = 0;
         virtual LinkedList<Module*>* getModuleList() = 0;
     };

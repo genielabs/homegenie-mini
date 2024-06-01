@@ -91,7 +91,7 @@ namespace IO { namespace IR {
                 //Serial.println(resultToSourceCode(&results));
                 String stringData = sProtocol + sSize + sData;
                 stringData.toUpperCase();
-                sendEvent((const uint8_t*)(IOEventPaths::Receiver_RawData), &stringData, IOEventDataType::Text);
+                sendEvent(IOEventPaths::Receiver_RawData, &stringData, IOEventDataType::Text);
             }
 
             irReceiver->resume();

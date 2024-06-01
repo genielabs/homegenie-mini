@@ -14,16 +14,16 @@ namespace IO { namespace Env {
         if (motionValue == HIGH && !motionDetected) {
             // MOTION DETECTED
             motionDetected = true;
-            Logger::info("@%s [%s %d]", MOTION_SENSOR_NS_PREFIX, (IOEventPaths::Sensor_MotionDetect), motionValue);
-            sendEvent((const uint8_t*)(IOEventPaths::Sensor_MotionDetect), (int*)&motionValue, IOEventDataType::Number);
+            Logger::info("@%s [%s %d]", MOTION_SENSOR_NS_PREFIX, IOEventPaths::Sensor_MotionDetect, motionValue);
+            sendEvent(IOEventPaths::Sensor_MotionDetect, (int*)&motionValue, IOEventDataType::Number);
 #ifdef CONFIG_ENABLE_POWER_MANAGER
             PowerManager::setActive();
 #endif
         } else if (motionValue == LOW && motionDetected) {
             // MOTION CLEAR
             motionDetected = false;
-            Logger::info("@%s [%s %d]", MOTION_SENSOR_NS_PREFIX, (IOEventPaths::Sensor_MotionDetect), motionValue);
-            sendEvent((const uint8_t*)(IOEventPaths::Sensor_MotionDetect), (int*)&motionValue, IOEventDataType::Number);
+            Logger::info("@%s [%s %d]", MOTION_SENSOR_NS_PREFIX, IOEventPaths::Sensor_MotionDetect, motionValue);
+            sendEvent(IOEventPaths::Sensor_MotionDetect, (int*)&motionValue, IOEventDataType::Number);
         } else if (motionDetected) {
             // MOTION ACTIVE
 #ifdef CONFIG_ENABLE_POWER_MANAGER

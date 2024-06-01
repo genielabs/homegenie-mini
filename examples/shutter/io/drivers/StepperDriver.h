@@ -94,8 +94,8 @@ namespace IO { namespace Components {
         }
         void sendLevel() {
             float currentLevel = ((float)currentPosition / (float)maxPosition);
-            Logger::info("@%s [%s %.4f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
-            eventSender->sendEvent(domain.c_str(), address.c_str(), (const uint8_t*)(IOEventPaths::Status_Level), &currentLevel, IOEventDataType::Float);
+            Logger::info("@%s [%s %.4f]", SHUTTER_CONTROL_NS_PREFIX, IOEventPaths::Status_Level, currentLevel);
+            eventSender->sendEvent(domain.c_str(), address.c_str(), IOEventPaths::Status_Level, &currentLevel, IOEventDataType::Float);
         }
     };
 }}

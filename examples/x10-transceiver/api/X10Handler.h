@@ -35,6 +35,7 @@
 
 #include "../configuration.h"
 #include "../io/X10Message.h"
+#include "../io/RFReceiver.h"
 #include "../io/RFTransmitter.h"
 
 #define X10_DIM_BRIGHT_STEP     (1.0f/21.0f)
@@ -49,15 +50,16 @@ namespace Service { namespace API {
         Module* rfModule;
         ModuleParameter* receiverRawData;
         ModuleParameter* receiverCommand;
-        IO::X10::RFTransmitter* transmitter;
+        RFTransmitter* transmitter;
+        RFReceiver* receiver;
     public:
-        X10Handler(IO::X10::RFTransmitter* transmitter);
+        X10Handler(IO::X10::RFTransmitter* transmitter, RFReceiver* receiver);
         void init() override;
         bool canHandleDomain(String* domain) override;
         bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
         bool handleEvent(IIOEventSender *sender,
                          const char* domain, const char* address,
-                         const unsigned char *eventPath, void *eventData, IOEventDataType dataType) override;
+                         const char *eventPath, void *eventData, IOEventDataType dataType) override;
 
         Module* getModule(const char* domain, const char* address) override;
         LinkedList<Module*>* getModuleList() override;

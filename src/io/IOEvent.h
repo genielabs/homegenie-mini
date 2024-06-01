@@ -45,7 +45,7 @@ namespace IO {
     // IIOEventReceiver interface
     class IIOEventReceiver {
     public:
-        virtual void onIOEvent(IIOEventSender *, const char *, const char *, const uint8_t *, void *, IOEventDataType dataType) = 0; // pure virtual
+        virtual void onIOEvent(IIOEventSender *, const char *, const char *, const char *, void *, IOEventDataType dataType) = 0; // pure virtual
     };
 
     // IIOEventSender interface
@@ -59,12 +59,12 @@ namespace IO {
         virtual void setModule(Module* m) {
             module = m;
         }
-        virtual void sendEvent(const char *domain, const char *address, const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
+        virtual void sendEvent(const char *domain, const char *address, const char *eventPath, void *eventData, IOEventDataType dataType) {
             if (eventReceiver != nullptr) {
                 eventReceiver->onIOEvent(this, domain, address, eventPath, eventData, dataType);
             }
         };
-        virtual void sendEvent(const uint8_t *eventPath, void *eventData, IOEventDataType dataType) {
+        virtual void sendEvent(const char *eventPath, void *eventData, IOEventDataType dataType) {
             if (eventReceiver != nullptr && module != nullptr) {
                 auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
                 if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {

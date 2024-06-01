@@ -48,7 +48,7 @@ namespace IO { namespace RCS {
 
     private:
         RFTransmitterConfig *configuration;
-        // TODO: declare other private members
+        RCSwitch RF = RCSwitch();
     };
 
 }}

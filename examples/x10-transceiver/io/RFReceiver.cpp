@@ -33,11 +33,12 @@ namespace IO { namespace X10 {
 
     RFReceiver *receiverInstance = NULL;
 
-    void receiverInstance_wrapper() {
+    void ICACHE_RAM_ATTR receiverInstance_wrapper() {
         if (receiverInstance) receiverInstance->receive();
     }
 
     RFReceiver::RFReceiver() {
+        setLoopInterval(50);
         receiverInstance = this;
     }
 
@@ -55,6 +56,21 @@ namespace IO { namespace X10 {
         pinMode(configuration->getPin(), INPUT_PULLUP);
         attachInterrupt(digitalPinToInterrupt(configuration->getInterrupt()), receiverInstance_wrapper, RISING);
         Logger::info("|  ✔ %s", X10_RFRECEIVER_NS_PREFIX);
+    }
+
+    void RFReceiver::loop() {
+        if (millis() < disabledToMs) {
+            eventReady = false;
+            return;
+        }
+        if (eventReady) {
+            eventReady = false;
+            sendEvent(IOEventPaths::Receiver_RawData, eventData, IOEventDataType::Undefined);
+        }
+    }
+
+    void RFReceiver::disableMs(uint32_t ms) {
+        disabledToMs = millis() + ms;
     }
 
     void RFReceiver::receive() {
@@ -94,8 +110,12 @@ namespace IO { namespace X10 {
 
                 if (isStandardCode || isSecurityCode) {
                     messageType = isStandardCode ? (uint8_t) 0x20 : (uint8_t) 0x29;
-                    uint8_t data[] = { messageType, byteBuffer[0], byteBuffer[1], (byteBuffer[2]), (byteBuffer[3]) };
-                    sendEvent((const uint8_t*)(IOEventPaths::Receiver_RawData), data, IOEventDataType::Undefined);
+                    eventData[0] = messageType;
+                    eventData[1] = byteBuffer[0];
+                    eventData[2] = byteBuffer[1];
+                    eventData[3] = byteBuffer[2];
+                    eventData[4] = byteBuffer[3];
+                    eventReady = true;
                 }
 
                 receivedCount = -1;

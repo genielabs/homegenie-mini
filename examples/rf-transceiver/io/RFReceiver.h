@@ -21,48 +21,35 @@
  * Authors:
  * - Generoso Martello <gene@homegenie.it>
  *
- *
- * Releases:
- * - 2019-01-10 Initial release
- *
  */
 
-#ifndef HOMEGENIE_MINI_X10_RFRECEIVER_H_
-#define HOMEGENIE_MINI_X10_RFRECEIVER_H_
+#ifndef HOMEGENIE_MINI_RFRECEIVER_H_
+#define HOMEGENIE_MINI_RFRECEIVER_H_
+
+#include <RCSwitch.h>
 
 #include <HomeGenie.h>
 #include <Utility.h>
 
 #include "RFReceiverConfig.h"
 
-#define X10_RFRECEIVER_NS_PREFIX                  "IO::X10::RfReceiver"
+#define RF_RFRECEIVER_NS_PREFIX                  "IO::RF::RfReceiver"
 
-namespace IO { namespace X10 {
+namespace IO { namespace RCS {
 
-    class RFReceiver : public Task, public IIOEventSender {
+    class RFReceiver : Task, public IIOEventSender {
     public:
         RFReceiver();
         RFReceiver(RFReceiverConfig *);
 
-        void loop() override;
         void begin() override;
-        void receive();
-        void disableMs(uint32_t ms);
+        void loop() override;
 
     private:
-        RFReceiverConfig *configuration;
-        // 32-bit RF message decoding
-        volatile uint8_t messageType = 0x00;
-        volatile uint8_t byteBuffer[4];
-        volatile uint32_t riseUs;
-        volatile int8_t receivedCount;
-        volatile uint32_t receiveBuffer;
-        // event data
-        uint8_t eventData[5];
-        bool eventReady = false;
-        uint32_t disabledToMs;
+        RFReceiverConfig* configuration;
+        RCSwitch RF = RCSwitch();
     };
 
 }} // ns
 
-#endif // HOMEGENIE_MINI_X10_RFRECEIVER_H_
+#endif // HOMEGENIE_MINI_RFRECEIVER_H_

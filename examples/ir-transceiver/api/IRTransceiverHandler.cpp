@@ -83,7 +83,7 @@ namespace Service { namespace API {
 
     bool IRTransceiverHandler::handleEvent(IIOEventSender *sender,
                                       const char* domain, const char* address,
-                                      const unsigned char *eventPath, void *eventData, IOEventDataType dataType) {
+                                      const char *eventPath, void *eventData, IOEventDataType dataType) {
 
         String event = String((char*)eventPath);
         /*

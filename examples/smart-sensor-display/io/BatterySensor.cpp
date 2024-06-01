@@ -39,8 +39,8 @@ namespace IO { namespace Env {
         float v = adv * conversionFactor; //adv * (gpioV / gpioMax) * batteryV;
         float batteryLevel = v / batteryVMax * 100;
         if (lastBatteryLevel != batteryLevel) {
-            Logger::info("@%s [%s %.1f] (%.1f)", BATTERY_SENSOR_NS_PREFIX, (IOEventPaths::Status_Battery), batteryLevel, adv);
-            sendEvent((const uint8_t*)(IOEventPaths::Status_Battery), (float*)&batteryLevel, IOEventDataType::Float);
+            Logger::info("@%s [%s %.1f] (%.1f)", BATTERY_SENSOR_NS_PREFIX, IOEventPaths::Status_Battery, batteryLevel, adv);
+            sendEvent(IOEventPaths::Status_Battery, (float*)&batteryLevel, IOEventDataType::Float);
             lastBatteryLevel = batteryLevel;
         }
 

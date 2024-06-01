@@ -77,7 +77,7 @@ namespace Service { namespace API {
 
     bool HomeGenieHandler::handleRequest(Service::APIRequest *request, ResponseCallback* responseCallback) {
         auto homeGenie = HomeGenie::getInstance();
-        if (request->Address == F("Automation")) {
+        if (request->Address == "Automation") {
 #ifndef DISABLE_AUTOMATION
             if (request->Command == AutomationApi::Scheduling_Add || request->Command == AutomationApi::Scheduling_Update) {
                 JsonDocument doc;
@@ -248,7 +248,7 @@ namespace Service { namespace API {
                 return true;
             }
 #endif
-        } else if (request->Address == F("Config")) {
+        } else if (request->Address == "Config") {
             if (request->Command == ConfigApi::Groups_List) {
                 responseCallback->beginGetLength();
                 homeGenie->writeGroupListJSON(responseCallback);
@@ -459,33 +459,27 @@ namespace Service { namespace API {
 
     bool HomeGenieHandler::handleEvent(IO::IIOEventSender *sender,
                                        const char* domain, const char* address,
-                                       const unsigned char *eventPath, void *eventData,
+                                       const char *eventPath, void *eventData,
                                        IO::IOEventDataType dataType) {
         auto module = getModule(domain, address);
         if (module) {
-            auto event = String((char *) eventPath);
+            String event = eventPath;
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto m = QueuedMessage(domain, address, event.c_str(), "", eventData, dataType);
+            auto m = QueuedMessage(domain, address, eventPath, "", eventData, dataType);
             // Data type handling
             switch (dataType) {
                 case SensorLight:
                     m.value = String(*(uint16_t *) eventData);
                     break;
                 case SensorTemperature:
-                    m.value = String(*(float_t *) eventData);
-                    break;
                 case SensorHumidity:
+                case Float:
                     m.value = String(*(float_t *) eventData);
                     break;
                 case UnsignedNumber:
                     m.value = String(*(uint32_t *) eventData);
                     break;
                 case Number:
-                    m.value = String(*(int32_t *) eventData);
-                    break;
-                case Float:
-                    m.value = String(*(float *) eventData);
-                    break;
                 default:
                     m.value = String(*(int32_t *) eventData);
             }

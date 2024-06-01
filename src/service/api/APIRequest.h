@@ -40,41 +40,41 @@ namespace Service { namespace API {
 
     namespace ControlApi {
         // generic switch / light
-        static const char Control_On[] PROGMEM = {"Control.On"};
-        static const char Control_Off[] PROGMEM = {"Control.Off"};
-        static const char Control_Toggle[] PROGMEM = {"Control.Toggle"};
-        static const char Control_Level[] PROGMEM = {"Control.Level"};
-        static const char Control_ColorHsb[] PROGMEM = {"Control.ColorHsb"};
+        static const char Control_On[] = {"Control.On"};
+        static const char Control_Off[] = {"Control.Off"};
+        static const char Control_Toggle[] = {"Control.Toggle"};
+        static const char Control_Level[] = {"Control.Level"};
+        static const char Control_ColorHsb[] = {"Control.ColorHsb"};
         // shutters / door locks
-        static const char Control_Open[] PROGMEM = {"Control.Open"};
-        static const char Control_Close[] PROGMEM = {"Control.Close"};
+        static const char Control_Open[] = {"Control.Open"};
+        static const char Control_Close[] = {"Control.Close"};
     }
 
     namespace AutomationApi {
-        static const char Scheduling_Add[] PROGMEM = {"Scheduling.Add"};
-        static const char Scheduling_Update[] PROGMEM = {"Scheduling.Update"};
-        static const char Scheduling_Get[] PROGMEM = {"Scheduling.Get"};
-        static const char Scheduling_ModuleUpdate[] PROGMEM = {"Scheduling.ModuleUpdate"};
-        static const char Scheduling_ListOccurrences[] PROGMEM = {"Scheduling.ListOccurrences"};
-        static const char Scheduling_Enable[] PROGMEM = {"Scheduling.Enable"};
-        static const char Scheduling_Disable[] PROGMEM = {"Scheduling.Disable"};
-        static const char Scheduling_Delete[] PROGMEM = {"Scheduling.Delete"};
-        static const char Scheduling_List[] PROGMEM = {"Scheduling.List"};
-        static const char Scheduling_Templates[] PROGMEM = {"Scheduling.Templates"};
+        static const char Scheduling_Add[] = {"Scheduling.Add"};
+        static const char Scheduling_Update[] = {"Scheduling.Update"};
+        static const char Scheduling_Get[] = {"Scheduling.Get"};
+        static const char Scheduling_ModuleUpdate[] = {"Scheduling.ModuleUpdate"};
+        static const char Scheduling_ListOccurrences[] = {"Scheduling.ListOccurrences"};
+        static const char Scheduling_Enable[] = {"Scheduling.Enable"};
+        static const char Scheduling_Disable[] = {"Scheduling.Disable"};
+        static const char Scheduling_Delete[] = {"Scheduling.Delete"};
+        static const char Scheduling_List[] = {"Scheduling.List"};
+        static const char Scheduling_Templates[] = {"Scheduling.Templates"};
     }
 
     namespace ConfigApi {
-        static const char Modules_List[] PROGMEM = {"Modules.List"};
-        static const char Modules_Get[] PROGMEM = {"Modules.Get"};
-        static const char Modules_ParameterSet[] PROGMEM = {"Modules.ParameterSet"};
-        static const char Groups_List[] PROGMEM = {"Groups.List"};
-        static const char WebSocket_GetToken[] PROGMEM = {"WebSocket.GetToken"};
-        static const char System_Configure[] PROGMEM = {"System.Configure"};
+        static const char Modules_List[] = {"Modules.List"};
+        static const char Modules_Get[] = {"Modules.Get"};
+        static const char Modules_ParameterSet[] = {"Modules.ParameterSet"};
+        static const char Groups_List[] = {"Groups.List"};
+        static const char WebSocket_GetToken[] = {"WebSocket.GetToken"};
+        static const char System_Configure[] = {"System.Configure"};
         namespace SystemApi {
-            static const char Location_Get[] PROGMEM = {"Location.Get"};
-            static const char Location_Set[] PROGMEM = {"Location.Set"};
-            static const char System_Info[] PROGMEM = {"System.Info"};
-            static const char System_TimeSet[] PROGMEM = {"System.TimeSet"};
+            static const char Location_Get[] = {"Location.Get"};
+            static const char Location_Set[] = {"Location.Set"};
+            static const char System_Info[] = {"System.Info"};
+            static const char System_TimeSet[] = {"System.TimeSet"};
         }
     }
 

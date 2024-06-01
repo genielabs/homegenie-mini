@@ -181,11 +181,10 @@ namespace Service {
 
     // BEGIN IIOEventReceiver interface methods
 
-    void HomeGenie::onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData,
+    void HomeGenie::onIOEvent(IIOEventSender *sender, const char* domain, const char* address, const char *eventPath, void *eventData,
                               IOEventDataType dataType) {
-        String event = String((char *) eventPath);
         Logger::trace(":%s [IOManager::IOEvent] >> [domain '%s' address '%s' event '%s']", HOMEGENIEMINI_NS_PREFIX,
-                      domain, address, event.c_str());
+                      domain, address, eventPath);
         String d = domain;
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
@@ -210,7 +209,7 @@ namespace Service {
 
 
     bool HomeGenie::api(APIRequest *request, ResponseCallback* responseCallback) {
-        bool handled;
+        bool handled = false;
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
             if (handler->canHandleDomain(&request->Domain)) {

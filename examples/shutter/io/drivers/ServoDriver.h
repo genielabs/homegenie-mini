@@ -154,7 +154,7 @@ namespace IO { namespace Components {
 
                 String err = "No pulse received from motor.";
                 Logger::info("@%s [%s %s]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Error), err.c_str());
-                eventSender->sendEvent((const uint8_t*)(IOEventPaths::Status_Error), &err, IOEventDataType::Text);
+                eventSender->sendEvent(IOEventPaths::Status_Error, &err, IOEventDataType::Text);
 
                 stopRequested = true;
 
@@ -169,7 +169,7 @@ namespace IO { namespace Components {
                 lastCommand = SHUTTER_COMMAND_NONE;
                 targetLevel = -1;
                 Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
-                eventSender->sendEvent((const uint8_t*)(IOEventPaths::Status_Level), &currentLevel, IOEventDataType::Float);
+                eventSender->sendEvent(IOEventPaths::Status_Level, &currentLevel, IOEventDataType::Float);
 
             } else if (lastCommand == SHUTTER_COMMAND_OPEN) {
 
@@ -177,7 +177,7 @@ namespace IO { namespace Components {
                     float level = (float)revolutions / (float)revolutionsMax;
                     lastEventMs = millis();
                     Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), level);
-                    eventSender->sendEvent((const uint8_t *) (IOEventPaths::Status_Level), &level, IOEventDataType::Float);
+                    eventSender->sendEvent(IOEventPaths::Status_Level, &level, IOEventDataType::Float);
                 }
 
             } else if (lastCommand == SHUTTER_COMMAND_CLOSE) {
@@ -186,7 +186,7 @@ namespace IO { namespace Components {
                     float level =  (float)revolutions / (float)revolutionsMax;
                     lastEventMs = millis();
                     Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), level);
-                    eventSender->sendEvent((const uint8_t *) (IOEventPaths::Status_Level), &level, IOEventDataType::Float);
+                    eventSender->sendEvent(IOEventPaths::Status_Level, &level, IOEventDataType::Float);
                 }
 
             }

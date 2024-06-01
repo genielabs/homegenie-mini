@@ -51,7 +51,7 @@ namespace IO {
         bool addEventSender(IIOEventSender *);
 
         // IIOEventReceiver interface
-        void onIOEvent(IIOEventSender *, const char*, const char*, const uint8_t *, void *, IOEventDataType);
+        void onIOEvent(IIOEventSender *, const char*, const char*, const char *, void *, IOEventDataType);
 
         void setEventReceiver(IIOEventReceiver *);
 

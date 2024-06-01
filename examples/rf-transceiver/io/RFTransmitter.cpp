@@ -37,15 +37,6 @@
 
 namespace IO { namespace RCS {
 
-    RCSwitch RF = RCSwitch();
-
-    /*
-    // Projector Screen commands
-    const long lowerMhz = 10045956;
-    const long raiseMhz = 10045953;
-    const long stopMhz = 10045954;
-    */
-
     const byte protocol = 1; // <--- See RCSwitch documentation
 
     RFTransmitter::RFTransmitter() {
@@ -57,44 +48,11 @@ namespace IO { namespace RCS {
 
     void RFTransmitter::begin() {
         Logger::info("|  - IO::RemoteControl::RFTransmitter (PIN=%d)", configuration->getPin());
+        RF.disableReceive();
         RF.enableTransmit(configuration->getPin());   // Set RF transmit pin
-        RF.setProtocol(protocol);                     // Set RF protocal
+        RF.setProtocol(protocol);                     // Set RF protocol
         Logger::info("|  ✔ IO::RemoteControl::RFTransmitter");
     }
-
-    /*
-    // TODO: code for RFReceiver.cpp
-
-    RCSwitch RF = RCSwitch();
-
-    // ....
-
-    void RFReceiver::begin() {
-        if (!Config::RCSwitchRFTransmitterEnabled) return;
-        Logger::info("|  - IO::RCSwitch::RFReceiver (PIN=%d, INTERRUPT=%d)", configuration->getPin(), configuration->getInterrupt());
-        RF.enableReceive(D1);  // Receiver on pin D1
-        Logger::info("|  ✔ IO::RCSwitch::RFReceiver");
-    }
-
-    void RFReceiver::receive() {
-        // TODO: ...
-        if (RF.available()) {
-
-            Serial.print("Received ");
-            Serial.print(RF.getReceivedValue());
-            Serial.print(" / ");
-            Serial.print(RF.getReceivedBitlength());
-            Serial.print("bit ");
-            Serial.print("Protocol: ");
-            Serial.println(RF.getReceivedProtocol());
-
-            RF.resetAvailable();
-        }
-    }
-
-    // ....
-
-    */
 
     void RFTransmitter::sendCommand(long command, unsigned short bitLength, unsigned short repeat, unsigned short repeat_delay) {
         for (int i = 0; i < repeat; i++) {

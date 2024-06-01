@@ -46,14 +46,14 @@ void setup() {
     // X10 RF RFTransmitter
     auto x10TransmitterConfig = new X10::RFTransmitterConfig(CONFIG_X10RFTransmitterPin);
     auto x10Transmitter = new X10::RFTransmitter(x10TransmitterConfig);
-
-    auto apiHandler = new X10Handler(x10Transmitter);
-    homeGenie->addAPIHandler(apiHandler);
-
     // X10 RF RFReceiver
-    auto rfModule = apiHandler->getModule(IO::IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
     auto x10ReceiverConfig = new X10::RFReceiverConfig(CONFIG_X10RFReceiverPin);
     auto x10Receiver = new X10::RFReceiver(x10ReceiverConfig);
+
+    auto apiHandler = new X10Handler(x10Transmitter, x10Receiver);
+    homeGenie->addAPIHandler(apiHandler);
+
+    auto rfModule = apiHandler->getModule(IO::IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
     x10Receiver->setModule(rfModule);
     homeGenie->addIOHandler(x10Receiver);
 

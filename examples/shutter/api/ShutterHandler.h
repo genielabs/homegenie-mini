@@ -51,7 +51,7 @@ namespace Service { namespace API {
             bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
             bool handleEvent(IIOEventSender *sender,
                              const char* domain, const char* address,
-                             const unsigned char *eventPath, void *eventData, IOEventDataType dataType) override;
+                             const char *eventPath, void *eventData, IOEventDataType dataType) override;
 
             Module* getModule(const char* domain, const char* address) override;
             LinkedList<Module*>* getModuleList() override;

@@ -49,7 +49,7 @@ namespace Service { namespace API {
         void init() override;
         bool canHandleDomain(String* domain) override;
         bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
-        bool handleEvent(IIOEventSender *sender, const char* domain, const char* address, const unsigned char *eventPath, void *eventData,
+        bool handleEvent(IIOEventSender *sender, const char* domain, const char* address, const char *eventPath, void *eventData,
                     IOEventDataType dataType) override;
         Module* getModule(const char* domain, const char* address) override;
         LinkedList<Module*>* getModuleList() override;

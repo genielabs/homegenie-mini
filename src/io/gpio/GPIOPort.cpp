@@ -49,8 +49,8 @@ namespace IO { namespace GPIO {
         } else if (value > GPIO_PORT_LEVEL_MIN && value < GPIO_PORT_LEVEL_MAX) {
             analogWrite(pinNumber, value);
         }
-        Logger::info("@%s [%s %.2f]", GPIO_PORT_NS_PREFIX, (IOEventPaths::Status_Level), level);
-        sendEvent(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), (const uint8_t*)(IOEventPaths::Status_Level), &level, Float);
+        Logger::info("@%s [%s %.2f]", GPIO_PORT_NS_PREFIX, IOEventPaths::Status_Level, level);
+        sendEvent(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), IOEventPaths::Status_Level, &level, Float);
     }
 
 
