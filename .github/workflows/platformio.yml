@@ -5,12 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set env
-        run: |
-          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "VERSION_NUMBER=$(echo ${GITHUB_REF#refs/*/} | cut -d"v" -f 2)" >> $GITHUB_ENV
-          echo VERSION_NUMBER=$VERSION_NUMBER
-
       - uses: actions/cache@v3
         with:
           path: |
@@ -27,6 +21,8 @@ jobs:
       - name: Build PlatformIO Project
         run: |
           pio run
+          export RELEASE_VERSION=${GITHUB_REF#refs/*/}
+          export VERSION_NUMBER=$RELEASE_VERSION
           echo VERSION_NUMBER=$VERSION_NUMBER
           bash ./.github/post-build.sh
 
