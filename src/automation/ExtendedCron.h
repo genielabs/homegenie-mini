@@ -66,7 +66,7 @@ namespace Automation {
 
     class ExtendedCron {
     public:
-        static bool IsScheduling(time_t date, String& cronExpression, int recursionCount = 0);
+        static bool IsScheduling(time_t date, String& cronExpression);
 
         static time_t normalizeStartTime(time_t timestamp);
         static time_t normalizeEndTime(time_t timestamp);

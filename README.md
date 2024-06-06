@@ -12,7 +12,7 @@ https://homegenie.it/mini
 - Easy Wi-Fi configuration using Bluetooth (ESP32) or WPS (ESP8266)
 - Does not require an Internet connection to be configured or to work properly
 - Time synchronization using internal RTC (ESP32), mobile app time or NTP
-- Integrated actions scheduler supporting *cron expressions* with seconds field
+- Integrated actions scheduler supporting *extended cron expressions*
 - Device discovery through SNMP/UPnP advertising with customizable name
 - Multi-channel I/O: HTTP, WebSocket, SSE, MQTT
 - Status LED
@@ -159,7 +159,7 @@ You can use the following command to list all possible configurations to build t
 pio project config
 ```
 
-See also [HomeGenie Mini Documentation](https://homegenie.it/mini/1.2/) for further information
+See also [HomeGenie Mini Documentation](https://homegenie.it/mini/) for further information
 about included examples.
 
 

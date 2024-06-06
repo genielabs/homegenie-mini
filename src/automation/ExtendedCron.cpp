@@ -37,9 +37,34 @@ namespace Automation {
         return nullptr;
     }
 
-    bool ExtendedCron::IsScheduling(time_t date, String& cronExpression, int recursionCount)
+    bool ExtendedCron::IsScheduling(time_t date, String& cronExpression)
     {
-        return getScheduling(date, date, cronExpression, recursionCount).size() > 0;
+        struct tm timeStart;
+        localtime_r(&date, &timeStart);
+        timeStart.tm_sec = timeStart.tm_min = timeStart.tm_hour = 0;
+        struct tm timeEnd;
+        localtime_r(&date, &timeEnd);
+        timeEnd.tm_sec = 59;
+        timeEnd.tm_min = 59;
+        timeEnd.tm_hour = 23;
+        auto start = mktime(&timeStart);
+        auto end = mktime(&timeEnd);
+        auto list = getScheduling(start, end, cronExpression);
+        int low = 0;
+        int high = list.size() - 1;
+        time_t x = normalizeStartTime(date);
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (list[mid] == x) {
+                return true;
+            }
+            if (list[mid] < x) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return false;
     }
 
     time_t ExtendedCron::normalizeStartTime(time_t timestamp) {
@@ -52,10 +77,8 @@ namespace Automation {
     LinkedList<time_t> ExtendedCron::getScheduling(time_t dateStart, time_t dateEnd, String& cronExpression, int recursionCount)
     {
         // align input time
-        if (!hasSecondsField(cronExpression.c_str())) {
-            dateStart = normalizeStartTime(dateStart);
-            dateEnd = normalizeEndTime(dateEnd);
-        }
+        dateStart = normalizeStartTime(dateStart);
+        dateEnd = normalizeEndTime(dateEnd);
 
         // '[' and ']' are just aesthetic alias for '(' and ')'
         cronExpression.replace("[", "(");
@@ -219,17 +242,6 @@ namespace Automation {
         delete rootEvalNode;
         copy.sort(occurrencesCompare);
         return copy;
-    }
-
-    int ExtendedCron::hasSecondsField(const char* str) {
-        char del = ' ';
-        size_t count = 0;
-        if (!str) return -1;
-        while ((str = strchr(str, del)) != nullptr) {
-            count++;
-            do str++; while (del == *str);
-        }
-        return (int)count + 1 > 5;
     }
 
     void ExtendedCron::getNextOccurrences(LinkedList<time_t>& occurrences, time_t dateStart, time_t dateEnd, const String& cronExpression)

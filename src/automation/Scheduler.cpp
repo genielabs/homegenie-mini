@@ -34,6 +34,7 @@
 namespace Automation {
     LinkedList<Schedule*> Scheduler::scheduleList;
     SchedulerListener* Scheduler::listener = nullptr;
+    int Scheduler::lastCheckMinute = -1;
 
     void Scheduler::addSchedule(Schedule* schedule) {
         int existingIndex = -1;
@@ -76,6 +77,9 @@ namespace Automation {
 
     void Scheduler::loop() {
         auto now = time(0);
+        tm* t = localtime(&now);
+        if (t->tm_min == lastCheckMinute || millis() < 10000) return;
+        lastCheckMinute = t->tm_min;
         //for(;;) {
         //    int lastRun = millis() % 1000;
             for (int i = 0; i < scheduleList.size(); i++) {

@@ -44,16 +44,16 @@ namespace Automation {
     using namespace Data;
 
     namespace ScheduleField {
-        static const char name[] PROGMEM = "Name";
-        static const char description[] PROGMEM = "Description";
-        static const char data[] PROGMEM = "Data";
-        static const char cronExpression[] PROGMEM = "CronExpression";
-        static const char script[] PROGMEM = "Script";
-        static const char boundDevices[] PROGMEM = "BoundDevices";
-        static const char boundModules[] PROGMEM = "BoundModules";
+        static const char name[] = "Name";
+        static const char description[] = "Description";
+        static const char data[] = "Data";
+        static const char cronExpression[] = "CronExpression";
+        static const char script[] = "Script";
+        static const char boundDevices[] = "BoundDevices";
+        static const char boundModules[] = "BoundModules";
     };
     namespace ScheduleData {
-        static const char fileName[] PROGMEM = "/schedules.json";
+        static const char fileName[] = "/schedules.json";
     }
 
     class Schedule {
@@ -77,10 +77,7 @@ namespace Automation {
             return ExtendedCron::IsScheduling(ts, cronExpression);
         }
         bool wasScheduled(time_t ts) {
-            if (!ExtendedCron::hasSecondsField(cronExpression.c_str())) {
-                return ExtendedCron::normalizeStartTime(lastOccurrence) == ExtendedCron::normalizeStartTime(ts);
-            }
-            return lastOccurrence == ts;
+            return ExtendedCron::normalizeStartTime(lastOccurrence) == ExtendedCron::normalizeStartTime(ts);
         }
         void setScheduled(time_t ts) {
             lastOccurrence = ts;
@@ -126,6 +123,7 @@ namespace Automation {
     private:
         static LinkedList<Schedule*> scheduleList;
         static SchedulerListener* listener;
+        static int lastCheckMinute;
     };
 
 }
