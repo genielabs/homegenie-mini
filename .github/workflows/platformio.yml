@@ -26,7 +26,8 @@ jobs:
       - name: Build PlatformIO Project
         run: |
           pio run
-          sh ./github/post-build.sh
+          chmod +x ./.github/post-build.sh 
+          ./.github/post-build.sh
 
       - name: Release
         uses: softprops/action-gh-release@v1

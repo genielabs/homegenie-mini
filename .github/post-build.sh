@@ -1,3 +1,4 @@
+#!/bin/sh
 outputFolder="./artifacts";
 if [ ! -d $outputFolder ]; then mkdir $outputFolder; fi;
 pio project config | grep "env:" | while read -r line; do
