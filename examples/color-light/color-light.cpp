@@ -49,7 +49,7 @@ unsigned long lastRefreshTs = 0;
 
 void statusLedCallback(bool isLedOn) {
     if (isLedOn) {
-        statusLED.setPixelColor(0, Adafruit_NeoPixel::Color(50, 50, 0));
+        statusLED.setPixelColor(0, Adafruit_NeoPixel::Color(1, 1, 0));
     } else {
         statusLED.setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
     }
