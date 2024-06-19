@@ -56,14 +56,12 @@ public:
         display->setColorDepth(16);
         gestureHelper = new GestureHelper(this);
 
-#ifndef DISABLE_PREFERENCES
         // apply display preferences
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, true);
         uint32_t displayRotation = preferences.getUInt(CONFIG_KEY_screen_rotation);
         preferences.end();
         display->setRotation(displayRotation);
-#endif
 
         display->setBrightness(64);
         display->drawString("Hello World! =)", 72, 96);

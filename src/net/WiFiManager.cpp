@@ -140,7 +140,6 @@ namespace Net {
         return false;
 #endif
 #else
-    #ifndef DISABLE_PREFERENCES
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, false);
         preferences.putString(CONFIG_KEY_wifi_ssid, "");
@@ -153,7 +152,6 @@ namespace Net {
         // Reboot
         esp_restart();
         return true;
-    #endif
 #endif
     }
 

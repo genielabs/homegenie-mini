@@ -329,7 +329,7 @@ namespace Service { namespace API {
                             if (doc.containsKey("utcOffset")) {
                                 Config::zone.offset = doc["utcOffset"].as<int>();
                             }
-#ifndef DISABLE_PREFERENCES
+
                             Preferences preferences;
                             preferences.begin(CONFIG_SYSTEM_NAME, false);
 
@@ -341,7 +341,7 @@ namespace Service { namespace API {
                             preferences.putInt(CONFIG_KEY_system_zone_offset, Config::zone.offset);
 
                             preferences.end();
-#endif
+
                             // set new timezone
                             Config::updateTimezone();
 

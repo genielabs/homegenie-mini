@@ -120,7 +120,9 @@ namespace Service {
         // HomeGenie-Mini Terminal CLI
         if (Serial.available() > 0) {
             String cmd = Serial.readStringUntil('\n');
-            if (!cmd.isEmpty()) {
+            if (cmd.startsWith("#")) {
+                Config::handleConfigCommand(cmd);
+            } else if (!cmd.isEmpty()) {
                 // TODO: implement SerialCallback
                 auto callback = DummyResponseCallback();
                 onNetRequest(this, cmd.c_str(), &callback);
@@ -292,7 +294,6 @@ namespace Service {
     unsigned int HomeGenie::writeGroupListJSON(ResponseCallback *responseCallback) {
         bool firstModule = true;
         String defaultGroupName = "Dashboard";
-#ifndef DISABLE_PREFERENCES
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, true);
         String deviceName = preferences.getString(CONFIG_KEY_device_name, "");
@@ -300,7 +301,6 @@ namespace Service {
         if (deviceName.length() > 0) {
             defaultGroupName = deviceName;
         }
-#endif
         String out = R"([{"Name": ")" + defaultGroupName + R"(", "Modules": [)";
         responseCallback->write(out.c_str());
         for (int i = 0; i < handlers.size(); i++) {

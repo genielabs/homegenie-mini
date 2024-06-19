@@ -36,92 +36,124 @@ using namespace Service::API::devices;
 
 HomeGenie* homeGenie;
 
-Adafruit_NeoPixel statusLED(1, CONFIG_StatusLedNeoPixelPin, NEO_GRB + NEO_KHZ800);
+// Optional RGB Status LED
+Adafruit_NeoPixel* statusLED = nullptr;
 
-#ifdef LED_ARRAY_COUNT
-int num = LED_ARRAY_COUNT;  // 90 = 3mt // 30 LEDs per meter (3 mt. strip)
-int pin = LED_ARRAY_PIN;
-Adafruit_NeoPixel pixels(num, pin, NEO_RGB + NEO_KHZ800);
-#endif
+// LED strip/array
+int count = 0; int pin = -1;
+Adafruit_NeoPixel* pixels = nullptr;
 
 bool changed = false;
 unsigned long lastRefreshTs = 0;
 
+// LED Blink callback when statusLED is configured
 void statusLedCallback(bool isLedOn) {
     if (isLedOn) {
-        statusLED.setPixelColor(0, Adafruit_NeoPixel::Color(1, 1, 0));
+        statusLED->setPixelColor(0, Adafruit_NeoPixel::Color(1, 1, 0));
     } else {
-        statusLED.setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
+        statusLED->setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
     }
-    statusLED.show();
+    statusLED->show();
 }
 
 void setup() {
     homeGenie = HomeGenie::getInstance();
 
+    // Get status LED config
+    int statusLedPin = Config::getSetting("stld-pin", "0").toInt();
+    if (statusLedPin > 0) {
+        int statusLedType = Config::getSetting("stld-typ", "0").toInt();
+        int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
+        statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
+    }
+
     if (!Config::isDeviceConfigured()) {
 
         // Custom status led (builtin NeoPixel RGB on pin 10)
-        Config::statusLedCallback(&statusLedCallback);
+        if (statusLED != nullptr) {
+            Config::statusLedCallback(&statusLedCallback);
+        }
 
     } else {
 
+        // Get LED strip config
+        count = Config::getSetting("leds-cnt", "0").toInt();  // 90 = 3mt // 30 LEDs per meter (3 mt. strip)
+        pin = (int16_t)Config::getSetting("leds-pin", "-1").toInt();
+        if (count > 0 && pin != -1) {
+            auto pixelsType = (int16_t)Config::getSetting("leds-typ", "-1").toInt();
+            auto pixelsSpeed = (int16_t)Config::getSetting("leds-spd", "0").toInt();
+            pixels = new Adafruit_NeoPixel(count, pin, pixelsType + pixelsSpeed);
+        }
+
+        // Setup Status LED as master channel
         auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Demo Light");
         colorLight->onSetColor([](float r, float g, float b) {
-            statusLED.setPixelColor(0, r, g, b);
-#ifdef LED_ARRAY_COUNT
-            for (int i = 0; i < num; i++) {
-                pixels.setPixelColor(i, r, g, b);
+            if (statusLED != nullptr) {
+                statusLED->setPixelColor(0, r, g, b);
             }
-#endif
+
+            for (int i = 0; i < count; i++) {
+                pixels->setPixelColor(i, r, g, b);
+            }
+
             changed = true;
             if (millis() - lastRefreshTs > 50) { // force 20fps max
-                statusLED.show();
-#ifdef LED_ARRAY_COUNT
-                pixels.show();
-#endif
+                if (statusLED != nullptr) {
+                    statusLED->show();
+                }
+                if (pixels != nullptr) {
+                    pixels->show();
+                }
                 lastRefreshTs = millis();
                 changed = false;
             }
         });
         homeGenie->addAPIHandler(colorLight);
 
-#ifdef LED_ARRAY_COUNT
-        for (int i = 0; i < num; i++) {
-            auto address = String("L") + String(i + 1);
-            auto cl = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), "Demo Light");
-            cl->onSetColor([i](float r, float g, float b) {
-                pixels.setPixelColor(i, r, g, b);
-                changed = true;
-                if (millis() - lastRefreshTs > 50) { // force 20fps max
-                    pixels.show();
-                    lastRefreshTs = millis();
-                    changed = false;
-                }
-            });
-            homeGenie->addAPIHandler(cl);
+        // Setup LED strip/array
+        if (pixels != nullptr) {
+            for (int i = 0; i < count; i++) {
+                auto address = String("L") + String(i + 1);
+                auto cl = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), "Demo Light");
+                cl->onSetColor([i](float r, float g, float b) {
+                    pixels->setPixelColor(i, r, g, b);
+                    changed = true;
+                    if (millis() - lastRefreshTs > 50) { // force 20fps max
+                        pixels->show();
+                        lastRefreshTs = millis();
+                        changed = false;
+                    }
+                });
+                homeGenie->addAPIHandler(cl);
+            }
         }
-#endif
-
         // TODO: implement color/status recall on start
         // TODO: implement color/status recall on start
         // TODO: implement color/status recall on start
 
     }
 
-    statusLED.begin();
+    if (statusLED != nullptr) {
+        statusLED->begin();
+    }
+    if (pixels != nullptr) {
+        pixels->begin();
+    }
     homeGenie->begin();
 }
 
 void loop()
 {
     homeGenie->loop();
+
     if (changed) { // trailing fx
         changed = false;
-        statusLED.show();
-#ifdef LED_ARRAY_COUNT
-        pixels.show();
-#endif
+        if (statusLED != nullptr) {
+            statusLED->show();
+        }
+        if (pixels != nullptr) {
+            pixels->show();
+        }
         lastRefreshTs = millis();
     }
 }

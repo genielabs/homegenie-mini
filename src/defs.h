@@ -40,6 +40,9 @@
 
 #define DEBUGLOG_DEFAULT_LOG_LEVEL_ERROR
 
+#ifndef BUILD_ENV_NAME
+#define BUILD_ENV_NAME "default-env"
+#endif
 
 // disabling FreeRTOS task saves about ~12K or RAM
 //#define CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
@@ -63,7 +66,6 @@
     #define DISABLE_UI
     #define DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
-    #define DISABLE_PREFERENCES
     #define CONFIGURE_WITH_WPS
     #define WebServer ESP8266WebServer
     #ifndef CONFIG_GPIO_OUT

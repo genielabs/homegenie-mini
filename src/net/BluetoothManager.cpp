@@ -107,37 +107,6 @@ namespace Net {
     }
 
     void BluetoothManager::handleMessage(String& message) {
-#ifndef DISABLE_PREFERENCES
-        Preferences preferences;
-        preferences.begin(CONFIG_SYSTEM_NAME, false);
-
-        if (message.startsWith("#CONFIG:device-name ")) {
-            preferences.putString(CONFIG_KEY_device_name, message.substring(20));
-        }
-        if (message.startsWith("#CONFIG:wifi-ssid ")) {
-            preferences.putString(CONFIG_KEY_wifi_ssid, message.substring(18));
-        }
-        if (message.startsWith("#CONFIG:wifi-password ")) {
-            preferences.putString(CONFIG_KEY_wifi_password, message.substring(22));
-            // reset system mode if it was previously forced to "config"
-            preferences.putString(CONFIG_KEY_system_mode, "");
-        }
-        if (message.startsWith("#CONFIG:system-time ")) {
-            String time = message.substring(20);
-            long seconds = time.substring(0, time.length() - 3).toInt();
-            long ms = time.substring(time.length() - 3).toInt();
-            Config::getRTC()->setTime(seconds, ms);
-        }
-        if (message.startsWith("#CONFIG:system-zone-id ")) {
-            String zoneId = message.substring(23);
-            preferences.putString(CONFIG_KEY_system_zone_id, zoneId);
-        }
-        if (message.startsWith("#CONFIG:system-zone-offset ")) {
-            int utcOffset = message.substring(27).toInt(); // minutes
-            preferences.putInt(CONFIG_KEY_system_zone_offset, utcOffset);
-        }
-        preferences.end();
-
         if (message.equals("#RESET")) {
 #ifndef DISABLE_BLUETOOTH_LE
             SerialBTLE->end();
@@ -147,10 +116,8 @@ namespace Net {
             SerialBT.end();
 #endif
             IO::Logger::info("RESET!");
-            delay(50);
-            esp_restart();
         }
-#endif //DISABLE_PREFERENCES
+        Config::handleConfigCommand(message);
     }
 
 } // Net

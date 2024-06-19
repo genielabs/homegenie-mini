@@ -45,8 +45,11 @@ namespace IO { namespace IR {
         Logger::info("|  - %s (PIN=%d INT=%d)", IR_IRRECEIVER_NS_PREFIX,
                      configuration->getPin(),
                      configuration->getInterrupt());
-
+#ifdef ESP8266
+        irReceiver = new IRrecv(configuration->getPin(), 1024, 50, false);
+#else
         irReceiver = new IRrecv(configuration->getPin(), 1024, 50, false, 1);
+#endif
         //irReceiver->setTolerance(10);
         enabled(true);
 
@@ -84,7 +87,11 @@ namespace IO { namespace IR {
                 sSize = Utility::byteToHex((uint16_t )(size / 8));
                 sData = Utility::getByteString(results.state, size / 8);
             } else {  // simple message protocol (<= 64 bits)
+#ifdef ESP8266
+                sData = String((unsigned long)results.value, HEX);
+#else
                 sData = String(results.value, HEX);
+#endif
             }
 
             if (sData != "ffffffffffffffff") {

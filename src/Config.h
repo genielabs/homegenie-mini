@@ -43,21 +43,19 @@
 #include <ESP8266WiFi.h>
 #endif
 #endif
-#ifndef DISABLE_PREFERENCES
 #include <Preferences.h>
-#endif
 
-const static char CONFIG_KEY_wifi_ssid[] PROGMEM = {"wifi:ssid"};
-const static char CONFIG_KEY_wifi_password[] PROGMEM = {"wifi:password"};
-const static char CONFIG_KEY_device_name[] PROGMEM = {"device:name"};
-const static char CONFIG_KEY_system_mode[] PROGMEM = {"system:mode"};
-const static char CONFIG_KEY_system_zone_id[] PROGMEM = {"system:zn_id"};
-const static char CONFIG_KEY_system_zone_description[] PROGMEM = {"system:zn_dsc"};
-const static char CONFIG_KEY_system_zone_name[] PROGMEM = {"system:zn_nam"};
-const static char CONFIG_KEY_system_zone_offset[] PROGMEM = {"system:zn_ofs"};
-const static char CONFIG_KEY_system_zone_lat[] PROGMEM = {"system:zn_lat"};
-const static char CONFIG_KEY_system_zone_lng[] PROGMEM = {"system:zn_lng"};
-const static char CONFIG_KEY_screen_rotation[] PROGMEM = {"screen:rotate"};
+const static char CONFIG_KEY_wifi_ssid[] = {"wifi:ssid"};
+const static char CONFIG_KEY_wifi_password[] = {"wifi:password"};
+const static char CONFIG_KEY_device_name[] = {"device:name"};
+const static char CONFIG_KEY_system_mode[] = {"system:mode"};
+const static char CONFIG_KEY_system_zone_id[] = {"system:zn_id"};
+const static char CONFIG_KEY_system_zone_description[] = {"system:zn_dsc"};
+const static char CONFIG_KEY_system_zone_name[] = {"system:zn_nam"};
+const static char CONFIG_KEY_system_zone_offset[] = {"system:zn_ofs"};
+const static char CONFIG_KEY_system_zone_lat[] = {"system:zn_lat"};
+const static char CONFIG_KEY_system_zone_lng[] = {"system:zn_lng"};
+const static char CONFIG_KEY_screen_rotation[] = {"screen:rotate"};
 
 class ZoneConfig {
 public:
@@ -81,12 +79,16 @@ class SystemConfig {
 public:
     String friendlyName;
     String systemMode;
+#ifndef CONFIGURE_WITH_WPS
     String ssid, pass;
+#endif
     SystemConfig() {
         friendlyName = CONFIG_BUILTIN_MODULE_NAME;
         systemMode = "";
+#ifndef CONFIGURE_WITH_WPS
         ssid = "";
         pass = "";
+#endif
     }
 };
 
@@ -128,26 +130,22 @@ public:
     }
 
     static bool saveSetting(const char* key, String& value) {
-#ifndef DISABLE_PREFERENCES
         String k = String("$") + String(key);
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, false);
         preferences.putString(k.c_str(), value);
         preferences.end();
-#endif
         return false;
     }
 
-    static String getSetting(const char* key) {
-        String value;
-#ifndef DISABLE_PREFERENCES
+    static String getSetting(const char* key, const char* defaultValue = "") {
+        String value = defaultValue;
         String k = String("$") + String(key);
         Preferences preferences;
         if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
-            value = preferences.getString(k.c_str());
+            value = preferences.getString(k.c_str(), defaultValue);
         }
         preferences.end();
-#endif
         return value;
     }
 
@@ -161,15 +159,16 @@ public:
     static void init() {
         // Setup status led
         if (StatusLedPin >= 0) pinMode(StatusLedPin, OUTPUT);
-#ifndef DISABLE_PREFERENCES
         Preferences preferences;
 
         if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
             // System and WiFi settings
             system.friendlyName = preferences.getString(CONFIG_KEY_device_name, system.friendlyName);
             system.systemMode = preferences.getString(CONFIG_KEY_system_mode, system.systemMode);
+#ifndef CONFIGURE_WITH_WPS
             system.ssid = preferences.getString(CONFIG_KEY_wifi_ssid, system.ssid);
             system.pass = preferences.getString(CONFIG_KEY_wifi_password, system.pass);
+#endif
             // Time Zone
             zone.id = preferences.getString(CONFIG_KEY_system_zone_id, zone.id);
             zone.description = preferences.getString(CONFIG_KEY_system_zone_description, zone.description);
@@ -182,8 +181,10 @@ public:
             preferences.begin(CONFIG_SYSTEM_NAME, false);
             preferences.putString(CONFIG_KEY_device_name, system.friendlyName);
             preferences.putString(CONFIG_KEY_system_mode, system.systemMode);
+#ifndef CONFIGURE_WITH_WPS
             preferences.putString(CONFIG_KEY_wifi_ssid, system.ssid);
             preferences.putString(CONFIG_KEY_wifi_password, system.pass);
+#endif
             // Time Zone
             preferences.putString(CONFIG_KEY_system_zone_id, zone.id);
             preferences.putString(CONFIG_KEY_system_zone_description, zone.description);
@@ -194,9 +195,10 @@ public:
         }
 
         preferences.end();
-#endif
         updateTimezone();
     }
+
+    static void handleConfigCommand(String &message);
 };
 
 #endif //HOMEGENIE_MINI_CONFIG_H
