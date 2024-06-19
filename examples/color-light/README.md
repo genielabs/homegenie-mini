@@ -12,10 +12,10 @@ A smart light device with addressable RGB LEDs.
 | `leds-pin` | LEDs strip GPIO pin number | -1 (-1=not used)                        |
 | `leds-cnt` | Number of LEDs             | 1 (1 - 200)                             |
 | `stld-typ` | LEDs type                  | RGB/RGBW order mask (see code for ref.) |
-| `leds-spd` | Data transfer speed        | 0 (0=800KHz, 256=400KHz)                |
+| `leds-spd` | Data transfer speed        | 0 (0=800kHz, 256=400kHz)                |
 | `stld-pin` | Status LED (RGB) pin       | -1 (-1=not used)                        |
 | `stld-typ` | Status LED type            | RGB/RGBW order mask (see code for ref.) |
-| `stld-spd` | Status LED speed           | 0 (0=800MHz, 256=400MHz)                |
+| `stld-spd` | Status LED speed           | 0 (0=800kHz, 256=400kHz)                |
 
 *Example **setting** configuration from a terminal connected to the serial port of the device:*
 
