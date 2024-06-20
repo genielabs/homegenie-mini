@@ -158,6 +158,9 @@ namespace Service {
             }
         }
         static void checkServiceButton() {
+            if (Config::ServiceButtonPin < 0) {
+                return;
+            }
             buttonChange();
             int64_t elapsed = 0;
             if (getInstance()->buttonPressed) {

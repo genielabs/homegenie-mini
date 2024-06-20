@@ -68,50 +68,20 @@
     #define DISABLE_BLUETOOTH_CLASSIC
     #define CONFIGURE_WITH_WPS
     #define WebServer ESP8266WebServer
-    #ifndef CONFIG_GPIO_OUT
-        #define CONFIG_GPIO_OUT {14,12,13,15}
-    #endif
 #endif
 
 #ifdef ESP32_C3
     #undef DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
-    #define CONFIG_ServiceButtonPin 4
-    #if CONFIG_StatusLedPin != -1
-    #define CONFIG_StatusLedPin 0
-    #endif
-    #ifndef CONFIG_GPIO_OUT
-        #define CONFIG_GPIO_OUT {6}
-    #endif
 #elif ESP32_S3
     #undef DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
-    #define CONFIG_ServiceButtonPin 21
-    #if CONFIG_StatusLedPin != -1
-    #define CONFIG_StatusLedPin 33
-    #endif
-    #ifndef CONFIG_GPIO_OUT
-        #define CONFIG_GPIO_OUT {15,16,17,18}
-    #endif
 #else
     #define DISABLE_BLUETOOTH_LE
 //    #define DISABLE_BLUETOOTH_CLASSIC
 //    #define DISABLE_MQTT
 //    #undef DISABLE_BLUETOOTH_LE
 //    #undef DISABLE_UI
-#endif
-
-#ifndef CONFIG_ServiceButtonPin
-    #define CONFIG_ServiceButtonPin 2
-#endif
-#ifndef CONFIG_StatusLedPin
-    #define CONFIG_StatusLedPin 16
-#endif
-#ifndef CONFIG_GPIO_OUT
-    #define CONFIG_GPIO_OUT {14,12,13,17}
-#endif
-#ifndef CONFIG_GPIO_IN
-    #define CONFIG_GPIO_IN { /* not implemented */ }
 #endif
 
 

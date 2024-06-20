@@ -5,7 +5,7 @@ A smart light device with addressable RGB LEDs.
 - [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/smart-led-lights/)
 
 
-## Firmware configuration
+## Firmware configuration (in addition to default system options)
 
 | Key        | Description                | Default                                 |
 |------------|----------------------------|-----------------------------------------|

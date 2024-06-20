@@ -148,6 +148,72 @@ pio device monitor -b 115200
 ```
 
 
+### Firmware configuration commands
+
+HomeGenie Mini device support also commands via serial terminal. You can enter any API
+command using the `/api/` prefix, or enter system commands prefixed by `#` character.
+
+#### System core commands
+
+```
+#CONFIG:device-name <name>
+#CONFIG:wifi-ssid <ssid>
+#CONFIG:wifi-password <passwd>
+#CONFIG:system-time <hh>:<mm>:<ss>.<ms>
+#CONFIG:system-zone-id <zone_id>
+#CONFIG:system-zone-offset <tz_offset>
+#VERSION
+#RESET
+```
+
+#### Getting/Setting parameters
+
+```
+#GET:<key>
+#SET:<key> <value>
+```
+
+##### System configuration parameters list 
+
+| Key        | Description                | Default          |
+|------------|----------------------------|------------------|
+| `sys-rb-n` | Factory reset button GPIO# | -1 (-1=not used) |
+| `sys-sl-n` | System status LED GPIO#    | -1 (-1=not used) |
+| `io-typ01` | I/O Ch.1 type              |                  |
+| `io-pin01` | I/O Ch.1 GPIO#             | -1 (-1=not used) |
+| `io-typ02` | I/O Ch.2 type              |                  |
+| `io-pin02` | I/O Ch.2 GPIO#             | -1 (-1=not used) |
+| `io-typ03` | I/O Ch.3 type              |                  |
+| `io-pin03` | I/O Ch.3 GPIO#             | -1 (-1=not used) |
+| `io-typ04` | I/O Ch.4 type              |                  |
+| `io-pin04` | I/O Ch.4 GPIO#             | -1 (-1=not used) |
+| `io-typ05` | I/O Ch.5 type              |                  |
+| `io-pin05` | I/O Ch.5 GPIO#             | -1 (-1=not used) |
+| `io-typ06` | I/O Ch.6 type              |                  |
+| `io-pin06` | I/O Ch.6 GPIO#             | -1 (-1=not used) |
+| `io-typ07` | I/O Ch.7 type              |                  |
+| `io-pin07` | I/O Ch.7 GPIO#             | -1 (-1=not used) |
+| `io-typ08` | I/O Ch.8 type              |                  |
+| `io-pin08` | I/O Ch.8 GPIO#             | -1 (-1=not used) |
+
+*Example **setting** configuration from a terminal connected to the serial port of the device:*
+
+```
+#SET:sys-sl-n=10
+#SET:sys-rb-n=0
+#RESET
+```
+
+*Example **getting** configuration value:*
+
+```
+#GET:sys-sl-n
+```
+response:
+```
+#GET:sys-sl-n=10
+```
+
 
 ## Firmwares examples with source code 
 

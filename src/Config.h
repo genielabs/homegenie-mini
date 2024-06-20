@@ -33,6 +33,8 @@
 #include "defs.h"
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
+
 #ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
 #include <FreeRTOSConfig.h>
 #endif
@@ -94,9 +96,9 @@ public:
 
 class Config {
 public:
-    const static short ServiceButtonPin = CONFIG_ServiceButtonPin;
-    const static short StatusLedPin = CONFIG_StatusLedPin;
-    const static uint16_t ConfigureButtonPushInterval = 2500;
+    static short ServiceButtonPin;
+    static short StatusLedPin;
+    const static uint16_t ConfigureButtonPushInterval = 5000;
     static ZoneConfig zone;
     static SystemConfig system;
 #ifdef ESP32
@@ -135,7 +137,7 @@ public:
         preferences.begin(CONFIG_SYSTEM_NAME, false);
         preferences.putString(k.c_str(), value);
         preferences.end();
-        return false;
+        return false; // TODO: ?!?
     }
 
     static String getSetting(const char* key, const char* defaultValue = "") {
@@ -146,6 +148,24 @@ public:
             value = preferences.getString(k.c_str(), defaultValue);
         }
         preferences.end();
+        // TODO: should use "pref.isKey(...)" for proper checking
+        if (value == "") {
+            // Lookup config factory defaults only if the value does not exists
+            String config = STRING_VALUE(DEFAULT_CONFIG);
+            if (!config.isEmpty()) {
+                JsonDocument doc;
+                DeserializationError error = deserializeJson(doc, config);
+                if (error.code() == 0) {
+                    auto params = doc.as<JsonObject>();
+                    for (auto p: params) {
+                        if (p.key() == key) {
+                            value = p.value().as<String>();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         return value;
     }
 
@@ -157,7 +177,10 @@ public:
     static void statusLedCallback(std::function<void(bool)> new_func);
 
     static void init() {
-        // Setup status led
+        // Setup status LED and factory reset buttons
+        ServiceButtonPin = getSetting("sys-rb-n", "-1").toInt();
+        StatusLedPin = getSetting("sys-sl-n", "-1").toInt();
+        // Setup status LED
         if (StatusLedPin >= 0) pinMode(StatusLedPin, OUTPUT);
         Preferences preferences;
 

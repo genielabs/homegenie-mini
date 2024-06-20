@@ -45,30 +45,34 @@ namespace Service { namespace API {
     }
 
     void HomeGenieHandler::init() {
-        // Add GPIO modules
-        // Output GPIO pins
-        uint8_t gpio[] = CONFIG_GPIO_OUT;
-        uint8_t gpio_count = *(&gpio + 1) - gpio;
-        for (int m = 0; m < gpio_count; m++) {
-            auto address = String(gpio[m]);
-            auto module = new Module();
-            module->domain = IO::IOEventDomains::HomeAutomation_HomeGenie;
-            module->address = address;
-            module->type = "Dimmer";
-            module->name = "GPIO " + address;
-            module->description = "";
-
-            // init pins with current level
-            float level = GPIOPort::loadLevel(gpio[m]);
-            level > 0 ? gpioPort->on(gpio[m]) : gpioPort->off(gpio[m]);
-            auto propLevel = new ModuleParameter(IOEventPaths::Status_Level, String(level));
-            module->properties.add(propLevel);
-
-            moduleList.add(module);
+        // Add builtin GPIO modules
+        for (int m = 0; m < 8; m++) {
+            auto in = String("io-typ0");
+            in.concat(m + 1);
+            auto moduleType = Config::getSetting(in.c_str(), "Dimmer");
+            in.replace("-typ0", "-pin0");
+            int gpioNum = Config::getSetting(in.c_str(), "-1").toInt();
+            if (gpioNum >= 0 && moduleType != "Sensor") { // TODO: enable INPUT channels (Sensor)
+                auto address = String(gpioNum);
+                auto module = new Module();
+                module->domain = IO::IOEventDomains::HomeAutomation_HomeGenie;
+                module->address = address;
+                module->type = moduleType;
+                module->name = "GPIO " + address;
+                module->description = "";
+                auto propLevel = new ModuleParameter(IOEventPaths::Status_Level, "");
+                module->properties.add(propLevel);
+                if (moduleType == "Sensor") {
+// TODO: ............
+                } else {
+                    // Recall last stored level (switchable modules only)
+                    float level = GPIOPort::loadLevel(gpioNum);
+                    level > 0 ? gpioPort->on(gpioNum) : gpioPort->off(gpioNum);
+                    propLevel->value = String(level);
+                }
+                moduleList.add(module);
+            }
         }
-
-        // TODO: implement Input GPIO pins as well (CONFIG_GPIO_IN)
-
     }
 
     bool HomeGenieHandler::canHandleDomain(String* domain) {
@@ -417,41 +421,35 @@ namespace Service { namespace API {
                 return false;
             }
         } else {
-
-            uint8_t gpio[] = CONFIG_GPIO_OUT;
             uint8_t pinNumber = request->Address.toInt();
-            bool validPin = std::find(std::begin(gpio), std::end(gpio), pinNumber) != std::end(gpio);
-            if (validPin) {
+            Module* module = getModule(request->Domain.c_str(), request->Address.c_str());
+            if (module != nullptr) {
 
-                Module* module = getModule(request->Domain.c_str(), request->Address.c_str());
-                if (module != nullptr) {
-
-                    auto levelProperty = module->getProperty(IOEventPaths::Status_Level);
-                    if (levelProperty->value.toFloat() > 0) {
-                        GPIOPort::saveLastOnLevel(pinNumber, levelProperty->value.toFloat());
-                    }
-
-                    float level = 0;
-                    if (request->Command == ControlApi::Control_On) {
-                        level = gpioPort->on(pinNumber);
-                    } else if (request->Command == ControlApi::Control_Off) {
-                        level = gpioPort->off(pinNumber);
-                    } else if (request->Command == ControlApi::Control_Level) {
-                        level = gpioPort->level(pinNumber, (uint8_t)request->getOption(0).toFloat());
-                    } else if (request->Command == ControlApi::Control_Toggle) {
-                        if (levelProperty->value.toFloat() == 0) {
-                            level = gpioPort->on(pinNumber);
-                        } else {
-                            level = gpioPort->off(pinNumber);
-                        }
-                    }
-
-                    levelProperty->setValue(String(level).c_str());
-                    GPIOPort::saveLevel(pinNumber, levelProperty->value.toFloat());
-
-                    responseCallback->writeAll(ApiHandlerResponseText::OK);
-                    return  true;
+                auto levelProperty = module->getProperty(IOEventPaths::Status_Level);
+                if (levelProperty->value.toFloat() > 0) {
+                    GPIOPort::saveLastOnLevel(pinNumber, levelProperty->value.toFloat());
                 }
+
+                float level = 0;
+                if (request->Command == ControlApi::Control_On) {
+                    level = gpioPort->on(pinNumber);
+                } else if (request->Command == ControlApi::Control_Off) {
+                    level = gpioPort->off(pinNumber);
+                } else if (request->Command == ControlApi::Control_Level) {
+                    level = gpioPort->level(pinNumber, (uint8_t)request->getOption(0).toFloat());
+                } else if (request->Command == ControlApi::Control_Toggle) {
+                    if (levelProperty->value.toFloat() == 0) {
+                        level = gpioPort->on(pinNumber);
+                    } else {
+                        level = gpioPort->off(pinNumber);
+                    }
+                }
+
+                levelProperty->setValue(String(level).c_str());
+                GPIOPort::saveLevel(pinNumber, levelProperty->value.toFloat());
+
+                responseCallback->writeAll(ApiHandlerResponseText::OK);
+                return  true;
             }
         }
         return false;

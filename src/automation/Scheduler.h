@@ -30,7 +30,6 @@
 #ifndef HOMEGENIE_MINI_SCHEDULER_H
 #define HOMEGENIE_MINI_SCHEDULER_H
 
-#include <ArduinoJson.h>
 #include <LinkedList.h>
 #include <LittleFS.h>
 

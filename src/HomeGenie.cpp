@@ -39,8 +39,10 @@ namespace Service {
         Config::init();
 
         // Setup button
-        pinMode(Config::ServiceButtonPin, INPUT_PULLUP);
-//        attachInterrupt(digitalPinToInterrupt(Config::ServiceButtonPin), buttonChange, CHANGE);
+        if (Config::ServiceButtonPin != -1) {
+            pinMode(Config::ServiceButtonPin, INPUT_PULLUP);
+//            attachInterrupt(digitalPinToInterrupt(Config::ServiceButtonPin), buttonChange, CHANGE);
+        }
 
         // Logger initialization
         Logger::begin(LOG_LEVEL_TRACE);

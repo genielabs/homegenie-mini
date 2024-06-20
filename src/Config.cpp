@@ -33,6 +33,9 @@
 
 ZoneConfig Config::zone;
 SystemConfig Config::system;
+short Config::ServiceButtonPin = -1;
+short Config::StatusLedPin = -1;
+
 
 bool Config::isStatusLedOn = false;
 void Config::statusLedOn() {
@@ -104,10 +107,6 @@ void Config::handleConfigCommand(String &message) {
     } else
     if (message.equals("#RESET")) {
         delay(50);
-#ifndef ESP8266
-        esp_restart();
-#else
-        // TODO: not supported by ESP8266
-#endif
+        ESP.restart();
     }
 }
