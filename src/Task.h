@@ -30,7 +30,8 @@
 #ifndef HOMEGENIE_MINI_TASK_H
 #define HOMEGENIE_MINI_TASK_H
 
-#include "Config.h"
+//#include "Config.h"
+#include <Arduino.h>
 
 // Task interface
 

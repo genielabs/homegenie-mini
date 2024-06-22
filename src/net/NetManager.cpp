@@ -133,6 +133,7 @@ namespace Net {
 
         });
         mqttServer->begin();
+        Logger::info("|  ✔ MQTT service");
 #endif
         timeClient = new TimeClient();
         timeClient->begin();

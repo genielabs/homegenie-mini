@@ -36,8 +36,9 @@ extern "C" {
 }
 #endif
 
+#include <io/Logger.h>
+
 #include "Task.h"
-#include "io/Logger.h"
 #include "io/IOEvent.h"
 #include "io/IOEventDomains.h"
 #include "io/IOEventPaths.h"

@@ -30,21 +30,20 @@
 #ifndef HOMEGENIE_MINI_LIGHTSENSOR_H
 #define HOMEGENIE_MINI_LIGHTSENSOR_H
 
-#include <HomeGenie.h>
+#include "src/HomeGenie.h"
 
-#include "../configuration.h"
-
-#define LIGHTSENSOR_NS_PREFIX           "IO::Env::LightSensor"
+#define LIGHTSENSOR_NS_PREFIX           "IO::Sensors::LightSensor"
 #define LIGHTSENSOR_SAMPLING_RATE       5000L
 
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
 
     using namespace Service;
 
     class LightSensor : Task, public IIOEventSender {
     public:
-        LightSensor() {
+        LightSensor(uint8_t pin) {
             setLoopInterval(LIGHTSENSOR_SAMPLING_RATE);
+            inputPin = pin;
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
@@ -57,7 +56,7 @@ namespace IO { namespace Env {
         void setInputPin(uint8_t number);
         uint16_t getLightLevel();
     private:
-        uint8_t inputPin = CONFIG_LightSensorPin; // Analogic input pin A0 (0)
+        uint8_t inputPin = 0;
         uint16_t currentLevel = 0;
     };
 

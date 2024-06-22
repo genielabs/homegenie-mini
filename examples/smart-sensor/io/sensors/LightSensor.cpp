@@ -29,7 +29,7 @@
 
 #include "LightSensor.h"
 
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
 
     void LightSensor::begin() {
         Logger::info("|  ✔ %s (PIN=%d)", LIGHTSENSOR_NS_PREFIX, inputPin);

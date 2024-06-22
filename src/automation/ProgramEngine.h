@@ -30,10 +30,11 @@
 #ifndef HOMEGENIE_MINI_PROGRAMENGINE_H
 #define HOMEGENIE_MINI_PROGRAMENGINE_H
 
+#include <io/Logger.h>
+
 #include "Task.h"
 
 #include "automation/Scheduler.h"
-#include "io/Logger.h"
 #include "net/NetManager.h"
 
 #define PROGRAMENGINE_NS_PREFIX            "Automation::ProgramEngine"

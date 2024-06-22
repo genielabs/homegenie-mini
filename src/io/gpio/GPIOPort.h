@@ -34,12 +34,13 @@
 #include <Preferences.h>
 #endif
 
+#include <io/Logger.h>
+
 #include "Config.h"
 
 #include "io/IOEvent.h"
 #include "io/IOEventDomains.h"
 #include "io/IOEventPaths.h"
-#include "io/Logger.h"
 
 #define GPIO_PORT_NS_PREFIX           "IO::GPIO::GPIOPort"
 

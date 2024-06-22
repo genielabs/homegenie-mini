@@ -60,7 +60,6 @@ namespace Net { namespace MQTT {
         for (auto &MQTTclient : MQTTclients) {
             MQTTclient.status = false;
         }
-        Logger::info("|  ✔ MQTT service");
     }
 
     void MQTTBrokerMini::parsing(uint8_t num, uint8_t *payload, uint16_t length) {

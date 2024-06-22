@@ -4,7 +4,7 @@
 
 #include "MotionSensor.h"
 
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
     void MotionSensor::begin() {
         pinMode(sensorPin, INPUT_PULLUP);
         Logger::info("|  ✔ %s (PIN=%d)", MOTION_SENSOR_NS_PREFIX, sensorPin);
@@ -31,4 +31,4 @@ namespace IO { namespace Env {
 #endif
         }
     }
-}} // Env
+}} // Sensors

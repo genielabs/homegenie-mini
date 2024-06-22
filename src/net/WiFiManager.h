@@ -38,9 +38,10 @@
 #endif
 #include <WiFiUdp.h>
 
+#include <io/Logger.h>
+
 #include "Config.h"
 #include "Task.h"
-#include "io/Logger.h"
 
 namespace Net {
 

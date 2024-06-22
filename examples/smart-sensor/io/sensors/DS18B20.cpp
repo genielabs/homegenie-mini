@@ -29,7 +29,7 @@
 
 #include "DS18B20.h"
 
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
 
     void DS18B20::begin() {
         ds = new OneWire(inputPin);

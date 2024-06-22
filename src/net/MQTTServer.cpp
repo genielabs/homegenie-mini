@@ -55,6 +55,7 @@ namespace Net {
         mqttBroker->setCallback([this](uint8_t n, const Net::MQTT::Events_t* e, const String* topic_name, uint8_t* payload, uint16_t payload_length) {
             mqttCallback(n, e, topic_name, payload, payload_length);
         });
+        Logger::info("|  ✔ MQTT service");
 
     }
 

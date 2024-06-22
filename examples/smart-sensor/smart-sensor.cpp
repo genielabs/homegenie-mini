@@ -30,10 +30,8 @@
 
 #include <HomeGenie.h>
 
-#include "io/DS18B20.h"
-#include "io/LightSensor.h"
+#include "CommonSensors.h"
 
-using namespace IO::Env;
 using namespace Service;
 
 HomeGenie* homeGenie;
@@ -44,15 +42,7 @@ void setup() {
 
     auto miniModule = homeGenie->getDefaultModule();
 
-    // Temperature sensor
-    auto temperatureSensor = new DS18B20();
-    temperatureSensor->setModule(miniModule);
-    homeGenie->addIOHandler(temperatureSensor);
-
-    // Light sensor
-    auto lightSensor = new LightSensor();
-    lightSensor->setModule(miniModule);
-    homeGenie->addIOHandler(lightSensor);
+    includeCommonSensors(homeGenie, miniModule);
 
     homeGenie->begin();
 

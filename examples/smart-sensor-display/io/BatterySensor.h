@@ -28,11 +28,9 @@
 
 #include <HomeGenie.h>
 
-#include "../configuration.h"
+#define BATTERY_SENSOR_NS_PREFIX           "IO::Sensors::BatterySensor"
 
-#define BATTERY_SENSOR_NS_PREFIX           "IO::Env::BatterySensor"
-
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
 
     class BatterySensor: Task, public IIOEventSender {
     public:

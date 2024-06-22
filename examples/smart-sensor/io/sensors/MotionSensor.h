@@ -5,13 +5,11 @@
 #ifndef HOMEGENIE_MINI_MOTIONSENSOR_H
 #define HOMEGENIE_MINI_MOTIONSENSOR_H
 
-#include <HomeGenie.h>
+#include "src/HomeGenie.h"
 
-#include "../configuration.h"
+#define MOTION_SENSOR_NS_PREFIX           "IO::Sensors::MotionSensor"
 
-#define MOTION_SENSOR_NS_PREFIX           "IO::Env::MotionSensor"
-
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
 
     using namespace Service;
 
@@ -34,6 +32,6 @@ namespace IO { namespace Env {
         bool motionDetected = false;
     };
 
-}} // Env
+}} // Sensors
 
 #endif //HOMEGENIE_MINI_MOTIONSENSOR_H

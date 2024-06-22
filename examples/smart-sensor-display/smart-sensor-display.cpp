@@ -27,8 +27,6 @@
  *
  */
 
-#include "configuration.h"
-
 #include <HomeGenie.h>
 
 #include <ui/Dashboard.h>
@@ -39,17 +37,15 @@
 #include <ui/activities/utilities/DigitalClockActivity.h>
 #include <ui/activities/utilities/SystemInfoActivity.h>
 
+#include "smart-sensor/CommonSensors.h"
+
 #include "display/activities/SensorValuesActivity.h"
-#include "io/DHTxx.h"
-//#include "../smart-sensor/io/LightSensor.h"
 //#include "io/BatterySensor.h"
-#include "io/MotionSensor.h"
 
 // Accelerometer and Gyroscope
 //#include "io/QMI8658.h"
 
 
-using namespace IO::Env;
 using namespace Service;
 using namespace UI::Activities::Control;
 //using namespace UI::Activities::Examples;
@@ -68,9 +64,6 @@ Dashboard* dashboard;
 void setup() {
 
     //uint8_t batterySensorPin = 1;
-    uint8_t motionSensorPin = CONFIG_MotionSensorPin;
-
-    PowerManager::setWakeUpGPIO((gpio_num_t)motionSensorPin);
 
     homeGenie = HomeGenie::getInstance();
     miniModule = homeGenie->getDefaultModule();
@@ -98,22 +91,16 @@ void setup() {
         homeGenie->addIOHandler(batterySensor);
         //*/
 
-        // Motion sensor
-        auto motionSensor = new MotionSensor(motionSensorPin);
-        motionSensor->setModule(miniModule);
-        homeGenie->addIOHandler(motionSensor);
 
-        /*
-        // Light sensor
-        auto lightSensor = new LightSensor();
-        lightSensor->setModule(miniModule);
-        homeGenie->addIOHandler(lightSensor);
-        //*/
+        includeCommonSensors(homeGenie, miniModule);
 
-        // Temperature and humidity sensor
-        auto dhtSensor = new DHTxx(22);
-        dhtSensor->setModule(miniModule);
-        homeGenie->addIOHandler(dhtSensor);
+#ifdef CONFIG_ENABLE_POWER_MANAGER
+        // Enable power manager (deep sleep on motion timeout)
+        if (Config::getSetting("motn-typ").equals("switch") && Config::getSetting("motn-pms").equals("sleep")) {
+            uint8_t motionSensorPin = Config::getSetting("motn-pin", "16").toInt();
+            PowerManager::setWakeUpGPIO((gpio_num_t) motionSensorPin);
+        }
+#endif
 
         // add custom properties to default module
         controlModuleParameter = new ModuleParameter("RemoteControl.EndPoint", Config::getSetting("ctrl-mod"));

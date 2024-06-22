@@ -29,7 +29,7 @@
 
 #include "DHTxx.h"
 
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
 
     void DHTxx::begin() {
         dht->setDisableIRQ(true);

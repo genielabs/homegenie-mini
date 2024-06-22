@@ -25,7 +25,7 @@
 
 #include "BatterySensor.h"
 
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
 
     void  BatterySensor::begin() {
         pinMode(sensorPin, INPUT);

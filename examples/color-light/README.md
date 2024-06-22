@@ -17,28 +17,6 @@ A smart light device with addressable RGB LEDs.
 | `stld-typ` | Status LED type            | RGB/RGBW order mask (see code for ref.) |
 | `stld-spd` | Status LED speed           | 0 (0=800kHz, 256=400kHz)                |
 
-*Example **setting** configuration from a terminal connected to the serial port of the device:*
-
-```
-#SET:leds-pin=5
-#SET:leds-cnt=25
-#SET:leds-typ=6
-#SET:leds-spd=0
-#SET:stld-pin=10
-#SET:stld-typ=82
-#SET:stld-spd=0
-#RESET
-```
-
-*Example **getting** configuration value:*
-
-```
-#GET:stl-pin
-```
-response:
-```
-#GET:stl-pin=10
-```
 
 ## Manual build and install
 

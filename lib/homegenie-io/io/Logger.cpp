@@ -29,8 +29,6 @@
 
 #include "Logger.h"
 
-#include "net/TimeClient.h"
-
 namespace IO {
 
     static int logLevel;
@@ -101,7 +99,13 @@ namespace IO {
     }
 
     void Logger::timestamp() {
-        Serial.printf("[%s] ", Net::TimeClient::getTimeClient().getFormattedDate().c_str());
+        char buffer[80];
+        auto ms = millis() % 1000;
+        auto tt = time(0);
+        auto timeInfo = localtime(&tt);
+        strftime (buffer, 80, "%FT%T", timeInfo);
+        sprintf(buffer, "%s.%03dZ", buffer, (int)ms);
+        Serial.printf("[%s] ", buffer);
     }
 
     void Logger::trace(const char *s, ...) {

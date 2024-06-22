@@ -30,8 +30,9 @@
 #ifndef HOMEGENIE_MINI_APIREQUEST_H
 #define HOMEGENIE_MINI_APIREQUEST_H
 
+#include <io/Logger.h>
+
 #include "Config.h"
-#include "io/Logger.h"
 
 #define APIREQUEST_LOG_PREFIX           "@Service::ApiRequest"
 

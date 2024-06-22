@@ -30,11 +30,18 @@
 #ifndef HOMEGENIE_MINI_MQTTSERVER_H
 #define HOMEGENIE_MINI_MQTTSERVER_H
 
+#include <ArduinoJson.h>
+#include <io/Logger.h>
+#include <WiFiServer.h>
+
+#include "defs.h"
 #include "Task.h"
 #include "net/mqtt/MQTTBrokerMini.h"
 
+
 namespace Net {
     using namespace MQTT;
+    using namespace IO;
 
     typedef std::function<void(uint8_t num, const char* domain, const char* address, const char* command)> ApiRequestEvent;
 

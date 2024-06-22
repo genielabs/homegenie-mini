@@ -27,51 +27,60 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_DS18B20_H
-#define HOMEGENIE_MINI_DS18B20_H
+#ifndef HOMEGENIE_MINI_DHTXX_H
+#define HOMEGENIE_MINI_DHTXX_H
+
+#include <dhtnew.h>
 
 #include <HomeGenie.h>
-#include <OneWire.h>
 
-#include "../configuration.h"
+#define DHTXX_NS_PREFIX       "IO::Sensors::DHTxx"
+#define SENSOR_SAMPLING_RATE  30000L
 
-#define DS18B20_NS_PREFIX                      "IO::Env::DS18B10"
-#define DS18B20_SAMPLING_RATE           60000L
-#define DS18B20_READ_ERROR              -1000
-// TODO: maybe put this as a configurable parameter through API
-#define DS18B20_MEASURE_OFFSET          (float_t)-2.00
-
-namespace IO { namespace Env {
+namespace IO { namespace Sensors {
 
     using namespace Service;
 
-    class DS18B20 : Task, public IIOEventSender {
+    class DHTxxSensorData {
     public:
-        DS18B20() {
-            setLoopInterval(DS18B20_SAMPLING_RATE);
+        float_t temperature;
+        float_t humidity;
+        DHTxxSensorData(DHTxxSensorData* data = nullptr) {
+            if (data != nullptr) {
+                temperature = data->temperature;
+                humidity = data->humidity;
+            }
+        }
+    };
+
+    class DHTxx : Task, public IIOEventSender {
+    public:
+        DHTxx(uint8_t dhtType, uint8_t pin) {
+            setLoopInterval(2000); // initial reading delay
+            inputPin = pin;
+            dht = new DHTNEW(inputPin);
+            dht->setType(dhtType);
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
             auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature);
             m->properties.add(temperature);
+            auto humidity = new ModuleParameter(IOEventPaths::Sensor_Humidity);
+            m->properties.add(humidity);
         }
         void begin() override;
         void loop() override;
-        void setInputPin(uint8_t);
-        void setSamplingRate(uint32_t);
-        float_t getTemperature();
     private:
-        String domain = IOEventDomains::HomeAutomation_HomeGenie;
-        String address = CONFIG_BUILTIN_MODULE_ADDRESS;
-        // Default I/O pin number is D3 (0)
-        uint8_t inputPin = CONFIG_DS18B20_DataPin;
-        // Temperature chip I/O
-        OneWire *ds;
-        // Current temperature
-        float_t currentTemperature;
-
+        // Set DHTxx pin number
+        uint8_t inputPin = 0;
+        // Temperature and humidity sensor
+        DHTNEW* dht;
+        // Current temperature and humidity
+        DHTxxSensorData currentData;
+        const float DHT_READ_ERROR = -999;
+        void readSensorData();
     };
 
 }}
 
-#endif //HOMEGENIE_MINI_DS18B20_H
+#endif //HOMEGENIE_MINI_DHTXX_H

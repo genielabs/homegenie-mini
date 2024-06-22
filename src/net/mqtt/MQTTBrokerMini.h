@@ -35,7 +35,7 @@
 
 #include <WebSocketsServer.h>
 
-#include "io/Logger.h"
+#include <io/Logger.h>
 
 #define MQTT_VERSION_3_1_1              4
 
@@ -103,8 +103,6 @@ namespace Net { namespace MQTT {
 
         typedef std::function<void(uint8_t num, const Events_t* event, const String* topic_name, uint8_t *payload,
                                   uint16_t length_payload)> callback_t;
-
-        using namespace IO;
 
         class MQTTBrokerMini {
         public:
