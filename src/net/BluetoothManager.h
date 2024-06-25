@@ -44,6 +44,7 @@
 #ifndef DISABLE_BLUETOOTH_CLASSIC
 #include <BluetoothSerial.h>
 #endif
+
 #include <Preferences.h>
 
 namespace Net {

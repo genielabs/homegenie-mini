@@ -7,23 +7,22 @@ based on *ESP32* or *ESP8266* chip.
 
 https://homegenie.it/mini
 
+
 ## Features
 
-- Easy Wi-Fi configuration using Bluetooth (ESP32) or WPS (ESP8266)
+- Easy device configuration using Wi-Fi protected setup button (WPS) or Bluetooth
 - Does not require an Internet connection to be configured or to work properly
 - Time synchronization using internal RTC (ESP32), mobile app time or NTP
 - Integrated actions scheduler supporting *extended cron expressions*
-- Device discovery through SNMP/UPnP advertising with customizable name
-- Multi-channel I/O: HTTP, WebSocket, SSE, MQTT
+- Device discovery via SNMP/UPnP with customizable advertising name
+- Multi-channel I/O: HTTP, WebSocket, SSE, MQTT, Serial
 - Status LED
 - Configuration/Pairing Button
 - Builtin GPIO control API
-- Switch level restore on power-on / restart
-- Event router
-- Simple task manager
-- Extensible API
+- Multi-threading support, event router, extensible API
 - Can connect directly to *HomeGenie Panel* either via Wi-Fi access point or hotspot/tethering
-- Can be easily connected to *HomeGenie Server* via MQTT
+- Can be easily connected to *HomeGenie Server* and other services via MQTT
+
 
 ## Building and flashing the firmware
 
@@ -67,23 +66,29 @@ of the firmware to support different hardware and functionality.
 Once the firmware is installed you can configure and control the device using
 the [HomeGenie Panel](https://play.google.com/store/apps/details?id=com.glabs.homegenieplus) app available on Google Play.
 
-The device status LED will blink continuously indicating that the device is not
-connected to Wi-Fi, and is in pairing mode accepting connections via Bluetooth.
+The status LED of the device will blink continuously indicating that it is not
+connected to Wi-Fi.  
+The device can be configured and connected to Wi-Fi very easily by enabling
+WPS on your router and by pressing the WPS button on the device for at least 5
+seconds. The status LED will stop blinking and stay on while the WPS mode is
+active on the device.
 
-Enable Bluetooth on your phone, open *HomeGenie Panel* and select the *"Discovery"* option.
-
-![HomeGenie Panel - Discovery](data/images/phone/hg_panel_discovery.png)
-
-The new HG-Mini device will be detected via Bluetooth and the app will display a dialog to
-configure the device name and data to connect it to Wi-Fi.
-After confirming the settings, the HG-Mini will exit pairing mode, reboot and connect
-to Wi-Fi.  
-At this point the device will blink slowly (every 2 seconds) indicating that is connected
-correctly, and it will appear in the list of detected devices in the *HomeGenie Panel* app.
-
-Select it from the list and click the *"Done"* button. 
+After pairing, the device will start blinking quickly again for about 5 seconds, and then
+it will blink slowly indicating that is connected correctly to Wi-Fi. It will then appear
+in the list of detected devices in the connections discovery page of *HomeGenie Panel*.
 
 ![HomeGenie Panel - Discovery: select device](data/images/phone/hg_panel_discovery_select.png)
+
+Select it from the list and click the *"Done"* button.
+
+If WPS is not available on your router, you can alternatively set up your device
+via Bluetooth if it is enabled on your phone when you start the connection discovery
+process on the *HomeGenie Panel*.
+
+The new HG-Mini device will be detected via Bluetooth and the app will display a
+dialog to configure the device name and data to connect it to Wi-Fi.
+After confirming the settings, the HG-Mini device will exit pairing mode, reset
+and connect to Wi-Fi.
 
 Depending on the installed firmware version you will be able to select different kind of modules
 to show in the panel dashboard. The following picture refers to the `smart-sensor-d1-mini-esp32`

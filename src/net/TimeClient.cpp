@@ -47,8 +47,8 @@ namespace Net {
 
     void TimeClient::loop() {
 
-        if (rtcTimeSet) {
 #ifdef ESP32
+        if (rtcTimeSet && Config::getRTC()->getLocalEpoch() > 1712031624) {
             if (millis() - lastTimeCheck > 60000) {
                 lastTimeCheck = millis();
                 if (!timeClient.isUpdated()) {
@@ -57,8 +57,9 @@ namespace Net {
                     Logger::info("|  - TimeClient: synced with RTC");
                 }
             }
+        } else
 #endif
-        } else if (WiFi.isConnected() && millis() - lastTimeCheck > 60000) {
+        if (WiFi.isConnected() && millis() - lastTimeCheck > 60000) {
             lastTimeCheck = millis();
             if (!timeClient.isUpdated()) {
                 if (timeClient.update()) {

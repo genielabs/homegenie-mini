@@ -136,9 +136,9 @@ bool NTPClient::isUpdated() const {
 bool NTPClient::update() {
   if (!isUpdated()) {
     if (!this->_udpSetup) this->begin(); // set up the UDP client if needed
-    return this->forceUpdate();
+    this->forceUpdate();
   }
-  return true;
+  return this->_currentEpoc > 1712031624;
 }
 
 unsigned long NTPClient::getEpochTime() const {

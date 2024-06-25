@@ -30,21 +30,30 @@
 #ifndef HOMEGENIE_MINI_CONFIG_H
 #define HOMEGENIE_MINI_CONFIG_H
 
-#include "defs.h"
-
 #include <Arduino.h>
 #include <ArduinoJson.h>
+
+#include "defs.h"
 
 #ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
 #include <FreeRTOSConfig.h>
 #endif
+
 #ifdef ESP32
 #include <ESP32Time.h>
-#else
 #ifdef CONFIGURE_WITH_WPS
+#include "esp_wifi.h"
+#endif
+#endif
+
+#ifdef CONFIGURE_WITH_WPS
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
+#else
+#include <WiFi.h>
 #endif
 #endif
+
 #include <Preferences.h>
 
 const static char CONFIG_KEY_wifi_ssid[] = {"wifi:ssid"};
@@ -81,16 +90,13 @@ class SystemConfig {
 public:
     String friendlyName;
     String systemMode;
-#ifndef CONFIGURE_WITH_WPS
     String ssid, pass;
-#endif
+
     SystemConfig() {
         friendlyName = CONFIG_BUILTIN_MODULE_NAME;
         systemMode = "";
-#ifndef CONFIGURE_WITH_WPS
         ssid = "";
         pass = "";
-#endif
     }
 };
 
@@ -117,18 +123,11 @@ public:
     }
 
     static bool isDeviceConfigured() {
-#ifdef CONFIGURE_WITH_WPS
-        return !WiFi.SSID().isEmpty() && !WiFi.psk().isEmpty();
-#else
-        return !system.systemMode.equals("config") && !system.ssid.isEmpty() && !system.pass.isEmpty();
-#endif
+        return isWiFiConfigured();
     }
+
     static bool isWiFiConfigured() {
-#ifdef CONFIGURE_WITH_WPS
-        return !WiFi.SSID().isEmpty() && !WiFi.psk().isEmpty();
-#else
-        return !system.ssid.isEmpty() && !system.pass.isEmpty();
-#endif
+        return !system.systemMode.equals("config") && !system.ssid.isEmpty();
     }
 
     static bool saveSetting(const char* key, String& value) {
@@ -188,10 +187,8 @@ public:
             // System and WiFi settings
             system.friendlyName = preferences.getString(CONFIG_KEY_device_name, system.friendlyName);
             system.systemMode = preferences.getString(CONFIG_KEY_system_mode, system.systemMode);
-#ifndef CONFIGURE_WITH_WPS
             system.ssid = preferences.getString(CONFIG_KEY_wifi_ssid, system.ssid);
             system.pass = preferences.getString(CONFIG_KEY_wifi_password, system.pass);
-#endif
             // Time Zone
             zone.id = preferences.getString(CONFIG_KEY_system_zone_id, zone.id);
             zone.description = preferences.getString(CONFIG_KEY_system_zone_description, zone.description);
@@ -204,10 +201,8 @@ public:
             preferences.begin(CONFIG_SYSTEM_NAME, false);
             preferences.putString(CONFIG_KEY_device_name, system.friendlyName);
             preferences.putString(CONFIG_KEY_system_mode, system.systemMode);
-#ifndef CONFIGURE_WITH_WPS
             preferences.putString(CONFIG_KEY_wifi_ssid, system.ssid);
             preferences.putString(CONFIG_KEY_wifi_password, system.pass);
-#endif
             // Time Zone
             preferences.putString(CONFIG_KEY_system_zone_id, zone.id);
             preferences.putString(CONFIG_KEY_system_zone_description, zone.description);

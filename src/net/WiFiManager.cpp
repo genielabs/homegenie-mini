@@ -32,12 +32,28 @@
 namespace Net {
     wl_status_t WiFiManager::wiFiStatus = WL_DISCONNECTED;
     unsigned long WiFiManager::lastStatusCheckTs = 0;
+#ifdef ESP32
+    esp_wps_config_t WiFiManager::wps_config;
+    bool WiFiManager::esp32_wps_started = false;
+#endif
 
     WiFiManager::WiFiManager() {
         setLoopInterval(1000);
-        // WPS works in STA (Station mode) only -> not working in WIFI_AP_STA !!!
+
         WiFi.mode(WIFI_STA);
         WiFi.setAutoReconnect(true);
+
+#ifdef CONFIGURE_WITH_WPS
+#ifdef ESP32
+        wps_config.wps_type = ESP_WPS_MODE;
+        strcpy(wps_config.factory_info.manufacturer, ESP_WPS_MANUFACTURER);
+        strcpy(wps_config.factory_info.model_number, ESP_WPS_MODEL_NUMBER);
+        strcpy(wps_config.factory_info.model_name, ESP_WPS_MODEL_NAME);
+        strcpy(wps_config.factory_info.device_name, ESP_WPS_DEVICE_NAME);
+#endif
+        WiFi.onEvent(WiFiEvent);
+#endif
+
         if (Config::isDeviceConfigured()) {
 #ifdef ESP8266
             // WI-FI will not boot without this delay!!!
@@ -61,7 +77,17 @@ namespace Net {
         IO::Logger::info("|  - Connecting to WI-FI");
 #ifdef CONFIGURE_WITH_WPS
         delay(1000); // TODO: is this delay necessary?
+#ifdef ESP8266
         WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
+#else
+        wifi_config_t config;
+        esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, &config);
+        if (err == ESP_OK) {
+            WiFi.begin((char*)config.sta.ssid, (char*)config.sta.password);
+        } else {
+            // TODO: printf("Couldn't get config: %d\n", (int) err);
+        }
+#endif
 #else
         String ssid, pass;
         Preferences preferences;
@@ -122,9 +148,23 @@ namespace Net {
     }
 
     bool WiFiManager::configure() {
-#ifdef CONFIGURE_WITH_WPS
+        Preferences preferences;
+        preferences.begin(CONFIG_SYSTEM_NAME, false);
+        preferences.putString(CONFIG_KEY_wifi_ssid, "");
+        preferences.putString(CONFIG_KEY_wifi_password, "");
+        preferences.end();
+        preferences.clear();
 #ifdef ESP8266
-        // WPS currently only works for ESP8266
+        ESP.eraseConfig();
+#else
+        // TODO: find a way to clear wi-fi credentials on ESP32 the
+        //       following commented code was apparently not working
+//        wifi_config_t wifi_cfg_empty;
+//        memset(&wifi_cfg_empty, 0, sizeof(wifi_config_t));
+//        esp_wifi_set_config(WIFI_IF_STA, &wifi_cfg_empty);
+#endif
+        IO::Logger::info("|  - WI-FI config reset!");
+#ifdef CONFIGURE_WITH_WPS
         Config::statusLedOff();
         WiFi.disconnect();
         delay(100);
@@ -132,25 +172,23 @@ namespace Net {
         delay(400);
         Config::statusLedOn();
         IO::Logger::info ("|  >> Press WPS button on your router <<");
-        bool wpsSuccess = WiFi.beginWPSConfig();
-        return wpsSuccess;
+#ifdef ESP8266
+        return WiFi.beginWPSConfig();
 #else
-        // WPS only works with ESP8266
-        IO::Logger::error("|  x WPS only works with ESP8266");
-        return false;
+        int timeout = 200;
+        bool success = wpsStart();
+        while (esp32_wps_started && timeout-- > 0) {
+            delay(100);
+            yield();
+        }
+        wpsStop();
+        return success;
 #endif
 #else
-        Preferences preferences;
-        preferences.begin(CONFIG_SYSTEM_NAME, false);
-        preferences.putString(CONFIG_KEY_wifi_ssid, "");
-        preferences.putString(CONFIG_KEY_wifi_password, "");
-        preferences.end();
-        preferences.clear();
-        IO::Logger::info("|  - WI-FI credentials reset!");
         delay(2000);
-        IO::Logger::info("REBOOT!");
-        // Reboot
-        esp_restart();
+        IO::Logger::info("RESTART!");
+        // Restart device
+        ESP.restart();
         return true;
 #endif
     }

@@ -29,7 +29,7 @@
 
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 2
-#define VERSION_PATCH 25
+#define VERSION_PATCH 26
 
 #define STRING_VALUE(...) STRING_VALUE__(__VA_ARGS__)
 #define STRING_VALUE__(...) #__VA_ARGS__
