@@ -56,14 +56,27 @@ void statusLedCallback(bool isLedOn) {
     statusLED->show();
 }
 
+void show() {
+    if (changed && millis() - lastRefreshTs > 25) { // force 40 fps max
+        if (statusLED != nullptr) {
+            statusLED->show();
+        }
+        if (pixels != nullptr) {
+            pixels->show();
+        }
+        lastRefreshTs = millis();
+        changed = false;
+    }
+}
+
 void setup() {
     homeGenie = HomeGenie::getInstance();
 
     // Get status LED config
-    int statusLedPin = Config::getSetting("stld-pin", "0").toInt();
-    if (statusLedPin > 0) {
-        int statusLedType = Config::getSetting("stld-typ", "0").toInt();
-        int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
+    int statusLedPin = Config::getSetting("stld-pin", "-1").toInt();
+    if (statusLedPin >= 0) {
+        int statusLedType = Config::getSetting("stld-typ").toInt();
+        int statusLedSpeed = Config::getSetting("stld-spd").toInt();
         statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
     }
 
@@ -77,61 +90,76 @@ void setup() {
     } else {
 
         // Get LED strip config
-        count = Config::getSetting("leds-cnt", "0").toInt();  // 90 = 3mt // 30 LEDs per meter (3 mt. strip)
-        pin = (int16_t)Config::getSetting("leds-pin", "-1").toInt();
-        if (count > 0 && pin != -1) {
-            auto pixelsType = (int16_t)Config::getSetting("leds-typ", "-1").toInt();
-            auto pixelsSpeed = (int16_t)Config::getSetting("leds-spd", "0").toInt();
+        count = Config::getSetting("leds-cnt").toInt();
+        pin = (int16_t)Config::getSetting("leds-pin").toInt();
+        if (count > 0 && pin >= 0) {
+            auto pixelsType = (int16_t)Config::getSetting("leds-typ").toInt();
+            auto pixelsSpeed = (int16_t)Config::getSetting("leds-spd").toInt();
             pixels = new Adafruit_NeoPixel(count, pin, pixelsType + pixelsSpeed);
         }
 
         // Setup Status LED as master channel
-        auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Demo Light");
-        colorLight->onSetColor([](float r, float g, float b) {
+        auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Main");
+        colorLight->onSetColor([](LightColor color) {
+            float r = color.getRed();
+            float g = color.getGreen();
+            float b = color.getBlue();
+
             if (statusLED != nullptr) {
                 statusLED->setPixelColor(0, r, g, b);
             }
 
-            for (int i = 0; i < count; i++) {
-                pixels->setPixelColor(i, r, g, b);
+            if (pixels != nullptr) {
+                for (int i = 0; i < count; i++) {
+                    pixels->setPixelColor(i, r, g, b);
+                }
             }
 
             changed = true;
-            if (millis() - lastRefreshTs > 50) { // force 20fps max
-                if (statusLED != nullptr) {
-                    statusLED->show();
-                }
-                if (pixels != nullptr) {
-                    pixels->show();
-                }
-                lastRefreshTs = millis();
-                changed = false;
-            }
+            show();
         });
         homeGenie->addAPIHandler(colorLight);
 
-        // Setup LED strip/array
-        if (pixels != nullptr) {
-            for (int i = 0; i < count; i++) {
-                auto address = String("L") + String(i + 1);
-                auto cl = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), "Demo Light");
-                cl->onSetColor([i](float r, float g, float b) {
-                    pixels->setPixelColor(i, r, g, b);
-                    changed = true;
-                    if (millis() - lastRefreshTs > 50) { // force 20fps max
-                        pixels->show();
-                        lastRefreshTs = millis();
-                        changed = false;
-                    }
-                });
-                homeGenie->addAPIHandler(cl);
+        // Setup example input "processor" module
+        // changing color of this module will affect
+        // all LED pixels with a color cycle effect
+        auto fxModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "F1", "Rainbow");
+        auto soundLightFeature = new ModuleParameter("Widget.Preference.AudioLight", "true");
+        fxModule->module->properties.add(soundLightFeature);
+        fxModule->onSetColor([](LightColor color) {
+
+            if (statusLED != nullptr) {
+                statusLED->setPixelColor(0, color.getRed(), color.getGreen(), color.getBlue());
             }
-        }
-        // TODO: implement color/status recall on start
-        // TODO: implement color/status recall on start
-        // TODO: implement color/status recall on start
+
+            if (pixels != nullptr) {
+                float s = color.getSaturation();
+                if (s > 1) {
+                    s = 1;
+                }
+                float h = color.getHue();
+                float hueStep = 1.0f / (float) count;
+                float v = color.getValue();
+                for (int i = 0; i < count; i++) {
+                    h += hueStep;
+                    auto rgb = Utility::hsv2rgb(h, s, v);
+                    pixels->setPixelColor(i, rgb.r, rgb.g, rgb.b);
+                }
+            }
+
+            changed = true;
+            show();
+
+        });
+        homeGenie->addAPIHandler(fxModule);
 
     }
+
+    homeGenie->begin();
+
+    // TODO: implement color/status recall on start
+    // TODO: implement color/status recall on start
+    // TODO: implement color/status recall on start
 
     if (statusLED != nullptr) {
         statusLED->begin();
@@ -139,21 +167,10 @@ void setup() {
     if (pixels != nullptr) {
         pixels->begin();
     }
-    homeGenie->begin();
 }
 
 void loop()
 {
     homeGenie->loop();
-
-    if (changed) { // trailing fx
-        changed = false;
-        if (statusLED != nullptr) {
-            statusLED->show();
-        }
-        if (pixels != nullptr) {
-            pixels->show();
-        }
-        lastRefreshTs = millis();
-    }
+    show();
 }

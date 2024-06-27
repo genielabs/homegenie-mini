@@ -104,7 +104,7 @@ class Config {
 public:
     static short ServiceButtonPin;
     static short StatusLedPin;
-    const static uint16_t ConfigureButtonPushInterval = 5000;
+    const static uint16_t ConfigureButtonPushInterval = 3000;
     static ZoneConfig zone;
     static SystemConfig system;
 #ifdef ESP32
@@ -149,7 +149,7 @@ public:
         preferences.end();
         // TODO: should use "pref.isKey(...)" for proper checking
         if (value == "") {
-            // Lookup config factory defaults only if the value does not exists
+            // Lookup config factory defaults only if the value does not exist
             String config = STRING_VALUE(DEFAULT_CONFIG);
             if (!config.isEmpty()) {
                 JsonDocument doc;
@@ -177,8 +177,8 @@ public:
 
     static void init() {
         // Setup status LED and factory reset buttons
-        ServiceButtonPin = getSetting("sys-rb-n", "-1").toInt();
-        StatusLedPin = getSetting("sys-sl-n", "-1").toInt();
+        ServiceButtonPin = getSetting("sys-rb-n").toInt();
+        StatusLedPin = getSetting("sys-sl-n").toInt();
         // Setup status LED
         if (StatusLedPin >= 0) pinMode(StatusLedPin, OUTPUT);
         Preferences preferences;

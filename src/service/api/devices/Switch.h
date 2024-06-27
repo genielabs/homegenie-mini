@@ -51,11 +51,12 @@ namespace Service { namespace API { namespace devices {
         void onSetStatus(std::function<void(SwitchStatus)> callback) {
             setStatusCallback = std::move(callback);
         }
+
+        Module* module;
     private:
         LinkedList<Module*> moduleList;
         std::function<void(SwitchStatus)> setStatusCallback = nullptr;
     protected:
-        Module* module;
         SwitchStatus status = SWITCH_STATUS_NOT_SET;
         float onLevel = 1;
     };

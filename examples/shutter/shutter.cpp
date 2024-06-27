@@ -82,8 +82,8 @@ void setup() {
 
 #ifdef ESP32_C3
     auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Demo Light");
-    colorLight->onSetColor([](float r, float g, float b) {
-        pixels.setPixelColor(0, r, g, b);
+    colorLight->onSetColor([](LightColor c) {
+        pixels.setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
         pixels.show();
     });
     homeGenie->addAPIHandler(colorLight);

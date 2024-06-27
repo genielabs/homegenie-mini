@@ -35,10 +35,10 @@ namespace Service { namespace API { namespace devices {
 
     class LightColor {
     public:
-        unsigned long duration;
-        bool isAnimating = false;
+        unsigned long duration = 400;
         void setColor(float hue, float saturation, float value, unsigned long transitionMs) {
             duration = transitionMs;
+            if (duration <= 0) duration = 1;
             oh = h;
             os = s;
             ov = v;
@@ -46,12 +46,13 @@ namespace Service { namespace API { namespace devices {
             s = saturation;
             v = value;
             startTime = millis();
-            isAnimating = true;
         }
-        float getProgress() {
+        bool isAnimating() const {
+            return ((float)(millis() - startTime) / (float)duration) < 1;
+        }
+        float getProgress() const {
             float p = (float)(millis() - startTime) / (float)duration;
             if (p >= 1) {
-                isAnimating = false;
                 p = 1;
             }
             return p;
@@ -88,7 +89,7 @@ namespace Service { namespace API { namespace devices {
         float s;
         float v;
         float oh, os, ov;
-        unsigned long startTime;
+        unsigned long startTime = -1;
         static float hueFix(float h) {
             return 1.325f - h;
         }
@@ -102,12 +103,12 @@ namespace Service { namespace API { namespace devices {
         void loop() override;
         bool handleRequest(APIRequest*, ResponseCallback*) override;
 
-        void onSetColor(std::function<void(float,float,float)> callback) {
+        void onSetColor(std::function<void(LightColor)> callback) {
             setColorCallback = std::move(callback);
         }
     private:
         LightColor color;
-        std::function<void(float,float,float)> setColorCallback = nullptr;
+        std::function<void(LightColor)> setColorCallback = nullptr;
     };
 
 }}}

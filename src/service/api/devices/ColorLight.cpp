@@ -43,9 +43,9 @@ namespace Service { namespace API { namespace devices {
     void ColorLight::loop() {
         Dimmer::loop(); // parent
 
-        if (color.isAnimating) {
+        if (color.isAnimating()) {
             if (setColorCallback != nullptr) {
-                setColorCallback(color.getRed(), color.getGreen(), color.getBlue());
+                setColorCallback(color);
             }
         }
 
