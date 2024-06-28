@@ -35,53 +35,53 @@ namespace Service { namespace API { namespace devices {
 
     class LightColor {
     public:
-        unsigned long duration = 400;
+        unsigned long duration = 0;
         void setColor(float hue, float saturation, float value, unsigned long transitionMs) {
-            duration = transitionMs;
-            if (duration <= 0) duration = 1;
-            oh = h;
-            os = s;
-            ov = v;
+            oh = getHue();
+            os = getSaturation();
+            ov = getValue();
+            if (hue > 1) hue = 1;
+            if (saturation > 1) saturation = 1;
+            if (value > 1) value = 1;
             h = hue;
             s = saturation;
             v = value;
+            duration = transitionMs;
+            if (duration <= 0) duration = 1;
             startTime = millis();
         }
         bool isAnimating() const {
-            return ((float)(millis() - startTime) / (float)duration) < 1;
+            return (millis() - startTime) <= duration + 100;
         }
         float getProgress() const {
             float p = (float)(millis() - startTime) / (float)duration;
-            if (p >= 1) {
-                p = 1;
-            }
-            return p;
+            return p < 1 ? p : 1;
         }
-        float getHue() {
+        float getHue() const {
             return oh + ((h - oh) * getProgress());
         }
-        float getSaturation() {
+        float getSaturation() const {
             return os + ((s - os) * getProgress());
         }
-        float getValue() {
+        float getValue() const {
             return ov + ((v - ov) * getProgress());
         }
-        float getRed() {
+        float getRed() const {
             auto orgb = Utility::hsv2rgb(hueFix(oh), os, ov);
             auto crgb =  Utility::hsv2rgb(hueFix(h), s, v);
-            float r = orgb.r + ((crgb.r - orgb.r) * getProgress());
+            float r = (float)orgb.r + ((float)(crgb.r - orgb.r) * getProgress());
             return r;
         }
-        float getGreen() {
+        float getGreen() const {
             auto orgb = Utility::hsv2rgb(hueFix(oh), os, ov);
             auto crgb =  Utility::hsv2rgb(hueFix(h), s, v);
-            float g = orgb.g + ((crgb.g - orgb.g) * getProgress());
+            float g = (float)orgb.g + ((float)(crgb.g - orgb.g) * getProgress());
             return g;
         }
-        float getBlue() {
+        float getBlue() const {
             auto orgb = Utility::hsv2rgb(hueFix(oh), os, ov);
             auto crgb =  Utility::hsv2rgb(hueFix(h), s, v);
-            float b = orgb.b + ((crgb.b - orgb.b) * getProgress());
+            float b = (float)orgb.b + ((float)(crgb.b - orgb.b) * getProgress());
             return b;
         }
     private:

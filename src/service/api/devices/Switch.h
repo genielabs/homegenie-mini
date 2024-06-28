@@ -51,6 +51,9 @@ namespace Service { namespace API { namespace devices {
         void onSetStatus(std::function<void(SwitchStatus)> callback) {
             setStatusCallback = std::move(callback);
         }
+        bool isOn() {
+            return status == SWITCH_STATUS_ON;
+        }
 
         Module* module;
     private:

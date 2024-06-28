@@ -56,16 +56,77 @@ void statusLedCallback(bool isLedOn) {
     statusLED->show();
 }
 
-void show() {
-    if (changed && millis() - lastRefreshTs > 25) { // force 40 fps max
-        if (statusLED != nullptr) {
-            statusLED->show();
+float currentSaturation;
+float hueOffset = 0;
+float hueRange = 1;
+float cursorDirection = 1;
+LightColor currentColor;
+
+ColorLight* mainModule;
+ColorLight* rainbowModule;
+
+void fx_reset(LightColor& color) {
+//    hueOffset = 0;
+    hueRange = 1;
+    if (color.getSaturation() > 1) {
+        // TODO: ...
+        currentSaturation = 1;
+    } else {
+        currentSaturation = color.getSaturation();
+    }
+}
+
+void fx_main(LightColor& color) {
+    float r = color.getRed();
+    float g = color.getGreen();
+    float b = color.getBlue();
+    if (statusLED != nullptr) {
+        statusLED->setPixelColor(0, r, g, b);
+    }
+    if (pixels != nullptr) {
+        for (int i = 0; i < count; i++) {
+            pixels->setPixelColor(i, r, g, b);
         }
-        if (pixels != nullptr) {
-            pixels->show();
+    }
+}
+
+void fx_rainbow(LightColor& color) {
+    if (statusLED != nullptr) {
+        statusLED->setPixelColor(0, color.getRed(), color.getGreen(), color.getBlue());
+    }
+
+    if (pixels != nullptr) {
+        float h = color.getHue() + hueOffset;
+        if (h > 1) h = ((int)round(h * 10000) % 10000) / 10000.0f;
+        float hueStep = 1.0f / (float) count;
+        hueStep /= hueRange;
+        float v = color.getValue();
+        for (int i = 0; i < count; i++) {
+            h += hueStep;
+            auto rgb = Utility::hsv2rgb(h, currentSaturation, v);
+            pixels->setPixelColor(i, rgb.r, rgb.g, rgb.b);
         }
-        lastRefreshTs = millis();
-        changed = false;
+    }
+
+    // animate
+    hueOffset += (0.128f / count);
+    if (hueOffset > 1) hueOffset = 0;
+    hueRange += (1.5f / count) * cursorDirection;
+    if (hueRange > 5) {
+        cursorDirection *= -1;
+        hueRange = 5;
+    } else if (hueRange < 1) {
+        cursorDirection *= -1;
+        hueRange = 1;
+    }
+}
+
+void refresh() {
+    if (statusLED != nullptr) {
+        statusLED->show();
+    }
+    if (pixels != nullptr) {
+        pixels->show();
     }
 }
 
@@ -78,6 +139,7 @@ void setup() {
         int statusLedType = Config::getSetting("stld-typ").toInt();
         int statusLedSpeed = Config::getSetting("stld-spd").toInt();
         statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
+        statusLED->setPixelColor(0, 0, 0, 0);
     }
 
     if (!Config::isDeviceConfigured()) {
@@ -96,62 +158,33 @@ void setup() {
             auto pixelsType = (int16_t)Config::getSetting("leds-typ").toInt();
             auto pixelsSpeed = (int16_t)Config::getSetting("leds-spd").toInt();
             pixels = new Adafruit_NeoPixel(count, pin, pixelsType + pixelsSpeed);
+            // turn off
+            for (int i = 0; i < count; i++) {
+                pixels->setPixelColor(i, 0, 0, 0);
+            }
         }
 
         // Setup Status LED as master channel
-        auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Main");
-        colorLight->onSetColor([](LightColor color) {
-            float r = color.getRed();
-            float g = color.getGreen();
-            float b = color.getBlue();
-
-            if (statusLED != nullptr) {
-                statusLED->setPixelColor(0, r, g, b);
-            }
-
-            if (pixels != nullptr) {
-                for (int i = 0; i < count; i++) {
-                    pixels->setPixelColor(i, r, g, b);
-                }
-            }
-
-            changed = true;
-            show();
+        mainModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Main");
+        mainModule->onSetColor([](LightColor color) {
+            currentColor = color;
+            fx_reset(color);
+            fx_main(color);
         });
-        homeGenie->addAPIHandler(colorLight);
+        homeGenie->addAPIHandler(mainModule);
 
         // Setup example input "processor" module
         // changing color of this module will affect
         // all LED pixels with a color cycle effect
-        auto fxModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "F1", "Rainbow");
+        rainbowModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "F1", "Rainbow");
         auto soundLightFeature = new ModuleParameter("Widget.Preference.AudioLight", "true");
-        fxModule->module->properties.add(soundLightFeature);
-        fxModule->onSetColor([](LightColor color) {
-
-            if (statusLED != nullptr) {
-                statusLED->setPixelColor(0, color.getRed(), color.getGreen(), color.getBlue());
-            }
-
-            if (pixels != nullptr) {
-                float s = color.getSaturation();
-                if (s > 1) {
-                    s = 1;
-                }
-                float h = color.getHue();
-                float hueStep = 1.0f / (float) count;
-                float v = color.getValue();
-                for (int i = 0; i < count; i++) {
-                    h += hueStep;
-                    auto rgb = Utility::hsv2rgb(h, s, v);
-                    pixels->setPixelColor(i, rgb.r, rgb.g, rgb.b);
-                }
-            }
-
-            changed = true;
-            show();
-
+        rainbowModule->module->properties.add(soundLightFeature);
+        rainbowModule->onSetColor([](LightColor color) {
+            currentColor = color;
+            fx_reset(color);
+            fx_rainbow(color);
         });
-        homeGenie->addAPIHandler(fxModule);
+        homeGenie->addAPIHandler(rainbowModule);
 
     }
 
@@ -167,10 +200,29 @@ void setup() {
     if (pixels != nullptr) {
         pixels->begin();
     }
+
+    refresh();
 }
 
 void loop()
 {
     homeGenie->loop();
-    show();
+
+    // refresh background/strobe layer
+    if (currentColor.isAnimating()) {
+        refresh();
+    }
+
+    // 40 fps animation FX layer
+    if (millis() - lastRefreshTs > 25) {
+
+        // FX - rainbow animation
+        if (rainbowModule->isOn()) {
+            fx_rainbow(currentColor);
+            refresh();
+        }
+        // TODO: add more FX modules
+
+        lastRefreshTs = millis();
+    }
 }
