@@ -37,24 +37,31 @@ namespace Service { namespace API { namespace devices {
     public:
         unsigned long duration = 0;
         void setColor(float hue, float saturation, float value, unsigned long transitionMs) {
-            oh = getHue();
-            os = getSaturation();
-            ov = getValue();
+            oh = h;
+            os = s;
+            ov = v;
+
+            //oh = getHue();
+            //os = getSaturation();
+            //ov = getValue();
+
+            // constraints
             if (hue > 1) hue = 1;
             if (saturation > 1) saturation = 1;
             if (value > 1) value = 1;
+
             h = hue;
             s = saturation;
             v = value;
+
             duration = transitionMs;
-            if (duration <= 0) duration = 1;
             startTime = millis();
         }
         bool isAnimating() const {
             return (millis() - startTime) <= duration + 100;
         }
         float getProgress() const {
-            float p = (float)(millis() - startTime) / (float)duration;
+            float p = (float)(millis() - startTime) / ((float)duration + 1);
             return p < 1 ? p : 1;
         }
         float getHue() const {

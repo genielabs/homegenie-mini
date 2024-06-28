@@ -56,6 +56,7 @@ void statusLedCallback(bool isLedOn) {
     statusLED->show();
 }
 
+bool isConfigured = false;
 float currentSaturation;
 float hueOffset = 0;
 float hueRange = 1;
@@ -142,7 +143,8 @@ void setup() {
         statusLED->setPixelColor(0, 0, 0, 0);
     }
 
-    if (!Config::isDeviceConfigured()) {
+    isConfigured = Config::isDeviceConfigured();
+    if (!isConfigured) {
 
         // Custom status led (builtin NeoPixel RGB on pin 10)
         if (statusLED != nullptr) {
@@ -208,21 +210,23 @@ void loop()
 {
     homeGenie->loop();
 
-    // refresh background/strobe layer
-    if (currentColor.isAnimating()) {
-        refresh();
-    }
-
-    // 40 fps animation FX layer
-    if (millis() - lastRefreshTs > 25) {
-
-        // FX - rainbow animation
-        if (rainbowModule->isOn()) {
-            fx_rainbow(currentColor);
+    if (isConfigured) {
+        // refresh background/strobe layer
+        if (currentColor.isAnimating()) {
             refresh();
         }
-        // TODO: add more FX modules
 
-        lastRefreshTs = millis();
+        // 40 fps animation FX layer
+        if (millis() - lastRefreshTs > 25) {
+
+            // FX - rainbow animation
+            if (rainbowModule->isOn()) {
+                fx_rainbow(currentColor);
+                refresh();
+            }
+            // TODO: add more FX modules
+
+            lastRefreshTs = millis();
+        }
     }
 }
