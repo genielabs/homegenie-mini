@@ -35,15 +35,10 @@ namespace Service { namespace API { namespace devices {
 
     class LightColor {
     public:
-        unsigned long duration = 0;
         void setColor(float hue, float saturation, float value, unsigned long transitionMs) {
-            oh = h;
-            os = s;
-            ov = v;
-
-            //oh = getHue();
-            //os = getSaturation();
-            //ov = getValue();
+            oh = getHue();
+            os = getSaturation();
+            ov = getValue();
 
             // constraints
             if (hue > 1) hue = 1;
@@ -55,6 +50,11 @@ namespace Service { namespace API { namespace devices {
             v = value;
 
             duration = transitionMs;
+            if (duration == 0) {
+                oh = h;
+                os = s;
+                ov = v;
+            }
             startTime = millis();
         }
         bool isAnimating() const {
@@ -72,6 +72,9 @@ namespace Service { namespace API { namespace devices {
         }
         float getValue() const {
             return ov + ((v - ov) * getProgress());
+        }
+        void setValue(float val) {
+            v = val;
         }
         float getRed() const {
             auto orgb = Utility::hsv2rgb(hueFix(oh), os, ov);
@@ -92,11 +95,10 @@ namespace Service { namespace API { namespace devices {
             return b;
         }
     private:
-        float h;
-        float s;
-        float v;
+        float h, s, v;
         float oh, os, ov;
         unsigned long startTime = -1;
+        unsigned long duration = 0;
         static float hueFix(float h) {
             return 1.325f - h;
         }

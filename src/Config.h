@@ -103,8 +103,9 @@ public:
 class Config {
 public:
     static short ServiceButtonPin;
-    static short StatusLedPin;
     const static uint16_t ConfigureButtonPushInterval = 3000;
+    static short StatusLedPin;
+    static bool isStatusLedOn;
     static ZoneConfig zone;
     static SystemConfig system;
 #ifdef ESP32
@@ -128,6 +129,14 @@ public:
 
     static bool isWiFiConfigured() {
         return !system.systemMode.equals("config") && !system.ssid.isEmpty();
+    }
+    static void onWiFiConfigured() {
+        if (wifiConfiguredCallback != nullptr) {
+            wifiConfiguredCallback();
+        }
+    }
+    static void setOnWiFiConfiguredCallback(std::function<void()> callback) {
+        wifiConfiguredCallback = std::move(callback);
     }
 
     static bool saveSetting(const char* key, String& value) {
@@ -168,8 +177,6 @@ public:
         return value;
     }
 
-    static std::function<void(bool)> ledCallback;
-    static bool isStatusLedOn;
     static void statusLedOn();
     static void statusLedOff();
 
@@ -217,6 +224,9 @@ public:
     }
 
     static void handleConfigCommand(String &message);
+private:
+    static std::function<void(bool)> ledCallback;
+    static std::function<void()> wifiConfiguredCallback;
 };
 
 #endif //HOMEGENIE_MINI_CONFIG_H

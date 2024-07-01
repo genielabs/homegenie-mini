@@ -31,7 +31,7 @@ namespace Service { namespace API { namespace devices {
         setLoopInterval(10); // fixed transition frequency
         module->type = "Dimmer";
         onSetStatus([this](SwitchStatus status) {
-            level.setLevel(status == SWITCH_STATUS_ON ? 1 : 0, defaultTransitionMs);
+            level.setLevel(status == SWITCH_STATUS_ON ? onLevel : 0, defaultTransitionMs);
         });
     }
 

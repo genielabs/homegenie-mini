@@ -40,6 +40,7 @@ namespace Service { namespace API { namespace devices {
     public:
         Switch(const char* domain, const char* address, const char* name);
         void init() override;
+        void loop() override;
         bool canHandleDomain(String* domain) override;
         bool handleRequest(APIRequest*, ResponseCallback*) override;
         bool handleEvent(IIOEventSender*,

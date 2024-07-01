@@ -24,17 +24,17 @@
  */
 
 #include <HomeGenie.h>
-#include <service/api/devices/ColorLight.h>
 
 #include <Adafruit_NeoPixel.h>
 
 #include "configuration.h"
-
+#include "color-fx.h"
 
 using namespace Service;
 using namespace Service::API::devices;
 
 HomeGenie* homeGenie;
+bool isConfigured = false;
 
 // Optional RGB Status LED
 Adafruit_NeoPixel* statusLED = nullptr;
@@ -42,9 +42,6 @@ Adafruit_NeoPixel* statusLED = nullptr;
 // LED strip/array
 int count = 0; int pin = -1;
 Adafruit_NeoPixel* pixels = nullptr;
-
-bool changed = false;
-unsigned long lastRefreshTs = 0;
 
 // LED Blink callback when statusLED is configured
 void statusLedCallback(bool isLedOn) {
@@ -56,71 +53,17 @@ void statusLedCallback(bool isLedOn) {
     statusLED->show();
 }
 
-bool isConfigured = false;
-float currentSaturation;
-float hueOffset = 0;
-float hueRange = 1;
-float cursorDirection = 1;
+unsigned int refreshMs = 10;
+unsigned long lastRefreshTs = 0;
+
 LightColor currentColor;
-
 ColorLight* mainModule;
-ColorLight* rainbowModule;
 
-void fx_reset(LightColor& color) {
-//    hueOffset = 0;
-    hueRange = 1;
-    if (color.getSaturation() > 1) {
-        // TODO: ...
-        currentSaturation = 1;
-    } else {
-        currentSaturation = color.getSaturation();
-    }
-}
+ModuleParameter* fxStyle;
+ModuleParameter* fxStrobe;
 
-void fx_main(LightColor& color) {
-    float r = color.getRed();
-    float g = color.getGreen();
-    float b = color.getBlue();
-    if (statusLED != nullptr) {
-        statusLED->setPixelColor(0, r, g, b);
-    }
-    if (pixels != nullptr) {
-        for (int i = 0; i < count; i++) {
-            pixels->setPixelColor(i, r, g, b);
-        }
-    }
-}
-
-void fx_rainbow(LightColor& color) {
-    if (statusLED != nullptr) {
-        statusLED->setPixelColor(0, color.getRed(), color.getGreen(), color.getBlue());
-    }
-
-    if (pixels != nullptr) {
-        float h = color.getHue() + hueOffset;
-        if (h > 1) h = ((int)round(h * 10000) % 10000) / 10000.0f;
-        float hueStep = 1.0f / (float) count;
-        hueStep /= hueRange;
-        float v = color.getValue();
-        for (int i = 0; i < count; i++) {
-            h += hueStep;
-            auto rgb = Utility::hsv2rgb(h, currentSaturation, v);
-            pixels->setPixelColor(i, rgb.r, rgb.g, rgb.b);
-        }
-    }
-
-    // animate
-    hueOffset += (0.128f / count);
-    if (hueOffset > 1) hueOffset = 0;
-    hueRange += (1.5f / count) * cursorDirection;
-    if (hueRange > 5) {
-        cursorDirection *= -1;
-        hueRange = 5;
-    } else if (hueRange < 1) {
-        cursorDirection *= -1;
-        hueRange = 1;
-    }
-}
+bool playFxStrobe;
+String currentStyle = "solid";
 
 void refresh() {
     if (statusLED != nullptr) {
@@ -133,6 +76,19 @@ void refresh() {
 
 void setup() {
     homeGenie = HomeGenie::getInstance();
+    auto miniModule = homeGenie->getDefaultModule();
+    miniModule->name = "Smart light";
+    miniModule->properties.add(
+            new ModuleParameter("Widget.OptionField.FX.Rainbow",
+                                "select:FX.Style:light_style:solid|rainbow|white_stripes|kaleidoscope"));
+    miniModule->properties.add(
+            new ModuleParameter("Widget.OptionField.FX.Strobe",
+                                "select:FX.Strobe:strobe_effect:off|slow|medium|fast"));
+
+    fxStyle = new ModuleParameter("FX.Style", "solid");
+    miniModule->properties.add(fxStyle);
+    fxStrobe = new ModuleParameter("FX.Strobe", "false");
+    miniModule->properties.add(fxStrobe);
 
     // Get status LED config
     int statusLedPin = Config::getSetting("stld-pin", "-1").toInt();
@@ -151,6 +107,12 @@ void setup() {
             Config::statusLedCallback(&statusLedCallback);
         }
 
+        Config::setOnWiFiConfiguredCallback([]{
+            Serial.println("Restarting now.");
+            delay(2000);
+            ESP.restart();
+        });
+
     } else {
 
         // Get LED strip config
@@ -166,34 +128,32 @@ void setup() {
             }
         }
 
-        // Setup Status LED as master channel
+        // Setup main LEDs control module
         mainModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Main");
+        mainModule->module->properties.add(
+                new ModuleParameter(IOEventPaths::Status_Level, "0"));
+        mainModule->module->properties.add(
+                new ModuleParameter(IOEventPaths::Status_ColorHsb, "0,0,1"));
+        mainModule->module->properties.add(
+                new ModuleParameter("Widget.Preference.AudioLight", "true"));
         mainModule->onSetColor([](LightColor color) {
             currentColor = color;
-            fx_reset(color);
-            fx_main(color);
+            fx_reset(pixels, color);
+            fx_solid(pixels, color);
         });
         homeGenie->addAPIHandler(mainModule);
 
-        // Setup example input "processor" module
-        // changing color of this module will affect
-        // all LED pixels with a color cycle effect
-        rainbowModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "F1", "Rainbow");
-        auto soundLightFeature = new ModuleParameter("Widget.Preference.AudioLight", "true");
-        rainbowModule->module->properties.add(soundLightFeature);
-        rainbowModule->onSetColor([](LightColor color) {
-            currentColor = color;
-            fx_reset(color);
-            fx_rainbow(color);
-        });
-        homeGenie->addAPIHandler(rainbowModule);
+        // Allocate "animated" colors
+        animatedColors = new AnimatedColor[count];
+        for (int i = 0; i < count; i++) {
+            animatedColors[i] = new LightColor();
+            animatedColors[i]->setColor(currentColor.getHue(), currentColor.getSaturation(), currentColor.getValue(), 0);
+        }
 
     }
 
     homeGenie->begin();
 
-    // TODO: implement color/status recall on start
-    // TODO: implement color/status recall on start
     // TODO: implement color/status recall on start
 
     if (statusLED != nullptr) {
@@ -212,19 +172,67 @@ void loop()
 
     if (isConfigured) {
         // refresh background/strobe layer
-        if (currentColor.isAnimating()) {
+        if (currentColor.isAnimating() && currentStyle == "solid") {
             refresh();
         }
 
         // 40 fps animation FX layer
-        if (millis() - lastRefreshTs > 25) {
+        if (millis() - lastRefreshTs > refreshMs) {
 
-            // FX - rainbow animation
-            if (rainbowModule->isOn()) {
-                fx_rainbow(currentColor);
+            // Check if current rendering style changed and update fx switches
+            if (currentStyle != fxStyle->value) {
+                currentStyle = fxStyle->value;
+                if (currentStyle == "solid") {
+                    fx_solid(pixels, currentColor);
+                    refresh();
+                }
+            }
+
+            if (playFxStrobe && fxStrobe->value == "off") {
+                playFxStrobe = false;
+                fx_solid(pixels, currentColor);
+                refresh();
+            } else if (!playFxStrobe && (fxStrobe->value == "slow" || fxStrobe->value == "medium" || fxStrobe->value == "fast")) {
+                playFxStrobe = true;
+            }
+
+            if (currentStyle != "solid") {
+                // overlay selected effect
+                if (currentStyle == "rainbow") {
+                    fx_rainbow(pixels, currentColor);
+                } else if (currentStyle == "kaleidoscope") {
+                    fx_kaleidoscope(pixels, currentColor);
+                } else if (currentStyle == "white_stripes") {
+                    fx_white_stripes(pixels, currentColor);
+                }
                 refresh();
             }
-            // TODO: add more FX modules
+
+            if (playFxStrobe) {
+                float speed = 2;
+                if (fxStrobe->value == "medium") {
+                    speed = 4;
+                }
+                if (fxStrobe->value == "slow") {
+                    speed = 6;
+                }
+                // TODO: rewrite without using delays
+                delay(refreshMs * speed);
+                // invert solid color
+                auto c = LightColor();
+                c.setColor(0, 0, 1, 0);
+                fx_solid(pixels, c);
+                refresh();
+                delay(refreshMs);
+                // restore solid color
+                fx_solid(pixels, currentColor);
+                refresh();
+                delay(refreshMs);
+            }
+
+            if (statusLED != nullptr) {
+                statusLED->setPixelColor(0, currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue());
+            }
 
             lastRefreshTs = millis();
         }

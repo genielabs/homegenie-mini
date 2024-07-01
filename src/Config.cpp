@@ -36,8 +36,10 @@ SystemConfig Config::system;
 short Config::ServiceButtonPin = -1;
 short Config::StatusLedPin = -1;
 
-
 bool Config::isStatusLedOn = false;
+std::function<void(bool)> Config::ledCallback = nullptr;
+std::function<void()> Config::wifiConfiguredCallback = nullptr;
+
 void Config::statusLedOn() {
     isStatusLedOn = true;
     if (Config::StatusLedPin >= 0) digitalWrite(Config::StatusLedPin, HIGH);
@@ -48,7 +50,6 @@ void Config::statusLedOff() {
     if (Config::StatusLedPin >= 0) digitalWrite(Config::StatusLedPin, LOW);
     if (ledCallback != nullptr) ledCallback(false);
 }
-std::function<void(bool)> Config::ledCallback = nullptr;
 void Config::statusLedCallback(std::function<void(bool)> callback) {
     ledCallback = std::move(callback);
 }

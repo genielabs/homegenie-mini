@@ -71,10 +71,14 @@ namespace Net {
 
 #ifdef CONFIGURE_WITH_WPS
         static void setWiFiConfigured() {
+            bool wasConfigured = Config::isWiFiConfigured();
             Preferences preferences;
             preferences.begin(CONFIG_SYSTEM_NAME, false);
             preferences.putString(CONFIG_KEY_wifi_ssid, WiFi.SSID());
             preferences.end();
+            if (!wasConfigured) {
+                Config::onWiFiConfigured();
+            }
         }
 #ifdef ESP32
         static esp_wps_config_t wps_config;

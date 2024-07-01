@@ -72,9 +72,9 @@ namespace Service { namespace API { namespace devices {
             setLevelCallback = std::move(callback);
         }
     private:
-        DimmerLevel level;
         std::function<void(float)> setLevelCallback = nullptr;
     protected:
+        DimmerLevel level;
         const unsigned long defaultTransitionMs = 500;
     };
 

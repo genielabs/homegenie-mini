@@ -43,6 +43,8 @@ namespace Service { namespace API { namespace devices {
 
     void Switch::init() {
     }
+    void Switch::loop() {
+    }
 
     bool Switch::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
         auto m = getModule(command->Domain.c_str(), command->Address.c_str());

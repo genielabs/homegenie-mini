@@ -32,7 +32,7 @@ namespace Service { namespace API { namespace devices {
 
         // add properties
         auto propStatusColorHsb = new ModuleParameter(IOEventPaths::Status_ColorHsb);
-        propStatusColorHsb->setValue("1,1,0,.5");
+        propStatusColorHsb->setValue("0,0,0,.5");
         module->properties.add(propStatusColorHsb);
 
         onSetLevel([this](float l) {
@@ -90,7 +90,7 @@ namespace Service { namespace API { namespace devices {
 
             if (o[2] > 0) {
                 Switch::status = SWITCH_STATUS_ON;
-                Switch::onLevel = o[2];
+                Dimmer::onLevel = Switch::onLevel = o[2];
             } else {
                 Switch::status = SWITCH_STATUS_OFF;
             }
