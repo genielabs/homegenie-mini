@@ -131,10 +131,6 @@ void setup() {
         // Setup main LEDs control module
         mainModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Main");
         mainModule->module->properties.add(
-                new ModuleParameter(IOEventPaths::Status_Level, "0"));
-        mainModule->module->properties.add(
-                new ModuleParameter(IOEventPaths::Status_ColorHsb, "0,0,1"));
-        mainModule->module->properties.add(
                 new ModuleParameter("Widget.Preference.AudioLight", "true"));
         mainModule->onSetColor([](LightColor color) {
             currentColor = color;

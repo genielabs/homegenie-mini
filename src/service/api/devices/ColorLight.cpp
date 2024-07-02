@@ -32,7 +32,7 @@ namespace Service { namespace API { namespace devices {
 
         // add properties
         auto propStatusColorHsb = new ModuleParameter(IOEventPaths::Status_ColorHsb);
-        propStatusColorHsb->setValue("0,0,0,.5");
+        propStatusColorHsb->setValue("0,0,1,.4");
         module->properties.add(propStatusColorHsb);
 
         onSetLevel([this](float l) {
