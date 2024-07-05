@@ -95,8 +95,8 @@ namespace Service { namespace API { namespace devices {
             return b;
         }
     private:
-        float h, s, v;
-        float oh, os, ov;
+        float h = 0, s = 0, v = 0;
+        float oh = 0, os = 0, ov = 0;
         unsigned long startTime = -1;
         unsigned long duration = 0;
         static float hueFix(float h) {

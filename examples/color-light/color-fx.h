@@ -29,105 +29,108 @@
 using namespace Service;
 using namespace Service::API::devices;
 
+#define FX_DEG_NORM(X) (((int) round((X) * 360.0f) % 360) / 360.0f)
+
 typedef LightColor* AnimatedColor;
 AnimatedColor* animatedColors = nullptr;
 
-float currentSaturation;
 float hueOffset = 0;
-float hueRange = 1;
-float cursorDirection = 1;
+float hueZoom = 1;
+
+void fx_init(int count, LightColor& currentColor) {
+    // Allocate "animated" colors
+    animatedColors = new AnimatedColor[count];
+    for (int i = 0; i < count; i++) {
+        animatedColors[i] = new LightColor();
+        animatedColors[i]->setColor(currentColor.getHue(), currentColor.getSaturation(), currentColor.getValue(), 0);
+    }
+}
 
 void fx_reset(Adafruit_NeoPixel* pixels, LightColor& color) {
 //    hueOffset = 0;
-    hueRange = 1;
+    hueZoom = 1;
 }
 
-void fx_solid(Adafruit_NeoPixel* pixels, LightColor& color) {
-    float r = color.getRed();
-    float g = color.getGreen();
-    float b = color.getBlue();
+void fx_solid(Adafruit_NeoPixel* pixels, LightColor& color, int transitionMs = 200) {
     for (int i = 0; i < pixels->numPixels(); i++) {
-        pixels->setPixelColor(i, r, g, b);
-//        animatedColors[i]->setColor(color.getHue(), color.getSaturation(), color.getValue(), 0);
+        animatedColors[i]->setColor(color.getHue(), color.getSaturation(), color.getValue(), transitionMs);
     }
 }
 
+float currentSaturation;
+float cursorDirection = 1;
+unsigned long rainbow_refresh_ts = 0;
 void fx_rainbow(Adafruit_NeoPixel* pixels, LightColor& color) {
-    if (color.getSaturation() > 1) {
-        return;
-        // TODO: ...
-        currentSaturation = 1;
-    } else {
-        currentSaturation = color.getSaturation();
-    }
+    currentSaturation = color.getSaturation();
+    float length = pixels->numPixels() * hueZoom;
 
-    if (pixels != nullptr) {
-        float h = color.getHue() + hueOffset;
-        if (h > 1) h = ((int)round(h * 10000) % 10000) / 10000.0f;
-        float hueStep = 1.0f / (float) pixels->numPixels();
-        hueStep /= hueRange;
+    float hueStep = 1.0f / (float) length;
+    //float offsetIncrement = (0.128f / length);
+
+    // animate
+    if (millis() - rainbow_refresh_ts > 100) {
+        rainbow_refresh_ts = millis();
+
         float v = color.getValue();
         for (int i = 0; i < pixels->numPixels(); i++) {
-            h += hueStep;
-            auto rgb = Utility::hsv2rgb(h, currentSaturation, v);
-            pixels->setPixelColor(i, rgb.r, rgb.g, rgb.b);
-            animatedColors[i]->setColor(h, currentSaturation, v, 0);
+            float h = FX_DEG_NORM((color.getHue() + hueOffset) + ((float)i * hueStep));
+            animatedColors[i]->setColor(h, currentSaturation, v, currentSaturation * 100);
+        }
+
+        // animate
+        hueOffset += hueStep;
+        if (hueOffset > 1) FX_DEG_NORM(hueOffset);
+        hueZoom += (0.05f * (float)cursorDirection);
+        if (hueZoom > 3) {
+            cursorDirection = -1;
+        } else if (hueZoom < 1) {
+            cursorDirection = 1;
+            hueZoom = 1;
         }
     }
 
-    // animate
-    hueOffset += (0.128f / pixels->numPixels());
-    if (hueOffset > 1) hueOffset = 0;
-    hueRange += (1.5f / pixels->numPixels()) * cursorDirection;
-    if (hueRange > 5) {
-        cursorDirection *= -1;
-        hueRange = 5;
-    } else if (hueRange < 1) {
-        cursorDirection *= -1;
-        hueRange = 1;
-    }
 }
 
 
 unsigned long stripe_refresh_ts = 0;
-int stripe_delay = 200; // ms
-unsigned long stripe_transition = 200; // ms
+int stripe_delay = 10; // ms
+unsigned int stripe_transition = 150; // ms
 int stripe_step = 3;
-int stripe_length = 9;
-int shift = 0;
+float stripe_cycle = 0;
+float stripe_previous_hue;
 
 void fx_white_stripes(Adafruit_NeoPixel* pixels, LightColor& color) {
+    int stripe_length = (int)round((float)pixels->numPixels() / 7.0f);
+    float shift;
 
     // animate
     if (millis() - stripe_refresh_ts > stripe_delay) {
 
-        shift = shift % stripe_length;
+        //shift = shift % stripe_length;
 
-        if (pixels != nullptr) {
-            for (int i = 0; i < pixels->numPixels(); i++) {
-                if ((i + shift) % stripe_length < stripe_step) {
-                    // draw stripe
-                    animatedColors[i]->setColor(0, 0, color.getValue(), stripe_transition);
-                } else {
-                    // draw solid color
-                    animatedColors[i]->setColor(color.getHue(), color.getSaturation(),
-                                                         color.getValue(), stripe_transition);
-                }
+        stripe_cycle += /*color.getValue() * */ ((float)stripe_length / (float)50);
+        if (stripe_cycle >= stripe_length) stripe_cycle = 0;
+
+        shift = ((float)stripe_length) + (stripe_cycle * cursorDirection);
+
+        cursorDirection = (color.getHue() - stripe_previous_hue > 0) ? 1 : -1;
+        stripe_previous_hue = color.getHue();
+
+        for (int i = 0; i < pixels->numPixels(); i++) {
+            float v = color.getValue();
+            float s = color.getSaturation();
+            if ((int)round(i + shift) % stripe_length < stripe_step) {
+                // draw stripe
+                animatedColors[i]->setColor(0, 0, 1,
+                                            (float)stripe_transition / v);
+            } else {
+                // draw solid color
+                animatedColors[i]->setColor(color.getHue(), s, v,
+                                            (float)stripe_transition * v);
             }
         }
 
-
-        shift++;
-        if (shift >= stripe_length) shift = 0;
         stripe_refresh_ts = millis();
-    }
-
-    // render
-    if (pixels != nullptr) {
-        for (int i = 0; i < pixels->numPixels(); i++) {
-            pixels->setPixelColor(i, animatedColors[i]->getRed(), animatedColors[i]->getGreen(),
-                                  animatedColors[i]->getBlue());
-        }
     }
 
 }
@@ -143,19 +146,14 @@ void fx_kaleidoscope(Adafruit_NeoPixel* pixels, LightColor& color) {
         for (int i = 0; i < pixels->numPixels(); i++) {
             float rnd1 = random(1000);
             float rnd2 = random(1000);
-            animatedColors[i]->setColor(rnd1 / 1000, rnd2 / 1000, color.getValue(), 500);
+            if ((int)rnd1 % 2 == 0) {
+                animatedColors[i]->setColor(color.getHue(), color.getSaturation(), color.getValue(), 300);
+            } else {
+                animatedColors[i]->setColor(rnd1 / 1000, rnd2 / 1000, color.getValue(), 500);
+            }
         }
 
         kaleidoscope_refresh_ts = millis();
-    }
-
-    // render
-    if (pixels != nullptr) {
-        for (int i = 0; i < pixels->numPixels(); i++) {
-            animatedColors[i]->setValue(color.getValue());
-            pixels->setPixelColor(i, animatedColors[i]->getRed(), animatedColors[i]->getGreen(),
-                                  animatedColors[i]->getBlue());
-        }
     }
 
 }

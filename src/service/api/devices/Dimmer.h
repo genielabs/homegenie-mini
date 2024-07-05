@@ -34,7 +34,7 @@ namespace Service { namespace API { namespace devices {
 
     class DimmerLevel {
     public:
-        unsigned long duration;
+        unsigned long duration = 0;
         bool isAnimating = false;
         void setLevel(float l, unsigned long transitionMs) {
             duration = transitionMs;
@@ -55,9 +55,9 @@ namespace Service { namespace API { namespace devices {
             return ol + ((level - ol) * getProgress());
         }
     private:
-        float level;
-        float ol;
-        unsigned long startTime;
+        float level = 0;
+        float ol = 0;
+        unsigned long startTime = -1;
 
     };
 

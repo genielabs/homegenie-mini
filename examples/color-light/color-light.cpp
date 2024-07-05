@@ -62,7 +62,10 @@ ColorLight* mainModule;
 ModuleParameter* fxStyle;
 ModuleParameter* fxStrobe;
 
-bool playFxStrobe;
+unsigned long strobeFxTickMs = 0;
+unsigned int strobeFxDurationMs = 25;
+unsigned int strobeFxIntervalMs = 75;  // limit strobe to 10Hz  (25+75 -> 100ms interval)
+
 String currentStyle = "solid";
 
 void refresh() {
@@ -85,9 +88,9 @@ void setup() {
             new ModuleParameter("Widget.OptionField.FX.Strobe",
                                 "select:FX.Strobe:strobe_effect:off|slow|medium|fast"));
 
-    fxStyle = new ModuleParameter("FX.Style", "solid");
+    fxStyle = new ModuleParameter("FX.Style", currentStyle);
     miniModule->properties.add(fxStyle);
-    fxStrobe = new ModuleParameter("FX.Strobe", "false");
+    fxStrobe = new ModuleParameter("FX.Strobe", "off");
     miniModule->properties.add(fxStrobe);
 
     // Get status LED config
@@ -135,17 +138,11 @@ void setup() {
         mainModule->onSetColor([](LightColor color) {
             currentColor = color;
             fx_reset(pixels, color);
-            fx_solid(pixels, color);
         });
         homeGenie->addAPIHandler(mainModule);
 
-        // Allocate "animated" colors
-        animatedColors = new AnimatedColor[count];
-        for (int i = 0; i < count; i++) {
-            animatedColors[i] = new LightColor();
-            animatedColors[i]->setColor(currentColor.getHue(), currentColor.getSaturation(), currentColor.getValue(), 0);
-        }
-
+        // Initialize FX buffer
+        fx_init(count, currentColor);
     }
 
     homeGenie->begin();
@@ -167,64 +164,62 @@ void loop()
     homeGenie->loop();
 
     if (isConfigured) {
-        // refresh background/strobe layer
-        if (currentColor.isAnimating() && currentStyle == "solid") {
-            refresh();
-        }
 
-        // 40 fps animation FX layer
-        if (millis() - lastRefreshTs > refreshMs) {
-
-            // Check if current rendering style changed and update fx switches
+        if (millis() - lastRefreshTs > refreshMs)
+        {
+            // Update current rendering style if changed
             if (currentStyle != fxStyle->value) {
                 currentStyle = fxStyle->value;
+            }
+
+            // enable / disable strobe light
+            if (strobeFxTickMs > 0 && fxStrobe->value == "off") {
+                strobeFxTickMs = 0;
+            } else if (strobeFxTickMs == 0 && fxStrobe->value != "off") {
+                strobeFxTickMs = millis();
+            }
+
+
+            if (strobeFxTickMs > 0 && millis() - strobeFxTickMs > ((strobeFxDurationMs + strobeFxIntervalMs) * (fxStrobe->value == "slow" ? 3 : fxStrobe->value == "medium" ? 2 : 1))) {
+
+                // strobe effect timing tick
+                strobeFxTickMs = millis();
+
+            } else if (strobeFxTickMs > 0 && millis() - strobeFxTickMs <= strobeFxDurationMs) {
+
+                // show strobe light for `strobeFxDurationMs` milliseconds (25)
+                auto c = LightColor();
+                c.setColor(0, 0, 1, 0);
+                fx_solid(pixels, c, 0);
+
+            } else {
+
+                // apply selected light style
                 if (currentStyle == "solid") {
-                    fx_solid(pixels, currentColor);
-                    refresh();
-                }
-            }
-
-            if (playFxStrobe && fxStrobe->value == "off") {
-                playFxStrobe = false;
-                fx_solid(pixels, currentColor);
-                refresh();
-            } else if (!playFxStrobe && (fxStrobe->value == "slow" || fxStrobe->value == "medium" || fxStrobe->value == "fast")) {
-                playFxStrobe = true;
-            }
-
-            if (currentStyle != "solid") {
-                // overlay selected effect
-                if (currentStyle == "rainbow") {
+                    fx_solid(pixels, currentColor, strobeFxTickMs > 0 ? 0 : 200);
+                } else if (currentStyle == "rainbow") {
                     fx_rainbow(pixels, currentColor);
                 } else if (currentStyle == "kaleidoscope") {
                     fx_kaleidoscope(pixels, currentColor);
                 } else if (currentStyle == "white_stripes") {
                     fx_white_stripes(pixels, currentColor);
                 }
-                refresh();
+
             }
 
-            if (playFxStrobe) {
-                float speed = 2;
-                if (fxStrobe->value == "medium") {
-                    speed = 4;
+
+            // render pixels
+            if (pixels != nullptr) {
+                for (int i = 0; i < pixels->numPixels(); i++) {
+                    pixels->setPixelColor(i,
+                                          animatedColors[i]->getRed(),
+                                          animatedColors[i]->getGreen(),
+                                          animatedColors[i]->getBlue());
                 }
-                if (fxStrobe->value == "slow") {
-                    speed = 6;
-                }
-                // TODO: rewrite without using delays
-                delay(refreshMs * speed);
-                // invert solid color
-                auto c = LightColor();
-                c.setColor(0, 0, 1, 0);
-                fx_solid(pixels, c);
-                refresh();
-                delay(refreshMs);
-                // restore solid color
-                fx_solid(pixels, currentColor);
-                refresh();
-                delay(refreshMs);
             }
+            // show pixels
+            refresh();
+
 
             if (statusLED != nullptr) {
                 statusLED->setPixelColor(0, currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue());
@@ -232,5 +227,6 @@ void loop()
 
             lastRefreshTs = millis();
         }
+
     }
 }
