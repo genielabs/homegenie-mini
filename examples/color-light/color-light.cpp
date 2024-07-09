@@ -65,6 +65,7 @@ ModuleParameter* fxStrobe;
 unsigned long strobeFxTickMs = 0;
 unsigned int strobeFxDurationMs = 25;
 unsigned int strobeFxIntervalMs = 75;  // limit strobe to 10Hz  (25+75 -> 100ms interval)
+bool strobeOff = true;
 
 String currentStyle = "solid";
 
@@ -180,17 +181,18 @@ void loop()
             }
 
 
-            if (strobeFxTickMs > 0 && millis() - strobeFxTickMs > ((strobeFxDurationMs + strobeFxIntervalMs) * (fxStrobe->value == "slow" ? 3 : fxStrobe->value == "medium" ? 2 : 1))) {
+            if (!strobeOff && strobeFxTickMs > 0 && millis() - strobeFxTickMs > ((strobeFxDurationMs + strobeFxIntervalMs) * (fxStrobe->value == "slow" ? 3 : fxStrobe->value == "medium" ? 2 : 1))) {
 
-                // strobe effect timing tick
-                strobeFxTickMs = millis();
+                // strobe off
+                strobeOff = true;
 
-            } else if (strobeFxTickMs > 0 && millis() - strobeFxTickMs <= strobeFxDurationMs) {
+            } else if (strobeFxTickMs > 0 && (millis() - strobeFxTickMs <= strobeFxDurationMs || strobeOff)) {
 
                 // show strobe light for `strobeFxDurationMs` milliseconds (25)
                 auto c = LightColor();
                 c.setColor(0, 0, 1, 0);
                 fx_solid(pixels, c, 0);
+                strobeOff = false;
 
             } else {
 
@@ -217,15 +219,17 @@ void loop()
                                           animatedColors[i]->getBlue());
                 }
             }
-            // show pixels
-            refresh();
-
-
             if (statusLED != nullptr) {
                 statusLED->setPixelColor(0, currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue());
             }
 
+            // show pixels
+            refresh();
+
             lastRefreshTs = millis();
+            if (strobeOff) {
+                strobeFxTickMs = lastRefreshTs;
+            }
         }
 
     }

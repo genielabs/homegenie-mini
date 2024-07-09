@@ -36,7 +36,7 @@ namespace UI { namespace Activities { namespace Utilities {
                 addControl((InputControl*)rotateScreenButton);
             }
 
-        } else if (Config::isWiFiConfigured()) {
+        } else if (Config::isWiFiConfigured() || Config::system.systemMode.equals("config")) {
 
             if (configDeviceButton == nullptr) {
                 configDeviceButton = new RoundButton(canvas, 16, center, 64);

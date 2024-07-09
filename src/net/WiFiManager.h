@@ -38,6 +38,8 @@
 #endif
 
 #include <WiFiUdp.h>
+//#include <wifi_provisioning/manager.h>
+//#include <qrcode.h>
 
 #include <io/Logger.h>
 
@@ -79,6 +81,23 @@ namespace Net {
             if (!wasConfigured) {
                 Config::onWiFiConfigured();
             }
+            /*
+
+            // This is  just a test to see if DPP support compiles on
+            // current SDK version (and yes, it does since espressif32@6.7.0)
+
+            char payload[150] = {0};
+            snprintf(payload, sizeof(payload), "{\"ver\":\"%s\",\"name\":\"%s\"" \
+                    ",\"transport\":\"%s\"}",
+                     "v1", "MyAP", "softap");
+
+            esp_qrcode_config_t cfg = ESP_QRCODE_CONFIG_DEFAULT();
+            esp_qrcode_generate(&cfg, payload);
+            Serial.println(payload);
+
+            // official docs page https://github.com/espressif/esp-idf/tree/5ca9f2a4/examples/wifi/wifi_easy_connect/dpp-enrollee
+
+            */
         }
 #ifdef ESP32
         static esp_wps_config_t wps_config;

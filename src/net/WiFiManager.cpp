@@ -75,33 +75,25 @@ namespace Net {
 
     void WiFiManager::connect() {
         IO::Logger::info("|  - Connecting to WI-FI");
-#ifdef CONFIGURE_WITH_WPS
-        delay(1000); // TODO: is this delay necessary?
+        // If stored password is empty use WPS credentials if present
+        if (Config::system.pass.isEmpty()) {
+            delay(1000); // TODO: is this delay necessary?
 #ifdef ESP8266
-        WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
+            WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
 #else
-        wifi_config_t config;
-        esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, &config);
-        if (err == ESP_OK) {
-            WiFi.begin((char*)config.sta.ssid, (char*)config.sta.password);
-        } else {
-            // TODO: printf("Couldn't get config: %d\n", (int) err);
-        }
+            wifi_config_t config;
+            esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, &config);
+            if (err == ESP_OK) {
+                WiFi.begin((char *) config.sta.ssid, (char *) config.sta.password);
+            } else {
+                // TODO: printf("Couldn't get config: %d\n", (int) err);
+            }
 #endif
-#else
-        String ssid, pass;
-        Preferences preferences;
-        if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
-            ssid = preferences.getString(CONFIG_KEY_wifi_ssid);
-            pass = preferences.getString(CONFIG_KEY_wifi_password);
-            preferences.end();
+        } else if (!Config::system.ssid.isEmpty() && !Config::system.pass.isEmpty()) {
+            IO::Logger::info("|  - WI-FI SSID: \"%s\"", Config::system.ssid.c_str());
+            IO::Logger::info("|  - WI-FI Password: ***"); // Config::system.pass.c_str()
+            WiFi.begin(Config::system.ssid.c_str(), Config::system.pass.c_str());
         }
-        if (!ssid.isEmpty() && !pass.isEmpty()) {
-            IO::Logger::info("|  - WI-FI SSID: \"%s\"", ssid.c_str());
-            IO::Logger::info("|  - WI-FI Password: ***"); // pass.c_str()
-            WiFi.begin(ssid.c_str(), pass.c_str());
-        }
-#endif
     }
 
     bool WiFiManager::checkWiFiStatus() {

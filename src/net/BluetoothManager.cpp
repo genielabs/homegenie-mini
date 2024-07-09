@@ -115,8 +115,13 @@ namespace Net {
             SerialBT.disconnect();
             SerialBT.end();
 #endif
+            // TODO: onWiFiConfigured should be moved to
+            //       a specific "#CONFIG:DONE" command instead of "#RESET"
+            Config::onWiFiConfigured();
+
             IO::Logger::info("RESET!");
         }
+        // handle received command
         Config::handleConfigCommand(message);
     }
 

@@ -52,6 +52,8 @@ void fx_reset(Adafruit_NeoPixel* pixels, LightColor& color) {
 }
 
 void fx_solid(Adafruit_NeoPixel* pixels, LightColor& color, int transitionMs = 200) {
+    if (pixels == nullptr) return;
+
     for (int i = 0; i < pixels->numPixels(); i++) {
         animatedColors[i]->setColor(color.getHue(), color.getSaturation(), color.getValue(), transitionMs);
     }
@@ -61,6 +63,8 @@ float currentSaturation;
 float cursorDirection = 1;
 unsigned long rainbow_refresh_ts = 0;
 void fx_rainbow(Adafruit_NeoPixel* pixels, LightColor& color) {
+    if (pixels == nullptr) return;
+
     currentSaturation = color.getSaturation();
     float length = pixels->numPixels() * hueZoom;
 
@@ -100,6 +104,8 @@ float stripe_cycle = 0;
 float stripe_previous_hue;
 
 void fx_white_stripes(Adafruit_NeoPixel* pixels, LightColor& color) {
+    if (pixels == nullptr) return;
+
     int stripe_length = (int)round((float)pixels->numPixels() / 7.0f);
     float shift;
 
@@ -140,6 +146,7 @@ unsigned long kaleidoscope_refresh_ts = 0;
 int kaleidoscope_delay = 500;
 
 void fx_kaleidoscope(Adafruit_NeoPixel* pixels, LightColor& color) {
+    if (pixels == nullptr) return;
 
     // animate
     if (millis() - kaleidoscope_refresh_ts > kaleidoscope_delay) {

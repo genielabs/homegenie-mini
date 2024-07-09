@@ -131,6 +131,12 @@ public:
         return !system.systemMode.equals("config") && !system.ssid.isEmpty();
     }
     static void onWiFiConfigured() {
+        // reset system mode if it was previously forced to "config"
+        Preferences preferences;
+        preferences.begin(CONFIG_SYSTEM_NAME, false);
+        preferences.putString(CONFIG_KEY_system_mode, "");
+        preferences.end();
+        // invoke callback if set
         if (wifiConfiguredCallback != nullptr) {
             wifiConfiguredCallback();
         }

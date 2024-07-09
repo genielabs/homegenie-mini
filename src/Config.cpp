@@ -61,24 +61,20 @@ void Config::handleConfigCommand(String &message) {
     if (message.startsWith("#CONFIG:device-name ")) {
         preferences.putString(CONFIG_KEY_device_name, message.substring(20));
     }
-#ifndef CONFIGURE_WITH_WPS
     if (message.startsWith("#CONFIG:wifi-ssid ")) {
         preferences.putString(CONFIG_KEY_wifi_ssid, message.substring(18));
     }
     if (message.startsWith("#CONFIG:wifi-password ")) {
         preferences.putString(CONFIG_KEY_wifi_password, message.substring(22));
-        // reset system mode if it was previously forced to "config"
-        preferences.putString(CONFIG_KEY_system_mode, "");
     }
-#endif
     if (message.startsWith("#CONFIG:system-time ")) {
         String time = message.substring(20);
         long seconds = time.substring(0, time.length() - 3).toInt();
         long ms = time.substring(time.length() - 3).toInt();
-#ifndef ESP8266
-        Config::getRTC()->setTime(seconds, ms);
+#ifdef ESP8266
+        // TODO: no integrated RTC available in ESP8266
 #else
-        // TODO: not supported by ESP8266
+        Config::getRTC()->setTime(seconds, ms);
 #endif
     }
     if (message.startsWith("#CONFIG:system-zone-id ")) {
