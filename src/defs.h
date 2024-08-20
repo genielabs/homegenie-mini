@@ -48,7 +48,7 @@
 // Automatically enable FreeRTOS task on devices with additional RAM
 // (is disabled otherwise saving about ~12K or RAM)
 //#ifdef BOARD_HAS_PSRAM
-// TODO: experimental flag (rc issues)
+// TODO: experimental flag (rc issues tbi)
 //#define CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
 //#endif
 

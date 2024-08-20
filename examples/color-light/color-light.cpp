@@ -40,7 +40,8 @@ bool isConfigured = false;
 Adafruit_NeoPixel* statusLED = nullptr;
 
 // LED strip/array
-int count = 0; int pin = -1;
+uint16_t ledsCount = 0; int16_t ledsPin = -1;
+int16_t pixelsType, pixelsSpeed;
 Adafruit_NeoPixel* pixels = nullptr;
 
 // LED Blink callback when statusLED is configured
@@ -59,12 +60,13 @@ unsigned long lastRefreshTs = 0;
 LightColor currentColor;
 ColorLight* mainModule;
 
-ModuleParameter* fxStyle;
-ModuleParameter* fxStrobe;
+ModuleParameter* mpLedCount;
+ModuleParameter* mpFxStyle;
+ModuleParameter* mpFxStrobe;
 
 unsigned long strobeFxTickMs = 0;
-unsigned int strobeFxDurationMs = 25;
-unsigned int strobeFxIntervalMs = 75;  // limit strobe to 10Hz  (25+75 -> 100ms interval)
+unsigned int strobeFxDurationMs = 20;
+unsigned int strobeFxIntervalMs = 80;  // limit strobe to 10Hz  (20+80 -> 100ms interval)
 bool strobeOff = true;
 
 String currentStyle = "solid";
@@ -78,29 +80,81 @@ void refresh() {
     }
 }
 
+void renderPixels() {
+    if (pixels != nullptr) {
+        for (int i = 0; i < ledsCount; i++) {
+            pixels->setPixelColor(i,
+                                  animatedColors[i]->getRed(),
+                                  animatedColors[i]->getGreen(),
+                                  animatedColors[i]->getBlue());
+        }
+    }
+    if (statusLED != nullptr) {
+        statusLED->setPixelColor(0, currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue());
+    }
+}
+
+void createPixels()
+{
+    if (ledsPin >= 0) {
+        pixels = new Adafruit_NeoPixel(ledsCount, ledsPin, pixelsType + pixelsSpeed);
+        // turn off
+        //pixels->clear();
+        //*
+        for (int i = 0; i < ledsCount; i++) {
+            pixels->setPixelColor(i, 0, 0, 0);
+        }
+        //*/
+        pixels->begin();
+    }
+}
+void disposePixels() {
+
+    // turn off all pixels
+    if (pixels != nullptr) {
+        //pixels->clear();
+        //*
+        for (int i = 0; i < ledsCount; i++) {
+            pixels->setPixelColor(i, 0, 0, 0);
+        }
+        refresh();
+        //*/
+        delete pixels;
+        delay(1000);
+    }
+
+}
+
 void setup() {
     homeGenie = HomeGenie::getInstance();
     auto miniModule = homeGenie->getDefaultModule();
     miniModule->name = "Smart light";
+
+    miniModule->properties.add(
+            new ModuleParameter("Widget.OptionField.LED.count",
+                                "number:LED.count:1:1920:1:led_count"));
     miniModule->properties.add(
             new ModuleParameter("Widget.OptionField.FX.Rainbow",
-                                "select:FX.Style:light_style:solid|rainbow|white_stripes|kaleidoscope"));
+                                "select:FX.Style:light_style:solid|rainbow|rainbow_2|white_stripes|white_stripes_2|kaleidoscope"));
     miniModule->properties.add(
             new ModuleParameter("Widget.OptionField.FX.Strobe",
                                 "select:FX.Strobe:strobe_effect:off|slow|medium|fast"));
 
-    fxStyle = new ModuleParameter("FX.Style", currentStyle);
-    miniModule->properties.add(fxStyle);
-    fxStrobe = new ModuleParameter("FX.Strobe", "off");
-    miniModule->properties.add(fxStrobe);
+    mpLedCount = new ModuleParameter("LED.count", "0");
+    miniModule->properties.add(mpLedCount);
+    mpFxStyle = new ModuleParameter("FX.Style", currentStyle);
+    miniModule->properties.add(mpFxStyle);
+    mpFxStrobe = new ModuleParameter("FX.Strobe", "off");
+    miniModule->properties.add(mpFxStrobe);
 
     // Get status LED config
     int statusLedPin = Config::getSetting("stld-pin", "-1").toInt();
     if (statusLedPin >= 0) {
-        int statusLedType = Config::getSetting("stld-typ").toInt();
-        int statusLedSpeed = Config::getSetting("stld-spd").toInt();
+        int statusLedType = Config::getSetting("stld-typ", "6").toInt();
+        int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
         statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
         statusLED->setPixelColor(0, 0, 0, 0);
+        statusLED->begin();
     }
 
     isConfigured = Config::isDeviceConfigured();
@@ -112,25 +166,23 @@ void setup() {
         }
 
         Config::setOnWiFiConfiguredCallback([]{
+            // Device successfully configured
             Serial.println("Restarting now.");
             delay(2000);
             ESP.restart();
+            // TODO: re-arrange code so that it won't require a restart
         });
 
     } else {
 
         // Get LED strip config
-        count = Config::getSetting("leds-cnt").toInt();
-        pin = (int16_t)Config::getSetting("leds-pin").toInt();
-        if (count > 0 && pin >= 0) {
-            auto pixelsType = (int16_t)Config::getSetting("leds-typ").toInt();
-            auto pixelsSpeed = (int16_t)Config::getSetting("leds-spd").toInt();
-            pixels = new Adafruit_NeoPixel(count, pin, pixelsType + pixelsSpeed);
-            // turn off
-            for (int i = 0; i < count; i++) {
-                pixels->setPixelColor(i, 0, 0, 0);
-            }
-        }
+        ledsCount = abs(Config::getSetting("leds-cnt").toInt());
+        ledsPin = (int16_t)Config::getSetting("leds-pin").toInt();
+        pixelsType = (int16_t)Config::getSetting("leds-typ").toInt();
+        pixelsSpeed = (int16_t)Config::getSetting("leds-spd").toInt();
+        createPixels();
+
+        mpLedCount->value = String(ledsCount);
 
         // Setup main LEDs control module
         mainModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Main");
@@ -142,20 +194,16 @@ void setup() {
         });
         homeGenie->addAPIHandler(mainModule);
 
+        // TODO: add 2 "GpioButton" modules for handling manual control (on/off, level, switch fx, ...)
+
         // Initialize FX buffer
-        fx_init(count, currentColor);
+        fx_init(ledsCount, currentColor);
+
+        // TODO: implement color/status recall on start
+
     }
 
     homeGenie->begin();
-
-    // TODO: implement color/status recall on start
-
-    if (statusLED != nullptr) {
-        statusLED->begin();
-    }
-    if (pixels != nullptr) {
-        pixels->begin();
-    }
 
     refresh();
 }
@@ -169,19 +217,19 @@ void loop()
         if (millis() - lastRefreshTs > refreshMs)
         {
             // Update current rendering style if changed
-            if (currentStyle != fxStyle->value) {
-                currentStyle = fxStyle->value;
+            if (currentStyle != mpFxStyle->value) {
+                currentStyle = mpFxStyle->value;
             }
 
             // enable / disable strobe light
-            if (strobeFxTickMs > 0 && fxStrobe->value == "off") {
+            if (strobeFxTickMs > 0 && mpFxStrobe->value == "off") {
                 strobeFxTickMs = 0;
-            } else if (strobeFxTickMs == 0 && fxStrobe->value != "off") {
+            } else if (strobeFxTickMs == 0 && mpFxStrobe->value != "off") {
                 strobeFxTickMs = millis();
             }
 
 
-            if (!strobeOff && strobeFxTickMs > 0 && millis() - strobeFxTickMs > ((strobeFxDurationMs + strobeFxIntervalMs) * (fxStrobe->value == "slow" ? 3 : fxStrobe->value == "medium" ? 2 : 1))) {
+            if (!strobeOff && strobeFxTickMs > 0 && millis() - strobeFxTickMs > ((strobeFxDurationMs + strobeFxIntervalMs) * (mpFxStrobe->value == "slow" ? 3 : mpFxStrobe->value == "medium" ? 2 : 1))) {
 
                 // strobe off
                 strobeOff = true;
@@ -200,29 +248,20 @@ void loop()
                 if (currentStyle == "solid") {
                     fx_solid(pixels, currentColor, strobeFxTickMs > 0 ? 0 : 200);
                 } else if (currentStyle == "rainbow") {
-                    fx_rainbow(pixels, currentColor);
+                    fx_rainbow(pixels, currentColor, 1);
+                } else if (currentStyle == "rainbow_2") {
+                    fx_rainbow(pixels, currentColor, 2);
                 } else if (currentStyle == "kaleidoscope") {
                     fx_kaleidoscope(pixels, currentColor);
                 } else if (currentStyle == "white_stripes") {
                     fx_white_stripes(pixels, currentColor);
+                } else if (currentStyle == "white_stripes_2") {
+                    fx_white_stripes(pixels, currentColor, true);
                 }
 
             }
 
-
-            // render pixels
-            if (pixels != nullptr) {
-                for (int i = 0; i < pixels->numPixels(); i++) {
-                    pixels->setPixelColor(i,
-                                          animatedColors[i]->getRed(),
-                                          animatedColors[i]->getGreen(),
-                                          animatedColors[i]->getBlue());
-                }
-            }
-            if (statusLED != nullptr) {
-                statusLED->setPixelColor(0, currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue());
-            }
-
+            renderPixels();
             // show pixels
             refresh();
 
@@ -230,6 +269,19 @@ void loop()
             if (strobeOff) {
                 strobeFxTickMs = lastRefreshTs;
             }
+        }
+
+        // check if number of pixels was changed
+        if (ledsCount != mpLedCount->value.toInt()) {
+
+            disposePixels();
+
+            ledsCount = mpLedCount->value.toInt();
+            Config::saveSetting("leds-cnt", mpLedCount->value);
+
+            // re-create pixels with the new length
+            createPixels();
+
         }
 
     }
