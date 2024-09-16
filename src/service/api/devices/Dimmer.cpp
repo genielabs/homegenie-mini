@@ -51,27 +51,10 @@ namespace Service { namespace API { namespace devices {
         auto m = getModule(command->Domain.c_str(), command->Address.c_str());
         if (m != nullptr && command->Command == ControlApi::Control_Level) {
 
-            auto l = command->getOption(0).toFloat() / 100.0F; // 0.00 - 1.00  0 = OFF, 1.00 = MAX
+            auto l = command->getOption(0).toFloat() / 100.0f; // 0.00 - 1.00  0 = OFF, 1.00 = MAX
             auto transition = command->getOption(1).isEmpty() ? defaultTransitionMs : command->getOption(1).toFloat(); // ms
 
-            level.setLevel(l, transition);
-
-            // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
-            if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
-                auto eventPath = IOEventPaths::Status_Level;
-                auto eventValue = String(l);
-                auto msg = QueuedMessage(m, eventPath, eventValue, &l, IOEventDataType::Float);
-                m->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
-                HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
-            }
-
-            if (l > 0) {
-                Switch::status = SWITCH_STATUS_ON;
-                Switch::onLevel = l;
-            } else {
-                Switch::status = SWITCH_STATUS_OFF;
-            }
+            setLevel(l, transition);
 
             responseCallback->writeAll(ApiHandlerResponseText::OK);
             return true;
@@ -79,6 +62,41 @@ namespace Service { namespace API { namespace devices {
         }
         // not handled
         return false;
+    }
+
+    void Dimmer::dim(float transition) {
+        if (level.getLevel() <= 0.05) return;
+        auto l = level.getLevel() - 0.05f;
+        if (l < 0.05) l = 0.05;
+        setLevel(l, transition);
+    }
+    void Dimmer::bright(float transition) {
+        if (level.getLevel() == 1) return;
+        auto l = level.getLevel() + 0.05f;
+        if (l > 1) l = 1;
+        setLevel(l, transition);
+    }
+    void Dimmer::setLevel(float l, float transition) {
+
+        level.setLevel(l, transition);
+
+        // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
+        auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
+        if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
+            auto eventPath = IOEventPaths::Status_Level;
+            auto eventValue = String(l);
+            auto msg = QueuedMessage(module, eventPath, eventValue, &l, IOEventDataType::Float);
+            module->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+        }
+
+        if (l > 0) {
+            Switch::status = SWITCH_STATUS_ON;
+            Switch::onLevel = l;
+        } else {
+            Switch::status = SWITCH_STATUS_OFF;
+        }
+
     }
 
 }}}

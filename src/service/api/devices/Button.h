@@ -23,22 +23,34 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_SWITCH_H
-#define HOMEGENIE_MINI_SWITCH_H
+#ifndef HOMEGENIE_MINI_BUTTON_H
+#define HOMEGENIE_MINI_BUTTON_H
 
 #include <HomeGenie.h>
 
 namespace Service { namespace API { namespace devices {
 
-    enum SwitchStatus {
-        SWITCH_STATUS_NOT_SET = -1,
-        SWITCH_STATUS_OFF,
-        SWITCH_STATUS_ON,
+    enum ButtonStatus {
+        BUTTON_STATUS_NOT_SET = -1,
+        BUTTON_STATUS_NORMAL,
+        BUTTON_STATUS_PRESSED,
+    };
+    enum ButtonGesture {
+        BUTTON_GESTURE_CLICK,
+        //BUTTON_GESTURE_DOUBLE_CLICK,
+        BUTTON_GESTURE_LONG_PRESS
+    };
+    enum PullResistor {
+        NONE = INPUT,
+        PULL_UP = INPUT_PULLUP,
+#ifndef ESP8266
+        PULL_DOWN = INPUT_PULLDOWN
+#endif
     };
 
-    class Switch: public Task, public APIHandler {
+    class Button: public Task, public APIHandler {
     public:
-        Switch(const char* domain, const char* address, const char* name);
+        Button(const char* domain, const char* address, const char* name, uint8_t pin, PullResistor mode = PULL_UP);
         void init() override;
         void loop() override;
         bool canHandleDomain(String* domain) override;
@@ -49,29 +61,28 @@ namespace Service { namespace API { namespace devices {
 
         Module* getModule(const char* domain, const char* address) override;
         LinkedList<Module*>* getModuleList() override;
-
-        bool isOn() {
-            return status == SWITCH_STATUS_ON;
-        }
-
-        void on();
-        void off();
-        void toggle();
-
-        void onSetStatus(std::function<void(SwitchStatus)> callback) {
+        void onSetStatus(std::function<void(ButtonStatus)> callback) {
             setStatusCallback = std::move(callback);
+        }
+        void onGesture(std::function<void(ButtonGesture)> callback) {
+            onGestureCallback = std::move(callback);
+        }
+        bool isPressed() {
+            return status == BUTTON_STATUS_PRESSED;
         }
 
         Module* module;
     private:
         LinkedList<Module*> moduleList;
-        std::function<void(SwitchStatus)> setStatusCallback = nullptr;
-        void setStatus(SwitchStatus s);
+        std::function<void(ButtonStatus)> setStatusCallback = nullptr;
+        std::function<void(ButtonGesture)> onGestureCallback = nullptr;
+        uint8_t pinNumber;
+        unsigned long pressedTs = 0;
     protected:
-        SwitchStatus status = SWITCH_STATUS_NOT_SET;
+        ButtonStatus status = BUTTON_STATUS_NOT_SET;
         float onLevel = 1;
     };
 
 }}}
 
-#endif //HOMEGENIE_MINI_SWITCH_H
+#endif //HOMEGENIE_MINI_BUTTON_H

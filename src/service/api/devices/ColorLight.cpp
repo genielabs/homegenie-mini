@@ -71,29 +71,7 @@ namespace Service { namespace API { namespace devices {
                 hsvString = hsvString.substring(ci + 1);
             } while (oi < 4);
 
-            color.setColor(o[0], o[1], o[2], o[3]*1000);
-
-            // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
-            if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
-                // color
-                auto eventValue = command->getOption(0);
-                auto msg = QueuedMessage(m, IOEventPaths::Status_ColorHsb, eventValue, nullptr, IOEventDataType::Undefined);
-                m->setProperty(IOEventPaths::Status_ColorHsb, eventValue, nullptr, IOEventDataType::Undefined);
-                HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
-                // level
-                auto levelValue = String(o[2]); // TODO: use sprintf %.6f
-                auto msg2 = QueuedMessage(m, IOEventPaths::Status_Level, levelValue, nullptr, IOEventDataType::Undefined);
-                m->setProperty(IOEventPaths::Status_Level, levelValue, nullptr, IOEventDataType::Undefined);
-                HomeGenie::getInstance()->getEventRouter().signalEvent(msg2);
-            }
-
-            if (o[2] > 0) {
-                Switch::status = SWITCH_STATUS_ON;
-                Dimmer::onLevel = Switch::onLevel = o[2];
-            } else {
-                Switch::status = SWITCH_STATUS_OFF;
-            }
+            setColor(o[0], o[1], o[2], o[3]*1000);
 
             responseCallback->writeAll(ApiHandlerResponseText::OK);
             return true;
@@ -101,6 +79,38 @@ namespace Service { namespace API { namespace devices {
         }
         // not handled
         return false;
+    }
+
+    void ColorLight::setColor(float h, float s, float v, unsigned long transition) {
+
+        color.setColor(h, s, v, transition);
+
+        // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
+        auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
+        if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
+            // color
+            int size = snprintf(nullptr, 0, "%f,%f,%f", h, s, v);
+            char eventValue[size + 1];
+            sprintf(eventValue, "%f,%f,%f", h, s, v);
+            auto msg = QueuedMessage(module, IOEventPaths::Status_ColorHsb, eventValue, nullptr, IOEventDataType::Undefined);
+            module->setProperty(IOEventPaths::Status_ColorHsb, eventValue, nullptr, IOEventDataType::Undefined);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+            // level
+            size = snprintf(nullptr, 0, "%f", v);
+            char levelValue[size + 1];
+            sprintf(levelValue, "%f", v);
+            auto msg2 = QueuedMessage(module, IOEventPaths::Status_Level, levelValue, nullptr, IOEventDataType::Undefined);
+            module->setProperty(IOEventPaths::Status_Level, levelValue, nullptr, IOEventDataType::Undefined);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(msg2);
+        }
+
+        if (v > 0) {
+            Switch::status = SWITCH_STATUS_ON;
+            Dimmer::onLevel = Switch::onLevel = v;
+        } else {
+            Switch::status = SWITCH_STATUS_OFF;
+        }
+
     }
 
 }}}

@@ -6,7 +6,9 @@ Smart multi-sensor device with display. HomeGenie Mini UI example use.
 - [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/smart-sensor/)
 
 
-## Firmware configuration (in addition to default system options)
+## Firmware configuration
+
+In addition to default system options the following configuration options are available:
 
 | Key        | Description                         | Default |
 |------------|-------------------------------------|---------|

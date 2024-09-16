@@ -38,6 +38,8 @@ namespace Service { namespace API { namespace devices {
         bool isAnimating = false;
         void setLevel(float l, unsigned long transitionMs) {
             duration = transitionMs;
+            if (l < 0) l = 0;
+            else if (l > 1) l = 1;
             ol = level;
             level = l;
             startTime = millis();
@@ -68,6 +70,10 @@ namespace Service { namespace API { namespace devices {
 
         bool handleRequest(APIRequest*, ResponseCallback*) override;
 
+        void dim(float transition = defaultTransitionMs);
+        void bright(float transition = defaultTransitionMs);
+        void setLevel(float l, float transition);
+
         void onSetLevel(std::function<void(float)> callback) {
             setLevelCallback = std::move(callback);
         }
@@ -75,7 +81,7 @@ namespace Service { namespace API { namespace devices {
         std::function<void(float)> setLevelCallback = nullptr;
     protected:
         DimmerLevel level;
-        const unsigned long defaultTransitionMs = 500;
+        static const unsigned long defaultTransitionMs = 400;
     };
 
 }}}

@@ -106,7 +106,7 @@ float stripe_previous_hue;
 void fx_white_stripes(Adafruit_NeoPixel* pixels, LightColor& color, bool brightWhite = false) {
     if (pixels == nullptr) return;
 
-    int stripe_length = (int)round((float)pixels->numPixels() / 7.0f);
+    int stripe_length = (int)round((float)pixels->numPixels() / 5.0f);
     float shift;
 
     // animate

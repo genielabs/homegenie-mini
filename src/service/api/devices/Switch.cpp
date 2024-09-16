@@ -50,35 +50,19 @@ namespace Service { namespace API { namespace devices {
         auto m = getModule(command->Domain.c_str(), command->Address.c_str());
         if (m != nullptr) {
 
-            auto eventPath = IOEventPaths::Status_Level;
-            SwitchStatus s = SWITCH_STATUS_NOT_SET;
+            bool handled = true;
             if (command->Command == ControlApi::Control_On) {
-                s = SWITCH_STATUS_ON;
+                on();
             } else if (command->Command == ControlApi::Control_Off) {
-                s = SWITCH_STATUS_OFF;
+                off();
             } else if (command->Command == ControlApi::Control_Toggle) {
-                s = status == SWITCH_STATUS_ON ? SWITCH_STATUS_OFF : SWITCH_STATUS_ON;
+                toggle();
+            } else {
+                handled = false;
             }
 
-            if (s != SWITCH_STATUS_NOT_SET) {
-                status = s;
-
-                if (setStatusCallback != nullptr) {
-                    setStatusCallback(status);
-                }
-
-                // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-                auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
-                if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
-                    float l = status == SWITCH_STATUS_ON ? onLevel : 0;
-                    auto eventValue = String(l);
-                    auto msg = QueuedMessage(m, eventPath, eventValue, &l, IOEventDataType::Float);
-                    m->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
-                    HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
-                }
-
+            if (handled) {
                 responseCallback->writeAll(ApiHandlerResponseText::OK);
-
                 return true;
             }
 
@@ -110,4 +94,36 @@ namespace Service { namespace API { namespace devices {
         return &moduleList;
     }
 
+    void Switch::on() {
+        setStatus(SWITCH_STATUS_ON);
+    }
+
+    void Switch::off() {
+        setStatus(SWITCH_STATUS_OFF);
+    }
+
+    void Switch::toggle() {
+        setStatus(status == SWITCH_STATUS_ON ? SWITCH_STATUS_OFF : SWITCH_STATUS_ON);
+    }
+
+    void Switch::setStatus(SwitchStatus s) {
+
+        status = s;
+
+        if (setStatusCallback != nullptr) {
+            setStatusCallback(status);
+        }
+
+        // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
+        auto eventPath = IOEventPaths::Status_Level;
+        auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
+        if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
+            float l = status == SWITCH_STATUS_ON ? onLevel : 0;
+            auto eventValue = String(l);
+            auto msg = QueuedMessage(module, eventPath, eventValue, &l, IOEventDataType::Float);
+            module->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+        }
+
+    }
 }}}

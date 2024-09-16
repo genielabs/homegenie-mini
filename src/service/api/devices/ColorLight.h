@@ -77,20 +77,20 @@ namespace Service { namespace API { namespace devices {
             v = val;
         }
         float getRed() const {
-            auto orgb = Utility::hsv2rgb(hueFix(oh), os, ov);
-            auto crgb =  Utility::hsv2rgb(hueFix(h), s, v);
+            auto orgb = Utility::hsv2rgb(oh, os, ov);
+            auto crgb =  Utility::hsv2rgb(h, s, v);
             float r = (float)orgb.r + ((float)(crgb.r - orgb.r) * getProgress());
             return r;
         }
         float getGreen() const {
-            auto orgb = Utility::hsv2rgb(hueFix(oh), os, ov);
-            auto crgb =  Utility::hsv2rgb(hueFix(h), s, v);
+            auto orgb = Utility::hsv2rgb(oh, os, ov);
+            auto crgb =  Utility::hsv2rgb(h, s, v);
             float g = (float)orgb.g + ((float)(crgb.g - orgb.g) * getProgress());
             return g;
         }
         float getBlue() const {
-            auto orgb = Utility::hsv2rgb(hueFix(oh), os, ov);
-            auto crgb =  Utility::hsv2rgb(hueFix(h), s, v);
+            auto orgb = Utility::hsv2rgb(oh, os, ov);
+            auto crgb =  Utility::hsv2rgb(h, s, v);
             float b = (float)orgb.b + ((float)(crgb.b - orgb.b) * getProgress());
             return b;
         }
@@ -99,9 +99,6 @@ namespace Service { namespace API { namespace devices {
         float oh = 0, os = 0, ov = 0;
         unsigned long startTime = -1;
         unsigned long duration = 0;
-        static float hueFix(float h) {
-            return 1.325f - h;
-        }
 
     };
 
@@ -111,6 +108,8 @@ namespace Service { namespace API { namespace devices {
 
         void loop() override;
         bool handleRequest(APIRequest*, ResponseCallback*) override;
+
+        void setColor(float h, float s, float v, unsigned long transition);
 
         void onSetColor(std::function<void(LightColor)> callback) {
             setColorCallback = std::move(callback);
