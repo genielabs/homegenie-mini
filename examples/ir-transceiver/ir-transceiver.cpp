@@ -86,6 +86,7 @@ void setup() {
     homeGenie->addAPIHandler(colorLight);
 #endif
 
+    Config::system.friendlyName = "Firefly IR";
     homeGenie->begin();
 }
 

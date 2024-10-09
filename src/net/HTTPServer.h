@@ -36,6 +36,7 @@
 #else
 #include <WebServer.h>
 #endif
+#include <WiFiClient.h>
 
 #include <detail/RequestHandler.h>
 #include <LinkedList.h>
@@ -57,8 +58,13 @@ namespace Net {
         static void addHandler(RequestHandler* handler);
 #ifndef DISABLE_SSE
         // RequestHandler interface methods
+#if ESP_ARDUINO_VERSION_MAJOR > 2
+        bool canHandle(HTTPMethod method, const String& uri) override;
+        bool handle(WebServer& server, HTTPMethod requestMethod, const String& requestUri) override;
+#else
         bool canHandle(HTTPMethod method, String uri) override;
         bool handle(WebServer& server, HTTPMethod requestMethod, String requestUri) override;
+#endif
         void sendSSEvent(String domain, String address, String event, String value);
 #endif
     private:

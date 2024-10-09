@@ -295,14 +295,7 @@ namespace Service {
 
     unsigned int HomeGenie::writeGroupListJSON(ResponseCallback *responseCallback) {
         bool firstModule = true;
-        String defaultGroupName = "Dashboard";
-        Preferences preferences;
-        preferences.begin(CONFIG_SYSTEM_NAME, true);
-        String deviceName = preferences.getString(CONFIG_KEY_device_name, "");
-        preferences.end();
-        if (deviceName.length() > 0) {
-            defaultGroupName = deviceName;
-        }
+        String defaultGroupName = Config::getSetting(CONFIG_KEY_device_group, "Dashboard");
         String out = R"([{"Name": ")" + defaultGroupName + R"(", "Modules": [)";
         responseCallback->write(out.c_str());
         for (int i = 0; i < handlers.size(); i++) {

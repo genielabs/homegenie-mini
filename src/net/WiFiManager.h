@@ -99,7 +99,20 @@ namespace Net {
 
             */
         }
-#ifdef ESP32
+#ifdef ESP8266
+        // WPS events handling
+        static void WiFiEvent(WiFiEvent_t event) {
+            switch(event) {
+                case WIFI_EVENT_STAMODE_GOT_IP:
+                case WIFI_EVENT_STAMODE_DISCONNECTED:
+                case WIFI_EVENT_STAMODE_CONNECTED:
+                    break;
+                case WIFI_EVENT_STAMODE_AUTHMODE_CHANGE:
+                    setWiFiConfigured();
+                    break;
+            }
+        }
+#else // ESP32
         static esp_wps_config_t wps_config;
         static bool esp32_wps_started;
         static bool wpsStart() {
@@ -142,20 +155,7 @@ namespace Net {
                     break;
             }
         }
-#else
-        // WPS events handling
-        static void WiFiEvent(WiFiEvent_t event) {
-            switch(event) {
-                case WIFI_EVENT_STAMODE_GOT_IP:
-                case WIFI_EVENT_STAMODE_DISCONNECTED:
-                case WIFI_EVENT_STAMODE_CONNECTED:
-                    break;
-                case WIFI_EVENT_STAMODE_AUTHMODE_CHANGE:
-                    setWiFiConfigured();
-                    break;
-            }
-        }
-#endif // ESP32
+#endif
 #endif // CONFIGURE_WITH_WPS
 
     };

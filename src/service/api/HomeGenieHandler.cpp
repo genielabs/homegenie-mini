@@ -40,7 +40,6 @@ namespace Service { namespace API {
         miniModule->type = "Sensor";
         miniModule->name = CONFIG_BUILTIN_MODULE_NAME;
         miniModule->description = "HomeGenie Mini node";
-        miniModule->properties.add(new ModuleParameter("Widget.OptionField.System.LocationInfo", "location.info:map-picker"));
         moduleList.add(miniModule);
     }
 
@@ -353,6 +352,39 @@ namespace Service { namespace API {
                             return true;
                         }
                     }
+                } else if (method == ConfigApi::SystemApi::System_DataSet) {
+                    JsonDocument doc;
+                    DeserializationError error = deserializeJson(doc, request->Data);
+
+                    if (!error.code()) {
+                        int operationsCount = 0;
+                        if (doc.containsKey("name")) {
+                            String deviceName = doc["name"].as<String>();
+                            if (deviceName.isEmpty()) {
+                                responseCallback->writeAll(HomeGenieHandlerResponseStatus::ERROR_INVALID_NAME);
+                                return true;
+                            } else {
+                                Config::system.friendlyName = deviceName;
+                                Config::saveSetting(CONFIG_KEY_device_name, deviceName);
+                            }
+                        }
+                        if (doc.containsKey("group")) {
+                            String deviceGroup = doc["group"].as<String>();
+                            if (deviceGroup.isEmpty()) {
+                                responseCallback->writeAll(HomeGenieHandlerResponseStatus::ERROR_INVALID_NAME);
+                                return true;
+                            } else {
+                                Config::saveSetting(CONFIG_KEY_device_group, deviceGroup);
+                                operationsCount++;
+                            }
+                        }
+                        if (operationsCount > 0) {
+                            responseCallback->writeAll(ApiHandlerResponseText::OK);
+                        } else {
+                            responseCallback->writeAll(ApiHandlerResponseStatus::ERROR);
+                        }
+                        return true;
+                    }
 #ifndef ESP8266
                 } else if (method == ConfigApi::SystemApi::System_TimeSet) {
 
@@ -374,6 +406,8 @@ namespace Service { namespace API {
                     obj["Release"]["Name"] = CONFIG_DEVICE_MODEL_NAME;
                     obj["Release"]["Version"] = CONFIG_DEVICE_MODEL_NUMBER;
                     obj["Release"]["ReleaseDate"] = ReleaseBuildDate;
+                    obj["Id"] = Config::system.id;
+                    obj["Name"] = Config::system.friendlyName;
 #ifdef ESP8266
                     obj["Release"]["Runtime"] = "esp8266";
                     obj["Platform"] = "espressif8266";
@@ -388,6 +422,9 @@ namespace Service { namespace API {
                     obj["UtcOffset"] = Config::zone.offset;
                     obj["LocalTime"] = homeGenie->getNetManager().getTimeClient().getFormattedDate();
                     obj["Configuration"] = doc.add<JsonObject>();
+                    // Default group name
+                    String defaultGroupName = Config::getSetting(CONFIG_KEY_device_group, "Dashboard");
+                    obj["Configuration"]["Group"] = defaultGroupName;
                     // Location info
                     obj["Configuration"]["Location"] = doc.add<JsonObject>();
                     obj["Configuration"]["Location"]["name"] = Config::zone.name;

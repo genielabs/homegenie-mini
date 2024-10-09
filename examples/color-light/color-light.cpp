@@ -32,7 +32,7 @@ void setup() {
 
     // Get the default system module
     auto miniModule = homeGenie->getDefaultModule();
-    miniModule->name = "Smart light";
+    miniModule->name = "LED Controller";
 
     // Add to the default module some configuration properties.
     // Properties starting with `Widget.OptionField.` are special
@@ -48,14 +48,6 @@ void setup() {
     miniModule->properties.add(
             new ModuleParameter("Widget.OptionField.LED.power",
                                 "number:LED.power:5:100:25:led_power"));
-    // Dropdown list control to select the light animation effect
-    miniModule->properties.add(
-            new ModuleParameter("Widget.OptionField.FX.Rainbow",
-                                "select:FX.Style:light_style:solid|rainbow|rainbow_2|white_stripes|white_stripes_2|kaleidoscope"));
-    // Dropdown list control to enable the strobe effect
-    miniModule->properties.add(
-            new ModuleParameter("Widget.OptionField.FX.Strobe",
-                                "select:FX.Strobe:strobe_effect:off|slow|medium|fast"));
 
     // The following are the actual properties where
     // UI controls implemented by `Widget.Options`
@@ -64,13 +56,10 @@ void setup() {
     miniModule->properties.add(mpLedCount);
     mpMaxPower = new ModuleParameter("LED.power", "25");
     miniModule->properties.add(mpMaxPower);
-    mpFxStyle = new ModuleParameter("FX.Style", lightStyleNames[0]);
-    miniModule->properties.add(mpFxStyle);
-    mpFxStrobe = new ModuleParameter("FX.Strobe", "off");
-    miniModule->properties.add(mpFxStrobe);
 
     // Get status LED config
-    int statusLedPin = Config::getSetting("stld-pin", "-1").toInt();
+    auto pin = Config::getSetting("stld-pin");
+    int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
     if (statusLedPin >= 0) {
         int statusLedType = Config::getSetting("stld-typ", "82").toInt();
         int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
@@ -105,12 +94,12 @@ void setup() {
         maxPower = Config::getSetting("leds-pwr").toInt();
         if (maxPower <= 0) maxPower = DEFAULT_MAX_POWER;
         createPixels();
-
+        // default values
         mpLedCount->value = String(ledsCount);
         mpMaxPower->value = String(maxPower);
 
         // Setup main LEDs control module
-        mainModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Main");
+        mainModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Color Light");
         mainModule->module->properties.add(
                 new ModuleParameter("Widget.Preference.AudioLight", "true"));
         mainModule->onSetColor([](LightColor color) {
@@ -119,8 +108,26 @@ void setup() {
         });
         homeGenie->addAPIHandler(mainModule);
 
+        auto module = mainModule->module;
+        module->name = "Smart Light";
+
+        // Add to the ColorLight module some configuration properties:
+        // - dropdown list control to select the light animation effect
+        module->properties.add(
+                new ModuleParameter("Widget.OptionField.FX.Rainbow",
+                                    "select:FX.Style:light_style:solid|rainbow|rainbow_2|white_stripes|white_stripes_2|kaleidoscope"));
+        // - dropdown list control to enable the strobe effect
+        module->properties.add(
+                new ModuleParameter("Widget.OptionField.FX.Strobe",
+                                    "select:FX.Strobe:strobe_effect:off|slow|medium|fast"));
+
+        mpFxStyle = new ModuleParameter("FX.Style", lightStyleNames[0]);
+        module->properties.add(mpFxStyle);
+        mpFxStrobe = new ModuleParameter("FX.Strobe", "off");
+        module->properties.add(mpFxStrobe);
+
         // Setup control buttons
-        setupControlButtons(miniModule);
+        setupControlButtons(module);
 
         // Initialize FX buffer
         fx_init(ledsCount, currentColor);
@@ -133,6 +140,8 @@ void setup() {
 
     }
 
+    // Name shown in SMNP/UPnP advertising
+    Config::system.friendlyName = "LED Controller";
     homeGenie->begin();
 
     refresh();

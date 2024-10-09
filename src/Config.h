@@ -59,6 +59,7 @@
 const static char CONFIG_KEY_wifi_ssid[] = {"wifi:ssid"};
 const static char CONFIG_KEY_wifi_password[] = {"wifi:password"};
 const static char CONFIG_KEY_device_name[] = {"device:name"};
+const static char CONFIG_KEY_device_group[] = {"device:group"};
 const static char CONFIG_KEY_system_mode[] = {"system:mode"};
 const static char CONFIG_KEY_system_zone_id[] = {"system:zn_id"};
 const static char CONFIG_KEY_system_zone_description[] = {"system:zn_dsc"};
@@ -88,11 +89,13 @@ public:
 
 class SystemConfig {
 public:
+    String id;
     String friendlyName;
     String systemMode;
     String ssid, pass;
 
     SystemConfig() {
+        id = "";
         friendlyName = CONFIG_BUILTIN_MODULE_NAME;
         systemMode = "";
         ssid = "";

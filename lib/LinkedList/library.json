@@ -1,0 +1,33 @@
+{
+    "name": "LinkedList",
+    "keywords": "llist, linkedlist",
+    "description": "Forked ivanseidel's LinkedList - A fully implemented LinkedList (int, float, objects, Lists or Wales) made to work with Arduino projects",
+    "url": "https://github.com/vortigont/LinkedList",
+    "authors": [
+        {
+            "name": "Ivan Seidel",
+            "url": "https://github.com/ivanseidel"
+        },
+        {
+            "name": "Emil Muratov",
+            "url": "https://github.com/vortigont",
+            "email": "gpm@hotplug.ru",
+            "maintainer": true
+        }
+    ],
+    "license": "MIT",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/vortigont/LinkedList.git"
+    },
+    "frameworks": "*",
+    "platforms": "*",
+    "version": "1.5.0",
+    "build": {
+        "srcFilter": [
+            "+<LinkedList.h>",
+            "+<LList.h>"
+        ]
+    }
+}

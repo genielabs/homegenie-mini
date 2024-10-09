@@ -44,6 +44,7 @@ void setup() {
 
     includeCommonSensors(homeGenie, miniModule);
 
+    Config::system.friendlyName = "Smart Sensor";
     homeGenie->begin();
 
 }

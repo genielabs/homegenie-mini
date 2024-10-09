@@ -43,11 +43,11 @@ void includeCommonSensors(HomeGenie* homeGenie, Module* miniModule) {
     if (Config::getSetting("sdht-typ").equals("22")) {
         auto dhtSensor = new DHTxx(22, dhtSensorPint);
         dhtSensor->setModule(miniModule);
-        homeGenie->addIOHandler(dhtSensor);
+        homeGenie->addIOHandler((IIOEventSender*)dhtSensor);
     } else if (Config::getSetting("sdht-typ").equals("11")) {
         auto dhtSensor = new DHTxx(11, dhtSensorPint);
         dhtSensor->setModule(miniModule);
-        homeGenie->addIOHandler(dhtSensor);
+        homeGenie->addIOHandler((IIOEventSender*)dhtSensor);
     }
 }
 

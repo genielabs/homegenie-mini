@@ -45,6 +45,7 @@ namespace Service { namespace API {
 
     namespace ApiHandlerResponseStatus {
         static const char* OK = R"({ "ResponseStatus": "OK", Message: "" })";
+        static const char* ERROR = R"({ "ResponseStatus": "ERROR", Message: "" })";
     }
     namespace ApiHandlerResponseText {
         static const char* OK = R"({ "ResponseText": "OK" })";

@@ -34,7 +34,7 @@
 
 #ifndef DISABLE_AUTOMATION
 
-#include <lib/duktape-2.7.0/src/duktape.h>
+#include <duktape.h>
 
 /*
  *

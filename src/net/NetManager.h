@@ -240,20 +240,29 @@ namespace Net {
 
         // BEGIN HTTP RequestHandler interface methods
 
+#if ESP_ARDUINO_VERSION_MAJOR > 2
+        bool canHandle(HTTPMethod method, const String& uri) override {
+#else
         bool canHandle(HTTPMethod method, String uri) override {
+#endif
             return uri != nullptr && uri.startsWith("/api/");
         }
+#if ESP_ARDUINO_VERSION_MAJOR > 2
+        bool handle(WebServer &server, HTTPMethod requestMethod, const String& requestUri) override {
+#else
         bool handle(WebServer &server, HTTPMethod requestMethod, String requestUri) override {
+#endif
             // append POST data to requestUri
+            String uri = requestUri;
             for (int a = 0; a < server.args(); a++) {
                 if (server.argName(a).length() > 0) {
-                    requestUri += String("/") + server.argName(a);
+                    uri += String("/") + server.argName(a);
                 }
-                requestUri += String ("/") + server.arg(a);
+                uri += String ("/") + server.arg(a);
             }
             // create response callback
             auto responseCallback = new WebServerResponseCallback(&server);
-            if (!netRequestHandler->onNetRequest(&server, requestUri.c_str(), responseCallback)) {
+            if (!netRequestHandler->onNetRequest(&server, uri.c_str(), responseCallback)) {
                 responseCallback->error("Invalid request.");
             };
             delete responseCallback;

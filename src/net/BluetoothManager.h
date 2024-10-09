@@ -38,7 +38,7 @@
 #include <io/Logger.h>
 
 #ifndef DISABLE_BLUETOOTH_LE
-#include "lib/ESP32_BleSerial/src/BleSerial.h"
+#include <BleSerial.h>
 #endif
 
 #ifndef DISABLE_BLUETOOTH_CLASSIC

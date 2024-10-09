@@ -103,10 +103,12 @@ namespace Net {
             SSDPDevice.setManufacturer(FPSTR(SSDP_Manufacturer));
             SSDPDevice.setManufacturerURL(FPSTR(SSDP_ManufacturerURL));
 
+            Config::system.id = SSDPDevice.getId();
+            Logger::info("|  ✔ SSDP service");
+            //Logger::info("|  ✔ SSDP service id: ", Config::system.id.c_str());
+
             SSDPDevice.setFriendlyName(Config::system.friendlyName);
             Logger::info("|  ✔ UPnP friendly name: %s", Config::system.friendlyName.c_str());
-
-            Logger::info("|  ✔ SSDP service");
         }
 
         httpServer.handleClient();
@@ -135,11 +137,19 @@ namespace Net {
 
 #ifndef DISABLE_SSE
     // BEGIN RequestHandler interface methods
+#if ESP_ARDUINO_VERSION_MAJOR > 2
+    bool HTTPServer::canHandle(HTTPMethod method, const String& uri) {
+#else
     bool HTTPServer::canHandle(HTTPMethod method, String uri) {
+#endif
         return false;
     }
 
+#if ESP_ARDUINO_VERSION_MAJOR > 2
+    bool HTTPServer::handle(WebServer& server, HTTPMethod requestMethod, const String& requestUri) {
+#else
     bool HTTPServer::handle(WebServer& server, HTTPMethod requestMethod, String requestUri) {
+#endif
         return false;
     }
     // END RequestHandler interface methods

@@ -57,6 +57,7 @@ void setup() {
     x10Receiver->setModule(rfModule);
     homeGenie->addIOHandler(x10Receiver);
 
+    Config::system.friendlyName = "Firefly X10";
     homeGenie->begin();
 
 }

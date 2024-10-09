@@ -75,7 +75,7 @@ namespace Automation {
         bool occurs(time_t ts) {
             return ExtendedCron::IsScheduling(ts, cronExpression);
         }
-        bool wasScheduled(time_t ts) {
+        bool wasScheduled(time_t ts) const {
             return ExtendedCron::normalizeStartTime(lastOccurrence) == ExtendedCron::normalizeStartTime(ts);
         }
         void setScheduled(time_t ts) {
@@ -121,6 +121,9 @@ namespace Automation {
         static String getJsonList();
     private:
         static LinkedList<Schedule*> scheduleList;
+        // TODO: add LinkedList<RuntimeEvent*> runtimeEventList;  ( RuntimeEvent => {key/value} )
+        //       - registerRuntimeEvent(const char* key, const char* description, ..)
+        //       - handleRuntimeEvent(const char* key, const char* value, ..)
         static SchedulerListener* listener;
         static int lastCheckMinute;
     };

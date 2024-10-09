@@ -40,7 +40,13 @@ namespace Net {
     WiFiManager::WiFiManager() {
         setLoopInterval(1000);
 
+#ifdef ESP8266
         WiFi.mode(WIFI_STA);
+        //WiFi.setOutputPower(20.5);
+#else
+        WiFiClass::mode(WIFI_STA);
+        //WiFi.setTxPower(WIFI_POWER_19_5dBm);
+#endif
         WiFi.setAutoReconnect(true);
 
 #ifdef CONFIGURE_WITH_WPS
@@ -86,7 +92,7 @@ namespace Net {
             if (err == ESP_OK) {
                 WiFi.begin((char *) config.sta.ssid, (char *) config.sta.password);
             } else {
-                // TODO: printf("Couldn't get config: %d\n", (int) err);
+                // TODO: Serial.printf("Couldn't get config: %d\n", (int) err);
             }
 #endif
         } else if (!Config::system.ssid.isEmpty() && !Config::system.pass.isEmpty()) {
@@ -133,6 +139,8 @@ namespace Net {
                     IO::Logger::error("|  x Not connected to WiFi (state='%d')", status);
                     break;
                 case WL_IDLE_STATUS:
+                    IO::Logger::error("|  x WiFi idle (?)");
+                    connect();
                     break;
             }
         }
@@ -167,7 +175,7 @@ namespace Net {
 #ifdef ESP8266
         return WiFi.beginWPSConfig();
 #else
-        int timeout = 200;
+        int timeout = 400;
         bool success = wpsStart();
         while (esp32_wps_started && timeout-- > 0) {
             delay(100);

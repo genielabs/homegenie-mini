@@ -57,6 +57,7 @@ void setup() {
     receiver->setModule(rfModule);
     homeGenie->addIOHandler(receiver);
 
+    Config::system.friendlyName = "Firefly RF";
     homeGenie->begin();
 
 }

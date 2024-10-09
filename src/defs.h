@@ -65,7 +65,7 @@
     #define FILE_WRITE      "w"
     #define FILE_APPEND     "a"
 #else
-    #define ESP_WIFI_STATUS WiFiClass::status()
+    #define ESP_WIFI_STATUS WiFi.status()
 #endif
 
 #ifdef ESP8266

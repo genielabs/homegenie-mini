@@ -37,6 +37,7 @@ namespace Service { namespace API {
     using namespace IO::GPIO;
 
     namespace HomeGenieHandlerResponseStatus {
+        static const char* ERROR_INVALID_NAME = R"({ "ResponseStatus": "ERROR", "ResponseMessage": "Invalid name" })";
         static const char* ERROR_NO_SCHEDULE_WITH_THE_GIVEN_NAME = R"({ "ResponseStatus": "ERROR", "ResponseMessage": "No schedule with the given name" })";
     }
 

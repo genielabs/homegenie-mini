@@ -44764,6 +44764,7 @@ DUK_INTERNAL duk_ret_t duk_bi_thread_resume(duk_hthread *ctx) {
 
 state_error:
 	DUK_DCERROR_TYPE_INVALID_STATE(thr);
+	return 0;
 }
 #endif
 
@@ -44881,6 +44882,7 @@ DUK_INTERNAL duk_ret_t duk_bi_thread_yield(duk_hthread *thr) {
 
 state_error:
 	DUK_DCERROR_TYPE_INVALID_STATE(thr);
+	return 0;
 }
 #endif
 

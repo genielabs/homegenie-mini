@@ -407,6 +407,10 @@ void SSDPDeviceClass::handleClient() {
 	}
 }
 
+String SSDPDeviceClass::getId() {
+    return {m_uuid};
+}
+
 void SSDPDeviceClass::setSchemaURL(const char *url) {
 	strlcpy(m_schemaURL, url, sizeof(m_schemaURL));
 }

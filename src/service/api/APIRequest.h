@@ -75,6 +75,7 @@ namespace Service { namespace API {
             static const char Location_Get[] = {"Location.Get"};
             static const char Location_Set[] = {"Location.Set"};
             static const char System_Info[] = {"System.Info"};
+            static const char System_DataSet[] = {"System.DataSet"};
             static const char System_TimeSet[] = {"System.TimeSet"};
         }
     }

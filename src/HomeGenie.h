@@ -151,10 +151,11 @@ namespace Service {
         volatile int64_t buttonPressStart = 0;
         volatile bool buttonPressed = false;
         static void buttonChange() {
-            bool wasPressed = getInstance()->buttonPressed;
-            getInstance()->buttonPressed = (digitalRead(Config::ServiceButtonPin) == LOW);
-            if (!wasPressed && getInstance()->buttonPressed) {
-                getInstance()->buttonPressStart = millis();
+            auto hg = getInstance();
+            bool wasPressed = hg->buttonPressed;
+            hg->buttonPressed = (digitalRead(Config::ServiceButtonPin) == LOW);
+            if (!wasPressed && hg->buttonPressed) {
+                hg->buttonPressStart = millis();
             }
         }
         static void checkServiceButton() {
@@ -163,11 +164,12 @@ namespace Service {
             }
             buttonChange();
             int64_t elapsed = 0;
-            if (getInstance()->buttonPressed) {
+            auto hg = getInstance();
+            if (hg->buttonPressed) {
                 // released
-                elapsed = millis() - getInstance()->buttonPressStart;
+                elapsed = millis() - hg->buttonPressStart;
                 if (elapsed > Config::ConfigureButtonPushInterval) {
-                    getInstance()->getNetManager().getWiFiManager().configure();
+                    hg->getNetManager().getWiFiManager().configure();
                 }
             }
         }
