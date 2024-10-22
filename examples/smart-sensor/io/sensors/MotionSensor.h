@@ -5,7 +5,7 @@
 #ifndef HOMEGENIE_MINI_MOTIONSENSOR_H
 #define HOMEGENIE_MINI_MOTIONSENSOR_H
 
-#include "src/HomeGenie.h"
+#include <HomeGenie.h>
 
 #define MOTION_SENSOR_NS_PREFIX           "IO::Sensors::MotionSensor"
 
@@ -15,14 +15,16 @@ namespace IO { namespace Sensors {
 
     class MotionSensor : Task, public IIOEventSender {
     public:
-        MotionSensor(uint8_t pin) {
+        explicit MotionSensor(uint8_t pin) {
             setLoopInterval(200);
             sensorPin = pin;
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
-            auto motionDetect = new ModuleParameter(IOEventPaths::Sensor_MotionDetect);
+            auto motionDetect = new ModuleParameter(IOEventPaths::Sensor_MotionDetect, "0");
             m->properties.add(motionDetect);
+            auto idleTime = new ModuleParameter(IOEventPaths::Status_IdleTime, "0");
+            m->properties.add(idleTime);
         }
         void begin() override;
         void loop() override;
@@ -30,6 +32,10 @@ namespace IO { namespace Sensors {
     private:
         uint8_t sensorPin = 0;
         bool motionDetected = false;
+        unsigned long idleTime = 0;
+        unsigned long lastUpdate = 0;
+        void clearIdle();
+        void updateIdle();
     };
 
 }} // Sensors

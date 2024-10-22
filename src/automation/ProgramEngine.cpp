@@ -58,7 +58,7 @@ namespace Automation {
                 ScheduledScript scheduledScript(jobs->shift());
                 scheduledScript.run();
             }
-            vTaskDelay(portTICK_PERIOD_MS * 100);
+            vTaskDelay(100 * portTICK_PERIOD_MS);
         }
     }
 #else
@@ -76,7 +76,16 @@ namespace Automation {
 #endif
 
     void ProgramEngine::run(Schedule* schedule) {
-        ProgramEngine::scheduleList.add(schedule);
+        bool exists = false;
+        for (auto s : scheduleList) {
+            if (s == schedule) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            ProgramEngine::scheduleList.add(schedule);
+        }
     }
 
 }

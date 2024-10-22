@@ -34,11 +34,11 @@ namespace Data {
         ModuleParameter() {
             updateTime = getFormattedDate();
         }
-        ModuleParameter(String name): ModuleParameter() {
+        explicit ModuleParameter(String name): ModuleParameter() {
             this->name = name;
         };
         ModuleParameter(String name, String value): ModuleParameter(name) {
-            this->value = value;
+            setValue(value.c_str());
         };
 
         bool is(const char* n) const {
@@ -55,6 +55,23 @@ namespace Data {
     private:
         String getFormattedDate() {
             return Net::TimeClient::getTimeClient().getFormattedDate();
+        }
+    };
+
+    class ModuleReference {
+    public:
+        String serviceId;
+        String domain;
+        String address;
+        ModuleReference(const char* d, const char* a) {
+            serviceId = "";
+            domain = d;
+            address = a;
+        }
+        ModuleReference(const char* s, const char* d, const char* a) {
+            serviceId = s;
+            domain = d;
+            address = a;
         }
     };
 
@@ -79,7 +96,7 @@ namespace Data {
             properties.add(new ModuleParameter(pn, pv));
             return false;
         }
-        ModuleParameter* getProperty(String pn) {
+        ModuleParameter* getProperty(String pn) const {
             for(int p = 0; p < properties.size(); p++) {
                 auto param = properties.get(p);
                 if (param->is(pn.c_str())) {
@@ -88,15 +105,8 @@ namespace Data {
             }
             return nullptr;
         }
-    };
-
-    class ModuleReference {
-    public:
-        String domain;
-        String address;
-        ModuleReference(const char* d, const char* a) {
-            domain = d;
-            address = a;
+        ModuleReference* getReference() const {
+            return new ModuleReference(Config::system.id.c_str(), domain.c_str(), address.c_str());
         }
     };
 

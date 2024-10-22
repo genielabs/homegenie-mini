@@ -35,6 +35,7 @@ namespace Net {
 #ifdef ESP32
     esp_wps_config_t WiFiManager::wps_config;
     bool WiFiManager::esp32_wps_started = false;
+    unsigned long WiFiManager::esp32_wps_waiting_connect_ts = 0;
 #endif
 
     WiFiManager::WiFiManager() {
@@ -72,7 +73,7 @@ namespace Net {
     void WiFiManager::loop() {
         if (!Config::isDeviceConfigured()) return;
         auto status = ESP_WIFI_STATUS;
-        if (status != wiFiStatus || millis() - lastStatusCheckTs > 10000) {
+        if (status != wiFiStatus || millis() - lastStatusCheckTs > 15000) {
             checkWiFiStatus();
             wiFiStatus = status;
             lastStatusCheckTs = millis();
@@ -140,7 +141,6 @@ namespace Net {
                     break;
                 case WL_IDLE_STATUS:
                     IO::Logger::error("|  x WiFi idle (?)");
-                    connect();
                     break;
             }
         }

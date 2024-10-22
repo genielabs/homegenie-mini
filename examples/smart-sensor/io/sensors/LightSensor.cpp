@@ -41,7 +41,7 @@ namespace IO { namespace Sensors {
         if (lightLevel != currentLevel) {
             currentLevel = lightLevel;
             Logger::info("@%s [%s %d]", LIGHTSENSOR_NS_PREFIX, IOEventPaths::Sensor_Luminance, currentLevel);
-            sendEvent(IOEventPaths::Sensor_Luminance, (uint16_t *)&currentLevel, SensorLight);
+            sendEvent(IOEventPaths::Sensor_Luminance, &currentLevel, SensorLight);
         }
     }
 

@@ -121,6 +121,35 @@ String Utility::getByteString(uint64_t *data, uint16_t length) {
     return stringData;
 }
 
+ColorHSV Utility::rgb2hsv(float r, float g, float b) {
+    // R, G, B values are divided by 255
+    // to change the range from 0..255 to 0..1:
+    float h, s, v;
+    r /= 255.0;
+    g /= 255.0;
+    b /= 255.0;
+    float cmax = max(r, g, b); // maximum of r, g, b
+    float cmin = min(r, g, b); // minimum of r, g, b
+    float diff = cmax-cmin; // diff of cmax and cmin.
+    float degmax = 360.0f;
+    if (cmax == cmin)
+        h = 0;
+    else if (cmax == r)
+        h = fmod((60 * ((g - b) / diff) + 360), degmax);
+    else if (cmax == g)
+        h = fmod((60 * ((b - r) / diff) + 120), degmax);
+    else if (cmax == b)
+        h = fmod((60 * ((r - g) / diff) + 240), degmax);
+    // if cmax equal zero
+    if (cmax == 0)
+        s = 0;
+    else
+        s = (diff / cmax) * 100;
+    // compute v
+    v = cmax * 100;
+    return ColorHSV{h / degmax, s / 100.0f, v / 100.0f};
+}
+
 ColorRGB Utility::hsv2rgb(float h, float s, float v) {
     float r, g, b;
 

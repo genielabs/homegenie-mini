@@ -33,7 +33,7 @@
 
 namespace Automation {
 
-    const char baseCode[] PROGMEM = "const $$ = {\n"
+    static const char baseCode[] PROGMEM = "const $$ = {\n"
             "  get net() {\n"
             "    _url = '';\n"
             "    _command = '';\n"
@@ -110,7 +110,10 @@ namespace Automation {
             "    return __onNext();\n"
             "  },\n"
             "  data: function(k, v) {\n"
-            "    __log(k, v);\n" // TODO: 2B implemented
+            "    __log(k, v);\n" // TODO: cross-instance persistent data(<key>, <value>) 2B implemented
+            "  },\n"
+            "  log: function(k, v) {\n"
+            "    __log(k, v);\n"
             "  },\n"
             "  pause: function(seconds) {\n"
             "    __pause(seconds);\n"
@@ -145,7 +148,7 @@ namespace Automation {
         duk_push_c_lightfunc(ctx, schedule_on_next, 1, 1, 0);
         duk_put_global_string(ctx, "__onNext");
 
-        duk_push_c_lightfunc(ctx, netHelper_call, 0, 0, 0);
+        duk_push_c_lightfunc(ctx, netHelper_call, 1, 1, 0);
         duk_put_global_string(ctx, "__netHelper_call");
 
         duk_push_c_lightfunc(ctx, netHelper_ping, 1, 1, 0);
@@ -187,8 +190,7 @@ namespace Automation {
     duk_ret_t ScheduledScript::schedule_on_previous(duk_context *ctx) {
         duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
         auto schedule = (Schedule*)duk_get_pointer(ctx, -1);
-        time_t ts = time(0) - 60; // check one minute before now
-        bool result = schedule->occurs(ts);
+        bool result = schedule->info.onPreviousMinute > 0;
         duk_push_boolean(ctx, result);
         return 1;
     }
@@ -196,8 +198,7 @@ namespace Automation {
     duk_ret_t ScheduledScript::schedule_on_next(duk_context *ctx) {
         duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
         auto schedule = (Schedule*)duk_get_pointer(ctx, -1);
-        time_t ts = time(0) + 60; // check one minute after now
-        bool result = schedule->occurs(ts);
+        bool result = schedule->info.onNextMinute > 0;
         duk_push_boolean(ctx, result);
         return 1;
     }
@@ -276,10 +277,18 @@ namespace Automation {
         for (auto mr: schedule->boundModules) {
             String apiCommand = String("/api/") + mr->domain + String("/") + mr->address + String("/") + String(command) + String("/") + String(options);
 
-            // TODO: add support for generic HTTP commands
+            if (mr->serviceId.indexOf("://") > 0) {
+                if (mr->serviceId.endsWith("/")) {
+                    apiCommand = mr->serviceId + apiCommand.substring(1);
+                } else {
+                    apiCommand = mr->serviceId + apiCommand;
+                }
+                Helpers::NetHelper::httpGet(apiCommand);
+            } else {
+                auto callback = DummyResponseCallback();
+                ProgramEngine::apiRequest(schedule, apiCommand.c_str(), &callback);
+            }
 
-            auto callback = DummyResponseCallback();
-            ProgramEngine::apiRequest(schedule, apiCommand.c_str(), &callback);
         }
     }
 

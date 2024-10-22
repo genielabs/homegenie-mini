@@ -39,6 +39,12 @@ typedef struct ColorRGB {
     int b;
 } ColorRGB; // renamed from RGBColor to ColorRGB to prevent conflicts with LGFX
 
+typedef struct ColorHSV {
+    float h;
+    float s;
+    float v;
+} ColorHSV;
+
 
 class Utility {
 public:
@@ -55,8 +61,16 @@ public:
     static uint32_t reverseBits(uint32_t n);
     static uint8_t reverseByte(uint8_t n);
     static ColorRGB hsv2rgb(float H, float S, float V);
+    static ColorHSV rgb2hsv(float r, float g, float b);
     static uint32_t getFreeMem();
     static time_t relativeUtcHoursToLocalTime(double relativeHours, time_t time);
+private:
+    static float max(float a, float b, float c) {
+        return ((a > b)? (a > c ? a : c) : (b > c ? b : c));
+    }
+    static float min(float a, float b, float c) {
+        return ((a < b)? (a < c ? a : c) : (b < c ? b : c));
+    }
 };
 
 #endif //HOMEGENIE_MINI_UTILITY_H

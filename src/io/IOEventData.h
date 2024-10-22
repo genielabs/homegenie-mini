@@ -37,7 +37,8 @@ namespace IO {
         UnsignedNumber,
         SensorLight,
         SensorTemperature,
-        SensorHumidity
+        SensorHumidity,
+        SensorColorHsv
     };
 
     class IOEventBinaryData {

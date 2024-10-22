@@ -23,38 +23,8 @@
  *
  *
  * Releases:
- * - 2019-01-10 v1.0: initial release.
+ * - 2019-01-13 Initial release
  *
  */
 
-
-#include <HomeGenie.h>
-
-#include "CommonSensors.h"
-
-using namespace Service;
-
-HomeGenie* homeGenie;
-Module* miniModule;
-
-void setup() {
-
-    homeGenie = HomeGenie::getInstance();
-
-    miniModule = homeGenie->getDefaultModule();
-    miniModule->setProperty("Widget.Implements.Scheduling", "1", nullptr, UnsignedNumber);
-    miniModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1", nullptr, UnsignedNumber);
-
-    includeCommonSensors(homeGenie, miniModule);
-
-    Config::system.friendlyName = "Smart Sensor";
-    homeGenie->begin();
-
-}
-
-void loop()
-{
-
-    homeGenie->loop();
-
-}
+#include "Schedule.h"

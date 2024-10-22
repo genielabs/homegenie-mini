@@ -19,6 +19,9 @@ In addition to default system options the following configuration options are av
 | `soth-pin` | Temperature sensor GPIO#            | -1      |
 | `sdht-typ` | Temperature + Humidity sensor type  | -1      |
 | `sdht-pin` | Temperature + Humidity sensor GPIO# | -1      |
+| `colr-typ` | Color sensor type                   | -1      |
+| `colr-sda` | Color sensor SDA pin                | -1      |
+| `colr-scl` | Color sensor SCL pin                | -1      |
 
 
 ### Manual build and install

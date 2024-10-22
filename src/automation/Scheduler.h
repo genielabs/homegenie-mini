@@ -33,75 +33,28 @@
 #include <LinkedList.h>
 #include <LittleFS.h>
 
-#include "data/Module.h"
-#include "ExtendedCron.h"
+#include "Schedule.h"
 
 #define SCHEDULER_NS_PREFIX            "Automation::Scheduler"
 
 namespace Automation {
-
-    using namespace Data;
-
-    namespace ScheduleField {
-        static const char name[] = "Name";
-        static const char description[] = "Description";
-        static const char data[] = "Data";
-        static const char cronExpression[] = "CronExpression";
-        static const char script[] = "Script";
-        static const char boundDevices[] = "BoundDevices";
-        static const char boundModules[] = "BoundModules";
-    };
-    namespace ScheduleData {
-        static const char fileName[] = "/schedules.json";
-    }
-
-    class Schedule {
-    public:
-        Schedule(const char* n, const char* d, const char* dt, const char* cs, const char* jscript) {
-            name = n;
-            description = d;
-            data = dt;
-            cronExpression = cs;
-            script = jscript;
-        }
-        ~Schedule() {
-            for (auto && bd : boundDevices) {
-                delete bd;
-            }
-            for (auto && bm : boundModules) {
-                delete bm;
-            }
-        }
-        bool occurs(time_t ts) {
-            return ExtendedCron::IsScheduling(ts, cronExpression);
-        }
-        bool wasScheduled(time_t ts) const {
-            return ExtendedCron::normalizeStartTime(lastOccurrence) == ExtendedCron::normalizeStartTime(ts);
-        }
-        void setScheduled(time_t ts) {
-            lastOccurrence = ts;
-        }
-        bool isEnabled = true;
-        String name;
-        String description;
-        String data;
-        String cronExpression;
-        String script;
-        LinkedList<String*> boundDevices; // list of device types that can use this schedule
-        LinkedList<ModuleReference*> boundModules; // list of modules using this schedule
-    private:
-        time_t lastOccurrence;
-    };
 
     class SchedulerListener {
     public:
         virtual void onSchedule(Schedule* schedule) = 0;
     };
 
-    class Scheduler: Task {
+#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
+    class Scheduler
+#else
+    class Scheduler: Task
+#endif
+    {
     public:
         Scheduler() {
+#ifndef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
             setLoopInterval(1000);
+#endif
             Scheduler::load();
         }
         static void setListener(SchedulerListener* l) {
@@ -109,11 +62,16 @@ namespace Automation {
         };
         // adds or updates a schedule
         static void addSchedule(Schedule*);
+        static void enableSchedule(const char* name);
+        static void disableSchedule(const char* name);
         static void deleteSchedule(const char* name);
         static Schedule* get(const char* name);
         static LinkedList<Schedule*> getScheduleList();
+#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
+        static void worker();
+#else
         void loop() override;
-        //static void loop();
+#endif
         static void load();
         static void save();
         static Schedule* getScheduleFromJson(JsonVariant json);
@@ -126,6 +84,7 @@ namespace Automation {
         //       - handleRuntimeEvent(const char* key, const char* value, ..)
         static SchedulerListener* listener;
         static int lastCheckMinute;
+        static ModuleReference* parseModuleReference(JsonObject& em);
     };
 
 }

@@ -30,9 +30,9 @@
 #ifndef HOMEGENIE_MINI_DS18B20_H
 #define HOMEGENIE_MINI_DS18B20_H
 
-#include "src/HomeGenie.h"
+#include <HomeGenie.h>
 
-#include ".pio/libdeps/smart-sensor/OneWire/OneWire.h"
+#include <OneWire.h>
 
 #define DS18B20_NS_PREFIX                      "IO::Sensors::DS18B10"
 #define DS18B20_SAMPLING_RATE           60000L
@@ -46,13 +46,13 @@ namespace IO { namespace Sensors {
 
     class DS18B20 : Task, public IIOEventSender {
     public:
-        DS18B20(uint8_t pin) {
+        explicit DS18B20(uint8_t pin) {
             setLoopInterval(DS18B20_SAMPLING_RATE);
             inputPin = pin;
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
-            auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature);
+            auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature, "0");
             m->properties.add(temperature);
         }
         void begin() override;

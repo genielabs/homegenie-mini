@@ -37,7 +37,6 @@ namespace Net {
     using namespace IO;
     using namespace Service;
 
-    const char SSDP_SchemaURL[] PROGMEM = "description.xml";
     const char SSDP_Name[] PROGMEM = CONFIG_DEVICE_MODEL_NAME;
     const char SSDP_SerialNumber[] PROGMEM = CONFIG_DEVICE_SERIAL_NUMBER;
     const char SSDP_ModelName[] PROGMEM = CONFIG_DEVICE_MODEL_NAME;
@@ -61,9 +60,9 @@ namespace Net {
         //    httpServer.send(200, "text/plain", "Hello World!");
         //});
 
-        httpServer.on("/description.xml", HTTP_GET, []() {
-            SSDPDevice.schema(httpServer.client());
-        });
+        //httpServer.on("/description.xml", HTTP_GET, []() {
+        //    SSDPDevice.schema(httpServer.client());
+        //});
 
 #ifndef DISABLE_SSE
         static HTTPServer* i = this;
@@ -88,11 +87,16 @@ namespace Net {
 
         String localIP = WiFi.localIP().toString();
         if (!ipAddress.equals(localIP) && !localIP.equals("0.0.0.0")) {
+            // New IP address
             ipAddress = localIP;
             //Logger::info("|  ✔ New IP address %s", ipAddress.c_str());
 
-            SSDPDevice.setSchemaURL(FPSTR(SSDP_SchemaURL));
-            SSDPDevice.setHTTPPort(80);
+            // SSDP UDN uuid
+            Config::system.id = SSDPDevice.getId();
+            //Logger::info("|  ✔ SSDP UDN uuid: ", Config::system.id.c_str());
+
+            String ssdpUri = Config::system.id + String(".xml");
+            SSDPDevice.setSchemaURL(FPSTR(ssdpUri.c_str()));
             SSDPDevice.setName(FPSTR(SSDP_Name));
             SSDPDevice.setSerialNumber(FPSTR(SSDP_SerialNumber));
             SSDPDevice.setURL(ipAddress);
@@ -102,10 +106,9 @@ namespace Net {
             SSDPDevice.setModelURL(FPSTR(SSDP_ModelURL));
             SSDPDevice.setManufacturer(FPSTR(SSDP_Manufacturer));
             SSDPDevice.setManufacturerURL(FPSTR(SSDP_ManufacturerURL));
+            SSDPDevice.setHTTPPort(80);
 
-            Config::system.id = SSDPDevice.getId();
             Logger::info("|  ✔ SSDP service");
-            //Logger::info("|  ✔ SSDP service id: ", Config::system.id.c_str());
 
             SSDPDevice.setFriendlyName(Config::system.friendlyName);
             Logger::info("|  ✔ UPnP friendly name: %s", Config::system.friendlyName.c_str());
@@ -142,6 +145,10 @@ namespace Net {
 #else
     bool HTTPServer::canHandle(HTTPMethod method, String uri) {
 #endif
+        String ssdpUri = String("/") + Config::system.id + String(".xml");
+        if (uri == ssdpUri) {
+            return true;
+        }
         return false;
     }
 
@@ -150,6 +157,11 @@ namespace Net {
 #else
     bool HTTPServer::handle(WebServer& server, HTTPMethod requestMethod, String requestUri) {
 #endif
+        String ssdpUri = String("/") + Config::system.id + String(".xml");
+        if (requestUri == ssdpUri) {
+            SSDPDevice.schema(httpServer.client());
+            return true;
+        }
         return false;
     }
     // END RequestHandler interface methods

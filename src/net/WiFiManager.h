@@ -67,9 +67,25 @@ namespace Net {
         static void connect();
         static bool configure();
         static bool checkWiFiStatus();
+#if ESP32
+        static bool wpsIsRegistering() {
+            return esp32_wps_waiting_connect_ts > 0;
+        }
+        static bool wpsIsTimedOut() {
+            // TODO: add constant WPS_REGISTER_TIMEOUT = 15000
+            return wpsIsRegistering() && (millis() - esp32_wps_waiting_connect_ts > 15000);
+        }
+        static bool wpsCancel() {
+            wpsStop();
+            Config::statusLedOff();
+        }
+#endif
     private:
         static wl_status_t wiFiStatus;
         static unsigned long lastStatusCheckTs;
+#if ESP32
+        static unsigned long esp32_wps_waiting_connect_ts;
+#endif
 
 #ifdef CONFIGURE_WITH_WPS
         static void setWiFiConfigured() {
@@ -125,6 +141,7 @@ namespace Net {
                 return false;
             }
             esp32_wps_started = true;
+            esp32_wps_waiting_connect_ts = 0;
             return true;
         }
         static void wpsStop() {
@@ -132,22 +149,26 @@ namespace Net {
                 // TODO: Serial.println("WPS Disable Failed");
             }
             esp32_wps_started = false;
+            esp32_wps_waiting_connect_ts = 0;
         }
         // WPS events handling
         static void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info) {
             switch (event) {
                 case ARDUINO_EVENT_WPS_ER_SUCCESS: {
                     wpsStop();
-                    WiFi.begin();
+                    esp32_wps_waiting_connect_ts = millis();
+                    Config::statusLedOn();
                     connect();
                 } break;
                 case ARDUINO_EVENT_WIFI_STA_GOT_IP: {
                     setWiFiConfigured();
+                    esp32_wps_waiting_connect_ts = 0;
+                    Config::statusLedOff();
                 } break;
                 case ARDUINO_EVENT_WPS_ER_FAILED:
-                case ARDUINO_EVENT_WPS_ER_TIMEOUT:
+                case ARDUINO_EVENT_WPS_ER_TIMEOUT: {
                     wpsStop();
-                    break;
+                } break;
                 case ARDUINO_EVENT_WIFI_STA_START:
                 case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
                 case ARDUINO_EVENT_WPS_ER_PIN:

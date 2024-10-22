@@ -244,3 +244,55 @@ void setupControlButtons(Module* miniModule) {
     }
 
 }
+
+#ifndef DISABLE_AUTOMATION
+void setupDefaultSchedules() {
+
+    // Create default Dawn scene
+    if (Scheduler::get("Dawn") == nullptr) {
+        auto s = new Schedule("Dawn", "Dawn scene colors, 24 minutes before sunrise.", "", "@SolarTimes.Sunrise - 24", "$$.boundModules.on();");
+        s->onModuleEvent = false;
+        //s->eventModules.add(miniModule->getReference());
+        // UI state data
+        s->data = R"({"action":{"template":{"forEach":{"config":{"color":"#FF9100|30.0"},"enabled":true,"id":"command_set_color"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[],"from":"","itemType":3,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})";
+        // Device types allowed
+        s->boundDevices.add(new String("Dimmer"));
+        s->boundDevices.add(new String("Color"));
+        Scheduler::addSchedule(s);
+    }
+
+    // Create default Dusk scene
+    if (Scheduler::get("Dusk") == nullptr) {
+        auto s = new Schedule("Dusk", "Dusk scene colors, 42 minutes after sunset.", "", "@SolarTimes.Sunset + 42", "$$.boundModules.on();");
+        s->onModuleEvent = false;
+        //s->eventModules.add(miniModule->getReference());
+        // UI state data
+        s->data = R"({"action":{"template":{"forEach":{"config":{"color":"#0099FF|30.0"},"enabled":true,"id":"command_set_color"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[],"from":"","itemType":3,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})";
+        // Device types allowed
+        s->boundDevices.add(new String("Dimmer"));
+        s->boundDevices.add(new String("Color"));
+        Scheduler::addSchedule(s);
+    }
+
+    // Create default Light.OFF scene
+    if (Scheduler::get("Lights.Off") == nullptr) {
+        auto s = new Schedule("Lights.Off", "Ensure lights are turned off every day at 2AM.", "", "0 2 * * *", "$$.boundModules.off();");
+        s->onModuleEvent = false;
+        //s->eventModules.add(miniModule->getReference());
+        // UI state data
+        s->data = R"({"action":{"template":{"forEach":{"config":{},"enabled":true,"id":"command_turn_off"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[],"from":"","itemType":1,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[{"end":"02:00","start":"02:00"}],"to":""})";
+        // Device types allowed
+        s->boundDevices.add(new String("Light"));
+        s->boundDevices.add(new String("Dimmer"));
+        s->boundDevices.add(new String("Color"));
+        Scheduler::addSchedule(s);
+    }
+
+    if (true || Scheduler::getScheduleList().size() == 0) {
+
+        // TODO: if added at least one schedule then  ->  Scheduler::save();
+
+    }
+
+}
+#endif // DISABLE_AUTOMATION

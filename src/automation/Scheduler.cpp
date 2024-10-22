@@ -36,6 +36,7 @@ namespace Automation {
     SchedulerListener* Scheduler::listener = nullptr;
     int Scheduler::lastCheckMinute = -1;
 
+    // Adds or updates
     void Scheduler::addSchedule(Schedule* schedule) {
         int existingIndex = -1;
         for (int i = 0; i < scheduleList.size(); i++) {
@@ -48,6 +49,33 @@ namespace Automation {
         }
         scheduleList.add(existingIndex, schedule);
         save();
+        // update and cache current occurrences
+        time_t now = time(0);
+        if (schedule->isEnabled) {
+            schedule->occursUpdate(now);
+        }
+    }
+
+    void Scheduler::enableSchedule(const char* name) {
+        for (int i = 0; i < scheduleList.size(); i++) {
+            auto s = scheduleList.get(i);
+            if (s->name == name) {
+                s->isEnabled = true;
+                save();
+                break;
+            }
+        }
+    }
+
+    void Scheduler::disableSchedule(const char* name) {
+        for (int i = 0; i < scheduleList.size(); i++) {
+            auto s = scheduleList.get(i);
+            if (s->name == name) {
+                s->isEnabled = false;
+                save();
+                break;
+            }
+        }
     }
 
     void Scheduler::deleteSchedule(const char* name) {
@@ -55,10 +83,10 @@ namespace Automation {
             auto s = scheduleList.get(i);
             if (s->name == name) {
                 scheduleList.remove(i);
+                save();
                 break;
             }
         }
-        save();
     }
 
     Schedule* Scheduler::get(const char* name) {
@@ -75,28 +103,69 @@ namespace Automation {
         return scheduleList;
     }
 
-    void Scheduler::loop() {
-        auto now = time(0);
-        tm* t = localtime(&now);
-        if (t->tm_min == lastCheckMinute || millis() < 10000) return;
-        lastCheckMinute = t->tm_min;
-        //for(;;) {
-        //    int lastRun = millis() % 1000;
+    bool firstRun = true;
+    int preemptiveDelay = 0;
+#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
+    void Scheduler::worker() {
+        for(;;) {
+            auto now = time(0) + preemptiveDelay;
+            tm* t = localtime(&now);
+            if (t->tm_min == lastCheckMinute || now < 645120000) continue; /* continue; */
+            lastCheckMinute = t->tm_min;
             for (int i = 0; i < scheduleList.size(); i++) {
                 auto schedule = scheduleList.get(i);
-                if (schedule->isEnabled && !schedule->wasScheduled(now) && schedule->occurs(now)) {
+                // check if schedule is occurring right now and fire `onSchedule` event if so
+                if (schedule->isEnabled && !schedule->wasScheduled(now) && schedule->occursUpdate(now) && !schedule->onModuleEvent) {
                     schedule->setScheduled(now);
-                    if (listener != nullptr && schedule->boundModules.size() > 0) {
-                        Logger::info(":%s [Scheduler::Event] >> ['%s' triggered]", SCHEDULER_NS_PREFIX,
-                                     schedule->name.c_str());
-                        listener->onSchedule(schedule);
+                    if (!firstRun) {
+                        if (listener != nullptr && schedule->boundModules.size() > 0) {
+                            Logger::info(":%s [Scheduler::Event] >> ['%s' triggered]", SCHEDULER_NS_PREFIX,
+                                         schedule->name.c_str());
+                            listener->onSchedule(schedule);
+                        }
                     }
                 }
             }
-        //    int delayMs = 1000 - lastRun;
-        //    vTaskDelay(portTICK_PERIOD_MS * delayMs);
-        //}
+            preemptiveDelay = time(0) + preemptiveDelay - now;
+            if (preemptiveDelay < 0) preemptiveDelay = 0;
+            else if (preemptiveDelay > 30) preemptiveDelay = 30;
+            if (firstRun) {
+                firstRun = false;
+                // 3 are the calculated occurrences on the first run (prev, now, next)
+                preemptiveDelay = preemptiveDelay / 3;
+            }
+            vTaskDelay(1000 * portTICK_PERIOD_MS);
+        }
     }
+#else
+    void Scheduler::loop() {
+            auto now = time(0) + preemptiveDelay;
+            tm* t = localtime(&now);
+            if (t->tm_min == lastCheckMinute || now < 645120000) return;
+            lastCheckMinute = t->tm_min;
+            for (int i = 0; i < scheduleList.size(); i++) {
+                auto schedule = scheduleList.get(i);
+                if (schedule->isEnabled && !schedule->wasScheduled(now) && schedule->occursUpdate(now) && !schedule->onModuleEvent) {
+                    schedule->setScheduled(now);
+                    if (!firstRun) {
+                        if (listener != nullptr && schedule->boundModules.size() > 0) {
+                            Logger::info(":%s [Scheduler::Event] >> ['%s' triggered]", SCHEDULER_NS_PREFIX,
+                                         schedule->name.c_str());
+                            listener->onSchedule(schedule);
+                        }
+                    }
+                }
+            }
+            preemptiveDelay = time(0) + preemptiveDelay - now;
+            if (preemptiveDelay < 0) preemptiveDelay = 0;
+            else if (preemptiveDelay > 30) preemptiveDelay = 30;
+            if (firstRun) {
+                firstRun = false;
+                // 3 are the calculated occurrences on the first run (prev, now, next)
+                preemptiveDelay = preemptiveDelay / 3;
+            }
+    }
+#endif
 
     void Scheduler::load() {
         auto fs = LittleFS;
@@ -156,6 +225,22 @@ namespace Automation {
                 v[ScheduleField::script].as<const char*>()
         );
 
+        if (v.containsKey(ScheduleField::isEnabled)) {
+            schedule->isEnabled = v[ScheduleField::isEnabled].as<bool>();
+        }
+
+        if (v.containsKey(ScheduleField::onModuleEvent)) {
+            schedule->onModuleEvent = v[ScheduleField::onModuleEvent].as<bool>();
+        }
+
+        if (v.containsKey(ScheduleField::eventModules)) {
+            auto eventModules = v[ScheduleField::eventModules].as<JsonArray>();
+            for (auto eventModule: eventModules) {
+                auto em = eventModule.as<JsonObject>();
+                auto mr = parseModuleReference(em);
+                schedule->eventModules.add(mr);
+            }
+        }
         if (v.containsKey(ScheduleField::boundDevices)) {
             auto boundDevices = v[ScheduleField::boundDevices].as<JsonArray>();
             for (auto boundModule: boundDevices) {
@@ -167,9 +252,7 @@ namespace Automation {
             auto boundModules = v[ScheduleField::boundModules].as<JsonArray>();
             for (auto boundModule: boundModules) {
                 auto bm = boundModule.as<JsonObject>();
-                String domain = bm["Domain"].as<const char *>();
-                String address = bm["Address"].as<const char *>();
-                auto mr = new ModuleReference(domain.c_str(), address.c_str());
+                auto mr = parseModuleReference(bm);
                 schedule->boundModules.add(mr);
             }
         }
@@ -184,6 +267,16 @@ namespace Automation {
         s[ScheduleField::data] = schedule->data;
         s[ScheduleField::cronExpression] = schedule->cronExpression;
         s[ScheduleField::script] = schedule->script;
+        s[ScheduleField::isEnabled] = schedule->isEnabled;
+        s[ScheduleField::onModuleEvent] = schedule->onModuleEvent;
+        JsonArray eventModules = s[ScheduleField::eventModules].to<JsonArray>();
+        for (int b = 0; b < schedule->eventModules.size(); b++) {
+            auto m = schedule->eventModules.get(b);
+            JsonObject mr = eventModules.add<JsonObject>();
+            mr["ServiceId"] = m->serviceId;
+            mr["Domain"] = m->domain;
+            mr["Address"] = m->address;
+        }
         JsonArray boundDevices = s[ScheduleField::boundDevices].to<JsonArray>();
         for (int b = 0; b < schedule->boundDevices.size(); b++) {
             auto d = schedule->boundDevices.get(b);
@@ -192,9 +285,10 @@ namespace Automation {
         JsonArray boundModules = s[ScheduleField::boundModules].to<JsonArray>();
         for (int b = 0; b < schedule->boundModules.size(); b++) {
             auto m = schedule->boundModules.get(b);
-            JsonObject module = boundModules.add<JsonObject>();
-            module["Domain"] = m->domain;
-            module["Address"] = m->address;
+            JsonObject mr = boundModules.add<JsonObject>();
+            mr["ServiceId"] = m->serviceId;
+            mr["Domain"] = m->domain;
+            mr["Address"] = m->address;
         }
     }
 
@@ -208,6 +302,16 @@ namespace Automation {
         String output;
         serializeJson(doc, output);
         return output;
+    }
+
+    ModuleReference* Scheduler::parseModuleReference(JsonObject& em) {
+        String serviceId = "";
+        if (em.containsKey("ServiceId")) {
+            serviceId = em["ServiceId"].as<const char *>();
+        }
+        String domain = em["Domain"].as<const char *>();
+        String address = em["Address"].as<const char *>();
+        return new ModuleReference(serviceId.c_str(), domain.c_str(), address.c_str());
     }
 
 }

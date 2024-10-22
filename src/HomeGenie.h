@@ -176,25 +176,33 @@ namespace Service {
 
         uint64_t statusLedTs;
         void statusLedLoop() {
-            if (WiFi.isConnected()) {
-                // when connected the LED will blink quickly every 2 seconds
-                if (millis() - statusLedTs > 1950 && !Config::isStatusLedOn) {
-                    Config::statusLedOn();
-                    statusLedTs = millis();
-                } else if (Config::isStatusLedOn && millis() - statusLedTs > 50) {
-                    Config::statusLedOff();
-                    statusLedTs = millis();
+#ifdef ESP32
+            if (!Net::WiFiManager::wpsIsRegistering()) {
+#endif
+                if (WiFi.isConnected()) {
+                    // when connected the LED will blink quickly every 2 seconds
+                    if (millis() - statusLedTs > 1950 && !Config::isStatusLedOn) {
+                        Config::statusLedOn();
+                        statusLedTs = millis();
+                    } else if (Config::isStatusLedOn && millis() - statusLedTs > 50) {
+                        Config::statusLedOff();
+                        statusLedTs = millis();
+                    }
+                } else {
+                    // if not connected the LED will blink quickly every 200ms
+                    if (millis() - statusLedTs > 100 && !Config::isStatusLedOn) {
+                        Config::statusLedOn();
+                        statusLedTs = millis();
+                    } else if (Config::isStatusLedOn && millis() - statusLedTs > 100) {
+                        Config::statusLedOff();
+                        statusLedTs = millis();
+                    }
                 }
-            } else {
-                // if not connected the LED will blink quickly every 200ms
-                if (millis() - statusLedTs > 100 && !Config::isStatusLedOn) {
-                    Config::statusLedOn();
-                    statusLedTs = millis();
-                } else if (Config::isStatusLedOn && millis() - statusLedTs > 100) {
-                    Config::statusLedOff();
-                    statusLedTs = millis();
-                }
+#ifdef ESP32
+            } else if (Net::WiFiManager::wpsIsTimedOut()) {
+                Net::WiFiManager::wpsCancel();
             }
+#endif
         }
 
     };

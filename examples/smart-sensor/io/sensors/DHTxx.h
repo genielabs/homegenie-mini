@@ -30,9 +30,9 @@
 #ifndef HOMEGENIE_MINI_DHTXX_H
 #define HOMEGENIE_MINI_DHTXX_H
 
-#include <dhtnew.h>
-
 #include <HomeGenie.h>
+
+#include <dhtnew.h>
 
 #define DHTXX_NS_PREFIX       "IO::Sensors::DHTxx"
 #define SENSOR_SAMPLING_RATE  30000L
@@ -45,7 +45,7 @@ namespace IO { namespace Sensors {
     public:
         float_t temperature;
         float_t humidity;
-        DHTxxSensorData(DHTxxSensorData* data = nullptr) {
+        explicit DHTxxSensorData(DHTxxSensorData* data = nullptr) {
             if (data != nullptr) {
                 temperature = data->temperature;
                 humidity = data->humidity;
@@ -63,9 +63,9 @@ namespace IO { namespace Sensors {
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
-            auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature);
+            auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature, "0");
             m->properties.add(temperature);
-            auto humidity = new ModuleParameter(IOEventPaths::Sensor_Humidity);
+            auto humidity = new ModuleParameter(IOEventPaths::Sensor_Humidity, "0");
             m->properties.add(humidity);
         }
         void begin() override;

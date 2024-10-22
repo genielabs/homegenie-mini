@@ -34,11 +34,11 @@ namespace Service { namespace API {
     HomeGenieHandler::HomeGenieHandler(GPIOPort* gpioPort) {
         this->gpioPort = gpioPort;
         // HomeGenie Mini module (default module)
-        auto miniModule = new Module();
+        miniModule = new Module();
         miniModule->domain = IO::IOEventDomains::HomeAutomation_HomeGenie;
         miniModule->address = CONFIG_BUILTIN_MODULE_ADDRESS;
         miniModule->type = "Sensor";
-        miniModule->name = CONFIG_BUILTIN_MODULE_NAME;
+        miniModule->name = Config::system.friendlyName;
         miniModule->description = "HomeGenie Mini node";
         moduleList.add(miniModule);
     }
@@ -134,16 +134,18 @@ namespace Service { namespace API {
                             bool exits = false;
                             auto boundModules = &schedule->boundModules;
                             for (int i = 0; i < boundModules->size(); i++) {
-                                if (boundModules->get(i)->domain == domain && boundModules->get(i)->address == address) {
+                                auto bm = boundModules->get(i);
+                                auto sid = bm->serviceId;
+                                if ((sid.isEmpty() || sid == Config::system.id) && bm->domain == domain && bm->address == address) {
                                     exits = true;
                                     break;
                                 }
                             }
                             if (!exits) {
-                                auto mr = new ModuleReference(domain.c_str(), address.c_str());
+                                auto mr = module->getReference();
                                 boundModules->add(mr);
+                                Scheduler::save();
                             }
-                            Scheduler::save();
                         } else {
                             responseCallback->writeAll(HomeGenieHandlerResponseStatus::ERROR_NO_SCHEDULE_WITH_THE_GIVEN_NAME);
                             return true;
@@ -156,13 +158,15 @@ namespace Service { namespace API {
                         if (schedule != nullptr) {
                             auto boundModules = &schedule->boundModules;
                             for (int i = 0; i < boundModules->size(); i++) {
-                                if (boundModules->get(i)->domain == domain && boundModules->get(i)->address == address) {
+                                auto bm = boundModules->get(i);
+                                auto sid = bm->serviceId;
+                                if ((sid.isEmpty() || sid == Config::system.id) && bm->domain == domain && bm->address == address) {
                                     auto mr = boundModules->remove(i);
                                     delete mr;
+                                    Scheduler::save();
                                     break;
                                 }
                             }
-                            Scheduler::save();
                         } else {
                             responseCallback->writeAll(HomeGenieHandlerResponseStatus::ERROR_NO_SCHEDULE_WITH_THE_GIVEN_NAME);
                             return true;
@@ -238,6 +242,14 @@ namespace Service { namespace API {
                 }
 
                 return false;
+            } else if (request->Command == AutomationApi::Scheduling_Enable) {
+                Scheduler::enableSchedule(request->getOption(0).c_str());
+                responseCallback->writeAll(ApiHandlerResponseText::OK);
+                return true;
+            } else if (request->Command == AutomationApi::Scheduling_Disable) {
+                Scheduler::disableSchedule(request->getOption(0).c_str());
+                responseCallback->writeAll(ApiHandlerResponseText::OK);
+                return true;
             } else if (request->Command == AutomationApi::Scheduling_Delete) {
                 // TODO: return -1 or the index of deleted item
                 Scheduler::deleteSchedule(request->getOption(0).c_str());
@@ -366,6 +378,7 @@ namespace Service { namespace API {
                             } else {
                                 Config::system.friendlyName = deviceName;
                                 Config::saveSetting(CONFIG_KEY_device_name, deviceName);
+                                miniModule->name = deviceName;
                             }
                         }
                         if (doc.containsKey("group")) {
@@ -458,9 +471,10 @@ namespace Service { namespace API {
                 return false;
             }
         } else {
+            // Control API implementation for integrated GPIO modules
             uint8_t pinNumber = request->Address.toInt();
             Module* module = getModule(request->Domain.c_str(), request->Address.c_str());
-            if (module != nullptr) {
+            if (module != nullptr && module != miniModule) {
 
                 auto levelProperty = module->getProperty(IOEventPaths::Status_Level);
                 if (levelProperty->value.toFloat() > 0) {
@@ -503,20 +517,27 @@ namespace Service { namespace API {
             auto m = QueuedMessage(domain, address, eventPath, "", eventData, dataType);
             // Data type handling
             switch (dataType) {
-                case SensorLight:
+                case SensorColorHsv: {
+                    auto color = (ColorHSV *) eventData;
+                    m.value = String(color->h, 4)
+                              + String(",") + String(color->s, 4)
+                              + String(",") + String(color->v, 4);
+                } break;
+                case SensorLight: {
                     m.value = String(*(uint16_t *) eventData);
-                    break;
+                } break;
                 case SensorTemperature:
                 case SensorHumidity:
-                case Float:
+                case Float: {
                     m.value = String(*(float_t *) eventData);
-                    break;
-                case UnsignedNumber:
+                } break;
+                case UnsignedNumber: {
                     m.value = String(*(uint32_t *) eventData);
-                    break;
+                } break;
                 case Number:
-                default:
+                default: {
                     m.value = String(*(int32_t *) eventData);
+                }
             }
             module->setProperty(event, m.value, eventData, dataType);
             HomeGenie::getInstance()->getEventRouter().signalEvent(m);

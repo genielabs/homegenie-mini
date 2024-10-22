@@ -129,6 +129,11 @@ void setup() {
         // Setup control buttons
         setupControlButtons(module);
 
+#ifndef DISABLE_AUTOMATION
+        // Setup example schedules/scenes
+        setupDefaultSchedules();
+#endif
+
         // Initialize FX buffer
         fx_init(ledsCount, currentColor);
 

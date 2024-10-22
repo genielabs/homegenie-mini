@@ -45,6 +45,7 @@ namespace Service { namespace API {
     private:
         GPIOPort* gpioPort;
         LinkedList<Module*> moduleList;
+        Module* miniModule;
     public:
         explicit HomeGenieHandler(GPIOPort* gpioPort);
         void init() override;

@@ -45,11 +45,11 @@ namespace IO { namespace Sensors {
         // signal value changes
         if (currentData.temperature != t) {
             Logger::info("@%s [%s %0.2f]", DHTXX_NS_PREFIX, IOEventPaths::Sensor_Temperature, currentData.temperature);
-            sendEvent(IOEventPaths::Sensor_Temperature, (float_t *)&currentData.temperature, SensorTemperature);
+            sendEvent(IOEventPaths::Sensor_Temperature, &currentData.temperature, SensorTemperature);
         }
         if (currentData.humidity != h) {
             Logger::info("@%s [%s %0.2f]", DHTXX_NS_PREFIX, IOEventPaths::Sensor_Humidity, currentData.humidity);
-            sendEvent(IOEventPaths::Sensor_Humidity, (float_t *)&currentData.humidity, SensorHumidity);
+            sendEvent(IOEventPaths::Sensor_Humidity, &currentData.humidity, SensorHumidity);
         }
 
         Logger::verbose("  > %s::loop() << END", DHTXX_NS_PREFIX);

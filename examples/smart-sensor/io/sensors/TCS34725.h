@@ -23,43 +23,46 @@
  *
  *
  * Releases:
- * - 2019-01-12 Initial release
+ * - 2024-10-17 Initial release
  *
  */
 
-#ifndef HOMEGENIE_MINI_LIGHTSENSOR_H
-#define HOMEGENIE_MINI_LIGHTSENSOR_H
+#ifndef HOMEGENIE_MINI_TCS34725_H
+#define HOMEGENIE_MINI_TCS34725_H
+
+#include <Adafruit_TCS34725.h>
 
 #include <HomeGenie.h>
 
-#define LIGHTSENSOR_NS_PREFIX           "IO::Sensors::LightSensor"
-#define LIGHTSENSOR_SAMPLING_RATE       5000L
+#define COLOR_SENSOR_NS_PREFIX           "IO::Sensors::ColorSensor"
 
 namespace IO { namespace Sensors {
 
     using namespace Service;
 
-    class LightSensor : Task, public IIOEventSender {
+    class TCS34725 : Task, public IIOEventSender {
     public:
-        explicit LightSensor(uint8_t pin) {
-            setLoopInterval(LIGHTSENSOR_SAMPLING_RATE);
-            inputPin = pin;
+        explicit TCS34725(uint8_t sdaPin, uint8_t sclPin) {
+            setLoopInterval(10000);
+            this->sdaPin = sdaPin;
+            this->sclPin = sclPin;
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
             auto luminance = new ModuleParameter(IOEventPaths::Sensor_Luminance, "0");
             m->properties.add(luminance);
         }
-
         void begin() override;
         void loop() override;
-        void setInputPin(uint8_t number);
-        uint16_t getLightLevel();
     private:
-        uint8_t inputPin = 0;
-        uint16_t currentLevel = 0;
+        Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_614MS, TCS34725_GAIN_1X);
+        uint8_t sdaPin = 4;
+        uint8_t sclPin = 5;
+        uint16_t lightLevel = 0;
+        bool initialized = false;
     };
 
-}}
+}} // IO::Sensors
 
-#endif //HOMEGENIE_MINI_LIGHTSENSOR_H
+
+#endif //HOMEGENIE_MINI_TCS34725_H
