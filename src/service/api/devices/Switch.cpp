@@ -33,10 +33,8 @@ namespace Service { namespace API { namespace devices {
         module->address = address;
         module->type = "Switch";
         module->name = name;
-        // add properties
-        auto propStatusLevel = new ModuleParameter(IOEventPaths::Status_Level);
-        propStatusLevel->value = "0";
-        module->properties.add(propStatusLevel);
+        // set properties
+        module->setProperty(IOEventPaths::Status_Level, "0");
 
         moduleList.add(module);
     }

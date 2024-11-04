@@ -31,9 +31,7 @@ namespace Service { namespace API { namespace devices {
         module->type = "Color";
 
         // add properties
-        auto propStatusColorHsb = new ModuleParameter(IOEventPaths::Status_ColorHsb);
-        propStatusColorHsb->setValue("0,0,1,.4");
-        module->properties.add(propStatusColorHsb);
+        module->setProperty(IOEventPaths::Status_ColorHsb, "0,0,1,.4");
 
         onSetLevel([this](float l) {
             color.setColor(color.getHue(), color.getSaturation(), l, defaultTransitionMs);

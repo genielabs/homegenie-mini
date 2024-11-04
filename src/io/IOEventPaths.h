@@ -44,6 +44,7 @@ namespace IO {
         const char Status_IdleTime[]  = "Status.IdleTime";
         const char Status_Battery[]  = "Status.Battery";
         const char Status_Error[]  = "Status.Error";
+        const char System_Status[]  = "System.Status";
         const char System_BytesFree[]  = "System.BytesFree";
         const char Events_Disabled[]  = "Events.Disable";
     }

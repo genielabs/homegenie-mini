@@ -83,7 +83,7 @@ namespace Data {
         String name;
         String description;
         LinkedList<ModuleParameter*> properties;
-        bool setProperty(String pn, String pv, void* data, IOEventDataType dataType) {
+        bool setProperty(String pn, String pv, void* data = nullptr, IOEventDataType dataType = Undefined) {
             for(int p = 0; p < properties.size(); p++) {
                 auto param = properties.get(p);
                 if (param->is(pn.c_str())) {

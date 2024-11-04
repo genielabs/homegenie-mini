@@ -166,6 +166,21 @@ namespace Automation {
         duk_push_pointer(ctx, schedule);
         duk_put_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
 
+        auto event = schedule->getLastEvent();
+        if (event != nullptr) {
+            auto obj_idx = duk_push_object(ctx);
+            duk_push_string(ctx, event->domain.c_str());
+            duk_put_prop_string(ctx, obj_idx, "domain");
+            duk_push_string(ctx, event->sender.c_str());
+            duk_put_prop_string(ctx, obj_idx, "address");
+            duk_push_string(ctx, event->event.c_str());
+            duk_put_prop_string(ctx, obj_idx, "property");
+            duk_push_string(ctx, event->value.c_str());
+            duk_put_prop_string(ctx, obj_idx, "value");
+            duk_put_global_string(ctx, "event");
+            schedule->setLastEvent(nullptr);
+        }
+
         const String scriptCode = baseCode + schedule->script;
 
         duk_peval_string(ctx, scriptCode.c_str());

@@ -47,14 +47,13 @@ namespace IO { namespace Sensors {
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
-            auto luminance = new ModuleParameter(IOEventPaths::Sensor_Luminance, "0");
-            m->properties.add(luminance);
+            m->setProperty(IOEventPaths::Sensor_Luminance, "0");
         }
 
         void begin() override;
         void loop() override;
         void setInputPin(uint8_t number);
-        uint16_t getLightLevel();
+        uint16_t getLightLevel(); // normalized value [0 .. 1000]
     private:
         uint8_t inputPin = 0;
         uint16_t currentLevel = 0;

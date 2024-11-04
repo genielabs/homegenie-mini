@@ -41,13 +41,11 @@ void setup() {
     // to configure parameters of this device implementation
 
     // Number select control to set the number of LEDs of the strip
-    miniModule->properties.add(
-            new ModuleParameter("Widget.OptionField.LED.count",
-                                "number:LED.count:1:1920:1:led_count"));
+    miniModule->setProperty("Widget.OptionField.LED.count",
+                            "number:LED.count:1:1920:1:led_count");
     // Number select control to set maximum percentage of power that can be drawn
-    miniModule->properties.add(
-            new ModuleParameter("Widget.OptionField.LED.power",
-                                "number:LED.power:5:100:25:led_power"));
+    miniModule->setProperty("Widget.OptionField.LED.power",
+                            "number:LED.power:5:100:25:led_power");
 
     // The following are the actual properties where
     // UI controls implemented by `Widget.Options`
@@ -99,27 +97,26 @@ void setup() {
         mpMaxPower->value = String(maxPower);
 
         // Setup main LEDs control module
-        mainModule = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Color Light");
-        mainModule->module->properties.add(
-                new ModuleParameter("Widget.Preference.AudioLight", "true"));
-        mainModule->onSetColor([](LightColor color) {
+        colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Color Light");
+        colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
+        colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+        colorLight->module->setProperty("Widget.Preference.AudioLight", "true");
+        colorLight->onSetColor([](LightColor color) {
             currentColor = color;
             fx_reset(pixels, color);
         });
-        homeGenie->addAPIHandler(mainModule);
+        homeGenie->addAPIHandler(colorLight);
 
-        auto module = mainModule->module;
+        auto module = colorLight->module;
         module->name = "Smart Light";
 
         // Add to the ColorLight module some configuration properties:
         // - dropdown list control to select the light animation effect
-        module->properties.add(
-                new ModuleParameter("Widget.OptionField.FX.Rainbow",
-                                    "select:FX.Style:light_style:solid|rainbow|rainbow_2|white_stripes|white_stripes_2|kaleidoscope"));
+        module->setProperty("Widget.OptionField.FX.Rainbow",
+                            "select:FX.Style:light_style:solid|rainbow|rainbow_2|white_stripes|white_stripes_2|kaleidoscope");
         // - dropdown list control to enable the strobe effect
-        module->properties.add(
-                new ModuleParameter("Widget.OptionField.FX.Strobe",
-                                    "select:FX.Strobe:strobe_effect:off|slow|medium|fast"));
+        module->setProperty("Widget.OptionField.FX.Strobe",
+                            "select:FX.Strobe:strobe_effect:off|slow|medium|fast");
 
         mpFxStyle = new ModuleParameter("FX.Style", lightStyleNames[0]);
         module->properties.add(mpFxStyle);
@@ -141,7 +138,7 @@ void setup() {
         // Set default color
         float h = presetColors[0][0];
         float s = presetColors[0][1];
-        mainModule->setColor(h, s, 0, 0);
+        colorLight->setColor(h, s, 0, 0);
 
     }
 
@@ -226,10 +223,10 @@ void loop()
         // check for commands issued via physical button
         if (buttonCommand == BUTTON_COMMAND_STEP_DIM && millis() - lastStepCommandTs > BUTTON_COMMAND_STEP_INTERVAL) {
             lastStepCommandTs = millis();
-            mainModule->dim(0);
+            colorLight->dim(0);
         } else if (buttonCommand == BUTTON_COMMAND_STEP_BRIGHT && millis() - lastStepCommandTs > BUTTON_COMMAND_STEP_INTERVAL) {
             lastStepCommandTs = millis();
-            mainModule->bright(0);
+            colorLight->bright(0);
         }
 
         // check if number of pixels was changed

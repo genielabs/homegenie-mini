@@ -63,10 +63,8 @@ namespace IO { namespace Sensors {
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
-            auto temperature = new ModuleParameter(IOEventPaths::Sensor_Temperature, "0");
-            m->properties.add(temperature);
-            auto humidity = new ModuleParameter(IOEventPaths::Sensor_Humidity, "0");
-            m->properties.add(humidity);
+            m->setProperty(IOEventPaths::Sensor_Temperature, "0");
+            m->setProperty(IOEventPaths::Sensor_Humidity, "0");
         }
         void begin() override;
         void loop() override;

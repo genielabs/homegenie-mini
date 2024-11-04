@@ -36,7 +36,6 @@
 #include "io/IOEventDomains.h"
 #include "io/IOEventPaths.h"
 
-#include "io/sys/Diagnostics.h"
 #include "service/api/APIRequest.h"
 
 namespace IO {
@@ -57,9 +56,9 @@ namespace IO {
 
     private:
         // Diagnostics
-        System::Diagnostics *systemDiagnostics;
         IIOEventReceiver *ioEventReceiver;
         LinkedList<IIOEventSender*> eventSenders;
+        bool initialized = false;
     };
 
 }

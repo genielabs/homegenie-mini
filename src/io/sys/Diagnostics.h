@@ -49,16 +49,32 @@ extern "C" {
 
 namespace IO { namespace System {
 
+    namespace SystemStatus {
+        const char BOOT[] = "boot";
+        const char DEEP_SLEEP[] = "deep_sleep";
+        const char SLEEP[] = "sleep";
+        const char AWAKE[] = "awake";
+        const char WIFI_CONNECTED[] = "wifi_connected";
+        const char WIFI_DISCONNECTED[] = "wifi_disconnected";
+    };
+
     class Diagnostics : Task, public IIOEventSender {
     public:
         Diagnostics();
-        void begin();
-        void loop();
+        void begin() override;
+        void loop() override;
+
+        void setModule(Module* m) override {
+            IIOEventSender::setModule(m);
+            m->setProperty(IOEventPaths::System_BytesFree, "0");
+            m->setProperty(IOEventPaths::System_Status, "");
+        }
 
     private:
         const char* domain = IOEventDomains::HomeAutomation_HomeGenie;
         const char* address = CONFIG_BUILTIN_MODULE_ADDRESS;
         uint32_t currentFreeMemory;
+        int isWifiConnected = (ESP_WIFI_STATUS == WL_CONNECTED);
     };
 
 }}

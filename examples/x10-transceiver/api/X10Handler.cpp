@@ -58,8 +58,8 @@ namespace Service { namespace API {
         rfModule->type = "Sensor";
         rfModule->name = "RF"; //TODO: CONFIG_X10RF_MODULE_NAME;
         // explicitly enable "scheduling" features for this module
-        rfModule->properties.add(new ModuleParameter("Widget.Implements.Scheduling", "1"));
-        // add properties
+        rfModule->setProperty("Widget.Implements.Scheduling", "1");
+        // set properties
         receiverRawData = new ModuleParameter(IOEventPaths::Receiver_RawData);
         rfModule->properties.add(receiverRawData);
         receiverCommand = new ModuleParameter(IOEventPaths::Receiver_Command);

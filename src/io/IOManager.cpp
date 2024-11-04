@@ -31,20 +31,21 @@
 
 namespace IO {
 
-    IOManager::IOManager() {
-        systemDiagnostics = new System::Diagnostics();
-        systemDiagnostics->setEventReceiver(this);
-    }
+    IOManager::IOManager() { }
 
     void IOManager::begin() {
         for(int i = 0; i < eventSenders.size(); i++) {
             eventSenders[i]->begin();
         }
+        initialized = true;
     }
 
     bool IOManager::addEventSender(IIOEventSender* sender) {
         eventSenders.add(sender);
         sender->setEventReceiver(this);
+        if (initialized) {
+            sender->begin();
+        }
         return true;
     }
 

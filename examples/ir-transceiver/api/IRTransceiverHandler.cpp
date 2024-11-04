@@ -40,10 +40,9 @@ namespace Service { namespace API {
         irModule->type = "Sensor";
         irModule->name = CONFIG_IR_MODULE_ADDRESS; //TODO: CONFIG_IR_MODULE_NAME;
         // explicitly enable "scheduling" features for this module
-        irModule->properties.add(new ModuleParameter("Widget.Implements.Scheduling", "1"));
+        irModule->setProperty("Widget.Implements.Scheduling", "1");
         // add properties
-        auto propRawData = new ModuleParameter(IOEventPaths::Receiver_RawData);
-        irModule->properties.add(propRawData);
+        irModule->setProperty(IOEventPaths::Receiver_RawData, "");
 
         moduleList.add(irModule);
 

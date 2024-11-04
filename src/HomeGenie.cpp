@@ -108,6 +108,10 @@ namespace Service {
 #endif
 
 #endif
+        // Add System Diagnostics event handler
+        auto systemDiagnostics = new System::Diagnostics();
+        systemDiagnostics->setModule(getDefaultModule());
+        ioManager.addEventSender(systemDiagnostics);
 
         Logger::info("READY.");
     }
@@ -198,117 +202,6 @@ namespace Service {
                 break;
             }
         }
-
-#ifndef DISABLE_AUTOMATION
-        // Run schedules based on module events
-        auto scheduleList = Scheduler::getScheduleList();
-        for (auto s : scheduleList) {
-            if (s->isEnabled && s->onModuleEvent) {
-
-                bool matchesConditionsProperty = false;
-
-                // TODO: check if domain/address match declared event modules (`s->eventModules` list)
-
-                JsonDocument doc;
-                deserializeJson(doc, s->data);
-                auto event = doc["event"].as<JsonArray>();
-
-                for (auto eventCondition: event) {
-                    auto c = eventCondition.as<JsonObject>();
-
-                    // Parse module address
-                    // [<server_address_port_or_upnp_uuid>/]<domain>/<address>
-                    // examples:
-                    // - 34b7da5-2220-6e69-654d-696e69dab734/HomeAutomation.HomeGenie/mini
-                    // - 192.168.2.111:8080/HomeAutomation.ZigBee/0017880100B1A9A7
-                    // - HomeAutomation.HomeGenie/B1
-                    auto moduleId = c["module"].as<String>();
-                    int addressIdx = moduleId.lastIndexOf('/');
-                    if (addressIdx < 0) continue; // invalid module ID
-                    auto moduleAddress = moduleId.substring(addressIdx + 1);
-                    auto moduleDomain = moduleId.substring(0, addressIdx);
-                    int serverIdx = moduleDomain.lastIndexOf('/');
-                    String serverId = "";
-                    if (serverIdx >= 0) {
-                        serverId = moduleDomain.substring(0, serverIdx);
-                        moduleDomain = moduleDomain.substring(serverIdx + 1);
-                    }
-
-                    // Only supports events coming from this very system
-                    if (!serverId.isEmpty() && !serverId.equals(Config::system.id)) {
-                        matchesConditionsProperty = false;
-                        break;
-                    }
-
-                    auto property = c["property"].as<String>();
-                    if (strcmp(domain, moduleDomain.c_str()) == 0 &&
-                        strcmp(address, moduleAddress.c_str()) == 0 &&
-                        strcmp(eventPath, property.c_str()) == 0) {
-                        matchesConditionsProperty = true;
-                        break;
-                    }
-                }
-
-                if (matchesConditionsProperty)
-                {
-
-                    bool eventMatchesConditions = false;
-
-                    for (auto eventCondition : event) {
-                        auto c = eventCondition.as<JsonObject>();
-
-                        // Parse module address
-                        auto moduleId = c["module"].as<String>();
-                        int addressIdx = moduleId.lastIndexOf('/');
-                        if (addressIdx < 0) continue; // invalid module ID
-                        auto moduleAddress = moduleId.substring(addressIdx + 1);
-                        auto moduleDomain = moduleId.substring(0, addressIdx);
-                        int serverIdx = moduleDomain.lastIndexOf('/');
-                        if (serverIdx >= 0) {
-                            moduleDomain = moduleDomain.substring(serverIdx + 1);
-                        }
-
-                        auto condition = c["condition"].as<String>();
-                        auto property = c["property"].as<String>();
-                        auto value = c["value"].as<float>();
-
-                        auto module = getModule(&moduleDomain, &moduleAddress);
-                        if (module != nullptr) {
-                            auto mp = module->getProperty(property);
-                            if (mp != nullptr && mp->value != nullptr) {
-                                float v = mp->value.toFloat();
-
-                                bool isEqualTo = false;
-                                if (condition.indexOf('=') >= 0) {
-                                    isEqualTo = (v == value);
-                                    eventMatchesConditions = (condition == "!=") ? !isEqualTo : isEqualTo;
-                                }
-                                if (condition.startsWith("<") || condition.startsWith(">")) {
-                                    if (condition.startsWith("<")) {
-                                        eventMatchesConditions = (v < value);
-                                    } else if (condition.startsWith(">")) {
-                                        eventMatchesConditions = (v > value);
-                                    }
-                                    if (condition.indexOf('=') > 0) {
-                                        eventMatchesConditions = (eventMatchesConditions || isEqualTo);
-                                    }
-                                }
-
-                                if (!eventMatchesConditions) break;
-                            }
-                        }
-                    }
-
-                    if (eventMatchesConditions && (s->cronExpression.isEmpty() || s->info.onThisMinute > 0)) {
-                        ProgramEngine::run(s);
-                    }
-
-                }
-
-            }
-
-        }
-#endif // #ifndef DISABLE_AUTOMATION
     }
 
     // END IIOEventReceiver

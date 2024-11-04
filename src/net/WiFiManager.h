@@ -67,7 +67,7 @@ namespace Net {
         static void connect();
         static bool configure();
         static bool checkWiFiStatus();
-#if ESP32
+#ifdef ESP32
         static bool wpsIsRegistering() {
             return esp32_wps_waiting_connect_ts > 0;
         }
@@ -75,7 +75,7 @@ namespace Net {
             // TODO: add constant WPS_REGISTER_TIMEOUT = 15000
             return wpsIsRegistering() && (millis() - esp32_wps_waiting_connect_ts > 15000);
         }
-        static bool wpsCancel() {
+        static void wpsCancel() {
             wpsStop();
             Config::statusLedOff();
         }
@@ -83,7 +83,7 @@ namespace Net {
     private:
         static wl_status_t wiFiStatus;
         static unsigned long lastStatusCheckTs;
-#if ESP32
+#ifdef ESP32
         static unsigned long esp32_wps_waiting_connect_ts;
 #endif
 
@@ -149,7 +149,6 @@ namespace Net {
                 // TODO: Serial.println("WPS Disable Failed");
             }
             esp32_wps_started = false;
-            esp32_wps_waiting_connect_ts = 0;
         }
         // WPS events handling
         static void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info) {
@@ -158,6 +157,7 @@ namespace Net {
                     wpsStop();
                     esp32_wps_waiting_connect_ts = millis();
                     Config::statusLedOn();
+                    delay(2000); // without this delay the connection might fail
                     connect();
                 } break;
                 case ARDUINO_EVENT_WIFI_STA_GOT_IP: {
@@ -168,6 +168,7 @@ namespace Net {
                 case ARDUINO_EVENT_WPS_ER_FAILED:
                 case ARDUINO_EVENT_WPS_ER_TIMEOUT: {
                     wpsStop();
+                    esp32_wps_waiting_connect_ts = 0;
                 } break;
                 case ARDUINO_EVENT_WIFI_STA_START:
                 case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:

@@ -41,10 +41,9 @@ namespace Service { namespace API {
             rfModule->type = "Sensor";
             rfModule->name = "RF"; //TODO: CONFIG_RCSwitchRF_MODULE_NAME;
             // explicitly enable "scheduling" features for this module
-            rfModule->properties.add(new ModuleParameter("Widget.Implements.Scheduling", "1"));
+            rfModule->setProperty("Widget.Implements.Scheduling", "1");
             // add properties
-            auto propRawData = new ModuleParameter(IOEventPaths::Receiver_RawData);
-            rfModule->properties.add(propRawData);
+            rfModule->setProperty(IOEventPaths::Receiver_RawData, "");
 
             moduleList.add(rfModule);
 

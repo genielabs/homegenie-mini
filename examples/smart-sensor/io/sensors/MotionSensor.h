@@ -21,10 +21,8 @@ namespace IO { namespace Sensors {
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
-            auto motionDetect = new ModuleParameter(IOEventPaths::Sensor_MotionDetect, "0");
-            m->properties.add(motionDetect);
-            auto idleTime = new ModuleParameter(IOEventPaths::Status_IdleTime, "0");
-            m->properties.add(idleTime);
+            m->setProperty(IOEventPaths::Sensor_MotionDetect, "0");
+            m->setProperty(IOEventPaths::Status_IdleTime, "0");
         }
         void begin() override;
         void loop() override;

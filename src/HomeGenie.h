@@ -47,6 +47,7 @@
 #include "io/gpio/GPIOPort.h"
 #include "io/IOEventPaths.h"
 #include "io/IOManager.h"
+#include "io/sys/Diagnostics.h"
 #include "net/NetManager.h"
 #include "service/api/APIRequest.h"
 #include "service/api/APIHandler.h"

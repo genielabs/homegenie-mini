@@ -42,8 +42,8 @@ void setup() {
     homeGenie = HomeGenie::getInstance();
 
     miniModule = homeGenie->getDefaultModule();
-    miniModule->setProperty("Widget.Implements.Scheduling", "1", nullptr, UnsignedNumber);
-    miniModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1", nullptr, UnsignedNumber);
+    miniModule->setProperty("Widget.Implements.Scheduling", "1");
+    miniModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
 
     includeCommonSensors(homeGenie, miniModule);
 

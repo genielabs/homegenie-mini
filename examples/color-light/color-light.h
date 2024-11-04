@@ -96,7 +96,7 @@ void statusLedCallback(bool isLedOn) {
     statusLED->show();
 }
 
-ColorLight* mainModule;
+ColorLight* colorLight;
 LightColor currentColor;
 
 ModuleParameter* mpLedCount;
@@ -194,11 +194,11 @@ void setupControlButtons(Module* miniModule) {
             if (buttonCommand != BUTTON_COMMAND_NONE) return;
             switch (gesture) {
                 case ButtonGesture::BUTTON_GESTURE_CLICK: {
-                        mainModule->toggle();
+                        colorLight->toggle();
                     }
                     break;
                 case ButtonGesture::BUTTON_GESTURE_LONG_PRESS: {
-                        if (mainModule->isOn()) {
+                        if (colorLight->isOn()) {
                             buttonCommand = BUTTON_COMMAND_STEP_DIM;
                         }
                     }
@@ -217,7 +217,7 @@ void setupControlButtons(Module* miniModule) {
                     float h = presetColors[presetColorIndex][0];
                     float s = presetColors[presetColorIndex][1];
                     float v = presetColors[presetColorIndex][2];
-                    mainModule->setColor(h, s, v, 0);
+                    colorLight->setColor(h, s, v, 0);
                     presetColorIndex = (presetColorIndex + 1) % presetColorsCount;
                 }
             } else if (!button1Pressed) {
@@ -225,7 +225,7 @@ void setupControlButtons(Module* miniModule) {
             }
         });
         button2->onGesture([miniModule](Service::API::devices::ButtonGesture gesture) {
-            if (buttonCommand != BUTTON_COMMAND_NONE || button1Pressed || !mainModule->isOn()) return;
+            if (buttonCommand != BUTTON_COMMAND_NONE || button1Pressed || !colorLight->isOn()) return;
             switch (gesture) {
                 case ButtonGesture::BUTTON_GESTURE_CLICK: {
                         currentStyleIndex = (currentStyleIndex + 1) % LightStyles::STYLES_COUNT;

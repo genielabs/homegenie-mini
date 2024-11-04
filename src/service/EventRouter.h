@@ -82,6 +82,8 @@ namespace Service {
     private:
         NetManager* netManager;
         LinkedList<QueuedMessage> eventsQueue;
+        template <class T>
+        bool valueMatchesCondition(String& condition, T leftValue, T rightValue);
     };
 
 }

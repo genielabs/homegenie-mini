@@ -517,6 +517,9 @@ namespace Service { namespace API {
             auto m = QueuedMessage(domain, address, eventPath, "", eventData, dataType);
             // Data type handling
             switch (dataType) {
+                case Text: {
+                    m.value = String((const char *) eventData);
+                } break;
                 case SensorColorHsv: {
                     auto color = (ColorHSV *) eventData;
                     m.value = String(color->h, 4)

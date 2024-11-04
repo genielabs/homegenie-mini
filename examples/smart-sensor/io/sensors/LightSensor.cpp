@@ -51,11 +51,13 @@ namespace IO { namespace Sensors {
 
     uint16_t LightSensor::getLightLevel() {
 #ifdef ESP8266
-        // It returns values between 0-1023
-        return (uint16_t)analogRead(inputPin);
+        // It returns values between 0-1023, normalize to [0 .. 1000]
+        auto v = (uint16_t)round((float)analogRead(inputPin) / 1.023f);
+        return v;
 #else // ESP32
-        // It returns values between 0-4095
-        return (uint16_t)analogRead(inputPin) / 4;
+        // It returns values between 0-4095, normalize to [0 .. 1000]
+        auto v = (uint16_t)round((float)analogRead(inputPin) / 4.095f);
+        return v;
 #endif
     }
 }}

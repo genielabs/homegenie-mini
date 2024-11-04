@@ -36,6 +36,46 @@ using namespace Service;
 
 HomeGenie* homeGenie;
 
+/*
+#    ofekp/TinyUPnP@3.2.0
+
+#define UPNP_DEBUG 1
+#include <TinyUPnP.h>
+
+TinyUPnP tinyUPnP(10000);
+
+void ssdpDeviceToString(ssdpDevice* d) {
+    Serial.printf("SSDP device [%s] port [%d] path [%s]\n",
+                  d->host.toString().c_str(), d->port, d->path.c_str());
+}
+
+void ssdpRefresh() {
+    vTaskDelay(10000 * portTICK_PERIOD_MS);
+    for (;;) {
+        if (Config::isDeviceConfigured()) {
+
+            Serial.println("\nSEARCHING SSDP devices...\n");
+            //*
+            ssdpDeviceNode *ssdpDeviceNodeList = tinyUPnP.listSsdpDevices();
+            ssdpDeviceNode *node = ssdpDeviceNodeList;
+            while (node != nullptr) {
+                auto device = node->ssdpDevice;
+                ssdpDeviceToString(device);
+                auto prev = node;
+                node = node->next;
+                delete device;
+                delete prev;
+            }
+            //* /
+            //vTaskDelay(200 * portTICK_PERIOD_MS);
+            Serial.println("\n----------------------\n");
+
+        }
+        vTaskDelay(60000 * portTICK_PERIOD_MS);
+    }
+}
+*/
+
 void setup() {
     homeGenie = HomeGenie::getInstance();
     //auto miniModule = homeGenie->getDefaultModule();
@@ -43,6 +83,18 @@ void setup() {
     // TODO: ..
 
     homeGenie->begin();
+
+/*
+    xTaskCreate(
+            reinterpret_cast<TaskFunction_t>(&ssdpRefresh),
+            "SSDP-Check",
+            ESP_TASK_TIMER_STACK,
+            nullptr,
+            CONFIG_ARDUINO_UDP_TASK_PRIORITY,
+            nullptr
+    );
+*/
+
 }
 
 void loop()

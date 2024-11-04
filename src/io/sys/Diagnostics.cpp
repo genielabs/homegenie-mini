@@ -36,15 +36,30 @@ namespace IO { namespace System {
         setLoopInterval(DIAGNOSTICS_SAMPLING_RATE);
     }
 
-    void Diagnostics::begin() { }
+    void Diagnostics::begin() {
+        // Report system booting
+        Logger::trace("@%s [%s %s]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_Status, SystemStatus::BOOT);
+        sendEvent(IOEventPaths::System_Status, (void*)&SystemStatus::BOOT, Text);
+    }
 
     void Diagnostics::loop() {
+
+        // Report free memory changes
         uint32_t freeMem = Utility::getFreeMem();
         if (currentFreeMemory != freeMem) {
-            Logger::trace("@%s [%s %lu]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_BytesFree, freeMem, UnsignedNumber);
-            sendEvent(domain, address, IOEventPaths::System_BytesFree, &freeMem, UnsignedNumber);
+            Logger::trace("@%s [%s %lu]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_BytesFree, freeMem);
+            sendEvent(IOEventPaths::System_BytesFree, &freeMem, UnsignedNumber);
             currentFreeMemory = freeMem;
         }
+
+        // Report Wi-FI connection status
+        bool connected = (ESP_WIFI_STATUS == WL_CONNECTED);
+        if (connected != isWifiConnected) {
+            isWifiConnected = connected;
+            Logger::trace("@%s [%s %s]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_Status, isWifiConnected ? SystemStatus::WIFI_CONNECTED : SystemStatus::WIFI_DISCONNECTED);
+            sendEvent(IOEventPaths::System_Status, isWifiConnected ? (void*)&SystemStatus::WIFI_CONNECTED : (void*)&SystemStatus::WIFI_DISCONNECTED, Text);
+        }
+
     }
 
 }}

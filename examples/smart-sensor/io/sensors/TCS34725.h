@@ -49,8 +49,7 @@ namespace IO { namespace Sensors {
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
-            auto luminance = new ModuleParameter(IOEventPaths::Sensor_Luminance, "0");
-            m->properties.add(luminance);
+            m->setProperty(IOEventPaths::Sensor_Luminance, "0");
         }
         void begin() override;
         void loop() override;

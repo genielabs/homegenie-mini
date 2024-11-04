@@ -40,8 +40,7 @@ namespace IO { namespace Sensors {
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
-            auto statusBattery = new ModuleParameter(IOEventPaths::Status_Battery);
-            m->properties.add(statusBattery);
+            m->setProperty(IOEventPaths::Status_Battery, "0");
         }
         void begin() override;
         void loop() override;

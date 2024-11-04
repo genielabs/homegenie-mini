@@ -32,10 +32,12 @@
 
 #include "data/Module.h"
 #include "ExtendedCron.h"
+#include "service/EventRouter.h"
 
 namespace Automation {
 
     using namespace Data;
+    using namespace Service;
 
     namespace ScheduleField {
         static const char name[] = "Name";
@@ -110,6 +112,24 @@ namespace Automation {
             lastOccurrence = ts;
         }
 
+        QueuedMessage* getLastEvent() {
+            return lastEvent;
+        }
+        void setLastEvent(QueuedMessage* m) {
+            delete lastEvent;
+            lastEvent = nullptr;
+            if (m != nullptr) {
+                auto qm = new QueuedMessage();
+                qm->type = m->type;
+                qm->domain = m->domain;
+                qm->sender = m->sender;
+                qm->event = m->event;
+                qm->value = m->value;
+                qm->data = m->data;
+                lastEvent = qm;
+            }
+        }
+
         bool isEnabled = true;
         bool onModuleEvent;
         String name;
@@ -124,6 +144,8 @@ namespace Automation {
 
     private:
         time_t lastOccurrence;
+        QueuedMessage* lastEvent = nullptr;
+
     };
 }
 
