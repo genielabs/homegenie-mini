@@ -3,7 +3,7 @@
 # HomeGenie Mini v1.2 <small>`ESP32 / ESP8266`</small>
 
 HomeGenie mini *(code name **Sbirulino**)* is an **open source library** for building custom firmware for smart devices
-based on *ESP32* or *ESP8266* chip.
+based on *ESP32* or *ESP8266* SoC.
 
 https://homegenie.it/mini
 
@@ -13,15 +13,26 @@ https://homegenie.it/mini
 - Easy device configuration using Wi-Fi protected setup button (WPS) or Bluetooth
 - Does not require an Internet connection to be configured or to work properly
 - Time synchronization using internal RTC (ESP32), mobile app time or NTP
-- Integrated actions scheduler supporting *extended cron expressions*
-- Device discovery via SNMP/UPnP with customizable advertising name
+- Integrated actions scheduler supporting *extended cron expressions* and JavaScript
+- Device discovery via SSDP/UPnP with customizable device name
 - Multi-channel I/O: HTTP, WebSocket, SSE, MQTT, Serial
-- Status LED
-- Configuration/Pairing Button
+- Builtin status LED logic
+- Builtin Wi-Fi Configuration/Pairing button
 - Builtin GPIO control API
 - Multi-threading support, event router, extensible API
 - Can connect directly to *HomeGenie Panel* either via Wi-Fi access point or hotspot/tethering
 - Can be easily connected to *HomeGenie Server* and other services via MQTT
+- Works also without Internet connection
+
+## Applications
+
+- Wearable devices
+- Smart Homes
+- Building Automation
+- Robotics
+- Remote controls
+- Health monitoring
+- Education
 
 
 ## Building and flashing the firmware
