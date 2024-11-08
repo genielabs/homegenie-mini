@@ -16,13 +16,12 @@ https://homegenie.it/mini
 - Integrated actions scheduler supporting *extended cron expressions* and JavaScript
 - Device discovery via SSDP/UPnP with customizable device name
 - Multi-channel I/O: HTTP, WebSocket, SSE, MQTT, Serial
-- Builtin status LED logic
-- Builtin Wi-Fi Configuration/Pairing button
-- Builtin GPIO control API
+- Built-in status LED logic
+- Built-in Wi-Fi Configuration/Pairing button
+- Built-in GPIO control API
 - Multi-threading support, event router, extensible API
 - Can connect directly to *HomeGenie Panel* either via Wi-Fi access point or hotspot/tethering
 - Can be easily connected to *HomeGenie Server* and other services via MQTT
-- Works also without Internet connection
 
 ## Applications
 
