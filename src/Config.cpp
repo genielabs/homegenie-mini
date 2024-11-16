@@ -39,6 +39,7 @@ short Config::StatusLedPin = -1;
 bool Config::isStatusLedOn = false;
 std::function<void(bool)> Config::ledCallback = nullptr;
 std::function<void()> Config::wifiConfiguredCallback = nullptr;
+bool Config::wpsRequest = false;
 
 void Config::statusLedOn() {
     isStatusLedOn = true;
@@ -105,5 +106,11 @@ void Config::handleConfigCommand(String &message) {
     if (message.equals("#RESET")) {
         delay(50);
         ESP.restart();
+    } else
+    if (message.equals("#UPTIME")) {
+        Serial.printf("#UPTIME:%.3f seconds\n", (float)millis() / 1000.0f);
+    } else
+    if (message.equals("#WPS")) {
+        Config::wpsRequest = true;
     }
 }

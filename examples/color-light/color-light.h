@@ -30,15 +30,13 @@
 
 #include "configuration.h"
 #include "color-fx.h"
+#include "status-led.h"
 
 using namespace Service;
 using namespace Service::API::devices;
 
 HomeGenie* homeGenie;
 bool isConfigured = false;
-
-// Optional RGB Status LED
-Adafruit_NeoPixel* statusLED = nullptr;
 
 // LED strip
 uint16_t ledsCount = 0; int16_t ledsPin = -1;
@@ -86,16 +84,6 @@ uint8_t getLightStyleIndex(String& styleName) {
     return 0;
 }
 
-// Status LED Blink callback used if statusLED is enabled
-void statusLedCallback(bool isLedOn) {
-    if (isLedOn) {
-        statusLED->setPixelColor(0, Adafruit_NeoPixel::Color(1, 1, 0));
-    } else {
-        statusLED->setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
-    }
-    statusLED->show();
-}
-
 ColorLight* colorLight;
 LightColor currentColor;
 
@@ -138,9 +126,9 @@ void renderPixels() {
     }
     if (statusLED != nullptr) {
         statusLED->setPixelColor(0,
-                                 static_cast<int>(round(currentColor.getRed())),
-                                 static_cast<int>(round(currentColor.getGreen())),
-                                 static_cast<int>(round(currentColor.getBlue())));
+                                 static_cast<int>(round(animatedColors[0]->getRed())),
+                                 static_cast<int>(round(animatedColors[0]->getGreen())),
+                                 static_cast<int>(round(animatedColors[0]->getBlue())));
     }
 }
 

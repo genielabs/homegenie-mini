@@ -62,6 +62,9 @@ bool helloWorldActive = true;
 
 
 void setup() {
+    // Default name shown in SMNP/UPnP advertising
+    Config::system.friendlyName = "Smart Shutter";
+
 #ifdef ESP32_C3
     // Custom status led (builtin NeoPixel RGB on pin 10)
 //    if (!Config::isDeviceConfigured()) {
@@ -90,7 +93,6 @@ void setup() {
 #endif
 
     homeGenie->begin();
-
 }
 
 void loop()

@@ -109,6 +109,7 @@ public:
     const static uint16_t ConfigureButtonPushInterval = 3000;
     static short StatusLedPin;
     static bool isStatusLedOn;
+    static bool wpsRequest;
     static ZoneConfig zone;
     static SystemConfig system;
 #ifdef ESP32

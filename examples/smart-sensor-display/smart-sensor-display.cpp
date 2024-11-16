@@ -62,6 +62,8 @@ SwitchControlActivity* switchControl;
 Dashboard* dashboard;
 
 void setup() {
+    // Default name shown in SMNP/UPnP advertising
+    Config::system.friendlyName = "Smart Sensor Display";
 
     //uint8_t batterySensorPin = 1;
 
@@ -139,7 +141,6 @@ void setup() {
     }
 
     homeGenie->begin();
-
 }
 
 void loop()

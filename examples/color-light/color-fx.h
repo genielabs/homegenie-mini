@@ -65,8 +65,9 @@ unsigned long rainbow_refresh_ts = 0;
 void fx_rainbow(Adafruit_NeoPixel* pixels, LightColor& color, float iterations = 1) {
     if (pixels == nullptr) return;
 
+    uint numPixels = pixels->numPixels();
     currentSaturation = color.getSaturation();
-    float length = pixels->numPixels() * hueZoom;
+    float length = numPixels * hueZoom;
 
     float hueStep = 1.0f / (float) length * iterations;
 
@@ -75,8 +76,8 @@ void fx_rainbow(Adafruit_NeoPixel* pixels, LightColor& color, float iterations =
         rainbow_refresh_ts = millis();
 
         float v = color.getValue();
-        for (int i = 0; i < pixels->numPixels(); i++) {
-            float inc = (i < pixels->numPixels() / iterations ? (float)i : (float)(pixels->numPixels() - i)) * hueStep;
+        for (int i = 0; i < numPixels; i++) {
+            float inc = (i < numPixels / iterations ? (float)i : (float)(numPixels - i)) * hueStep;
             float h = FX_DEG_NORM((color.getHue() + hueOffset) + inc);
             animatedColors[i]->setColor(h, currentSaturation, v, currentSaturation * 100);
         }
@@ -106,7 +107,8 @@ float stripe_previous_hue;
 void fx_white_stripes(Adafruit_NeoPixel* pixels, LightColor& color, bool brightWhite = false) {
     if (pixels == nullptr) return;
 
-    int stripe_length = (int)round((float)pixels->numPixels() / 5.0f);
+    uint numPixels = pixels->numPixels();
+    int stripe_length = (int)round((float)numPixels / 5.0f);
     float shift;
 
     // animate
@@ -122,13 +124,13 @@ void fx_white_stripes(Adafruit_NeoPixel* pixels, LightColor& color, bool brightW
         cursorDirection = (color.getHue() - stripe_previous_hue > 0) ? 1 : -1;
         stripe_previous_hue = color.getHue();
 
-        for (int i = 0; i < pixels->numPixels(); i++) {
+        for (int i = 0; i < numPixels; i++) {
             float v = color.getValue();
             float s = color.getSaturation();
             if ((int)round(i + shift) % stripe_length < stripe_step) {
                 // draw stripe
                 animatedColors[i]->setColor(0, 0, brightWhite && v > 0 ? 1 : v,
-                                            (float)stripe_transition / pixels->numPixels());
+                                            (float)stripe_transition / numPixels);
             } else {
                 // draw solid color
                 animatedColors[i]->setColor(color.getHue(), s, v,

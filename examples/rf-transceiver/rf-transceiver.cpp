@@ -39,6 +39,8 @@ using namespace Service;
 HomeGenie* homeGenie;
 
 void setup() {
+    // Default name shown in SMNP/UPnP advertising
+    Config::system.friendlyName = "Firefly RF";
 
     homeGenie = HomeGenie::getInstance();
     auto miniModule = homeGenie->getDefaultModule();
@@ -57,9 +59,7 @@ void setup() {
     receiver->setModule(rfModule);
     homeGenie->addIOHandler(receiver);
 
-    Config::system.friendlyName = "Firefly RF";
     homeGenie->begin();
-
 }
 
 void loop()

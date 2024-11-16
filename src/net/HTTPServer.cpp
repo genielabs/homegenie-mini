@@ -86,7 +86,7 @@ namespace Net {
         Logger::verbose("%s loop() >> BEGIN", HTTPSERVER_LOG_PREFIX);
 
         String localIP = WiFi.localIP().toString();
-        if (!ipAddress.equals(localIP) && !localIP.equals("0.0.0.0")) {
+        if (!ipAddress.equals(localIP) && !localIP.equals("0.0.0.0") && !localIP.isEmpty()) {
             // New IP address
             ipAddress = localIP;
             //Logger::info("|  ✔ New IP address %s", ipAddress.c_str());

@@ -26,6 +26,8 @@
 #include "color-light.h"
 
 void setup() {
+    // Default name shown in SMNP/UPnP advertising
+    Config::system.friendlyName = "LED Controller";
 
     // Get a reference to HomeGenie Mini running instance
     homeGenie = HomeGenie::getInstance();
@@ -68,11 +70,6 @@ void setup() {
 
     isConfigured = Config::isDeviceConfigured();
     if (!isConfigured) {
-
-        // Custom status led (builtin NeoPixel RGB LED)
-        if (statusLED != nullptr) {
-            Config::statusLedCallback(&statusLedCallback);
-        }
 
         Config::setOnWiFiConfiguredCallback([]{
             // Device successfully configured
@@ -142,8 +139,6 @@ void setup() {
 
     }
 
-    // Name shown in SMNP/UPnP advertising
-    Config::system.friendlyName = "LED Controller";
     homeGenie->begin();
 
     refresh();
@@ -152,6 +147,9 @@ void setup() {
 void loop()
 {
     homeGenie->loop();
+
+    // Custom status led (builtin NeoPixel RGB LED)
+    statusLedLoop();
 
     if (isConfigured) {
 

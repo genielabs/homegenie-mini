@@ -59,6 +59,9 @@ bool helloWorldActive = true;
 #endif
 
 void setup() {
+    // Default name shown in SMNP/UPnP advertising
+    Config::system.friendlyName = "Firefly IR";
+
 #ifdef ESP32_C3
     // Custom status led (builtin NeoPixel RGB on pin 10)
 //    if (!Config::isDeviceConfigured()) {
@@ -86,7 +89,6 @@ void setup() {
     homeGenie->addAPIHandler(colorLight);
 #endif
 
-    Config::system.friendlyName = "Firefly IR";
     homeGenie->begin();
 }
 

@@ -160,12 +160,17 @@ namespace Service {
             }
         }
         static void checkServiceButton() {
+            auto hg = getInstance();
+            if (Config::wpsRequest) {
+                Config::wpsRequest = false;
+                hg->getNetManager().getWiFiManager().configure();
+                return;
+            }
             if (Config::ServiceButtonPin < 0) {
                 return;
             }
             buttonChange();
             int64_t elapsed = 0;
-            auto hg = getInstance();
             if (hg->buttonPressed) {
                 // released
                 elapsed = millis() - hg->buttonPressStart;

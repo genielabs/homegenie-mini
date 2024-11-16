@@ -30,8 +30,7 @@
 #include "WiFiManager.h"
 
 namespace Net {
-    wl_status_t WiFiManager::wiFiStatus = WL_DISCONNECTED;
-    unsigned long WiFiManager::lastStatusCheckTs = 0;
+    wl_status_t WiFiManager::wiFiStatus = WL_NO_SSID_AVAIL;
 #ifdef ESP32
     esp_wps_config_t WiFiManager::wps_config;
     bool WiFiManager::esp32_wps_started = false;
@@ -66,32 +65,43 @@ namespace Net {
             // WI-FI will not boot without this delay!!!
             delay(2000);
 #endif
-            connect();
         }
     }
 
     void WiFiManager::loop() {
         if (!Config::isDeviceConfigured()) return;
         auto status = ESP_WIFI_STATUS;
-        if (status != wiFiStatus || millis() - lastStatusCheckTs > 15000) {
+        if (status != wiFiStatus) {
+
+            // work-around for re-connection issue on version 6.9.0
+            if (status != WL_CONNECTED) {
+                WiFi.disconnect();
+            }
+
             checkWiFiStatus();
             wiFiStatus = status;
-            lastStatusCheckTs = millis();
         }
     }
 
     void WiFiManager::connect() {
+        Config::statusLedOn();
         IO::Logger::info("|  - Connecting to WI-FI");
         // If stored password is empty use WPS credentials if present
         if (Config::system.pass.isEmpty()) {
             delay(1000); // TODO: is this delay necessary?
 #ifdef ESP8266
             WiFi.begin(WiFi.SSID().c_str(), WiFi.psk().c_str());
+            WiFi.waitForConnectResult(10000);
 #else
             wifi_config_t config;
             esp_err_t err = esp_wifi_get_config(WIFI_IF_STA, &config);
             if (err == ESP_OK) {
+
                 WiFi.begin((char *) config.sta.ssid, (char *) config.sta.password);
+                WiFi.waitForConnectResult(10000);
+
+                esp32_wps_waiting_connect_ts = 0;
+
             } else {
                 // TODO: Serial.printf("Couldn't get config: %d\n", (int) err);
             }
@@ -100,12 +110,12 @@ namespace Net {
             IO::Logger::info("|  - WI-FI SSID: \"%s\"", Config::system.ssid.c_str());
             IO::Logger::info("|  - WI-FI Password: ***"); // Config::system.pass.c_str()
             WiFi.begin(Config::system.ssid.c_str(), Config::system.pass.c_str());
+            WiFi.waitForConnectResult(10000);
         }
     }
 
     bool WiFiManager::checkWiFiStatus() {
         bool wpsSuccess = false;
-        WiFi.waitForConnectResult(1500);
         auto status = ESP_WIFI_STATUS;
         if (status == WL_CONNECTED) {
             Config::statusLedOff();
@@ -115,7 +125,6 @@ namespace Net {
             }
             wpsSuccess = true;
         } else {
-            Config::statusLedOn();
             switch (status) {
                 case WL_NO_SSID_AVAIL:
                     IO::Logger::error("|  x WiFi SSID not available");

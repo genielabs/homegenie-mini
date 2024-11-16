@@ -29,15 +29,20 @@
 
 
 #include <HomeGenie.h>
+#include <service/api/devices/ColorLight.h>
 
+#include "../color-light/status-led.h"
 #include "CommonSensors.h"
 
 using namespace Service;
+using namespace Service::API::devices;
 
 HomeGenie* homeGenie;
 Module* miniModule;
 
 void setup() {
+    // Default name shown in SMNP/UPnP advertising
+    Config::system.friendlyName = "Smart Sensor";
 
     homeGenie = HomeGenie::getInstance();
 
@@ -47,14 +52,42 @@ void setup() {
 
     includeCommonSensors(homeGenie, miniModule);
 
-    Config::system.friendlyName = "Smart Sensor";
-    homeGenie->begin();
+    // Get status LED config
+    auto pin = Config::getSetting("stld-pin");
+    int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
+    if (statusLedPin >= 0) {
+        int statusLedType = Config::getSetting("stld-typ", "82").toInt();
+        int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
+        statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
+        statusLED->setPixelColor(0, 0, 0, 0);
+        statusLED->begin();
+    }
 
+    // Custom status led (builtin NeoPixel RGB LED)
+    if (statusLED != nullptr) {
+
+        // Setup main LEDs control module
+        auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Color Light");
+        colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
+        colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+        colorLight->module->setProperty("Widget.Preference.AudioLight", "true");
+        colorLight->onSetColor([](LightColor c) {
+            statusLED->setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
+            statusLED->show();
+        });
+        homeGenie->addAPIHandler(colorLight);
+
+    }
+
+    homeGenie->begin();
 }
 
 void loop()
 {
 
     homeGenie->loop();
+
+    // Custom status led (builtin NeoPixel RGB LED)
+    statusLedLoop();
 
 }
