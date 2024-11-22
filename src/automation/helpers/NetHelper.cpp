@@ -33,21 +33,32 @@ namespace Automation { namespace Helpers {
     HTTPClient NetHelper::http;
 
     String NetHelper::httpGet(String &url) {
+        WiFiClient* client;
+        if (url.startsWith("https://")) {
+            client = new WiFiClientSecure();
+            ((WiFiClientSecure*)client)->setInsecure();
+        } else {
+            client = new WiFiClient();
+        }
         String response;
-        http.begin(url.c_str());
-        //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        int httpCode = http.GET();
-        if (httpCode > 0) {
-            // Server response
-            if (httpCode == HTTP_CODE_OK) {
-                response = http.getString();
+        if (http.begin(*client, url)) {
+            //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+            int httpCode = http.GET();
+            if (httpCode > 0) {
+                // Server response
+                if (httpCode == HTTP_CODE_OK) {
+                    response = http.getString();
+                } else {
+                    // Server reported error code
+                    //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+                }
             } else {
-                // Server reported error code
-                //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+                Serial.printf("[HTTP] GET... failed, error: %s\n", HTTPClient::errorToString(httpCode).c_str());
             }
         } else {
-            //Serial.printf("[HTTP] GET... failed, error: %s\n", HTTPClient::errorToString(httpCode).c_str());
+            // TODO: ...
         }
+        delete client;
         return response;
     }
 

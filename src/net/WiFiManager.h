@@ -82,7 +82,7 @@ namespace Net {
 #endif
     private:
         static wl_status_t wiFiStatus;
-        static unsigned long lastStatusCheckTs;
+        static unsigned long wiFiIdleTimestamp;
 #ifdef ESP32
         static unsigned long esp32_wps_waiting_connect_ts;
 #endif

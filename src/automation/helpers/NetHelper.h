@@ -30,6 +30,8 @@
 #ifndef HOMEGENIE_MINI_NETHELPER_H
 #define HOMEGENIE_MINI_NETHELPER_H
 
+#include <WiFiClientSecure.h>
+
 #ifdef ESP8266
 #include <ESP8266HTTPClient.h>
 #else
@@ -41,12 +43,13 @@
 
 namespace Automation { namespace Helpers {
 
-    class NetHelper{
+    class NetHelper {
     public:
         static String httpGet(String& url);
         static bool ping(String& host);
 
     private:
+        static WiFiClientSecure* wifiClientSecure;
         static HTTPClient http;
     };
 

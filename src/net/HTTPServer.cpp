@@ -89,11 +89,11 @@ namespace Net {
         if (!ipAddress.equals(localIP) && !localIP.equals("0.0.0.0") && !localIP.isEmpty()) {
             // New IP address
             ipAddress = localIP;
-            //Logger::info("|  ✔ New IP address %s", ipAddress.c_str());
+            Logger::info("|  ✔ New IP address: %s", ipAddress.c_str());
 
             // SSDP UDN uuid
             Config::system.id = SSDPDevice.getId();
-            //Logger::info("|  ✔ SSDP UDN uuid: ", Config::system.id.c_str());
+            Logger::info("|  ✔ SSDP UDN uuid: %s", Config::system.id.c_str());
 
             String ssdpUri = Config::system.id + String(".xml");
             SSDPDevice.setSchemaURL(FPSTR(ssdpUri.c_str()));

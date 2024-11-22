@@ -79,6 +79,9 @@ namespace Automation {
             for (auto &&bm: boundModules) {
                 delete bm;
             }
+            for (auto &&em: eventModules) {
+                delete em;
+            }
         }
 
         bool occursUpdate(time_t ts) {

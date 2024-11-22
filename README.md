@@ -13,7 +13,7 @@ https://homegenie.it/mini
 - Easy device configuration using Wi-Fi protected setup button (WPS) or Bluetooth
 - Does not require an Internet connection to be configured or to work properly
 - Time synchronization using internal RTC (ESP32), mobile app time or NTP
-- Integrated actions scheduler supporting *extended cron expressions* and JavaScript
+- Integrated actions scheduler supporting *extended Cron expressions* and JavaScript
 - Device discovery via SSDP/UPnP with customizable device name
 - Multi-channel I/O: HTTP, WebSocket, SSE, MQTT, Serial
 - Built-in status LED logic

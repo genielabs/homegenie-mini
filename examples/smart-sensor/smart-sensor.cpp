@@ -27,7 +27,6 @@
  *
  */
 
-
 #include <HomeGenie.h>
 #include <service/api/devices/ColorLight.h>
 
@@ -50,8 +49,6 @@ void setup() {
     miniModule->setProperty("Widget.Implements.Scheduling", "1");
     miniModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
 
-    includeCommonSensors(homeGenie, miniModule);
-
     // Get status LED config
     auto pin = Config::getSetting("stld-pin");
     int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
@@ -67,7 +64,7 @@ void setup() {
     if (statusLED != nullptr) {
 
         // Setup main LEDs control module
-        auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Color Light");
+        auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, COLOR_LIGHT_ADDRESS, "Status LED");
         colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
         colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
         colorLight->module->setProperty("Widget.Preference.AudioLight", "true");
@@ -78,6 +75,8 @@ void setup() {
         homeGenie->addAPIHandler(colorLight);
 
     }
+
+    includeCommonSensors(homeGenie, miniModule);
 
     homeGenie->begin();
 }

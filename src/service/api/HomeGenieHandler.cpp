@@ -377,8 +377,12 @@ namespace Service { namespace API {
                                 return true;
                             } else {
                                 Config::system.friendlyName = deviceName;
-                                Config::saveSetting(CONFIG_KEY_device_name, deviceName);
                                 miniModule->name = deviceName;
+                                // persist setting
+                                Preferences preferences;
+                                preferences.begin(CONFIG_SYSTEM_NAME, false);
+                                preferences.putString(CONFIG_KEY_device_name, deviceName);
+                                preferences.end();
                             }
                         }
                         if (doc.containsKey("group")) {

@@ -31,6 +31,7 @@
 
 namespace Net {
     wl_status_t WiFiManager::wiFiStatus = WL_NO_SSID_AVAIL;
+    unsigned long WiFiManager::wiFiIdleTimestamp = 0;
 #ifdef ESP32
     esp_wps_config_t WiFiManager::wps_config;
     bool WiFiManager::esp32_wps_started = false;
@@ -79,7 +80,19 @@ namespace Net {
             }
 
             checkWiFiStatus();
-            wiFiStatus = status;
+            wiFiStatus = ESP_WIFI_STATUS;
+            if (wiFiStatus == WL_DISCONNECTED) {
+                wiFiStatus = WL_NO_SSID_AVAIL;
+            }
+        } else if (wiFiStatus == WL_IDLE_STATUS) {
+            if (wiFiIdleTimestamp == 0) {
+                wiFiIdleTimestamp = millis();
+            } else if (millis() - wiFiIdleTimestamp > 15000) {
+                // force reconnect
+                wiFiStatus = WL_NO_SSID_AVAIL;
+                wiFiIdleTimestamp = 0;
+                connect();
+            }
         }
     }
 

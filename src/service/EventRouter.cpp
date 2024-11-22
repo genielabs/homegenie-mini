@@ -81,11 +81,10 @@ namespace Service {
                         }
 
                         // Only supports events coming from this very system
-                        // TODO: this might not work if MAC address changes
-//                        if (!serverId.isEmpty() && !serverId.equals(Config::system.id)) {
-//                            matchesConditionsProperty = false;
-//                            break;
-//                        }
+                        if (!serverId.isEmpty() && !serverId.equals(Config::system.id)) {
+                            matchesConditionsProperty = false;
+                            break;
+                        }
 
                         auto property = c["property"].as<String>();
                         if (strcmp(domain, moduleDomain.c_str()) == 0 &&
