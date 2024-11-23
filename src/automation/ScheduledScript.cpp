@@ -73,7 +73,7 @@ namespace Automation {
             "        return this;\n"
             "      },\n"
             "      set level(level) {\n"
-            "        __boundModules_command('Control.Level', level);\n"
+            "        __boundModules_command('Control.Level', +level * 100);\n"
             "        return this;\n"
             "      },\n"
             "      get level() {\n"
