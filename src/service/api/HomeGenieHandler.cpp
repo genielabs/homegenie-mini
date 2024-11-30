@@ -286,10 +286,10 @@ namespace Service { namespace API {
                 homeGenie->writeModuleJSON(responseCallback, &domain, &address);
                 return true;
             } else if (request->Command == ConfigApi::Modules_ParameterSet) {
-                String domain = request->getOption(0);
-                String address = request->getOption(1);
-                String propName = request->getOption(2);
-                String propValue = WebServer::urlDecode(request->getOption(3));
+                auto domain = request->getOption(0);
+                auto address = request->getOption(1);
+                auto propName = request->getOption(2);
+                auto propValue = WebServer::urlDecode(request->getOption(3));
                 auto module = homeGenie->getModule(&domain, &address);
                 if (module != nullptr) {
                     module->setProperty(propName, propValue, nullptr, IOEventDataType::Undefined);
@@ -302,6 +302,24 @@ namespace Service { namespace API {
                     responseCallback->writeAll(ApiHandlerResponseText::OK);
                     return true;
                 }
+#ifndef DISABLE_DATA_PROCESSING
+            } else if (request->Command == ConfigApi::Modules_StatisticsGet) {
+                auto domain = request->getOption(0);
+                auto address = request->getOption(1);
+                auto propName = request->getOption(2);
+                auto resPage = request->getOption(3).toInt();
+                auto resPerPage = request->getOption(4).toInt();
+                auto module = homeGenie->getModule(&domain, &address);
+                if (module != nullptr) {
+                    auto parameter = module->getProperty(propName);
+                    if (parameter != nullptr) {
+                        responseCallback->beginGetLength();
+                        homeGenie->writeParameterHistoryJSON(parameter, responseCallback, resPage, resPerPage);
+                        responseCallback->endGetLength();
+                        homeGenie->writeParameterHistoryJSON(parameter, responseCallback, resPage, resPerPage);
+                    }
+                }
+#endif
             } else if (request->Command == ConfigApi::WebSocket_GetToken) {
 
                 // TODO: implement random token with expiration (like in HG server) for websocket client verification

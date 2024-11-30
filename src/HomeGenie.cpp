@@ -56,6 +56,13 @@ namespace Service {
         addIOHandler(gpioPort);
         auto homeGenieHandler = new HomeGenieHandler(gpioPort);
         addAPIHandler(homeGenieHandler);
+
+#ifndef DISABLE_DATA_PROCESSING
+        Statistics();
+        auto dataProcessingHandler = new DataProcessingHandler();
+        addAPIHandler(dataProcessingHandler);
+#endif
+
 #ifdef CONFIG_ENABLE_POWER_MANAGER
         PowerManager::setWakeUpInterval(0);
         PowerManager::init();
@@ -325,6 +332,107 @@ namespace Service {
         return responseCallback->contentLength;
     }
 
+
+#ifndef DISABLE_DATA_PROCESSING
+    unsigned int HomeGenie::writeParameterHistoryJSON(ModuleParameter* parameter, ResponseCallback *outputCallback, int pageNumber, int pageSize, double rangeStart, double rangeEnd, double maxWidth) {
+        bool firstItem = true;
+        auto count = Statistics::getHistorySize();
+        if (pageSize == 0) pageSize = STATS_HISTORY_RESULTS_DEFAULT_PAGE_SIZE;
+        int currentPage = 0;
+        int i = 0;
+        // normalize range start/end
+        if (rangeEnd > 0) {
+            for (; i < count; i++) {
+                auto statValue = Statistics::getHistory(i);
+                if (statValue->timestamp <= rangeEnd) {
+                    rangeEnd = statValue->timestamp;
+                    break;
+                }
+            }
+        }
+        if (rangeStart > 0) {
+            double start = rangeStart;
+            for (; i < count; i++) {
+                auto statValue = Statistics::getHistory(i);
+                if (statValue->timestamp >= rangeStart) {
+                    start = statValue->timestamp;
+                } else {
+                    break;
+                }
+            }
+            rangeStart = start;
+        }
+
+        double step = maxWidth > 0 ? (rangeEnd - rangeStart) / maxWidth : 0;
+        String out = R"({"HistoryLimit": )" + String("1440") + R"(, "HistoryLimitSize": 2000, "History": [)";
+        outputCallback->write(out.c_str());
+        int itemCount = 0;
+        for (int i = 0; i < count; i++) {
+            auto statValue = Statistics::getHistory(i);
+
+            double timestamp = statValue->timestamp;
+            double value = statValue->value;
+
+            if (statValue->parameter != parameter)
+                continue;
+
+            if (rangeStart > 0 && timestamp < rangeStart)
+                break;
+            if (rangeEnd > 0 && timestamp > rangeEnd)
+                continue;
+
+            if (step > 0) {
+                auto ts = timestamp - fmod(timestamp, step) + step;
+                int tot = 1;
+                for (int j = i + 1; j < count; j++) {
+                    statValue = Statistics::getHistory(j);
+                    if (statValue->timestamp < ts - step || statValue->timestamp < rangeStart) break;
+                    if (statValue->parameter == parameter) {
+                        value += statValue->value;
+                        tot++;
+                    }
+                    i = j;
+                }
+                // average value in the given timestamp range
+                value = (value / tot);
+            }
+
+            if (currentPage == pageNumber) {
+                if (!firstItem) {
+                    out = ",\n";
+                } else {
+                    firstItem = false;
+                    out = "\n";
+                }
+
+                int milli = (timestamp * 1000.0f) - (trunc(timestamp) * 1000);
+                auto secs = (time_t) timestamp;
+                char buf[sizeof "1990-06-11T11:11:00.000Z"];
+                strftime(buf, sizeof buf, "%FT%T", gmtime(&secs));
+                sprintf(buf, "%s.%03dZ", buf, milli);
+
+                out += R"({"Value": )" + String(value) + R"(, "Timestamp": ")" + String(buf) +
+                       R"(", "UnixTimestamp": )" + String(timestamp * 1000, 3) + R"(})";
+
+                outputCallback->write(out.c_str());
+            }
+
+            itemCount++;
+            if (pageSize != -1 && itemCount == pageSize) {
+                if (currentPage == pageNumber) {
+                    break;
+                }
+                currentPage++;
+                itemCount = 0;
+            }
+
+        }
+        out = "\n]}\n";
+
+        outputCallback->write(out.c_str());
+        return outputCallback->contentLength;
+    }
+#endif
 
     String HomeGenie::createModuleParameter(const char *name, const char *value, const char *timestamp) {
         static const char *parameterTemplate = R"({

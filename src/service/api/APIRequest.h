@@ -68,6 +68,7 @@ namespace Service { namespace API {
         static const char Modules_List[] = {"Modules.List"};
         static const char Modules_Get[] = {"Modules.Get"};
         static const char Modules_ParameterSet[] = {"Modules.ParameterSet"};
+        static const char Modules_StatisticsGet[] = {"Modules.StatisticsGet"};
         static const char Groups_List[] = {"Groups.List"};
         static const char WebSocket_GetToken[] = {"WebSocket.GetToken"};
         static const char System_Configure[] = {"System.Configure"};

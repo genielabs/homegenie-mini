@@ -26,6 +26,8 @@
 #ifndef HOMEGENIE_MINI_IOEVENTDATA_H
 #define HOMEGENIE_MINI_IOEVENTDATA_H
 
+#include <cstddef>
+
 namespace IO {
 
     enum IOEventDataType {
@@ -47,6 +49,15 @@ namespace IO {
         void* data;
         size_t type_size;
     };
+
+    inline bool isNumericDataType(IOEventDataType dataType) {
+        return (dataType == IOEventDataType::SensorLight ||
+        dataType == IOEventDataType::SensorHumidity ||
+        dataType == IOEventDataType::SensorTemperature ||
+        dataType == IOEventDataType::Float ||
+        dataType == IOEventDataType::UnsignedNumber ||
+        dataType == IOEventDataType::Number);
+    }
 }
 
 #endif //HOMEGENIE_MINI_IOEVENTDATA_H

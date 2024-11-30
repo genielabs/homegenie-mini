@@ -33,12 +33,18 @@
 #include "Config.h"
 
 #include "data/Module.h"
+#ifndef DISABLE_DATA_PROCESSING
+#include "data/Statistics.h"
+#endif
 #include "IOEventData.h"
 #include "IOEventPaths.h"
 
 namespace IO {
 
     using namespace Data;
+#ifndef DISABLE_DATA_PROCESSING
+    using namespace Data::Processing;
+#endif
 
     class IIOEventSender;
 
@@ -70,6 +76,14 @@ namespace IO {
                 if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
                     eventReceiver->onIOEvent(this, module->domain.c_str(), module->address.c_str(), eventPath, eventData, dataType);
                 }
+#ifndef DISABLE_DATA_PROCESSING
+                if (isNumericDataType(dataType)) {
+                    auto moduleParameter = module->getProperty(eventPath);
+                    if (moduleParameter != nullptr) {
+                        Statistics::collect(moduleParameter);
+                    }
+                }
+#endif
             }
         };
 

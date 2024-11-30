@@ -91,6 +91,10 @@
 #endif
 
 
+#ifndef BOARD_HAS_PSRAM
+#define DISABLE_DATA_PROCESSING
+#endif
+
 
 #ifdef DISABLE_BLUETOOTH
     #define DISABLE_BLUETOOTH_LE

@@ -21,23 +21,18 @@
  * Authors:
  * - Generoso Martello <gene@homegenie.it>
  *
- *
- * Releases:
- * - 2019-01-19 Initial release
- *
  */
 
-#ifndef HOMEGENIE_MINI_IOEVENTDOMAINS_H
-#define HOMEGENIE_MINI_IOEVENTDOMAINS_H
+#include "Statistics.h"
 
-namespace IO {
-    namespace IOEventDomains {
-        const char HomeAutomation_HomeGenie[] = "HomeAutomation.HomeGenie";
-        const char HomeAutomation_X10[] = "HomeAutomation.X10";
-        const char HomeAutomation_RemoteControl[] = "HomeAutomation.RemoteControl";
-        const char Automation_Components[] = "Automation.Components";
-        const char DataProcessing_Filters[] = "DataProcessing.Filters";
-    };
-}
+#ifndef DISABLE_DATA_PROCESSING
 
-#endif //HOMEGENIE_MINI_IOEVENTDOMAINS_H
+namespace Data { namespace Processing {
+
+    int Statistics::historyIndex = 0;
+    bool Statistics::historyIsFull = false;
+    StatValue **Statistics::History = nullptr;
+
+}}
+
+#endif

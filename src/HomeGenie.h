@@ -51,6 +51,9 @@
 #include "net/NetManager.h"
 #include "service/api/APIRequest.h"
 #include "service/api/APIHandler.h"
+#ifndef DISABLE_DATA_PROCESSING
+#include "service/api/DataProcessingHandler.h"
+#endif
 #include "service/api/HomeGenieHandler.h"
 #include "service/EventRouter.h"
 
@@ -61,6 +64,9 @@ namespace Service {
 
     using namespace IO;
     using namespace Data;
+#ifndef DISABLE_DATA_PROCESSING
+    using namespace Data::Processing;
+#endif
     using namespace Net;
     using namespace Service::API;
 #ifndef DISABLE_AUTOMATION
@@ -131,7 +137,9 @@ namespace Service {
         unsigned int writeModuleListJSON(ResponseCallback *outputCallback);
         unsigned int writeModuleJSON(ResponseCallback *outputCallback, String* domain, String* address);
         unsigned int writeGroupListJSON(ResponseCallback *outputCallback);
-
+#ifndef DISABLE_DATA_PROCESSING
+        unsigned int writeParameterHistoryJSON(ModuleParameter* parameter, ResponseCallback *outputCallback, int pageNumber = 0, int pageSize = STATS_HISTORY_RESULTS_DEFAULT_PAGE_SIZE, double rangeStart = 0, double rangeEnd = 0, double maxWidth = 0);
+#endif
         static String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
         static String createModuleParameter(const char *name, const char* value, const char *timestamp);
 
