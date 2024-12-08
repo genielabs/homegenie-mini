@@ -52,6 +52,8 @@ namespace Service { namespace API {
     }
 
     namespace AutomationApi {
+        static const char Programs_Enable[] = {"Programs.Enable"};
+        static const char Programs_Disable[] = {"Programs.Disable"};
         static const char Scheduling_Add[] = {"Scheduling.Add"};
         static const char Scheduling_Update[] = {"Scheduling.Update"};
         static const char Scheduling_Get[] = {"Scheduling.Get"};
@@ -67,6 +69,7 @@ namespace Service { namespace API {
     namespace ConfigApi {
         static const char Modules_List[] = {"Modules.List"};
         static const char Modules_Get[] = {"Modules.Get"};
+        static const char Modules_ParameterGet[] = {"Modules.ParameterGet"};
         static const char Modules_ParameterSet[] = {"Modules.ParameterSet"};
         static const char Modules_StatisticsGet[] = {"Modules.StatisticsGet"};
         static const char Groups_List[] = {"Groups.List"};

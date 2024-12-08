@@ -40,7 +40,10 @@ namespace Net {
         // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
         delete httpServer;
         delete webSocket;
-#ifndef DISABLE_MQTT
+#ifndef DISABLE_MQTT_CLIENT
+        delete mqttClient;
+#endif
+#ifndef DISABLE_MQTT_BROKER
         delete mqttServer;
 #endif
     }
@@ -115,26 +118,33 @@ namespace Net {
         webSocket->begin();
         Logger::info("|  ✔ WebSocket server");
 
-#ifndef DISABLE_MQTT
+#ifndef DISABLE_MQTT_BROKER
         mqttServer = new MQTTServer();
         mqttServer->onRequest([this](uint8_t num, const char* domain, const char* address, const char* command) {
 
             auto c = String(command);
             if (c == "Module.Describe") {
-                String topic = WiFi.macAddress() + "/" + domain + "/" + address + "/description";
+                String topic = Config::system.id + "/" + domain + "/" + address + "/description";
                 String apiCommand = "/api/" + String(IOEventDomains::HomeAutomation_HomeGenie) + "/Config/Modules.Get/" + domain + "/" + address;
-                auto cb = MQTTResponseCallback(mqttServer, num, &topic);
+                auto cb = MQTTResponseCallback((MQTTChannel*)mqttServer, &topic);
                 netRequestHandler->onNetRequest(mqttServer, apiCommand.c_str(), &cb);
             } else {
                 String apiCommand = "/api/" + String(domain) + "/" + String(address) + "/" + c;
-                auto cb = MQTTResponseCallback(mqttServer, 0, nullptr);
+                auto cb = MQTTResponseCallback((MQTTChannel*)mqttServer, nullptr);
                 netRequestHandler->onNetRequest(mqttServer, apiCommand.c_str(), &cb);
             }
 
         });
         mqttServer->begin();
-        Logger::info("|  ✔ MQTT service");
+        Logger::info("|  ✔ MQTT broker");
 #endif
+
+#ifndef DISABLE_MQTT_CLIENT
+        mqttClient = new MQTTClient();
+        Net::MQTTClient::requestHandler = this;
+        Logger::info("|  ✔ MQTT client");
+#endif
+
         timeClient = new TimeClient();
         timeClient->begin();
     }
@@ -143,10 +153,7 @@ namespace Net {
     void NetManager::loop() {
         Logger::verbose("%s loop() >> BEGIN", NETMANAGER_LOG_PREFIX);
 
-        for (int i = 0; i < 5; i++) { // higher priority task
-            webSocket->loop();
-            yield();
-        }
+        webSocket->loop();
 
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }
@@ -169,9 +176,21 @@ namespace Net {
         return *httpServer;
     }
 
-#ifndef DISABLE_MQTT
+#ifndef DISABLE_MQTT_BROKER
     MQTTServer& NetManager::getMQTTServer() {
         return *mqttServer;
+    }
+#endif
+#ifndef DISABLE_MQTT_CLIENT
+    MQTTClient& NetManager::getMQTTClient() {
+        return *mqttClient;
+    }
+
+    bool NetManager::onMqttRequest(void *sender, String &req, String &data, String &tid) {
+        String topic = Config::system.id + "/MQTT.Listeners/" + tid + "/response";
+        auto callback = MQTTResponseCallback((MQTTChannel*)mqttClient, &topic);
+        netRequestHandler->onNetRequest(sender, req.c_str(), &callback);
+        return false;
     }
 #endif
 

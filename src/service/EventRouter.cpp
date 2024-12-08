@@ -165,12 +165,17 @@ namespace Service {
 #endif // #ifndef DISABLE_AUTOMATION
 
 
-#ifndef DISABLE_MQTT
+#if !(defined DISABLE_MQTT_BROKER || defined DISABLE_MQTT_CLIENT)
             // MQTT
             auto date = TimeClient::getTimeClient().getFormattedDate();
-            auto topic = String(WiFi.macAddress() + "/" + domain + "/" + sender + "/event");
-            auto details = Service::HomeGenie::createModuleParameter(eventPath, m.value.c_str(), date.c_str());
+            auto topic = String(Config::system.id + "/" + domain + "/" + sender + "/event");
+            auto json = HomeGenie::createModuleParameter(eventPath, m.value.c_str(), date.c_str());
+            auto details = String(json);
+            free((void*)json);
             netManager->getMQTTServer().broadcast(&topic, &details);
+#ifndef DISABLE_MQTT_CLIENT
+            netManager->getMQTTClient().broadcast(&topic, &details);
+#endif
 #endif
 #ifndef DISABLE_SSE
             // SSE

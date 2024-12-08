@@ -75,7 +75,8 @@ namespace Service { namespace API {
     }
 
     bool HomeGenieHandler::canHandleDomain(String* domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie)
+                ||domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie_Automation);
     }
 
     bool HomeGenieHandler::handleRequest(Service::APIRequest *request, ResponseCallback* responseCallback) {
@@ -261,6 +262,19 @@ namespace Service { namespace API {
             } else if (request->Command == AutomationApi::Scheduling_Templates) {
                 responseCallback->writeAll(SCHEDULER_ACTION_TEMPLATES);
                 return true;
+            } else if (request->Command == AutomationApi::Programs_Enable || request->Command == AutomationApi::Programs_Disable) {
+                auto address = request->OptionsString.c_str();
+                auto program = homeGenie->programs.getItem(address);
+                if (program != nullptr) {
+                    if (request->Command == AutomationApi::Programs_Enable) {
+                        homeGenie->programs.enable(program);
+                    } else {
+                        homeGenie->programs.disable(program);
+                    }
+                    homeGenie->programs.save();
+                    responseCallback->writeAll(ApiHandlerResponseText::OK);
+                    return true;
+                }
             }
 #endif
         } else if (request->Address == "Config") {
@@ -285,22 +299,85 @@ namespace Service { namespace API {
                 if (contentLength == 0) return false;
                 homeGenie->writeModuleJSON(responseCallback, &domain, &address);
                 return true;
+            } else if (request->Command == ConfigApi::Modules_ParameterGet) {
+                auto domain = request->getOption(0);
+                auto address = request->getOption(1);
+                auto module = homeGenie->getModule(&domain, &address);
+                if (module != nullptr) {
+                    auto parameter = module->getProperty(request->getOption(2));
+                    if (parameter != nullptr) {
+                        /*
+                        {
+                          "Name": "ConfigureOptions.Username",
+                          "Value": "",
+//TODO:                   "Description": "5. Username (optional)",
+//TODO:                   "FieldType": "text",
+//                        "UpdateTime": "2024-12-08T02:46:23.1173437Z",
+//TODO: (?)               "NeedsUpdate": false
+                        }
+                        */
+                        auto jsonParameter = HomeGenie::createModuleParameter(parameter->name.c_str(), parameter->value.c_str(), parameter->updateTime.c_str());
+                        responseCallback->writeAll(jsonParameter);
+                        return true;
+                    }
+                }
             } else if (request->Command == ConfigApi::Modules_ParameterSet) {
                 auto domain = request->getOption(0);
                 auto address = request->getOption(1);
-                auto propName = request->getOption(2);
-                auto propValue = WebServer::urlDecode(request->getOption(3));
                 auto module = homeGenie->getModule(&domain, &address);
-                if (module != nullptr) {
-                    module->setProperty(propName, propValue, nullptr, IOEventDataType::Undefined);
-                    QueuedMessage m;
-                    m.domain = domain;
-                    m.sender = address;
-                    m.event = propName;
-                    m.value = propValue;
-                    homeGenie->getEventRouter().signalEvent(m);
-                    responseCallback->writeAll(ApiHandlerResponseText::OK);
-                    return true;
+
+                bool isProgramConfiguration = domain.equals(IOEventDomains::HomeAutomation_HomeGenie_Automation);
+                if (module != nullptr || isProgramConfiguration) {
+                    // Collect parameters
+                    auto parameters = LinkedList<ModuleParameter>();
+                    if (request->Data.length() > 0) {
+                        JsonDocument doc;
+                        DeserializationError error = deserializeJson(doc, request->Data);
+                        if (!error.code()) {
+                            auto list = doc.as<JsonObject>();
+                            for (JsonPair kv : list) {
+                                auto p = ModuleParameter(kv.key().c_str(), kv.value().as<String>());
+                                parameters.add(p);
+                            }
+                        }
+                    } else {
+                        auto propName = request->getOption(2);
+                        auto propValue = WebServer::urlDecode(request->getOption(3));
+                        auto p = ModuleParameter(propName, propValue);
+                        parameters.add(p);
+                    }
+                    // Update module parameters
+                    if (module != nullptr) {
+                        for (ModuleParameter p: parameters) {
+                            if (p.name.isEmpty()) continue;
+                            module->setProperty(p.name, p.value, nullptr, IOEventDataType::Undefined);
+                            QueuedMessage m;
+                            m.domain = domain;
+                            m.sender = address;
+                            m.event = p.name;
+                            m.value = p.value;
+                            homeGenie->getEventRouter().signalEvent(m);
+                        }
+                        responseCallback->writeAll(ApiHandlerResponseText::OK);
+                        return true;
+                    }
+                    // Update program configuration
+                    if (isProgramConfiguration) {
+// TODO: move this to a "ProgramManager" class (extend actual ProgramStore)
+#ifndef DISABLE_MQTT_CLIENT
+                        if (address.equals(MQTT_NETWORK_CONFIGURATION)) {
+                            auto mqttNetwork = homeGenie->programs.getItem(MQTT_NETWORK_CONFIGURATION);
+                            for (const ModuleParameter& p: parameters) {
+                                mqttNetwork->setProperty(p.name, p.value);
+                            }
+                            homeGenie->programs.save();
+                            homeGenie->getNetManager().getMQTTClient().configure(mqttNetwork->properties);
+                        }
+#endif
+                        responseCallback->writeAll(ApiHandlerResponseText::OK);
+                        return true;
+                    }
+                    return false;
                 }
 #ifndef DISABLE_DATA_PROCESSING
             } else if (request->Command == ConfigApi::Modules_StatisticsGet) {
@@ -580,6 +657,15 @@ namespace Service { namespace API {
     }
     LinkedList<Module*>* HomeGenieHandler::getModuleList() {
         return &moduleList;
+    }
+
+    bool HomeGenieHandler::addModule(Module* module) {
+        auto m = getModule(module->name.c_str(), module->address.c_str());
+        if (m != nullptr) {
+            return false;
+        }
+        moduleList.add(module);
+        return true;
     }
 
 }}

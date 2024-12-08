@@ -21,24 +21,11 @@
  * Authors:
  * - Generoso Martello <gene@homegenie.it>
  *
- *
- * Releases:
- * - 2019-01-19 Initial release
- *
  */
 
-#ifndef HOMEGENIE_MINI_IOEVENTDOMAINS_H
-#define HOMEGENIE_MINI_IOEVENTDOMAINS_H
 
-namespace IO {
-    namespace IOEventDomains {
-        const char HomeAutomation_HomeGenie[] = "HomeAutomation.HomeGenie";
-        const char HomeAutomation_HomeGenie_Automation[] = "HomeAutomation.HomeGenie.Automation";
-        const char HomeAutomation_X10[] = "HomeAutomation.X10";
-        const char HomeAutomation_RemoteControl[] = "HomeAutomation.RemoteControl";
-        const char Automation_Components[] = "Automation.Components";
-        const char DataProcessing_Filters[] = "DataProcessing.Filters";
-    };
+#include "JsonStore.h"
+
+namespace Data {
+
 }
-
-#endif //HOMEGENIE_MINI_IOEVENTDOMAINS_H

@@ -55,6 +55,7 @@ namespace Service { namespace API {
                     IOEventDataType dataType) override;
         Module* getModule(const char* domain, const char* address) override;
         LinkedList<Module*>* getModuleList() override;
+        bool addModule(Module* module);
     };
 
     static const char* SCHEDULER_ACTION_TEMPLATES PROGMEM = "[\n"

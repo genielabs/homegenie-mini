@@ -67,6 +67,24 @@ namespace Service {
         PowerManager::setWakeUpInterval(0);
         PowerManager::init();
 #endif
+
+        programs.setStatusCallback(this);
+        programs.load();
+#ifndef DISABLE_MQTT_CLIENT
+        // create "MQTT Network" program if not already there
+        auto mqttNetwork = programs.getItem(MQTT_NETWORK_CONFIGURATION);
+        if (mqttNetwork == nullptr) {
+            mqttNetwork = new Program(MQTT_NETWORK_CONFIGURATION, "MQTT Network", "");
+            programs.addItem(mqttNetwork);
+            programs.save();
+        }
+        auto programStatus = mqttNetwork->getProperty(IOEventPaths::Program_Status);
+        if (programStatus == nullptr) {
+            mqttNetwork->properties.add(new ModuleParameter(IOEventPaths::Program_Status, ""));
+        }
+        homeGenieHandler->addModule(mqttNetwork);
+#endif
+
         Logger::info("+ Starting HomeGenie service");
     }
 
@@ -115,6 +133,18 @@ namespace Service {
 #endif
 
 #endif
+
+#ifndef DISABLE_MQTT_CLIENT
+        // Configure MQTT client
+        auto mqttProgram = programs.getItem(MQTT_NETWORK_CONFIGURATION);
+        if (mqttProgram != nullptr) {
+            netManager.getMQTTClient().configure(mqttProgram->properties);
+            if (mqttProgram->isEnabled) {
+                netManager.getMQTTClient().enable();
+            }
+        }
+#endif
+
         // Add System Diagnostics event handler
         auto systemDiagnostics = new System::Diagnostics();
         systemDiagnostics->setModule(getDefaultModule());
@@ -260,22 +290,24 @@ namespace Service {
         String parameters = "";
         for(int p = 0; p < module->properties.size(); p++) {
             auto param = module->properties.get(p);
-            parameters += HomeGenie::createModuleParameter(param->name.c_str(), param->value.c_str(), param->updateTime.c_str());
+            auto json = HomeGenie::createModuleParameter(param->name.c_str(), param->value.c_str(), param->updateTime.c_str());
+            parameters += String(json);
+            free((void*)json);
             if (p < module->properties.size() - 1) {
                 parameters += ",";
             }
         }
-        String out = HomeGenie::createModule(module->domain.c_str(), module->address.c_str(),
-                                             module->name.c_str(), module->description.c_str(), module->type.c_str(),
-                                             parameters.c_str());
-        return out.c_str();
+        return HomeGenie::createModule(module->domain.c_str(), module->address.c_str(),
+                                       module->name.c_str(), module->description.c_str(), module->type.c_str(),
+                                       parameters.c_str());
     }
 
     unsigned int HomeGenie::writeModuleJSON(ResponseCallback *responseCallback, String* domain, String* address) {
         auto module = getModule(domain, address);
         if (module != nullptr) {
-            String out = getModuleJSON(module);
-            responseCallback->write(out.c_str());
+            auto json = getModuleJSON(module);
+            responseCallback->write(json);
+            free((void*)json);
         }
         return responseCallback->contentLength;
     }
@@ -296,7 +328,9 @@ namespace Service {
                     firstModule = false;
                     out = "";
                 }
-                out += getModuleJSON(module);
+                auto json = getModuleJSON(module);
+                out += String(json);
+                free((void*)json);
                 responseCallback->write(out.c_str());
             }
         }
@@ -434,27 +468,29 @@ namespace Service {
     }
 #endif
 
-    String HomeGenie::createModuleParameter(const char *name, const char *value, const char *timestamp) {
+    const char* HomeGenie::createModuleParameter(const char *name, const char *value, const char *timestamp) {
         static const char *parameterTemplate = R"({
-    "Name": "%s",
-    "Value": "%s",
-    "Description": "%s",
-    "FieldType": "%s",
-    "UpdateTime": "%s"
-  })";
+  "Name": "%s",
+  "Value": "%s",
+  "Description": "%s",
+  "FieldType": "%s",
+  "UpdateTime": "%s"
+})";
         ssize_t size = snprintf(nullptr, 0, parameterTemplate,
                                 name, value, "", "", timestamp
         ) + 1;
+#ifdef BOARD_HAS_PSRAM
+        char *parameterJson = (char *) ps_malloc(size);
+#else
         char *parameterJson = (char *) malloc(size);
+#endif
         snprintf(parameterJson, size, parameterTemplate,
                  name, value, "", "", timestamp
         );
-        auto p = String(parameterJson);
-        free(parameterJson);
-        return p;
+        return parameterJson;
     }
 
-    String HomeGenie::createModule(const char *domain, const char *address, const char *name, const char *description,
+    const char* HomeGenie::createModule(const char *domain, const char *address, const char *name, const char *description,
                                    const char *deviceType, const char *parameters) {
         static const char *moduleTemplate = R"({
   "Name": "%s",
@@ -469,15 +505,17 @@ namespace Service {
                                 domain, address,
                                 parameters
         ) + 1;
+#ifdef BOARD_HAS_PSRAM
+        char *moduleJson = (char *) ps_malloc(size);
+#else
         char *moduleJson = (char *) malloc(size);
+#endif
         snprintf(moduleJson, size, moduleTemplate,
                  name, description, deviceType,
                  domain, address,
                  parameters
         );
-        auto m = String(moduleJson);
-        free(moduleJson);
-        return m;
+        return moduleJson;
     }
 
 }

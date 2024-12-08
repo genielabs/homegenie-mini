@@ -45,8 +45,11 @@
 #include "net/HTTPServer.h"
 #include "net/WiFiManager.h"
 
-#ifndef DISABLE_MQTT
+#ifndef DISABLE_MQTT_BROKER
 #include "net/MQTTServer.h"
+#endif
+#ifndef DISABLE_MQTT_CLIENT
+#include "net/MQTTClient.h"
 #endif
 
 #ifndef DISABLE_BLUETOOTH
@@ -81,28 +84,29 @@ namespace Net {
         void error(const char* s) override {};
     };
 
-#ifndef DISABLE_MQTT
+#if !(defined DISABLE_MQTT_BROKER && defined DISABLE_MQTT_CLIENT)
     class MQTTResponseCallback : public ResponseCallback {
     public:
-        MQTTResponseCallback(MQTTServer *server, uint8_t clientId, String* destinationTopic) {
-            mq = server;
-            cid = clientId;
+        MQTTResponseCallback(MQTTChannel *mqttChannel, String* destinationTopic) {
+            mqtt = mqttChannel;
             topic = destinationTopic;
         }
         void beginGetLength() override {
             buffer = "";
         };
         void endGetLength() override {
-            mq->broadcast(topic, &buffer);
+            mqtt->broadcast(topic, &buffer);
         };
         void write(const char* s) override {
             buffer += s;
         };
-        void writeAll(const char* s) override {};
+        void writeAll(const char* s) override {
+            buffer = s;
+            mqtt->broadcast(topic, &buffer);
+        };
         void error(const char* s) override {};
     private:
-        MQTTServer* mq;
-        uint8_t cid;
+        MQTTChannel* mqtt;
         String* topic;
         String buffer;
     };
@@ -215,7 +219,11 @@ namespace Net {
 
 
     /// Network services management
-    class NetManager : Task, RequestHandler {
+    class NetManager : Task, RequestHandler
+#if !(defined DISABLE_MQTT_BROKER || defined DISABLE_MQTT_CLIENT)
+            , MQTTRequestHandler
+#endif
+            {
     public:
         NetManager();
         ~NetManager();
@@ -230,8 +238,11 @@ namespace Net {
         WiFiManager& getWiFiManager();
         HTTPServer& getHttpServer();
 
-#ifndef DISABLE_MQTT
+#ifndef DISABLE_MQTT_BROKER
         MQTTServer& getMQTTServer();
+#endif
+#ifndef DISABLE_MQTT_CLIENT
+        MQTTClient& getMQTTClient();
 #endif
         WebSocketsServer& getWebSocketServer();
 
@@ -271,14 +282,22 @@ namespace Net {
 
         // END HTTP RequestHandler interface methods
 
+#ifndef DISABLE_MQTT_CLIENT
+        // MqttRequestHandler overrides
+        bool onMqttRequest(void* sender, String&, String&, String&) override;
+#endif
+
     private:
 #ifndef DISABLE_BLUETOOTH
         BluetoothManager *bluetoothManager;
 #endif
         WiFiManager *wiFiManager;
         HTTPServer *httpServer;
-#ifndef DISABLE_MQTT
+#ifndef DISABLE_MQTT_BROKER
         MQTTServer *mqttServer;
+#endif
+#ifndef DISABLE_MQTT_CLIENT
+        MQTTClient *mqttClient;
 #endif
         WebSocketsServer *webSocket;
         NetRequestHandler* netRequestHandler;

@@ -32,15 +32,16 @@
 
 namespace IO {
     namespace IOEventPaths {
+        const char Program_Status[]  = "Program.Status";
         const char Receiver_RawData[]  = "Receiver.RawData";
         const char Receiver_Command[]  = "Receiver.Command";
-        const char Status_Level[]  = "Status.Level";
-        const char Status_ColorHsb[]  = "Status.ColorHsb";
         const char Sensor_Luminance[]  = "Sensor.Luminance";
         const char Sensor_ColorHsv[]  = "Sensor.ColorHsv";
         const char Sensor_Temperature[]  = "Sensor.Temperature";
         const char Sensor_Humidity[]  = "Sensor.Humidity";
         const char Sensor_MotionDetect[]  = "Sensor.MotionDetect";
+        const char Status_Level[]  = "Status.Level";
+        const char Status_ColorHsb[]  = "Status.ColorHsb";
         const char Status_IdleTime[]  = "Status.IdleTime";
         const char Status_Battery[]  = "Status.Battery";
         const char Status_Error[]  = "Status.Error";

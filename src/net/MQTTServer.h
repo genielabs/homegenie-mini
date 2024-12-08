@@ -34,7 +34,7 @@
 #include <io/Logger.h>
 #include <WiFiServer.h>
 
-#include "defs.h"
+#include "MQTTChannel.h"
 #include "Task.h"
 #include "net/mqtt/MQTTBrokerMini.h"
 
@@ -46,19 +46,20 @@ namespace Net {
     typedef std::function<void(uint8_t num, const char* domain, const char* address, const char* command)> ApiRequestEvent;
 
     /// Simple MQTT Broker implementation over WebSockets
-    class MQTTServer : Task {
+    class MQTTServer : MQTTChannel, Task {
     public:
         void begin();
         void loop() override;
 
-        void broadcast(uint8_t num, String* topic, String* payload);
-        void broadcast(String* topic, String* payload);
         void onRequest(ApiRequestEvent cb) {
             apiCallback = cb;
         }
 
         void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
         void mqttCallback(uint8_t num, const Events_t* event, const String* topic_name, uint8_t* payload, uint16_t length_payload);
+
+        void broadcast(String *topic, String *payload) override;
+        void broadcast(uint8_t num, String *topic, String *payload) override;
 
     private:
         WebSocketsServer* webSocket = nullptr;

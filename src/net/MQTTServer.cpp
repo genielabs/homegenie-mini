@@ -79,7 +79,7 @@ namespace Net {
             case EVENT_PUBLISH: {
                 IO::Logger::trace(":%s [%d] >> PUBLISH to '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
 
-                auto controlTopic = String ("/") + WiFi.macAddress() + String("/command");
+                auto controlTopic = String ("/") + Config::system.id + String("/command");
 #if ESP8266
                 auto msg = mb->data_to_string(payload, length_payload);
 #else
@@ -172,12 +172,12 @@ namespace Net {
         }
     }
 
-    void MQTTServer::broadcast(uint8_t num, String *topic, String *payload) {
-        mb->broadcast(num, *topic, (uint8_t *)payload->c_str(), (uint16_t)payload->length());
-    }
-
     void MQTTServer::broadcast(String *topic, String *payload) {
         mb->broadcast(*topic, (uint8_t *)payload->c_str(), (uint16_t)payload->length());
+    }
+
+    void MQTTServer::broadcast(uint8_t num, String *topic, String *payload) {
+        mb->broadcast(num, *topic, (uint8_t *)payload->c_str(), (uint16_t)payload->length());
     }
 
 }

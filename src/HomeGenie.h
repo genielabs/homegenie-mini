@@ -42,6 +42,7 @@
 #include "automation/ProgramEngine.h"
 #include "automation/Scheduler.h"
 #endif
+#include "data/ProgramStore.h"
 
 #include "data/Module.h"
 #include "io/gpio/GPIOPort.h"
@@ -58,7 +59,8 @@
 #include "service/EventRouter.h"
 
 
-#define HOMEGENIEMINI_NS_PREFIX            "Service::HomeGenie"
+#define HOMEGENIEMINI_NS_PREFIX     "Service::HomeGenie"
+#define MQTT_NETWORK_CONFIGURATION  "77"
 
 namespace Service {
 
@@ -73,7 +75,7 @@ namespace Service {
     using namespace Automation;
 #endif
 
-    class HomeGenie: IIOEventReceiver, NetRequestHandler
+    class HomeGenie: IIOEventReceiver, NetRequestHandler, ProgramStatusListener
 #ifndef DISABLE_AUTOMATION
             , SchedulerListener
 #endif
@@ -104,6 +106,40 @@ namespace Service {
         void onSchedule(Schedule* schedule) override;
 #endif
 
+        // ProgramStatusListener events
+        void onProgramEnabled(Program* program) override {
+#ifndef DISABLE_MQTT_CLIENT
+            if (program->address == MQTT_NETWORK_CONFIGURATION) {
+                auto mqttNetwork = programs.getItem(MQTT_NETWORK_CONFIGURATION);
+                mqttNetwork->setProperty(IOEventPaths::Program_Status, "Running");
+                QueuedMessage m;
+                m.domain = IOEventDomains::HomeAutomation_HomeGenie_Automation;
+                m.sender = MQTT_NETWORK_CONFIGURATION;
+                m.event = IOEventPaths::Program_Status;
+                m.value = "Running";
+                eventRouter.signalEvent(m);
+                netManager.getMQTTClient().enable();
+            }
+#endif
+            programs.save();
+        }
+        void onProgramDisabled(Program* program) override {
+#ifndef DISABLE_MQTT_CLIENT
+            if (program->address == MQTT_NETWORK_CONFIGURATION) {
+                auto mqttNetwork = programs.getItem(MQTT_NETWORK_CONFIGURATION);
+                mqttNetwork->setProperty(IOEventPaths::Program_Status, "Stopped");
+                QueuedMessage m;
+                m.domain = IOEventDomains::HomeAutomation_HomeGenie_Automation;
+                m.sender = MQTT_NETWORK_CONFIGURATION;
+                m.event = IOEventPaths::Program_Status;
+                m.value = "Stopped";
+                eventRouter.signalEvent(m);
+                netManager.getMQTTClient().disable();
+            }
+#endif
+            programs.save();
+        }
+
         /**
          *
          * @param handler
@@ -130,6 +166,8 @@ namespace Service {
         IOManager& getIOManager();
         EventRouter& getEventRouter();
 
+        ProgramStore programs;
+
         Module* getDefaultModule();
         Module* getModule(String* domain, String* address);
 
@@ -140,8 +178,8 @@ namespace Service {
 #ifndef DISABLE_DATA_PROCESSING
         unsigned int writeParameterHistoryJSON(ModuleParameter* parameter, ResponseCallback *outputCallback, int pageNumber = 0, int pageSize = STATS_HISTORY_RESULTS_DEFAULT_PAGE_SIZE, double rangeStart = 0, double rangeEnd = 0, double maxWidth = 0);
 #endif
-        static String createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
-        static String createModuleParameter(const char *name, const char* value, const char *timestamp);
+        static const char* createModule(const char *domain, const char *address, const char *name, const char* description, const char *deviceType, const char *parameters);
+        static const char* createModuleParameter(const char *name, const char* value, const char *timestamp);
 
     private:
         static HomeGenie* serviceInstance;

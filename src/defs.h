@@ -56,7 +56,7 @@
 
 // disabling SSE and MQTT saves only ~2K of RAM
 //#define DISABLE_SSE
-//#define DISABLE_MQTT
+//#define DISABLE_MQTT_BROKER
 
 // WPS active for all configurations by default
 #define CONFIGURE_WITH_WPS
@@ -72,6 +72,7 @@
 
 #ifdef ESP8266
     #undef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
+    #define DISABLE_MQTT_CLIENT
     #define DISABLE_UI
     #define DISABLE_BLUETOOTH
     #define WebServer ESP8266WebServer
