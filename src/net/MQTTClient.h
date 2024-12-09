@@ -82,12 +82,15 @@ namespace Net {
         static MQTTRequestHandler* requestHandler;
 
         MQTTClient() {
-            setLoopInterval(5000);
+            setLoopInterval(2000);
         };
 
         void loop() override {
 
-            if (isEnabled && !clientStarted) {
+            if (stopRequested) {
+                stop();
+                stopRequested = false;
+            } else if (isEnabled && !clientStarted) {
                 start();
             }
 
@@ -98,8 +101,8 @@ namespace Net {
             auto port = String();
             auto tls = String();
             auto webSockets = String();
-            auto username = String();
-            auto password = String();
+            username = "";
+            password = "";
             for (ModuleParameter* p: parameters) {
                 if(p->name.equals("ConfigureOptions.ServerAddress")) {
                     address = String(p->value);
@@ -116,20 +119,18 @@ namespace Net {
                 }
             }
 
-            auto brokerUrl = new String();
             if (tls.equals("on")) {
-                *brokerUrl = webSockets.equals("on") ? "wss://" : "mqtts://";
+                brokerUrl = webSockets.equals("on") ? "wss://" : "mqtts://";
             } else {
-                *brokerUrl = webSockets.equals("on") ? "ws://" : "mqtt://";
+                brokerUrl = webSockets.equals("on") ? "ws://" : "mqtt://";
             }
-            *brokerUrl += address + String(":") + port;
+            brokerUrl += address + String(":") + port;
 
-            stop();
-
-            mqtt_cfg.uri = brokerUrl->c_str();
+            mqtt_cfg.uri = brokerUrl.c_str();
             mqtt_cfg.username = username.c_str();
             mqtt_cfg.password = password.c_str();
 
+            stopRequested = true;
         }
 
         void enable() {
@@ -137,7 +138,7 @@ namespace Net {
         }
         void disable() {
             isEnabled = false;
-            stop();
+            stopRequested = true;
         }
 
         void start() {
@@ -150,12 +151,16 @@ namespace Net {
                 arduino_esp_crt_bundle_attach(&conf);
                 */
 
+                esp_mqtt_client_destroy(client);
                 client = esp_mqtt_client_init(&mqtt_cfg);
-                /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
-                esp_mqtt_client_register_event(client, static_cast<esp_mqtt_event_id_t>(ESP_EVENT_ANY_ID), mqtt_event_handler, nullptr);
+                if (client != nullptr) {
+                    /* The last argument may be used to pass data to the event handler, in this example mqtt_event_handler */
+                    esp_mqtt_client_register_event(client, static_cast<esp_mqtt_event_id_t>(ESP_EVENT_ANY_ID),
+                                                   mqtt_event_handler, nullptr);
 
-                if (esp_mqtt_client_start(client) == ESP_OK) {
-                    clientStarted = true;
+                    if (esp_mqtt_client_start(client) == ESP_OK) {
+                        clientStarted = true;
+                    }
                 }
             }
 
@@ -164,6 +169,7 @@ namespace Net {
         void stop() {
 
             if (clientStarted) {
+                esp_mqtt_client_disconnect(client);
                 esp_mqtt_client_stop(client);
                 clientStarted = false;
             }
@@ -175,8 +181,12 @@ namespace Net {
         }
 
     private:
-        bool clientStarted = false;
+        String brokerUrl;
+        String username;
+        String password;
         bool isEnabled = false;
+        bool stopRequested = false;
+        bool clientStarted = false;
         esp_mqtt_client_handle_t client = nullptr;
         esp_mqtt_client_config_t mqtt_cfg { .uri = "" };
 

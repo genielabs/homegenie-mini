@@ -318,6 +318,7 @@ namespace Service { namespace API {
                         */
                         auto jsonParameter = HomeGenie::createModuleParameter(parameter->name.c_str(), parameter->value.c_str(), parameter->updateTime.c_str());
                         responseCallback->writeAll(jsonParameter);
+                        free((void*)jsonParameter);
                         return true;
                     }
                 }
@@ -343,8 +344,13 @@ namespace Service { namespace API {
                     } else {
                         auto propName = request->getOption(2);
                         auto propValue = WebServer::urlDecode(request->getOption(3));
-                        auto p = ModuleParameter(propName, propValue);
-                        parameters.add(p);
+                        if (!propName.isEmpty()) {
+                            auto p = ModuleParameter(propName, propValue);
+                            parameters.add(p);
+                        }
+                    }
+                    if (parameters.size() == 0) {
+                        return false;
                     }
                     // Update module parameters
                     if (module != nullptr) {
@@ -358,8 +364,10 @@ namespace Service { namespace API {
                             m.value = p.value;
                             homeGenie->getEventRouter().signalEvent(m);
                         }
-                        responseCallback->writeAll(ApiHandlerResponseText::OK);
-                        return true;
+                        if (!isProgramConfiguration) {
+                            responseCallback->writeAll(ApiHandlerResponseText::OK);
+                            return true;
+                        }
                     }
                     // Update program configuration
                     if (isProgramConfiguration) {
@@ -367,9 +375,6 @@ namespace Service { namespace API {
 #ifndef DISABLE_MQTT_CLIENT
                         if (address.equals(MQTT_NETWORK_CONFIGURATION)) {
                             auto mqttNetwork = homeGenie->programs.getItem(MQTT_NETWORK_CONFIGURATION);
-                            for (const ModuleParameter& p: parameters) {
-                                mqttNetwork->setProperty(p.name, p.value);
-                            }
                             homeGenie->programs.save();
                             homeGenie->getNetManager().getMQTTClient().configure(mqttNetwork->properties);
                         }
