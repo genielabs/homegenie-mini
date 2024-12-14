@@ -476,8 +476,10 @@ namespace Service {
   "FieldType": "%s",
   "UpdateTime": "%s"
 })";
+        auto v = String(value);
+        Utility::simpleJsonStringEscape(v);
         ssize_t size = snprintf(nullptr, 0, parameterTemplate,
-                                name, value, "", "", timestamp
+                                name, v.c_str(), "", "", timestamp
         ) + 1;
 #ifdef BOARD_HAS_PSRAM
         char *parameterJson = (char *) ps_malloc(size);
@@ -485,7 +487,7 @@ namespace Service {
         char *parameterJson = (char *) malloc(size);
 #endif
         snprintf(parameterJson, size, parameterTemplate,
-                 name, value, "", "", timestamp
+                 name, v.c_str(), "", "", timestamp
         );
         return parameterJson;
     }
@@ -500,8 +502,10 @@ namespace Service {
   "Address": "%s",
   "Properties": [%s]
 })";
+        auto d = String(description);
+        Utility::simpleJsonStringEscape(d);
         ssize_t size = snprintf(nullptr, 0, moduleTemplate,
-                                name, description, deviceType,
+                                name, d.c_str(), deviceType,
                                 domain, address,
                                 parameters
         ) + 1;
@@ -511,7 +515,7 @@ namespace Service {
         char *moduleJson = (char *) malloc(size);
 #endif
         snprintf(moduleJson, size, moduleTemplate,
-                 name, description, deviceType,
+                 name, d.c_str(), deviceType,
                  domain, address,
                  parameters
         );

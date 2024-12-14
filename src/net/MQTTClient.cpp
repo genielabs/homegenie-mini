@@ -32,6 +32,8 @@
 
 namespace Net {
     MQTTRequestHandler* MQTTClient::requestHandler = nullptr;
+    bool MQTTClient::enableEncryption = false;
+    String MQTTClient::encryptionKey;
 }
 
 #endif

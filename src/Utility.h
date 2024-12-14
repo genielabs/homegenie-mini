@@ -64,6 +64,7 @@ public:
     static ColorHSV rgb2hsv(float r, float g, float b);
     static uint32_t getFreeMem();
     static time_t relativeUtcHoursToLocalTime(double relativeHours, time_t time);
+    static void simpleJsonStringEscape(String& s);
     static bool isNumeric(const char* s) {
         return strlen(s) > 0 && strspn(s, "0123456789.") == strlen(s);
     }

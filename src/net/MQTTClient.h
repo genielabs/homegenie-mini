@@ -27,45 +27,19 @@
 #ifndef HOMEGENIE_MINI_MQTTCLIENT_H
 #define HOMEGENIE_MINI_MQTTCLIENT_H
 
+#include <mbedtls/base64.h>
 #include <mqtt_client.h>
 #include <LinkedList.h>
 
-
-#include "MQTTChannel.h"
 #include "Task.h"
 #include "data/Module.h"
 #include "service/api/APIRequest.h"
 
+#include "./mqtt/MQTTChannel.h"
 
 #include "esp_crt_bundle.h"
 
 // TODO: TLS/SSL support to be completed
-
-static const char *mosquitto_org_pem PROGMEM = R"EOF(-----BEGIN CERTIFICATE-----
-MIIEAzCCAuugAwIBAgIUBY1hlCGvdj4NhBXkZ/uLUZNILAwwDQYJKoZIhvcNAQEL
-BQAwgZAxCzAJBgNVBAYTAkdCMRcwFQYDVQQIDA5Vbml0ZWQgS2luZ2RvbTEOMAwG
-A1UEBwwFRGVyYnkxEjAQBgNVBAoMCU1vc3F1aXR0bzELMAkGA1UECwwCQ0ExFjAU
-BgNVBAMMDW1vc3F1aXR0by5vcmcxHzAdBgkqhkiG9w0BCQEWEHJvZ2VyQGF0Y2hv
-by5vcmcwHhcNMjAwNjA5MTEwNjM5WhcNMzAwNjA3MTEwNjM5WjCBkDELMAkGA1UE
-BhMCR0IxFzAVBgNVBAgMDlVuaXRlZCBLaW5nZG9tMQ4wDAYDVQQHDAVEZXJieTES
-MBAGA1UECgwJTW9zcXVpdHRvMQswCQYDVQQLDAJDQTEWMBQGA1UEAwwNbW9zcXVp
-dHRvLm9yZzEfMB0GCSqGSIb3DQEJARYQcm9nZXJAYXRjaG9vLm9yZzCCASIwDQYJ
-KoZIhvcNAQEBBQADggEPADCCAQoCggEBAME0HKmIzfTOwkKLT3THHe+ObdizamPg
-UZmD64Tf3zJdNeYGYn4CEXbyP6fy3tWc8S2boW6dzrH8SdFf9uo320GJA9B7U1FW
-Te3xda/Lm3JFfaHjkWw7jBwcauQZjpGINHapHRlpiCZsquAthOgxW9SgDgYlGzEA
-s06pkEFiMw+qDfLo/sxFKB6vQlFekMeCymjLCbNwPJyqyhFmPWwio/PDMruBTzPH
-3cioBnrJWKXc3OjXdLGFJOfj7pP0j/dr2LH72eSvv3PQQFl90CZPFhrCUcRHSSxo
-E6yjGOdnz7f6PveLIB574kQORwt8ePn0yidrTC1ictikED3nHYhMUOUCAwEAAaNT
-MFEwHQYDVR0OBBYEFPVV6xBUFPiGKDyo5V3+Hbh4N9YSMB8GA1UdIwQYMBaAFPVV
-6xBUFPiGKDyo5V3+Hbh4N9YSMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQEL
-BQADggEBAGa9kS21N70ThM6/Hj9D7mbVxKLBjVWe2TPsGfbl3rEDfZ+OKRZ2j6AC
-6r7jb4TZO3dzF2p6dgbrlU71Y/4K0TdzIjRj3cQ3KSm41JvUQ0hZ/c04iGDg/xWf
-+pp58nfPAYwuerruPNWmlStWAXf0UTqRtg4hQDWBuUFDJTuWuuBvEXudz74eh/wK
-sMwfu1HFvjy5Z0iMDU8PUDepjVolOCue9ashlS4EB5IECdSR2TItnAIiIwimx839
-LdUdRudafMu5T5Xma182OC0/u/xRlEm+tvKGGmfFcN0piqVl8OrSPBgIlb+1IKJE
-m/XriWr/Cq4h/JfB7NTsezVslgkBaoU=
------END CERTIFICATE-----)EOF";
-
 
 namespace Net {
     using namespace Data;
@@ -103,6 +77,8 @@ namespace Net {
             auto webSockets = String();
             username = "";
             password = "";
+            encryptionKey = "";
+            enableEncryption = false;
             for (ModuleParameter* p: parameters) {
                 if(p->name.equals("ConfigureOptions.ServerAddress")) {
                     address = String(p->value);
@@ -116,6 +92,12 @@ namespace Net {
                     username = String(p->value);
                 } else if (p->name.equals("ConfigureOptions.Password")) {
                     password = String(p->value);
+                } else if (p->name.equals("ConfigureOptions.Encryption")) {
+                    String enable = String(p->value);
+                    enable.toLowerCase();
+                    enableEncryption = enable.equals("on");
+                } else if (p->name.equals("ConfigureOptions.EncryptionKey")) {
+                    encryptionKey = String(p->value);
                 }
             }
 
@@ -144,13 +126,6 @@ namespace Net {
         void start() {
 
             if (!clientStarted && ESP_WIFI_STATUS == WL_CONNECTED) {
-
-                /*
-                mbedtls_ssl_config conf;
-                mbedtls_ssl_config_init(&conf);
-                arduino_esp_crt_bundle_attach(&conf);
-                */
-
                 esp_mqtt_client_destroy(client);
                 client = esp_mqtt_client_init(&mqtt_cfg);
                 if (client != nullptr) {
@@ -177,10 +152,64 @@ namespace Net {
         }
 
         void broadcast(String *topic, String *payload) override {
+            if (enableEncryption) {
+                int ci = topic->indexOf("/");
+                if (ci > 0) {
+                    auto cid = topic->substring(0, ci);
+                    auto cmd = topic->substring(ci + 1);
+                    encryptTopic(&cid);
+                    encryptTopic(&cmd);
+                    *topic = cid + String("/") + cmd;
+                    decryptTopic(&cmd);
+                }
+                encryptionFilter(payload);
+            }
             esp_mqtt_client_publish(client, topic->c_str(), payload->c_str(), (uint16_t)payload->length(), 0, 0);
         }
 
+        static void  encryptTopic(String* topic) {
+            encryptionFilter(topic);
+
+            size_t encLength = topic->length() * 4;
+            unsigned char encryptedTopic[encLength];
+            size_t length;
+            mbedtls_base64_encode(encryptedTopic, encLength, &length,
+                                  (const uint8_t *)topic->c_str(), topic->length());
+
+            *topic = String(encryptedTopic, length);
+            topic->replace("/", "%");
+            topic->replace("+", "&");
+        }
+
+        static void decryptTopic(String* topic) {
+            topic->replace("%", "/");
+            topic->replace("&", "+");
+
+            size_t encLength = topic->length();
+            uint8_t encryptedTopic[encLength];
+            size_t length;
+            if (mbedtls_base64_decode(encryptedTopic, encLength, &length,
+                                  (const uint8_t*)topic->c_str(),
+                                  topic->length()) == 0) {
+                *topic = String(encryptedTopic, length);
+                encryptionFilter(topic);
+            }
+        }
+
+        static void encryptionFilter(String* payload) {
+            if (!encryptionKey.isEmpty()) {
+                uint8_t output[256];
+                size_t length;
+                mbedtls_base64_decode(output, 256, &length, (const uint8_t*)encryptionKey.c_str(), encryptionKey.length());
+                auto s = String((const char*)output, length);
+                andFilter(&s, &Config::system.id);
+                xorFilter(payload, &s);
+            }
+        }
+
     private:
+        static String encryptionKey;
+        static bool enableEncryption;
         String brokerUrl;
         String username;
         String password;
@@ -189,6 +218,28 @@ namespace Net {
         bool clientStarted = false;
         esp_mqtt_client_handle_t client = nullptr;
         esp_mqtt_client_config_t mqtt_cfg { .uri = "" };
+
+        static void xorFilter(String* payload, String* clientKey = 0) {
+            if (!clientKey->isEmpty()) {
+                for (int c = 0; c < payload->length(); c++) {
+                    auto key = clientKey->charAt(c % clientKey->length());
+                    auto in = (byte) payload->charAt(c);
+                    auto out = key ^ in;
+                    payload->setCharAt(c, out);
+                }
+            }
+        }
+
+        static void andFilter(String* payload, String* clientKey = 0) {
+            if (!clientKey->isEmpty()) {
+                for (int c = 0; c < payload->length(); c++) {
+                    auto key = clientKey->charAt(c % clientKey->length());
+                    auto in = (byte) payload->charAt(c);
+                    auto out = key & in;
+                    payload->setCharAt(c, out);
+                }
+            }
+        }
 
         /*
          * @brief Event handler registered to receive MQTT events
@@ -202,7 +253,6 @@ namespace Net {
          */
         static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
         {
-            String topic = Config::system.id + "/#";
 
             // Event dispatched from event loop `base` with `event_id`
             auto event = static_cast<esp_mqtt_event_handle_t>(event_data);
@@ -210,9 +260,17 @@ namespace Net {
             int msg_id;
             switch ((esp_mqtt_event_id_t)event_id) {
 
-                case MQTT_EVENT_CONNECTED:
-                    esp_mqtt_client_subscribe(client, topic.c_str(), 1);
-                    break;
+                case MQTT_EVENT_CONNECTED: {
+                    if (enableEncryption) {
+                        auto cid = String(Config::system.id);
+                        encryptTopic(&cid);
+                        cid += "/#";
+                        esp_mqtt_client_subscribe(client, cid.c_str(), 1);
+                    } else {
+                        String topic = Config::system.id + "/#";
+                        esp_mqtt_client_subscribe(client, topic.c_str(), 1);
+                    }
+                } break;
 
                 case MQTT_EVENT_DISCONNECTED:
                     break;
@@ -224,7 +282,20 @@ namespace Net {
                     break;
 
                 case MQTT_EVENT_DATA: {
-                    auto t = String(event->topic) + "/";
+                    auto t = String(event->topic);
+                    if (enableEncryption) {
+                        int i = t.indexOf('/');
+                        if (i > 0) {
+                            auto cid = t.substring(0, i);
+                            decryptTopic(&cid);
+                            auto payload = t.substring(i + 1);
+                            decryptTopic(&payload);
+                            t = cid + "/" + payload;
+                        } else {
+                            decryptTopic(&t);
+                        }
+                    }
+                    t += "/";
                     String cid;
                     String domain;
                     String address;
@@ -252,6 +323,9 @@ namespace Net {
                     if (cid == Config::system.id && domain == "MQTT.Listeners") {
                         if (address == Config::system.id) {
                             auto jsonRequest = String(event->data, event->data_len);
+                            if (enableEncryption) {
+                                encryptionFilter(&jsonRequest);
+                            }
                             JsonDocument doc;
                             DeserializationError error = deserializeJson(doc, jsonRequest);
                             if (error.code()) break;

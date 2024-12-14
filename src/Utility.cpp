@@ -197,3 +197,21 @@ time_t Utility::relativeUtcHoursToLocalTime(double relativeHours, time_t dt)  {
     // TODO: should also set DST??
     return mktime(tm_struct);
 }
+
+void Utility::simpleJsonStringEscape(String& s) {
+    s.replace("\"", "\\\"");
+    s.replace("\\", "\\\\");
+    s.replace("\b", "\\b");
+    s.replace("\f", "\\f");
+    s.replace("\n", "\\n");
+    s.replace("\r", "\\r");
+    s.replace("\t", "\\t");
+    for (int c = 0; c < s.length(); c++) {
+        auto ch = s.charAt(c);
+        if ('\x00' <= ch && ch <= '\x1f') {
+            char escaped[6];
+            sprintf(escaped, "\\u%4d", ch);
+            s = s.substring(0, c - 1) + escaped + s.substring(c);
+        }
+    }
+}
