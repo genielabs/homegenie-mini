@@ -30,6 +30,7 @@
 #include <mbedtls/base64.h>
 #include <mqtt_client.h>
 #include <LinkedList.h>
+#include <UUID.h>
 
 #include "Task.h"
 #include "data/Module.h"
@@ -108,6 +109,14 @@ namespace Net {
             }
             brokerUrl += address + String(":") + port;
 
+            UUID uuid;
+            uint32_t seed1 = random(999999999);
+            uint32_t seed2 = random(999999999);
+            uuid.seed(seed1, seed2);
+            uuid.generate();
+            clientId = uuid.toCharArray();
+
+            mqtt_cfg.client_id = clientId.c_str();
             mqtt_cfg.uri = brokerUrl.c_str();
             mqtt_cfg.username = username.c_str();
             mqtt_cfg.password = password.c_str();
@@ -210,6 +219,7 @@ namespace Net {
     private:
         static String encryptionKey;
         static bool enableEncryption;
+        String clientId;
         String brokerUrl;
         String username;
         String password;
