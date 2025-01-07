@@ -47,10 +47,7 @@ namespace Service { namespace API {
             "DoorWindow"
     };
 
-    X10Handler::X10Handler(RFTransmitter* transmitter, RFReceiver* receiver) {
-        this->transmitter = transmitter;
-        this->receiver = receiver;
-
+    X10Handler::X10Handler() {
         // RF module
         rfModule = new Module();
         rfModule->domain = IO::IOEventDomains::HomeAutomation_X10;
@@ -273,4 +270,11 @@ namespace Service { namespace API {
         return &moduleList;
     }
 
+    void X10Handler::setReceiver(RFReceiver *r) {
+        receiver = r;
+    }
+
+    void X10Handler::setTransmitter(RFTransmitter *t) {
+        transmitter = t;
+    }
 }}

@@ -50,10 +50,12 @@ namespace Service { namespace API {
         Module* rfModule;
         ModuleParameter* receiverRawData;
         ModuleParameter* receiverCommand;
-        RFTransmitter* transmitter;
-        RFReceiver* receiver;
+        RFTransmitter* transmitter{};
+        RFReceiver* receiver{};
     public:
-        X10Handler(IO::X10::RFTransmitter* transmitter, RFReceiver* receiver);
+        X10Handler();
+        void setReceiver(RFReceiver* receiver);
+        void setTransmitter(RFTransmitter* transmitter);
         void init() override;
         bool canHandleDomain(String* domain) override;
         bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;

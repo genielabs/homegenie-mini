@@ -26,7 +26,7 @@
 #include "color-light.h"
 
 void setup() {
-    // Default name shown in SMNP/UPnP advertising
+    // Default name shown in SNMP/UPnP advertising
     Config::system.friendlyName = "LED Controller";
 
     // Get a reference to HomeGenie Mini running instance
@@ -94,7 +94,7 @@ void setup() {
         mpMaxPower->value = String(maxPower);
 
         // Setup main LEDs control module
-        colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Color Light");
+        colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, COLOR_LIGHT_ADDRESS, "Color Light");
         colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
         colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
         colorLight->module->setProperty("Widget.Preference.AudioLight", "true");

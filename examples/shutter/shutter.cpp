@@ -62,7 +62,7 @@ bool helloWorldActive = true;
 
 
 void setup() {
-    // Default name shown in SMNP/UPnP advertising
+    // Default name shown in SNMP/UPnP advertising
     Config::system.friendlyName = "Smart Shutter";
 
 #ifdef ESP32_C3

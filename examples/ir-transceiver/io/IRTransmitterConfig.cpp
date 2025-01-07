@@ -26,11 +26,7 @@
 #include "IRTransmitterConfig.h"
 
 namespace IO { namespace IR {
-    IRTransmitterConfig::IRTransmitterConfig()
-    {
-        pin = CONFIG_IRTransmitterPin;
-    }
-    IRTransmitterConfig::IRTransmitterConfig(uint8_t pin) : IRTransmitterConfig()
+    IRTransmitterConfig::IRTransmitterConfig(uint8_t pin)
     {
         this->pin = pin;
     }

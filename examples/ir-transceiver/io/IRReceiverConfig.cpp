@@ -27,13 +27,9 @@
 
 namespace IO { namespace IR {
 
-    IRReceiverConfig::IRReceiverConfig()
+    IRReceiverConfig::IRReceiverConfig(uint8_t pin)
     {
-        pin = interrupt = CONFIG_IRReceiverPin; // 5
-    }
-    IRReceiverConfig::IRReceiverConfig(uint8_t pin) : IRReceiverConfig()
-    {
-        this->pin = pin;
+        this->pin = this->interrupt = pin;
     }
     IRReceiverConfig::IRReceiverConfig(
         uint8_t interrupt, uint8_t pin

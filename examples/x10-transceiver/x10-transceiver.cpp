@@ -33,31 +33,74 @@
 #include "io/RFReceiver.h"
 #include "io/RFTransmitter.h"
 
+#ifdef BOARD_HAS_RGB_LED
+#include <service/api/devices/ColorLight.h>
+#include "../color-light/status-led.h"
+using namespace Service::API::devices;
+unsigned long helloWorldDuration = 10000;
+bool helloWorldActive = true;
+#endif
+
 using namespace IO;
 using namespace Service;
 
 HomeGenie* homeGenie;
 
 void setup() {
-    // Default name shown in SMNP/UPnP advertising
+    // Default name shown in SNMP/UPnP advertising
     Config::system.friendlyName = "Firefly X10";
 
     homeGenie = HomeGenie::getInstance();
     auto miniModule = homeGenie->getDefaultModule();
 
-    // X10 RF RFTransmitter
-    auto x10TransmitterConfig = new X10::RFTransmitterConfig(CONFIG_X10RFTransmitterPin);
-    auto x10Transmitter = new X10::RFTransmitter(x10TransmitterConfig);
+#ifdef BOARD_HAS_RGB_LED
+    // Get status LED config
+    auto pin = Config::getSetting("stld-pin");
+    int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
+    if (statusLedPin >= 0) {
+        int statusLedType = Config::getSetting("stld-typ", "82").toInt();
+        int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
+        statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
+        statusLED->setPixelColor(0, 0, 0, 0);
+        statusLED->begin();
+    }
+    // Custom status led (builtin NeoPixel RGB LED)
+    if (statusLED != nullptr) {
+        // Setup main LEDs control module
+        auto colorLight = new ColorLight(IOEventDomains::HomeAutomation_HomeGenie, COLOR_LIGHT_ADDRESS, "Status LED");
+        colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
+        colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+        colorLight->module->setProperty("Widget.Preference.AudioLight", "true");
+        colorLight->onSetColor([](LightColor c) {
+            statusLED->setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
+            statusLED->show();
+        });
+        homeGenie->addAPIHandler(colorLight);
+    }
+#endif
+
+    auto apiHandler = new X10Handler();
+    auto rfModule = apiHandler->getModule(IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
+
     // X10 RF RFReceiver
-    auto x10ReceiverConfig = new X10::RFReceiverConfig(CONFIG_X10RFReceiverPin);
-    auto x10Receiver = new X10::RFReceiver(x10ReceiverConfig);
+    uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", String(CONFIG_X10RFReceiverPin).c_str()).toInt();
+    if (rfReceiverPin > 0) {
+        auto x10ReceiverConfig = new X10::RFReceiverConfig(rfReceiverPin);
+        auto x10Receiver = new X10::RFReceiver(x10ReceiverConfig);
+        x10Receiver->setModule(rfModule);
+        apiHandler->setReceiver(x10Receiver);
+        homeGenie->addIOHandler(x10Receiver);
+    }
 
-    auto apiHandler = new X10Handler(x10Transmitter, x10Receiver);
+    // X10 RF RFTransmitter
+    uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", String(CONFIG_X10RFTransmitterPin).c_str()).toInt();
+    if (rfTransmitterPin > 0) {
+        auto x10TransmitterConfig = new X10::RFTransmitterConfig(rfTransmitterPin);
+        auto x10Transmitter = new X10::RFTransmitter(x10TransmitterConfig);
+        apiHandler->setTransmitter(x10Transmitter);
+    }
+
     homeGenie->addAPIHandler(apiHandler);
-
-    auto rfModule = apiHandler->getModule(IO::IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
-    x10Receiver->setModule(rfModule);
-    homeGenie->addIOHandler(x10Receiver);
 
     homeGenie->begin();
 }
@@ -66,5 +109,12 @@ void loop()
 {
 
     homeGenie->loop();
-
+#ifdef BOARD_HAS_RGB_LED
+    if (statusLED != nullptr) {
+        if (helloWorldActive && millis() > helloWorldDuration && Config::isDeviceConfigured()) {
+            helloWorldActive = false;
+            Config::statusLedCallback(nullptr);
+        }
+    }
+#endif
 }

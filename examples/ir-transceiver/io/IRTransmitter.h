@@ -44,8 +44,7 @@ namespace IO { namespace IR {
 
     class IRTransmitter: Task {
     public:
-        IRTransmitter();
-        IRTransmitter(IRTransmitterConfig *);
+        explicit IRTransmitter(IRTransmitterConfig *);
 
         void begin();
         void loop() override;

@@ -39,7 +39,7 @@ using namespace Service;
 HomeGenie* homeGenie;
 
 void setup() {
-    // Default name shown in SMNP/UPnP advertising
+    // Default name shown in SNMP/UPnP advertising
     Config::system.friendlyName = "Firefly RF";
 
     homeGenie = HomeGenie::getInstance();

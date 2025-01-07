@@ -32,62 +32,69 @@
 #include "io/IRTransmitter.h"
 #include "api/IRTransceiverHandler.h"
 
-#ifdef ESP32_C3
+#ifdef BOARD_HAS_RGB_LED
 #include <service/api/devices/ColorLight.h>
+#include "../color-light/status-led.h"
+using namespace Service::API::devices;
+unsigned long helloWorldDuration = 10000;
+bool helloWorldActive = true;
 #endif
 
 using namespace Service;
 
 HomeGenie* homeGenie;
 
-
-#ifdef ESP32_C3
-using namespace Service::API::devices;
-#include <Adafruit_NeoPixel.h>
-// Custom status led (builtin NeoPixel RGB on pin 10)
-Adafruit_NeoPixel pixels(1, CONFIG_StatusLedNeoPixelPin, NEO_GRB + NEO_KHZ800);
-void statusLedCallback(bool isLedOn) {
-    if (isLedOn) {
-        pixels.setPixelColor(0, Adafruit_NeoPixel::Color(50, 50, 0));
-    } else {
-        pixels.setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
-    }
-    pixels.show();
-}
-unsigned long helloWorldDuration = 10000;
-bool helloWorldActive = true;
-#endif
-
 void setup() {
-    // Default name shown in SMNP/UPnP advertising
+    // Default name shown in SNMP/UPnP advertising
     Config::system.friendlyName = "Firefly IR";
 
-#ifdef ESP32_C3
-    // Custom status led (builtin NeoPixel RGB on pin 10)
-//    if (!Config::isDeviceConfigured()) {
-        Config::statusLedCallback(&statusLedCallback);
-//    }
-    pixels.begin();
-#endif
-
     homeGenie = HomeGenie::getInstance();
+    auto miniModule = homeGenie->getDefaultModule();
+    miniModule->setProperty("Widget.Implements.Scheduling", "1");
 
-    auto receiverConfiguration = new IR::IRReceiverConfig(CONFIG_IRReceiverPin);
-    auto receiver = new IR::IRReceiver(receiverConfiguration);
-    homeGenie->addIOHandler(receiver);
-
-    auto transmitterConfig = new IR::IRTransmitterConfig(CONFIG_IRTransmitterPin);
-    auto transmitter = new IR::IRTransmitter(transmitterConfig);
-    homeGenie->addAPIHandler(new IRTransceiverHandler(transmitter, receiver));
-
-#ifdef ESP32_C3
-    auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, "C1", "Demo Light");
-    colorLight->onSetColor([](LightColor c) {
-        pixels.setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
-        pixels.show();
-    });
-    homeGenie->addAPIHandler(colorLight);
+#ifdef BOARD_HAS_RGB_LED
+    // Get status LED config
+    auto pin = Config::getSetting("stld-pin");
+    int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
+    if (statusLedPin >= 0) {
+        int statusLedType = Config::getSetting("stld-typ", "82").toInt();
+        int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
+        statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
+        statusLED->setPixelColor(0, 0, 0, 0);
+        statusLED->begin();
+    }
+    // Custom status led (builtin NeoPixel RGB LED)
+    if (statusLED != nullptr) {
+        // Setup main LEDs control module
+        auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, COLOR_LIGHT_ADDRESS, "Status LED");
+        colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
+        colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+        colorLight->module->setProperty("Widget.Preference.AudioLight", "true");
+        colorLight->onSetColor([](LightColor c) {
+            statusLED->setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
+            statusLED->show();
+        });
+        homeGenie->addAPIHandler(colorLight);
+    }
 #endif
+
+    auto apiHandler = new IRTransceiverHandler();
+    homeGenie->addAPIHandler(apiHandler);
+    // IR receiver pin
+    uint8_t irReceiverPin = Config::getSetting("irrc-pin", String(CONFIG_IRReceiverPin).c_str()).toInt();
+    if (irReceiverPin > 0) {
+        auto receiverConfiguration = new IR::IRReceiverConfig(irReceiverPin);
+        auto receiver = new IR::IRReceiver(receiverConfiguration);
+        apiHandler->setReceiver(receiver);
+        homeGenie->addIOHandler(receiver);
+    }
+    // IR transmitter pin
+    uint8_t irTransmitterPin = Config::getSetting("irtr-pin", String(CONFIG_IRTransmitterPin).c_str()).toInt();
+    if (irTransmitterPin > 0) {
+        auto transmitterConfig = new IR::IRTransmitterConfig(irTransmitterPin);
+        auto transmitter = new IR::IRTransmitter(transmitterConfig);
+        apiHandler->setTransmitter(transmitter);
+    }
 
     homeGenie->begin();
 }
@@ -96,10 +103,12 @@ void setup() {
 void loop()
 {
     homeGenie->loop();
-#ifdef ESP32_C3
-    if (helloWorldActive && millis() > helloWorldDuration && Config::isDeviceConfigured()) {
-        helloWorldActive = false;
-        Config::statusLedCallback(nullptr);
+#ifdef BOARD_HAS_RGB_LED
+    if (statusLED != nullptr) {
+        if (helloWorldActive && millis() > helloWorldDuration && Config::isDeviceConfigured()) {
+            helloWorldActive = false;
+            Config::statusLedCallback(nullptr);
+        }
     }
 #endif
 }

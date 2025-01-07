@@ -25,6 +25,8 @@
 
 #include <Adafruit_NeoPixel.h>
 
+#define COLOR_LIGHT_ADDRESS "C1"
+
 // Optional RGB Status LED
 Adafruit_NeoPixel* statusLED = nullptr;
 bool _statusLedWifiConnected = true;

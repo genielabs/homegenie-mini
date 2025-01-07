@@ -27,31 +27,37 @@
 
 namespace Service { namespace API {
 
-    IRTransceiverHandler::IRTransceiverHandler(IRTransmitter* transmitter, IRReceiver* receiver) {
-        this->transmitter = transmitter;
-        transmitter->setListener(this);
-        this->receiver = receiver;
+    void IRTransceiverHandler::setReceiver(IRReceiver* r) {
+        receiver = r;
+    }
 
-        auto domain = IO::IOEventDomains::HomeAutomation_RemoteControl;
-        // HomeGenie Mini module
-        auto irModule = new Module();
-        irModule->domain = domain;
-        irModule->address = CONFIG_IR_MODULE_ADDRESS;
-        irModule->type = "Sensor";
-        irModule->name = CONFIG_IR_MODULE_ADDRESS; //TODO: CONFIG_IR_MODULE_NAME;
-        // explicitly enable "scheduling" features for this module
-        irModule->setProperty("Widget.Implements.Scheduling", "1");
-        // add properties
-        irModule->setProperty(IOEventPaths::Receiver_RawData, "");
-
-        moduleList.add(irModule);
-
-        receiver->setModule(irModule);
+    void IRTransceiverHandler::setTransmitter(IRTransmitter* t) {
+        this->transmitter = t;
+        t->setListener(this);
     }
 
     void IRTransceiverHandler::init() {
+        // Add IR sensor module
+        auto irModule = new Module();
+        irModule->domain = IO::IOEventDomains::HomeAutomation_RemoteControl;
+        irModule->address = CONFIG_IR_MODULE_ADDRESS;
+        irModule->type = "Sensor";
+        irModule->name = CONFIG_IR_MODULE_ADDRESS; //TODO: CONFIG_IR_MODULE_NAME;
+
+        // explicitly enable "scheduling" features for this module
+        irModule->setProperty("Widget.Implements.Scheduling", "1");
+        irModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+
+        // add properties
+        rawDataParameter = new ModuleParameter(IOEventPaths::Receiver_RawData);
+        irModule->properties.add(rawDataParameter);
+        rawDataParameter->value = "";
+
+        moduleList.add(irModule);
+
         transmitter->begin();
         //receiver->begin(); <-- this is already done automatically by "IIOEventSender" parent class
+        receiver->setModule(irModule);
     }
 
     bool IRTransceiverHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
@@ -96,8 +102,11 @@ namespace Service { namespace API {
 
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
             auto m = QueuedMessage(domain, address, event.c_str(), stringData, eventData, dataType);
-//            module->setProperty(event, m.value, eventData, dataType);
             HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+
+            // Update module parameter as well
+            rawDataParameter->setData(eventData, dataType);
+            rawDataParameter->setValue(m.value.c_str());
 
             return true;
         }

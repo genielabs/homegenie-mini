@@ -39,10 +39,12 @@ namespace Service { namespace API {
     class IRTransceiverHandler : public APIHandler, IRTransmitterListener {
     private:
         LinkedList<Module*> moduleList;
-        IRTransmitter* transmitter;
-        IRReceiver* receiver;
+        ModuleParameter* rawDataParameter{};
+        IRTransmitter* transmitter = nullptr;
+        IRReceiver* receiver = nullptr;
     public:
-        IRTransceiverHandler(IRTransmitter*,IRReceiver*);
+        void setReceiver(IRReceiver*);
+        void setTransmitter(IRTransmitter*);
         void init() override;
         bool canHandleDomain(String* domain) override;
         bool handleRequest(APIRequest*, ResponseCallback*) override;

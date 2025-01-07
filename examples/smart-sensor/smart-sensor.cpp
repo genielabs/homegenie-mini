@@ -30,7 +30,6 @@
 #include <HomeGenie.h>
 #include <service/api/devices/ColorLight.h>
 
-#include "../color-light/status-led.h"
 #include "CommonSensors.h"
 
 using namespace Service;
@@ -40,7 +39,7 @@ HomeGenie* homeGenie;
 Module* miniModule;
 
 void setup() {
-    // Default name shown in SMNP/UPnP advertising
+    // Default name shown in SNMP/UPnP advertising
     Config::system.friendlyName = "Smart Sensor";
 
     homeGenie = HomeGenie::getInstance();

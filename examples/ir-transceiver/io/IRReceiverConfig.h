@@ -37,13 +37,12 @@ namespace IO { namespace IR {
     class IRReceiverConfig
     {
     public:
-        IRReceiverConfig();
-        IRReceiverConfig(uint8_t pin);
+        explicit IRReceiverConfig(uint8_t pin);
         IRReceiverConfig(uint8_t interrupt, uint8_t pin);
         uint8_t getPin();
         uint8_t getInterrupt();
     private:
-        uint8_t interrupt;
+        uint8_t interrupt{};
         uint8_t pin;
     };
 }} // ns

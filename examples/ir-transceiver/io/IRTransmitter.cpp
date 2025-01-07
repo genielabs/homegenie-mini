@@ -34,11 +34,8 @@
 
 namespace IO { namespace IR {
 
-    IRTransmitter::IRTransmitter() {
+    IRTransmitter::IRTransmitter(IRTransmitterConfig *configuration) {
         setLoopInterval(100);
-    }
-
-    IRTransmitter::IRTransmitter(IRTransmitterConfig *configuration) : IRTransmitter() {
         this->configuration = configuration;
     }
 
