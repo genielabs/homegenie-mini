@@ -54,13 +54,13 @@ namespace IO { namespace X10 {
         // 32-bit RF message decoding
         volatile uint8_t messageType = 0x00;
         volatile uint8_t byteBuffer[4];
-        volatile uint32_t riseUs;
-        volatile int8_t receivedCount;
-        volatile uint32_t receiveBuffer;
+        volatile uint32_t riseUs = 0;
+        volatile int8_t receivedCount = 0;
+        volatile uint32_t receiveBuffer = 0;
         // event data
         uint8_t eventData[5];
         bool eventReady = false;
-        uint32_t disabledToMs;
+        uint32_t disabledToMs = 0;
     };
 
 }} // ns

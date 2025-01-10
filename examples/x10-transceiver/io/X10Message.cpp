@@ -108,9 +108,25 @@ namespace IO {
                     decodedMessage->houseCode = (enum HouseCode) encodedMessage[3];
                     decodedMessage->unitCode = UNIT_1;
                 } else {
-                    decodedMessage->unitCode = (enum UnitCode) (((encodedMessage[1] & 0xF) << 8) | (encodedMessage[3] & ~CMD_OFF));
+                    decodedMessage->unitCode = UnitCode::UNIT_NONE;
                     decodedMessage->houseCode = (enum HouseCode) (encodedMessage[1] & 0xF0);
-                    decodedMessage->command = (enum Command) (encodedMessage[3] & CMD_OFF);
+                    switch (encodedMessage[3]) {
+                        case CMD_LIGHTS_ALL_OFF:
+                            decodedMessage->command = CMD_LIGHTS_ALL_OFF;
+                            break;
+                        case CMD_LIGHTS_ALL_ON:
+                            decodedMessage->command = CMD_LIGHTS_ALL_ON;
+                            break;
+                        case CMD_LIGHTS_DIM:
+                            decodedMessage->command = CMD_LIGHTS_DIM;
+                            break;
+                        case CMD_LIGHTS_BRIGHT:
+                            decodedMessage->command = CMD_LIGHTS_BRIGHT;
+                            break;
+                        default:
+                            decodedMessage->unitCode = (enum UnitCode) (((encodedMessage[1] & 0xF) << 8) | (encodedMessage[3] & ~CMD_OFF));
+                            decodedMessage->command = (enum Command) (encodedMessage[3] & CMD_OFF);
+                    }
                 }
 
                 return 0;

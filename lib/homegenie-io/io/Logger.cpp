@@ -103,7 +103,7 @@ namespace IO {
         auto ms = millis() % 1000;
         auto tt = time(0);
         auto timeInfo = localtime(&tt);
-        strftime (buffer, 80, "%FT%T", timeInfo);
+        strftime(buffer, 80, "%FT%T", timeInfo);
         sprintf(buffer, "%s.%03dZ", buffer, (int)ms);
         Serial.printf("[%s] ", buffer);
     }

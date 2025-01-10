@@ -188,7 +188,8 @@ namespace IO {
             UNIT_1 = 0x000, UNIT_2 = 0x010, UNIT_3 = 0x008, UNIT_4 = 0x018,
             UNIT_5 = 0x040, UNIT_6 = 0x050, UNIT_7 = 0x048, UNIT_8 = 0x058,
             UNIT_9 = 0x400, UNIT_10 = 0x410, UNIT_11 = 0x408, UNIT_12 = 0x418,
-            UNIT_13 = 0x440, UNIT_14 = 0x450, UNIT_15 = 0x448, UNIT_16 = 0x458
+            UNIT_13 = 0x440, UNIT_14 = 0x450, UNIT_15 = 0x448, UNIT_16 = 0x458,
+            UNIT_NONE = 0xFFF
         };
 
         static enum UnitCode UnitCodeLut[(UNIT_MAX - UNIT_MIN) + 1] = {
@@ -197,6 +198,7 @@ namespace IO {
         };
 
         static int unit_code_to_int(enum UnitCode code) {
+            if (code == UnitCode::UNIT_NONE) return 0;
             int unit = ((code >> 7) & 0x8);
             unit |= ((code >> 4) & 0x4);
             unit |= ((code >> 2) & 0x2);
@@ -211,13 +213,29 @@ namespace IO {
             /* Standard 5-byte commands: */
             CMD_ON = 0x00,  /* Turn on unitCode */
             CMD_OFF = 0x20,  /* Turn off unitCode */
-            CMD_DIM = 0x98,  /* Dim lamp */
-            CMD_BRIGHT = 0x88,  /* Brighten lamp */
+            /* Lights */
+            CMD_LIGHTS_ALL_OFF = 0x80,  /* Turn off unitCode */
+            CMD_LIGHTS_ALL_ON = 0x90,  /* Turn off unitCode */
+            CMD_LIGHTS_DIM = 0x98,  /* Dim lamp */
+            CMD_LIGHTS_BRIGHT = 0x88,  /* Brighten lamp */
             /* Pan'n'Tilt 4-byte commands: */
-            CMD_UP = 0x762,
-            CMD_RIGHT = 0x661,
-            CMD_DOWN = 0x863,
-            CMD_LEFT = 0x560,
+            CMD_MOVE_UP = 0x762,
+            CMD_MOVE_RIGHT = 0x661,
+            CMD_MOVE_DOWN = 0x863,
+            CMD_MOVE_LEFT = 0x560,
+            /* Security codes */
+            CMD_SEC_PANIC = 0x26D9,
+            CMD_SEC_ARM_HOME = 0x0EF1,
+            CMD_SEC_ARM_AWAY = 0x06F9,
+            CMD_SEC_DISARM = 0x8679,
+            CMD_SEC_LIGHT_OFF = 0xC639,
+            CMD_SEC_LIGHT_ON = 0x46B9,
+            CMD_SEC_MOTION_DETECTED = 0x0CF3,
+            CMD_SEC_MOTION_IDLE = 0x8C73,
+            CMD_SEC_MOTION_TAMPERED = 0x4CB3,
+            CMD_SEC_DOOR_OPEN = 0x04FB,
+            CMD_SEC_DOOR_CLOSED = 0x847B,
+            CMD_SEC_DOOR_TAMPERED = 0x44BB,
             /* Error flag */
             CMD_INVALID = 0xFF
         };
@@ -228,18 +246,46 @@ namespace IO {
                     return CMD_ON;
                 case '-':
                     return CMD_OFF;
+                case '.':
+                    return CMD_LIGHTS_ALL_OFF;
+                case '*':
+                    return CMD_LIGHTS_ALL_ON;
+                case '!':
+                    return CMD_SEC_PANIC;
+                case '#':
+                    return CMD_SEC_ARM_HOME;
+                case '%':
+                    return CMD_SEC_ARM_AWAY;
+                case '=':
+                    return CMD_SEC_DISARM;
+                case '/':
+                    return CMD_SEC_LIGHT_OFF;
+                case 'x':
+                    return CMD_SEC_LIGHT_ON;
+                case '$':
+                    return CMD_SEC_MOTION_DETECTED;
+                case ':':
+                    return CMD_SEC_MOTION_IDLE;
+                case '^':
+                    return CMD_SEC_MOTION_TAMPERED;
+                case '_':
+                    return CMD_SEC_DOOR_OPEN;
+                case 'H':
+                    return CMD_SEC_DOOR_CLOSED;
+                case 'X':
+                    return CMD_SEC_DOOR_TAMPERED;
                 case 'u':
-                    return CMD_UP;
+                    return CMD_MOVE_UP;
                 case 'd':
-                    return CMD_DOWN;
+                    return CMD_MOVE_DOWN;
                 case 'l':
-                    return CMD_LEFT;
+                    return CMD_MOVE_LEFT;
                 case 'r':
-                    return CMD_RIGHT;
+                    return CMD_MOVE_RIGHT;
                 case 'b':
-                    return CMD_BRIGHT;
+                    return CMD_LIGHTS_BRIGHT;
                 case 's':
-                    return CMD_DIM;
+                    return CMD_LIGHTS_DIM;
                 default:
                     //error("%s: Invalid command code: %c\n", __FUNCTION__, c);
                     return CMD_INVALID;
@@ -252,17 +298,45 @@ namespace IO {
                     return '+';
                 case CMD_OFF:
                     return '-';
-                case CMD_DIM:
+                case CMD_LIGHTS_ALL_OFF:
+                    return '.';
+                case CMD_LIGHTS_ALL_ON:
+                    return '*';
+                case CMD_LIGHTS_DIM:
                     return 's';
-                case CMD_BRIGHT:
+                case CMD_LIGHTS_BRIGHT:
                     return 'b';
-                case CMD_UP:
+                case CMD_SEC_PANIC:
+                    return '!';
+                case CMD_SEC_ARM_HOME:
+                    return '#';
+                case CMD_SEC_ARM_AWAY:
+                    return '%';
+                case CMD_SEC_DISARM:
+                    return '=';
+                case CMD_SEC_LIGHT_OFF:
+                    return '/';
+                case CMD_SEC_LIGHT_ON:
+                    return 'x';
+                case CMD_SEC_MOTION_DETECTED:
+                    return '$';
+                case CMD_SEC_MOTION_IDLE:
+                    return ':';
+                case CMD_SEC_MOTION_TAMPERED:
+                    return '^';
+                case CMD_SEC_DOOR_OPEN:
+                    return '_';
+                case CMD_SEC_DOOR_CLOSED:
+                    return 'H';
+                case CMD_SEC_DOOR_TAMPERED:
+                    return 'X';
+                case CMD_MOVE_UP:
                     return 'u';
-                case CMD_RIGHT:
+                case CMD_MOVE_RIGHT:
                     return 'r';
-                case CMD_DOWN:
+                case CMD_MOVE_DOWN:
                     return 'd';
-                case CMD_LEFT:
+                case CMD_MOVE_LEFT:
                     return 'l';
                 default:
                     return '?';
@@ -275,17 +349,45 @@ namespace IO {
                     return "on";
                 case CMD_OFF:
                     return "off";
-                case CMD_DIM:
+                case CMD_LIGHTS_ALL_OFF:
+                    return "all_off";
+                case CMD_LIGHTS_ALL_ON:
+                    return "all_on";
+                case CMD_LIGHTS_DIM:
                     return "dim";
-                case CMD_BRIGHT:
+                case CMD_LIGHTS_BRIGHT:
                     return "brighten";
-                case CMD_UP:
+                case CMD_SEC_PANIC:
+                    return "panic";
+                case CMD_SEC_ARM_HOME:
+                    return "arm_home";
+                case CMD_SEC_ARM_AWAY:
+                    return "arm_away";
+                case CMD_SEC_DISARM:
+                    return "disarm";
+                case CMD_SEC_LIGHT_OFF:
+                    return "lights_off";
+                case CMD_SEC_LIGHT_ON:
+                    return "lights_on";
+                case CMD_SEC_MOTION_DETECTED:
+                    return "motion_detected";
+                case CMD_SEC_MOTION_IDLE:
+                    return "motion_idle";
+                case CMD_SEC_MOTION_TAMPERED:
+                    return "motion_tampered";
+                case CMD_SEC_DOOR_OPEN:
+                    return "door_open";
+                case CMD_SEC_DOOR_CLOSED:
+                    return "door_closed";
+                case CMD_SEC_DOOR_TAMPERED:
+                    return "door_tampered";
+                case CMD_MOVE_UP:
                     return "up";
-                case CMD_RIGHT:
+                case CMD_MOVE_RIGHT:
                     return "right";
-                case CMD_DOWN:
+                case CMD_MOVE_DOWN:
                     return "down";
-                case CMD_LEFT:
+                case CMD_MOVE_LEFT:
                     return "left";
                 default:
                     return "invalid";

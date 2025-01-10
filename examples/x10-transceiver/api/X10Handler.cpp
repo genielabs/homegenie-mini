@@ -83,6 +83,9 @@ namespace Service { namespace API {
     }
 
     void X10Handler::init() {
+        if (transmitter != nullptr) {
+            transmitter->begin();
+        }
     }
 
 
@@ -101,9 +104,13 @@ namespace Service { namespace API {
             uint8_t data[commandString.length() / 2];
             Utility::getBytes(commandString, data);
 
-            // only 0x20 standard type message are actually supported
-            receiver->disableMs(500);
-            transmitter->sendCommand(&data[1], sizeof(data)-1, sendRepeat);
+            // only 0x20 standard type message are currently supported
+            if (receiver != nullptr) {
+                receiver->disableMs(500);
+            }
+            if (transmitter != nullptr) {
+                transmitter->sendCommand(&data[1], sizeof(data) - 1, sendRepeat);
+            }
             responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             return true;
@@ -138,11 +145,11 @@ namespace Service { namespace API {
                     float prevLevel = levelProperty->value.toFloat();
                     sendRepeat = abs((level - prevLevel) / X10_DIM_BRIGHT_STEP);
                     if (level > prevLevel) {
-                        x10Message.command = X10::Command::CMD_BRIGHT;
+                        x10Message.command = X10::Command::CMD_LIGHTS_BRIGHT;
                         levelProperty->value = String(prevLevel + (sendRepeat * X10_DIM_BRIGHT_STEP));
                         if (levelProperty->value.toFloat() > 1) levelProperty->value = "1";
                     } else if (level < prevLevel) {
-                        x10Message.command = X10::Command::CMD_DIM;
+                        x10Message.command = X10::Command::CMD_LIGHTS_DIM;
                         levelProperty->value = String(prevLevel - (sendRepeat * X10_DIM_BRIGHT_STEP));
                         if (levelProperty->value.toFloat() < 0) levelProperty->value = "0";
                     }
@@ -167,8 +174,12 @@ namespace Service { namespace API {
 
             if (!ignoreCommand) {
                 X10::X10Message::encodeCommand(&x10Message, data);
-                receiver->disableMs(500);
-                transmitter->sendCommand(&data[1], sizeof(data)-1, sendRepeat);
+                if (receiver != nullptr) {
+                    receiver->disableMs(500);
+                }
+                if (transmitter != nullptr) {
+                    transmitter->sendCommand(&data[1], sizeof(data) - 1, sendRepeat);
+                }
             }
             responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
@@ -220,21 +231,46 @@ namespace Service { namespace API {
                 HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString,
                                                                                      nullptr, IOEventDataType::Undefined));
 
-                if (type == 0x20) { // 0x20 = standard, 0x29 = security
+                // 0x20 = standard, 0x29 = security
+                switch (type) {
 
-                    // Convert enums to string
-                    String houseCode(house_code_to_char(decodedMessage->houseCode));
-                    String unitCode(unit_code_to_int(decodedMessage->unitCode));
-                    const char* command = cmd_code_to_str(decodedMessage->command);
-                    String commandString = (houseCode + unitCode + " " + command);
+                    case 0x20: {
 
-                    Logger::trace(":%s %s", HOMEGENIEMINI_NS_PREFIX, commandString.c_str());
+                        // Convert enums to string
+                        String houseCode(house_code_to_char(decodedMessage->houseCode));
+                        String unitCode(unit_code_to_int(decodedMessage->unitCode));
+                        if (unitCode == "0") unitCode = "";
+                        const char* command = cmd_code_to_str(decodedMessage->command);
+                        String commandString = (houseCode + unitCode + " " + command);
 
-                    receiverCommand->setValue(commandString.c_str());
-                    HomeGenie::getInstance()->getEventRouter().signalEvent(
-                            QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command,
-                                          commandString,
-                                          nullptr, IOEventDataType::Undefined));
+                        Logger::trace(":%s %s", HOMEGENIEMINI_NS_PREFIX, commandString.c_str());
+
+                        receiverCommand->setValue(commandString.c_str());
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(
+                                QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command,
+                                              commandString,
+                                              nullptr, IOEventDataType::Undefined));
+
+                    } break;
+
+                    case 0x29: {
+
+                        int commandCode = (b2 << 8) + b3;
+                        const char* command = cmd_code_to_str((Command)commandCode);
+                        String commandString = (command);
+                        String subtype = Utility::byteToHex((b0)) + Utility::byteToHex((b1));
+                        subtype.toUpperCase();
+
+                        Logger::trace(":%s S-%s %s", HOMEGENIEMINI_NS_PREFIX, subtype.c_str(), commandString.c_str());
+
+                        receiverCommand->setValue(commandString.c_str());
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(
+                                QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command,
+                                              commandString,
+                                              nullptr, IOEventDataType::Undefined));
+
+                    } break;
+
                 }
 /*
                 QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, (IOEventPaths::Status_Level), "");

@@ -47,7 +47,7 @@ namespace IO { namespace X10 {
     }
     RFReceiverConfig::RFReceiverConfig(uint8_t pin) : RFReceiverConfig()
     {
-        this->pin = pin;
+        this->pin = this->interrupt = pin;
     }
     RFReceiverConfig::RFReceiverConfig(
         uint8_t interrupt, uint8_t pin

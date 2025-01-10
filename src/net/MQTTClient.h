@@ -115,12 +115,17 @@ namespace Net {
             uuid.seed(seed1, seed2);
             uuid.generate();
             clientId = uuid.toCharArray();
-
+#if ESP_IDF_VERSION_MAJOR >= 5
+            mqtt_cfg.credentials.client_id = clientId.c_str();
+            mqtt_cfg.broker.address.uri = brokerUrl.c_str();
+            mqtt_cfg.credentials.username = username.c_str();
+            mqtt_cfg.credentials.authentication.password = password.c_str();
+#else
             mqtt_cfg.client_id = clientId.c_str();
             mqtt_cfg.uri = brokerUrl.c_str();
             mqtt_cfg.username = username.c_str();
             mqtt_cfg.password = password.c_str();
-
+#endif
             stopRequested = true;
         }
 
@@ -227,8 +232,11 @@ namespace Net {
         bool stopRequested = false;
         bool clientStarted = false;
         esp_mqtt_client_handle_t client = nullptr;
+#if ESP_IDF_VERSION_MAJOR >= 5
+        esp_mqtt_client_config_t mqtt_cfg {};
+#else
         esp_mqtt_client_config_t mqtt_cfg { .uri = "" };
-
+#endif
         static void xorFilter(String* payload, String* clientKey = 0) {
             if (!clientKey->isEmpty()) {
                 for (int c = 0; c < payload->length(); c++) {

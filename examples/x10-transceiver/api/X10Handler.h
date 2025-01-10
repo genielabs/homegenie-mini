@@ -50,8 +50,8 @@ namespace Service { namespace API {
         Module* rfModule;
         ModuleParameter* receiverRawData;
         ModuleParameter* receiverCommand;
-        RFTransmitter* transmitter{};
-        RFReceiver* receiver{};
+        RFTransmitter* transmitter = nullptr;
+        RFReceiver* receiver = nullptr;
     public:
         X10Handler();
         void setReceiver(RFReceiver* receiver);
