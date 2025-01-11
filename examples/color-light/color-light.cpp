@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -57,16 +57,7 @@ void setup() {
     mpMaxPower = new ModuleParameter("LED.power", "25");
     miniModule->properties.add(mpMaxPower);
 
-    // Get status LED config
-    auto pin = Config::getSetting("stld-pin");
-    int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
-    if (statusLedPin >= 0) {
-        int statusLedType = Config::getSetting("stld-typ", "82").toInt();
-        int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
-        statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
-        statusLED->setPixelColor(0, 0, 0, 0);
-        statusLED->begin();
-    }
+    colorLight = statusLedSetup();
 
     isConfigured = Config::isDeviceConfigured();
     if (!isConfigured) {
@@ -94,10 +85,6 @@ void setup() {
         mpMaxPower->value = String(maxPower);
 
         // Setup main LEDs control module
-        colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, COLOR_LIGHT_ADDRESS, "Color Light");
-        colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
-        colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
-        colorLight->module->setProperty("Widget.Preference.AudioLight", "true");
         colorLight->onSetColor([](LightColor color) {
             currentColor = color;
             fx_reset(pixels, color);
@@ -147,9 +134,6 @@ void setup() {
 void loop()
 {
     homeGenie->loop();
-
-    // Custom status led (builtin NeoPixel RGB LED)
-    statusLedLoop();
 
     if (isConfigured) {
 
@@ -246,4 +230,9 @@ void loop()
         }
 
     }
+
+#ifdef BOARD_HAS_RGB_LED
+    // Custom status led (builtin NeoPixel RGB LED)
+    statusLedLoop();
+#endif
 }

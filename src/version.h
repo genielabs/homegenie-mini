@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -29,7 +29,7 @@
 
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 2
-#define VERSION_PATCH 46
+#define VERSION_PATCH 47
 
 #define STRING_VALUE(...) STRING_VALUE__(__VA_ARGS__)
 #define STRING_VALUE__(...) #__VA_ARGS__

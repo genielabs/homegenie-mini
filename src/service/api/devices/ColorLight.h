@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -77,20 +77,20 @@ namespace Service { namespace API { namespace devices {
             v = val;
         }
         float getRed() const {
-            auto orgb = Utility::hsv2rgb(oh, os, ov);
-            auto crgb =  Utility::hsv2rgb(h, s, v);
+            auto orgb = ::Utility::hsv2rgb(oh, os, ov);
+            auto crgb =  ::Utility::hsv2rgb(h, s, v);
             float r = (float)orgb.r + ((float)(crgb.r - orgb.r) * getProgress());
             return r;
         }
         float getGreen() const {
-            auto orgb = Utility::hsv2rgb(oh, os, ov);
-            auto crgb =  Utility::hsv2rgb(h, s, v);
+            auto orgb = ::Utility::hsv2rgb(oh, os, ov);
+            auto crgb =  ::Utility::hsv2rgb(h, s, v);
             float g = (float)orgb.g + ((float)(crgb.g - orgb.g) * getProgress());
             return g;
         }
         float getBlue() const {
-            auto orgb = Utility::hsv2rgb(oh, os, ov);
-            auto crgb =  Utility::hsv2rgb(h, s, v);
+            auto orgb = ::Utility::hsv2rgb(oh, os, ov);
+            auto crgb =  ::Utility::hsv2rgb(h, s, v);
             float b = (float)orgb.b + ((float)(crgb.b - orgb.b) * getProgress());
             return b;
         }

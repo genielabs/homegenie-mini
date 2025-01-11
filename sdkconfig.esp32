@@ -1,0 +1,5 @@
+# Override default sdkconfig settings here (works with PIOARDUINO only)
+
+CONFIG_ENABLE_ARDUINO_DEPENDS=y
+CONFIG_AUTOSTART_ARDUINO=y
+CONFIG_ARDUHAL_ESP_LOG=n

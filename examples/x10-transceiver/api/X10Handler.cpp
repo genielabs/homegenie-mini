@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -54,8 +54,11 @@ namespace Service { namespace API {
         rfModule->address = CONFIG_X10RF_MODULE_ADDRESS;
         rfModule->type = "Sensor";
         rfModule->name = "RF"; //TODO: CONFIG_X10RF_MODULE_NAME;
+
         // explicitly enable "scheduling" features for this module
         rfModule->setProperty("Widget.Implements.Scheduling", "1");
+        rfModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+
         // set properties
         receiverRawData = new ModuleParameter(IOEventPaths::Receiver_RawData);
         rfModule->properties.add(receiverRawData);
@@ -64,22 +67,22 @@ namespace Service { namespace API {
 
         moduleList.add(rfModule);
 
-#ifndef ESP8266
-        // TODO: this won't work on ESP8266 due to free RAM limit
-        // Add 16 X10 modules for house codes from 'A' to 'P'
+        auto defaultHouseCode = Config::getSetting("x10-hcode", "a").charAt(0);
+
+        // Add 16 X10 modules for default house code
         // module address: "<house_code_a_p><unit_number_1_16>"
-        for (int h = HOUSE_MIN; h <= HOUSE_MAX; h++) {
-            for (int m = 0; m < UNIT_MAX; m++) {
-                auto address = String((char)h)+String(m+UNIT_MIN);
-                address.toUpperCase();
-                auto module = new Module();
-                module->domain = IOEventDomains::HomeAutomation_X10;
-                module->address = address;
-                module->setProperty(IOEventPaths::Status_Level, "0", 0, Number);
-                moduleList.add(module);
-            }
+        // controlling these modules via API or app UI will result
+        // in sending the X10 RF code mathing the command (e.g. A1 ON)
+        for (int m = 0; m < UNIT_MAX; m++) {
+            auto address = String((char)defaultHouseCode) + String(m+UNIT_MIN);
+            address.toUpperCase();
+            auto module = new Module();
+            module->domain = IOEventDomains::HomeAutomation_X10;
+            module->address = address;
+            module->setProperty(IOEventPaths::Status_Level, "0", 0, Number);
+            moduleList.add(module);
         }
-#endif
+
     }
 
     void X10Handler::init() {
@@ -272,20 +275,7 @@ namespace Service { namespace API {
                     } break;
 
                 }
-/*
-                QueuedMessage m = QueuedMessage(domain, houseCode + unitCode, (IOEventPaths::Status_Level), "");
-                switch (decodedMessage->command) {
-                    case Command::CMD_ON:
-                        m.value = "1";
-                        homeGenie->getEventRouter().signalEvent(m);
-                        break;
-                    case Command::CMD_OFF:
-                        m.value = "0";
-                        homeGenie->getEventRouter().signalEvent(m);
-                        break;
-// TODO: Implement all X10 events + Camera and Security
-                }
-*/
+
                 delete decodedMessage;
 
                 return true;

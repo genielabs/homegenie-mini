@@ -7,6 +7,12 @@ cmake-build-debug
 CMakeFiles
 .idea
 artifacts
+managed_components
+.dummy
+CMakeLists.txt
+sdkconfig.*
+!sdkconfig.esp32
+dependencies.lock
 
 # Clion
 

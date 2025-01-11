@@ -22,32 +22,35 @@
  * - Generoso Martello <gene@homegenie.it>
  *
  *
- * Releases:
- * - 2019-01-10 v1.0: initial release.
- *
  */
 
 #include <HomeGenie.h>
 
-#include "api/X10Handler.h"
-#include "io/RFReceiver.h"
-#include "io/RFTransmitter.h"
+#include "configuration.h"
+
+#include "../ir-transceiver/io/IRReceiver.h"
+#include "../ir-transceiver/io/IRTransmitter.h"
+#include "../ir-transceiver/api/IRTransceiverHandler.h"
+
+#include "../x10-transceiver/io/RFReceiver.h"
+#include "../x10-transceiver/io/RFTransmitter.h"
+#include "../x10-transceiver/api/X10Handler.h"
 
 #ifdef BOARD_HAS_RGB_LED
 #include "../color-light/status-led.h"
 #endif
 
-using namespace IO;
 using namespace Service;
 
 HomeGenie* homeGenie;
 
 void setup() {
     // Default name shown in SNMP/UPnP advertising
-    Config::system.friendlyName = "Firefly X10";
+    Config::system.friendlyName = "Firefly IR-RF";
 
     homeGenie = HomeGenie::getInstance();
     auto miniModule = homeGenie->getDefaultModule();
+    miniModule->setProperty("Widget.Implements.Scheduling", "1");
 
 #ifdef BOARD_HAS_RGB_LED
     // Custom status led (builtin NeoPixel RGB LED)
@@ -59,15 +62,35 @@ void setup() {
     homeGenie->addAPIHandler(colorLight);
 #endif
 
-    auto apiHandler = new X10Handler();
-    auto rfModule = apiHandler->getModule(IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
+
+    auto irApiHandler = new IRTransceiverHandler();
+    // IR receiver pin
+    uint8_t irReceiverPin = Config::getSetting("irrc-pin", String(CONFIG_IRReceiverPin).c_str()).toInt();
+    if (irReceiverPin > 0) {
+        auto receiverConfiguration = new IR::IRReceiverConfig(irReceiverPin);
+        auto receiver = new IR::IRReceiver(receiverConfiguration);
+        irApiHandler->setReceiver(receiver);
+        homeGenie->addIOHandler(receiver);
+    }
+    // IR transmitter pin
+    uint8_t irTransmitterPin = Config::getSetting("irtr-pin", String(CONFIG_IRTransmitterPin).c_str()).toInt();
+    if (irTransmitterPin > 0) {
+        auto transmitterConfig = new IR::IRTransmitterConfig(irTransmitterPin);
+        auto transmitter = new IR::IRTransmitter(transmitterConfig);
+        irApiHandler->setTransmitter(transmitter);
+    }
+    homeGenie->addAPIHandler(irApiHandler);
+
+
+    auto x10ApiHandler = new X10Handler();
+    auto rfModule = x10ApiHandler->getModule(IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
     // X10 RF RFReceiver
     uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", String(CONFIG_X10RFReceiverPin).c_str()).toInt();
     if (rfReceiverPin > 0) {
         auto x10ReceiverConfig = new X10::RFReceiverConfig(rfReceiverPin);
         auto x10Receiver = new X10::RFReceiver(x10ReceiverConfig);
         x10Receiver->setModule(rfModule);
-        apiHandler->setReceiver(x10Receiver);
+        x10ApiHandler->setReceiver(x10Receiver);
         homeGenie->addIOHandler(x10Receiver);
     }
     // X10 RF RFTransmitter
@@ -75,12 +98,14 @@ void setup() {
     if (rfTransmitterPin > 0) {
         auto x10TransmitterConfig = new X10::RFTransmitterConfig(rfTransmitterPin);
         auto x10Transmitter = new X10::RFTransmitter(x10TransmitterConfig);
-        apiHandler->setTransmitter(x10Transmitter);
+        x10ApiHandler->setTransmitter(x10Transmitter);
     }
-    homeGenie->addAPIHandler(apiHandler);
+    homeGenie->addAPIHandler(x10ApiHandler);
+
 
     homeGenie->begin();
 }
+
 
 void loop()
 {
