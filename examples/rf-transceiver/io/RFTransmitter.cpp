@@ -55,6 +55,7 @@ namespace IO { namespace RCS {
     }
 
     void RFTransmitter::sendCommand(long command, unsigned short bitLength, unsigned short repeat, unsigned short repeat_delay) {
+// TODO: rewrite ASYNC (move to loop() SEE ir-transceiver/io/IRTransmitter.cpp)
         for (int i = 0; i < repeat; i++) {
             RF.send(command, bitLength);
             delay(repeat_delay);

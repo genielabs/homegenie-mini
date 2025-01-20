@@ -234,8 +234,7 @@ namespace Service {
         String d = domain;
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
-            if (handler->canHandleDomain(&d)) {
-                handler->handleEvent(sender, domain, address, eventPath, eventData, dataType);
+            if (handler->canHandleDomain(&d) && handler->handleEvent(sender, domain, address, eventPath, eventData, dataType)) {
                 break;
             }
         }

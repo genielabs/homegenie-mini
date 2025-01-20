@@ -27,11 +27,11 @@
  *
  */
 
-#include "RFReceiverConfig.h"
+#include "X10RFReceiverConfig.h"
 
 namespace IO { namespace X10 {
 
-    RFReceiverConfig::RFReceiverConfig()
+    X10RFReceiverConfig::X10RFReceiverConfig()
     {
         pin = interrupt = CONFIG_X10RFReceiverPin; // 5
 
@@ -45,26 +45,26 @@ namespace IO { namespace X10 {
         bitOneMin = 2000;
         bitOneMax = 2400;
     }
-    RFReceiverConfig::RFReceiverConfig(uint8_t pin) : RFReceiverConfig()
+    X10RFReceiverConfig::X10RFReceiverConfig(uint8_t pin) : X10RFReceiverConfig()
     {
         this->pin = this->interrupt = pin;
     }
-    RFReceiverConfig::RFReceiverConfig(
+    X10RFReceiverConfig::X10RFReceiverConfig(
         uint8_t interrupt, uint8_t pin
-    ) : RFReceiverConfig(pin)
+    ) : X10RFReceiverConfig(pin)
     {
         this->interrupt = interrupt;
     }
-    uint8_t RFReceiverConfig::getPin() { return pin; };
-    uint8_t RFReceiverConfig::getInterrupt() { return interrupt; };
-    uint16_t RFReceiverConfig::getStartBustMin() { return startBustMin; };
-    uint16_t RFReceiverConfig::getStartBustMax() { return startBustMax; };
-    uint16_t RFReceiverConfig::getStartBustRepeat() { return startBustRepeat; };
+    uint8_t X10RFReceiverConfig::getPin() { return pin; };
+    uint8_t X10RFReceiverConfig::getInterrupt() { return interrupt; };
+    uint16_t X10RFReceiverConfig::getStartBustMin() { return startBustMin; };
+    uint16_t X10RFReceiverConfig::getStartBustMax() { return startBustMax; };
+    uint16_t X10RFReceiverConfig::getStartBustRepeat() { return startBustRepeat; };
 
-    uint16_t RFReceiverConfig::getBitZeroMin() { return bitZeroMin; };
-    uint16_t RFReceiverConfig::getBitZeroMax() { return bitZeroMax; };
+    uint16_t X10RFReceiverConfig::getBitZeroMin() { return bitZeroMin; };
+    uint16_t X10RFReceiverConfig::getBitZeroMax() { return bitZeroMax; };
 
-    uint16_t RFReceiverConfig::getBitOneMin() { return bitOneMin; };
-    uint16_t RFReceiverConfig::getBitOneMax() { return bitOneMax; };
+    uint16_t X10RFReceiverConfig::getBitOneMin() { return bitOneMin; };
+    uint16_t X10RFReceiverConfig::getBitOneMax() { return bitOneMax; };
 
 }} // ns

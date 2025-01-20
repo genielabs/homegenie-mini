@@ -30,8 +30,9 @@
 #ifndef HOMEGENIE_MINI_RCS_RFTRANSMITTER_H
 #define HOMEGENIE_MINI_RCS_RFTRANSMITTER_H
 
-#include <HomeGenie.h>
 #include <RCSwitch.h>
+
+#include <io/Logger.h>
 
 #include "../configuration.h"
 #include "RFTransmitterConfig.h"

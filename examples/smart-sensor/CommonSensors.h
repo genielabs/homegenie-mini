@@ -5,15 +5,13 @@
 #ifndef HOMEGENIE_MINI_COMMONSENSORS_H
 #define HOMEGENIE_MINI_COMMONSENSORS_H
 
-#include "HomeGenie.h"
+#include "../color-light/StatusLed.h"
 
 #include "io/sensors/DS18B20.h"
 #include "io/sensors/MotionSensor.h"
 #include "io/sensors/DHTxx.h"
 #include "io/sensors/LightSensor.h"
 #include "io/sensors/TCS34725.h"
-
-#include "../color-light/status-led.h"
 
 using namespace IO::Sensors;
 

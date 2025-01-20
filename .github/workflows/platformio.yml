@@ -32,4 +32,5 @@ jobs:
         with:
           files: |
             ./artifacts/*.zip
+          body: ${{ github.event.workflow_run.head_commit.message }}
           generate_release_notes: true

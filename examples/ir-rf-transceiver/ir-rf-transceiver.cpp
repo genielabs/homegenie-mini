@@ -32,12 +32,17 @@
 #include "../ir-transceiver/io/IRTransmitter.h"
 #include "../ir-transceiver/api/IRTransceiverHandler.h"
 
-#include "../x10-transceiver/io/RFReceiver.h"
-#include "../x10-transceiver/io/RFTransmitter.h"
+#include "../rf-transceiver/io/RFReceiver.h"
+#include "../rf-transceiver/io/RFTransmitter.h"
+#include "../rf-transceiver/api/RCSwitchHandler.h"
+
+#include "../x10-transceiver/io/X10RFReceiver.h"
+#include "../x10-transceiver/io/X10RFTransmitter.h"
 #include "../x10-transceiver/api/X10Handler.h"
 
 #ifdef BOARD_HAS_RGB_LED
-#include "../color-light/status-led.h"
+#include "../color-light/StatusLed.h"
+StatusLed statusLed;
 #endif
 
 using namespace Service;
@@ -54,26 +59,22 @@ void setup() {
 
 #ifdef BOARD_HAS_RGB_LED
     // Custom status led (builtin NeoPixel RGB LED)
-    auto colorLight = statusLedSetup();
-    colorLight->onSetColor([](LightColor c) {
-        statusLED->setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
-        statusLED->show();
-    });
-    homeGenie->addAPIHandler(colorLight);
+    statusLed.setup();
 #endif
 
+    // IR transceiver
 
     auto irApiHandler = new IRTransceiverHandler();
-    // IR receiver pin
-    uint8_t irReceiverPin = Config::getSetting("irrc-pin", String(CONFIG_IRReceiverPin).c_str()).toInt();
+    // IR receiver
+    uint8_t irReceiverPin = Config::getSetting("irrc-pin", CONFIG_IRReceiverPin).toInt();
     if (irReceiverPin > 0) {
         auto receiverConfiguration = new IR::IRReceiverConfig(irReceiverPin);
         auto receiver = new IR::IRReceiver(receiverConfiguration);
         irApiHandler->setReceiver(receiver);
         homeGenie->addIOHandler(receiver);
     }
-    // IR transmitter pin
-    uint8_t irTransmitterPin = Config::getSetting("irtr-pin", String(CONFIG_IRTransmitterPin).c_str()).toInt();
+    // IR transmitter
+    uint8_t irTransmitterPin = Config::getSetting("irtr-pin", CONFIG_IRTransmitterPin).toInt();
     if (irTransmitterPin > 0) {
         auto transmitterConfig = new IR::IRTransmitterConfig(irTransmitterPin);
         auto transmitter = new IR::IRTransmitter(transmitterConfig);
@@ -81,27 +82,62 @@ void setup() {
     }
     homeGenie->addAPIHandler(irApiHandler);
 
+    uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", CONFIG_RCSwitchReceiverPin).toInt();
+    uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", CONFIG_RCSwitchTransmitterPin).toInt();
+
+    // RC-Switch RF transceiver
+
+    auto rcsApiHandler = new RCSwitchHandler();
+#ifdef BOARD_HAS_RGB_LED
+    rcsApiHandler->setOnDataReady([](const char* c) {
+        statusLed.signalActivity(0, 255, 255);
+    });
+#endif
+
+    // RCSwitch RF Transmitter
+    if (rfTransmitterPin > 0) {
+        auto rcsTransmitterConfig = new RCS::RFTransmitterConfig(rfTransmitterPin);
+        auto rcsTransmitter = new RCS::RFTransmitter(rcsTransmitterConfig);
+        rcsApiHandler->setTransmitter(rcsTransmitter);
+    }
+    // RCSwitch RF Receiver
+    if (rfReceiverPin > 0) {
+        auto rcsReceiverConfiguration = new RCS::RFReceiverConfig(rfReceiverPin);
+        auto rcsReceiver = new RCS::RFReceiver(rcsReceiverConfiguration);
+        homeGenie->addIOHandler(rcsReceiver);
+        // shared interrupt handler with X10 class
+        X10RFReceiver::addInterruptHandler([rcsReceiver](){
+            rcsReceiver->handleInterrupt();
+        });
+        rcsApiHandler->setReceiver(rcsReceiver);
+    }
+
+    homeGenie->addAPIHandler(rcsApiHandler);
+
+    // X10 RF transceiver
 
     auto x10ApiHandler = new X10Handler();
-    auto rfModule = x10ApiHandler->getModule(IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
+#ifdef BOARD_HAS_RGB_LED
+    x10ApiHandler->setOnDataReady([](const char* c) {
+        statusLed.signalActivity(0, 0, 255);
+    });
+#endif
+
+    // X10 RF RFTransmitter
+    if (rfTransmitterPin > 0) {
+        auto x10TransmitterConfig = new X10::X10RFTransmitterConfig(rfTransmitterPin);
+        auto x10Transmitter = new X10::X10RFTransmitter(x10TransmitterConfig);
+        x10ApiHandler->setTransmitter(x10Transmitter);
+    }
     // X10 RF RFReceiver
-    uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", String(CONFIG_X10RFReceiverPin).c_str()).toInt();
     if (rfReceiverPin > 0) {
-        auto x10ReceiverConfig = new X10::RFReceiverConfig(rfReceiverPin);
-        auto x10Receiver = new X10::RFReceiver(x10ReceiverConfig);
-        x10Receiver->setModule(rfModule);
+        auto x10ReceiverConfig = new X10::X10RFReceiverConfig(rfReceiverPin);
+        auto x10Receiver = new X10::X10RFReceiver(x10ReceiverConfig);
         x10ApiHandler->setReceiver(x10Receiver);
         homeGenie->addIOHandler(x10Receiver);
     }
-    // X10 RF RFTransmitter
-    uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", String(CONFIG_X10RFTransmitterPin).c_str()).toInt();
-    if (rfTransmitterPin > 0) {
-        auto x10TransmitterConfig = new X10::RFTransmitterConfig(rfTransmitterPin);
-        auto x10Transmitter = new X10::RFTransmitter(x10TransmitterConfig);
-        x10ApiHandler->setTransmitter(x10Transmitter);
-    }
-    homeGenie->addAPIHandler(x10ApiHandler);
 
+    homeGenie->addAPIHandler(x10ApiHandler);
 
     homeGenie->begin();
 }
@@ -109,10 +145,5 @@ void setup() {
 
 void loop()
 {
-
     homeGenie->loop();
-
-#ifdef BOARD_HAS_RGB_LED
-    statusLedLoop();
-#endif
 }

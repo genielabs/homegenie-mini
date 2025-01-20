@@ -30,13 +30,18 @@
 
 #include "configuration.h"
 #include "color-fx.h"
-#include "status-led.h"
+
+#include "StatusLed.h"
+StatusLed statusLed;
 
 using namespace Service;
 using namespace Service::API::devices;
 
 HomeGenie* homeGenie;
 bool isConfigured = false;
+
+// Master/Status LED
+ColorLight* colorLight;
 
 // LED strip
 uint16_t ledsCount = 0; int16_t ledsPin = -1;
@@ -84,9 +89,6 @@ uint8_t getLightStyleIndex(String& styleName) {
     return 0;
 }
 
-ColorLight* colorLight;
-LightColor currentColor;
-
 ModuleParameter* mpLedCount;
 ModuleParameter* mpMaxPower;
 ModuleParameter* mpFxStyle;
@@ -106,8 +108,8 @@ bool strobeOff = true;
 uint8_t currentStyleIndex = 0;
 
 void refresh() {
-    if (statusLED != nullptr) {
-        statusLED->show();
+    if (statusLed.isEnabled()) {
+        statusLed.getLed()->show();
     }
     if (pixels != nullptr) {
         pixels->show();
@@ -124,11 +126,11 @@ void renderPixels() {
                                   static_cast<int>(round(animatedColors[i]->getBlue() * pwr)));
         }
     }
-    if (statusLED != nullptr) {
-        statusLED->setPixelColor(0,
-                                 static_cast<int>(round(animatedColors[0]->getRed())),
-                                 static_cast<int>(round(animatedColors[0]->getGreen())),
-                                 static_cast<int>(round(animatedColors[0]->getBlue())));
+    if (statusLed.isEnabled()) {
+        statusLed.getLed()->setPixelColor(0,
+                             static_cast<int>(round(animatedColors[0]->getRed())),
+                             static_cast<int>(round(animatedColors[0]->getGreen())),
+                             static_cast<int>(round(animatedColors[0]->getBlue())));
     }
 }
 

@@ -34,7 +34,7 @@
 #ifndef HOMEGENIE_MINI_X10_X10_MESSAGE_H_
 #define HOMEGENIE_MINI_X10_X10_MESSAGE_H_
 
-#include <HomeGenie.h>
+#include <Config.h>
 
 /* Maximum debugging level to actually display */
 #define DBG_MAX DBG_INFO

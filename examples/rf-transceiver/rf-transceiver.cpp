@@ -34,6 +34,11 @@
 #include "io/RFReceiver.h"
 #include "api/RCSwitchHandler.h"
 
+#ifdef BOARD_HAS_RGB_LED
+#include "../color-light/StatusLed.h"
+StatusLed statusLed;
+#endif
+
 using namespace Service;
 
 HomeGenie* homeGenie;
@@ -43,21 +48,35 @@ void setup() {
     Config::system.friendlyName = "Firefly RF";
 
     homeGenie = HomeGenie::getInstance();
-    auto miniModule = homeGenie->getDefaultModule();
 
-    // RCSwitch RF Transmitter
-    auto rcsTransmitterConfig = new RCS::RFTransmitterConfig(CONFIG_RCSwitchTransmitterPin);
-    auto rcsTransmitter = new RCS::RFTransmitter(rcsTransmitterConfig);
+#ifdef BOARD_HAS_RGB_LED
+    statusLed.setup();
+#endif
 
-    auto apiHandler = new RCSwitchHandler(rcsTransmitter);
-    homeGenie->addAPIHandler(apiHandler);
+    auto apiHandler = new RCSwitchHandler();
+#ifdef BOARD_HAS_RGB_LED
+    apiHandler->setOnDataReady([](const char* c) {
+        statusLed.signalActivity(0, 255, 255);
+    });
+#endif
 
     // RCSwitch RF Receiver
-    auto rfModule = apiHandler->getModule(IO::IOEventDomains::HomeAutomation_RemoteControl, CONFIG_RCSwitchRF_MODULE_ADDRESS);
-    auto receiverConfiguration = new RCS::RFReceiverConfig(CONFIG_RCSwitchReceiverPin);
-    auto receiver = new RCS::RFReceiver(receiverConfiguration);
-    receiver->setModule(rfModule);
-    homeGenie->addIOHandler(receiver);
+    uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", CONFIG_RCSwitchReceiverPin).toInt();
+    if (rfReceiverPin > 0) {
+        auto receiverConfiguration = new RCS::RFReceiverConfig(rfReceiverPin);
+        auto rcsReceiver = new RCS::RFReceiver(receiverConfiguration);
+        apiHandler->setReceiver(rcsReceiver);
+        homeGenie->addIOHandler(rcsReceiver);
+    }
+    // RCSwitch RF Transmitter
+    uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", CONFIG_RCSwitchTransmitterPin).toInt();
+    if (rfTransmitterPin > 0) {
+        auto rcsTransmitterConfig = new RCS::RFTransmitterConfig(rfTransmitterPin);
+        auto rcsTransmitter = new RCS::RFTransmitter(rcsTransmitterConfig);
+        apiHandler->setTransmitter(rcsTransmitter);
+    }
+
+    homeGenie->addAPIHandler(apiHandler);
 
     homeGenie->begin();
 }

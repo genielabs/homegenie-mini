@@ -30,7 +30,7 @@
 #ifndef HOMEGENIE_MINI_RCS_RF_RECEIVER_CONFIG_H_
 #define HOMEGENIE_MINI_RCS_RF_RECEIVER_CONFIG_H_
 
-#include <HomeGenie.h>
+#include <Config.h>
 
 #include "../configuration.h"
 

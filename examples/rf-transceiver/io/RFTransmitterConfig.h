@@ -30,7 +30,7 @@
 #ifndef HOMEGENIE_MINI_RCS_RFTRANSMITTERCONFIG_H
 #define HOMEGENIE_MINI_RCS_RFTRANSMITTERCONFIG_H
 
-#include <HomeGenie.h>
+#include <Config.h>
 
 #include "../configuration.h"
 
@@ -42,7 +42,7 @@ namespace IO { namespace RCS {
     {
     public:
         RFTransmitterConfig();
-        RFTransmitterConfig(uint8_t pin);
+        explicit RFTransmitterConfig(uint8_t pin);
         uint8_t getPin();
     private:
         uint8_t pin;

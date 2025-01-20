@@ -27,16 +27,16 @@
  *
  */
 
-#include <HomeGenie.h>
-#include <service/api/devices/ColorLight.h>
-
 #include "CommonSensors.h"
 
 using namespace Service;
 using namespace Service::API::devices;
 
 HomeGenie* homeGenie;
-Module* miniModule;
+
+#ifdef BOARD_HAS_RGB_LED
+StatusLed statusLed;
+#endif
 
 void setup() {
     // Default name shown in SNMP/UPnP advertising
@@ -44,36 +44,13 @@ void setup() {
 
     homeGenie = HomeGenie::getInstance();
 
-    miniModule = homeGenie->getDefaultModule();
+    auto miniModule = homeGenie->getDefaultModule();
     miniModule->setProperty("Widget.Implements.Scheduling", "1");
     miniModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
 
-    // Get status LED config
-    auto pin = Config::getSetting("stld-pin");
-    int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
-    if (statusLedPin >= 0) {
-        int statusLedType = Config::getSetting("stld-typ", "82").toInt();
-        int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
-        statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
-        statusLED->setPixelColor(0, 0, 0, 0);
-        statusLED->begin();
-    }
-
-    // Custom status led (builtin NeoPixel RGB LED)
-    if (statusLED != nullptr) {
-
-        // Setup main LEDs control module
-        auto colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, COLOR_LIGHT_ADDRESS, "Status LED");
-        colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
-        colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
-        colorLight->module->setProperty("Widget.Preference.AudioLight", "true");
-        colorLight->onSetColor([](LightColor c) {
-            statusLED->setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
-            statusLED->show();
-        });
-        homeGenie->addAPIHandler(colorLight);
-
-    }
+#ifdef BOARD_HAS_RGB_LED
+    statusLed.setup();
+#endif
 
     includeCommonSensors(homeGenie, miniModule);
 
@@ -82,10 +59,5 @@ void setup() {
 
 void loop()
 {
-
     homeGenie->loop();
-
-    // Custom status led (builtin NeoPixel RGB LED)
-    statusLedLoop();
-
 }

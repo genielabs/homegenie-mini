@@ -57,7 +57,8 @@ void setup() {
     mpMaxPower = new ModuleParameter("LED.power", "25");
     miniModule->properties.add(mpMaxPower);
 
-    colorLight = statusLedSetup();
+    statusLed.setup();
+    colorLight = statusLed.getColorLight();
 
     isConfigured = Config::isDeviceConfigured();
     if (!isConfigured) {
@@ -86,7 +87,7 @@ void setup() {
 
         // Setup main LEDs control module
         colorLight->onSetColor([](LightColor color) {
-            currentColor = color;
+            statusLed.setCurrentColor(color);
             fx_reset(pixels, color);
         });
         homeGenie->addAPIHandler(colorLight);
@@ -116,7 +117,7 @@ void setup() {
 #endif
 
         // Initialize FX buffer
-        fx_init(ledsCount, currentColor);
+        fx_init(ledsCount, statusLed.getCurrentColor());
 
         // TODO: implement color/status recall on start
         // Set default color
@@ -167,6 +168,7 @@ void loop()
 
             } else {
 
+                auto currentColor = statusLed.getCurrentColor();
                 // apply selected light style
                 switch (currentStyleIndex) {
                     case LightStyles::RAINBOW:
@@ -230,9 +232,4 @@ void loop()
         }
 
     }
-
-#ifdef BOARD_HAS_RGB_LED
-    // Custom status led (builtin NeoPixel RGB LED)
-    statusLedLoop();
-#endif
 }

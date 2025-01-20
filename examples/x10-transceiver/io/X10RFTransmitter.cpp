@@ -27,7 +27,7 @@
  *
  */
 
-#include "RFTransmitter.h"
+#include "X10RFTransmitter.h"
 
 namespace IO { namespace X10 {
 
@@ -60,20 +60,21 @@ namespace IO { namespace X10 {
 
     */
 
-    RFTransmitter::RFTransmitter() {
+    X10RFTransmitter::X10RFTransmitter() {
 
     }
-    RFTransmitter::RFTransmitter(RFTransmitterConfig *configuration) : RFTransmitter() {
+    X10RFTransmitter::X10RFTransmitter(X10RFTransmitterConfig *configuration) : X10RFTransmitter() {
         this->configuration = configuration;
     }
 
-    void RFTransmitter::begin() {
+    void X10RFTransmitter::begin() {
         Logger::info("|  - IO::X10::RFTransmitter (PIN=%d)", configuration->getPin());
         pinMode(configuration->getPin(), OUTPUT);
         Logger::info("|  ✔ IO::X10::RFTransmitter");
     }
 
-    void RFTransmitter::sendCommand(uint8_t *data, uint8_t size, uint8_t repeat) {
+// TODO: rewrite ASYNC (move to loop() SEE ir-transceiver/io/IRTransmitter.cpp)
+    void X10RFTransmitter::sendCommand(uint8_t *data, uint8_t size, uint8_t repeat, uint8_t sendDelay) {
         for (int i = 0; i < (repeat > 0 ? repeat : configuration->getSendRepeat()); i++) {
             pulseHigh();
             delayMicroseconds(configuration->getStartBustLong());
@@ -84,16 +85,18 @@ namespace IO { namespace X10 {
             }
             sendBit(true);
             delayMicroseconds(configuration->getPacketGap());
+            // pause between commands (ms)
+            delay(sendDelay);
         }
     }
 
-    void RFTransmitter::sendByte(uint8_t data) {
+    void X10RFTransmitter::sendByte(uint8_t data) {
         for (int i = 7; i >= 0; i--) { // send bits from byte
             sendBit(bitRead(data, i) == 1);
         }
     }
 
-    void RFTransmitter::sendBit(bool databit) {
+    void X10RFTransmitter::sendBit(bool databit) {
         pulseHigh();
         delayMicroseconds(configuration->getBitShort());
         pulseLow();
@@ -101,11 +104,11 @@ namespace IO { namespace X10 {
         if (databit) delayMicroseconds(configuration->getBitLong());
     }
 
-    void RFTransmitter::pulseHigh() {
+    void X10RFTransmitter::pulseHigh() {
         digitalWrite(configuration->getPin(), HIGH);
     }
 
-    void RFTransmitter::pulseLow() {
+    void X10RFTransmitter::pulseLow() {
         digitalWrite(configuration->getPin(), LOW);
     }
 

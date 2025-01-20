@@ -27,10 +27,8 @@
 
 namespace IO { namespace RCS {
 
-    RFReceiver *receiverInstance = NULL;
-
     RFReceiver::RFReceiver() {
-        receiverInstance = this;
+        setLoopInterval(50);
     }
 
     RFReceiver::RFReceiver(RFReceiverConfig *configuration) : RFReceiver() {
@@ -59,26 +57,40 @@ namespace IO { namespace RCS {
     void RFReceiver::loop() {
 
         if (RF.available()) {  // We have captured something.
+//            Serial.print("Received ");
+//            Serial.print(RF.getReceivedValue());
+//            Serial.print(" / ");
+//            Serial.print(RF.getReceivedBitlength());
+//            Serial.print("bit ");
+//            Serial.print("Protocol: ");
+//            Serial.println(RF.getReceivedProtocol());
 
-            Serial.print("Received ");
-            Serial.print(RF.getReceivedValue());
-            Serial.print(" / ");
-            Serial.print(RF.getReceivedBitlength());
-            Serial.print("bit ");
-            Serial.print("Protocol: ");
-            Serial.println(RF.getReceivedProtocol());
+            auto value = RF.getReceivedValue();
+            auto hexData = Utility::byteToHex((uint32_t)value);
+            hexData.toUpperCase();
 
+            Utility::getBytes(hexData, eventData);
+            eventData[0] = (RF.getReceivedBitlength() << 3) + RF.getReceivedProtocol();
 
-            // TODO:
-            // TODO:
-            //    sendEvent((const uint8_t*)(IOEventPaths::Receiver_RawData), eventData, IOEventDataType::Undefined);
-            // TODO: auto eventData = RF.getReceivedValue();
-
+            sendEvent(IOEventPaths::Receiver_RawData, eventData, IOEventDataType::Undefined);
 
             RF.resetAvailable();
-
         }
 
+    }
+
+    void RFReceiver::handleInterrupt() {
+        if (enableReceive) {
+            RF.handleInterrupt();
+        }
+    }
+
+    void RFReceiver::enable() {
+        enableReceive = true;
+    }
+
+    void RFReceiver::disable() {
+        enableReceive = false;
     }
 
 }} // ns

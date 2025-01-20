@@ -43,7 +43,7 @@ namespace Service {
 
     class QueuedMessage {
     public:
-        QueuedMessage(){};
+        QueuedMessage() = default;
         QueuedMessage(String domain, String sender, String event, String value, void* data, IO::IOEventDataType type) {
             this->domain = domain;
             this->sender = sender;
@@ -60,8 +60,7 @@ namespace Service {
             this->data = data;
             this->type = type;
         }
-        ~QueuedMessage() {
-        }
+        ~QueuedMessage() = default;
         String domain;
         String sender;
         String event;
@@ -74,7 +73,7 @@ namespace Service {
 
     class EventRouter : Task {
     public:
-        void loop();
+        void loop() override;
         void signalEvent(QueuedMessage m);
 
         void withNetManager(NetManager &manager);

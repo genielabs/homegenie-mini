@@ -33,6 +33,7 @@
 #include <HomeGenie.h>
 
 #include "../configuration.h"
+#include "../io/RFReceiver.h"
 #include "../io/RFTransmitter.h"
 
 namespace Service { namespace API {
@@ -42,9 +43,20 @@ namespace Service { namespace API {
     class RCSwitchHandler : public APIHandler {
     private:
         LinkedList<Module*> moduleList;
-        IO::RCS::RFTransmitter* transmitter;
+        RFReceiver* receiver;
+        RFTransmitter* transmitter;
+        ModuleParameter* rawDataParameter{};
+        unsigned long eventTimestamp = 0;
+        String lastEvent;
+        unsigned long lastEventTimestamp = 0;
+        std::function<void(const char*)> ledBlinkHandler = nullptr;
+
     public:
-        RCSwitchHandler(IO::RCS::RFTransmitter* transmitter);
+        RCSwitchHandler();
+
+        void setTransmitter(RFTransmitter* transmitter);
+        void setReceiver(RFReceiver* receiver);
+
         void init() override;
         bool canHandleDomain(String* domain) override;
         bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
@@ -54,6 +66,8 @@ namespace Service { namespace API {
 
         Module* getModule(const char* domain, const char* address) override;
         LinkedList<Module*>* getModuleList() override;
+
+        void setOnDataReady(std::function<void(const char*)> callback);
     };
 
 }}

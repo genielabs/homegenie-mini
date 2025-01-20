@@ -29,7 +29,6 @@
 #include <RCSwitch.h>
 
 #include <HomeGenie.h>
-#include <Utility.h>
 
 #include "RFReceiverConfig.h"
 
@@ -40,14 +39,21 @@ namespace IO { namespace RCS {
     class RFReceiver : Task, public IIOEventSender {
     public:
         RFReceiver();
-        RFReceiver(RFReceiverConfig *);
+        explicit RFReceiver(RFReceiverConfig *);
 
         void begin() override;
         void loop() override;
 
+        void handleInterrupt();
+        void enable();
+        void disable();
+
     private:
         RFReceiverConfig* configuration;
         RCSwitch RF = RCSwitch();
+        uint8_t eventData[4];
+        bool enableReceive = true;
+
     };
 
 }} // ns

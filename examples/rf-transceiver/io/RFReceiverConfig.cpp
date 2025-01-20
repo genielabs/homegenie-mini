@@ -33,7 +33,7 @@ namespace IO { namespace RCS {
 
     RFReceiverConfig::RFReceiverConfig()
     {
-        pin = interrupt = CONFIG_RCSwitchReceiverPin; // 5
+        pin = interrupt = String(CONFIG_RCSwitchReceiverPin).toInt();
     }
     RFReceiverConfig::RFReceiverConfig(uint8_t pin) : RFReceiverConfig()
     {

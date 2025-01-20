@@ -30,7 +30,7 @@
 #ifndef HOMEGENIE_MINI_X10_RF_RECEIVER_CONFIG_H_
 #define HOMEGENIE_MINI_X10_RF_RECEIVER_CONFIG_H_
 
-#include <HomeGenie.h>
+#include <Config.h>
 
 #include "../configuration.h"
 
@@ -38,12 +38,12 @@ namespace IO { namespace X10 {
     /**
      * Decodes X10 RF messages
      */
-    class RFReceiverConfig
+    class X10RFReceiverConfig
     {
     public:
-        RFReceiverConfig();
-        RFReceiverConfig(uint8_t pin);
-        RFReceiverConfig(uint8_t interrupt, uint8_t pin);
+        X10RFReceiverConfig();
+        X10RFReceiverConfig(uint8_t pin);
+        X10RFReceiverConfig(uint8_t interrupt, uint8_t pin);
         uint8_t getPin();
         uint8_t getInterrupt();
         uint16_t getStartBustMin();

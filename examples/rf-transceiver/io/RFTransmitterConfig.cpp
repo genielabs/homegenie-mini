@@ -32,7 +32,7 @@
 namespace IO { namespace RCS {
     RFTransmitterConfig::RFTransmitterConfig()
     {
-        pin = CONFIG_RCSwitchTransmitterPin;
+        pin = String(CONFIG_RCSwitchTransmitterPin).toInt();
     }
     RFTransmitterConfig::RFTransmitterConfig(uint8_t pin) : RFTransmitterConfig()
     {

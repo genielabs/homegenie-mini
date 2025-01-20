@@ -30,11 +30,12 @@
 #include <HomeGenie.h>
 
 #include "api/X10Handler.h"
-#include "io/RFReceiver.h"
-#include "io/RFTransmitter.h"
+#include "io/X10RFReceiver.h"
+#include "io/X10RFTransmitter.h"
 
 #ifdef BOARD_HAS_RGB_LED
-#include "../color-light/status-led.h"
+#include "../color-light/StatusLed.h"
+StatusLed statusLed;
 #endif
 
 using namespace IO;
@@ -47,36 +48,34 @@ void setup() {
     Config::system.friendlyName = "Firefly X10";
 
     homeGenie = HomeGenie::getInstance();
-    auto miniModule = homeGenie->getDefaultModule();
 
 #ifdef BOARD_HAS_RGB_LED
-    // Custom status led (builtin NeoPixel RGB LED)
-    auto colorLight = statusLedSetup();
-    colorLight->onSetColor([](LightColor c) {
-        statusLED->setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
-        statusLED->show();
-    });
-    homeGenie->addAPIHandler(colorLight);
+    statusLed.setup();
 #endif
 
     auto apiHandler = new X10Handler();
-    auto rfModule = apiHandler->getModule(IOEventDomains::HomeAutomation_X10, CONFIG_X10RF_MODULE_ADDRESS);
+#ifdef BOARD_HAS_RGB_LED
+    apiHandler->setOnDataReady([](const char* c) {
+        statusLed.signalActivity(0, 0, 255);
+    });
+#endif
+
     // X10 RF RFReceiver
     uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", String(CONFIG_X10RFReceiverPin).c_str()).toInt();
     if (rfReceiverPin > 0) {
-        auto x10ReceiverConfig = new X10::RFReceiverConfig(rfReceiverPin);
-        auto x10Receiver = new X10::RFReceiver(x10ReceiverConfig);
-        x10Receiver->setModule(rfModule);
+        auto x10ReceiverConfig = new X10::X10RFReceiverConfig(rfReceiverPin);
+        auto x10Receiver = new X10::X10RFReceiver(x10ReceiverConfig);
         apiHandler->setReceiver(x10Receiver);
         homeGenie->addIOHandler(x10Receiver);
     }
     // X10 RF RFTransmitter
     uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", String(CONFIG_X10RFTransmitterPin).c_str()).toInt();
     if (rfTransmitterPin > 0) {
-        auto x10TransmitterConfig = new X10::RFTransmitterConfig(rfTransmitterPin);
-        auto x10Transmitter = new X10::RFTransmitter(x10TransmitterConfig);
+        auto x10TransmitterConfig = new X10::X10RFTransmitterConfig(rfTransmitterPin);
+        auto x10Transmitter = new X10::X10RFTransmitter(x10TransmitterConfig);
         apiHandler->setTransmitter(x10Transmitter);
     }
+
     homeGenie->addAPIHandler(apiHandler);
 
     homeGenie->begin();
@@ -84,10 +83,5 @@ void setup() {
 
 void loop()
 {
-
     homeGenie->loop();
-
-#ifdef BOARD_HAS_RGB_LED
-    statusLedLoop();
-#endif
 }

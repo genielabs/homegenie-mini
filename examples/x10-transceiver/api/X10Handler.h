@@ -31,12 +31,11 @@
 #define HOMEGENIE_MINI_X10APIHANDLER_H
 
 #include <HomeGenie.h>
-#include <Utility.h>
 
 #include "../configuration.h"
 #include "../io/X10Message.h"
-#include "../io/RFReceiver.h"
-#include "../io/RFTransmitter.h"
+#include "../io/X10RFReceiver.h"
+#include "../io/X10RFTransmitter.h"
 
 #define X10_DIM_BRIGHT_STEP     (1.0f/21.0f)
 
@@ -50,12 +49,15 @@ namespace Service { namespace API {
         Module* rfModule;
         ModuleParameter* receiverRawData;
         ModuleParameter* receiverCommand;
-        RFTransmitter* transmitter = nullptr;
-        RFReceiver* receiver = nullptr;
+        X10RFTransmitter* transmitter = nullptr;
+        X10RFReceiver* receiver = nullptr;
+        std::function<void(const char*)> ledBlinkHandler = nullptr;
+
     public:
         X10Handler();
-        void setReceiver(RFReceiver* receiver);
-        void setTransmitter(RFTransmitter* transmitter);
+        void setReceiver(X10RFReceiver* receiver);
+        void setTransmitter(X10RFTransmitter* transmitter);
+
         void init() override;
         bool canHandleDomain(String* domain) override;
         bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
@@ -65,6 +67,8 @@ namespace Service { namespace API {
 
         Module* getModule(const char* domain, const char* address) override;
         LinkedList<Module*>* getModuleList() override;
+
+        void setOnDataReady(std::function<void(const char*)> callback);
     };
 
 }}

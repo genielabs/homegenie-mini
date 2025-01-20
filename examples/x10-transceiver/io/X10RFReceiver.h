@@ -31,26 +31,26 @@
 #define HOMEGENIE_MINI_X10_RFRECEIVER_H_
 
 #include <HomeGenie.h>
-#include <Utility.h>
 
-#include "RFReceiverConfig.h"
+#include "X10RFReceiverConfig.h"
 
 #define X10_RFRECEIVER_NS_PREFIX                  "IO::X10::RfReceiver"
 
 namespace IO { namespace X10 {
 
-    class RFReceiver : public Task, public IIOEventSender {
+    class X10RFReceiver : public Task, public IIOEventSender {
     public:
-        RFReceiver();
-        RFReceiver(RFReceiverConfig *);
+        X10RFReceiver();
+        explicit X10RFReceiver(X10RFReceiverConfig *);
 
         void loop() override;
         void begin() override;
         void receive();
+        static void addInterruptHandler(std::function<void(void)> handler);
         void disableMs(uint32_t ms);
 
     private:
-        RFReceiverConfig *configuration;
+        X10RFReceiverConfig *configuration;
         // 32-bit RF message decoding
         volatile uint8_t messageType = 0x00;
         volatile uint8_t byteBuffer[4];

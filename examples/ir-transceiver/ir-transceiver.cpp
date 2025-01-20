@@ -33,7 +33,8 @@
 #include "api/IRTransceiverHandler.h"
 
 #ifdef BOARD_HAS_RGB_LED
-#include "../color-light/status-led.h"
+#include "../color-light/StatusLed.h"
+StatusLed statusLed;
 #endif
 
 using namespace Service;
@@ -49,13 +50,7 @@ void setup() {
     miniModule->setProperty("Widget.Implements.Scheduling", "1");
 
 #ifdef BOARD_HAS_RGB_LED
-    // Custom status led (builtin NeoPixel RGB LED)
-    auto colorLight = statusLedSetup();
-    colorLight->onSetColor([](LightColor c) {
-        statusLED->setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
-        statusLED->show();
-    });
-    homeGenie->addAPIHandler(colorLight);
+    statusLed.setup();
 #endif
 
     auto apiHandler = new IRTransceiverHandler();
@@ -74,6 +69,7 @@ void setup() {
         auto transmitter = new IR::IRTransmitter(transmitterConfig);
         apiHandler->setTransmitter(transmitter);
     }
+
     homeGenie->addAPIHandler(apiHandler);
 
     homeGenie->begin();
@@ -83,8 +79,4 @@ void setup() {
 void loop()
 {
     homeGenie->loop();
-
-#ifdef BOARD_HAS_RGB_LED
-    statusLedLoop();
-#endif
 }

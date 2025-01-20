@@ -43,7 +43,8 @@ namespace Automation {
             auto s = scheduleList.get(i);
             if (s->name == schedule->name) {
                 existingIndex = i;
-                scheduleList.remove(i);
+                auto sc = scheduleList.remove(i);
+                delete sc;
                 break;
             }
         }
@@ -82,7 +83,8 @@ namespace Automation {
         for (int i = 0; i < scheduleList.size(); i++) {
             auto s = scheduleList.get(i);
             if (s->name == name) {
-                scheduleList.remove(i);
+                auto sc = scheduleList.remove(i);
+                delete sc;
                 save();
                 break;
             }

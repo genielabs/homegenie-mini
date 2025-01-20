@@ -27,22 +27,34 @@
  *
  */
 
-#include "RFReceiver.h"
+#include "X10RFReceiver.h"
 
 namespace IO { namespace X10 {
 
-    RFReceiver *receiverInstance = NULL;
+    X10RFReceiver *receiverInstance = nullptr;
+    std::function<void()> customInterruptHandler = nullptr;
+    bool isPinLow = false;
+    uint8_t dataPin = 0;
 
     void ICACHE_RAM_ATTR receiverInstance_wrapper() {
-        if (receiverInstance) receiverInstance->receive();
+        auto pv = digitalRead(dataPin);
+        bool rising = isPinLow && pv == HIGH;
+        isPinLow = pv == LOW;
+        if (receiverInstance && rising) {
+            receiverInstance->receive();
+        }
+        // Call custom interrupt callback if set
+        if (customInterruptHandler) {
+            customInterruptHandler();
+        }
     }
 
-    RFReceiver::RFReceiver() {
+    X10RFReceiver::X10RFReceiver() {
         setLoopInterval(50);
         receiverInstance = this;
     }
 
-    RFReceiver::RFReceiver(RFReceiverConfig *configuration) : RFReceiver() {
+    X10RFReceiver::X10RFReceiver(X10RFReceiverConfig *configuration) : X10RFReceiver() {
         this->configuration = configuration;
     }
 
@@ -50,15 +62,16 @@ namespace IO { namespace X10 {
     /// Public
     //////////////////////////////
 
-    void RFReceiver::begin() {
+    void X10RFReceiver::begin() {
         Logger::info("|  - %s (PIN=%d INT=%d)", X10_RFRECEIVER_NS_PREFIX, configuration->getPin(),
                      configuration->getInterrupt());
-        pinMode(configuration->getPin(), INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(configuration->getInterrupt()), receiverInstance_wrapper, RISING);
+        dataPin = configuration->getPin();
+        pinMode(dataPin, INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(configuration->getInterrupt()), receiverInstance_wrapper, CHANGE);
         Logger::info("|  ✔ %s", X10_RFRECEIVER_NS_PREFIX);
     }
 
-    void RFReceiver::loop() {
+    void X10RFReceiver::loop() {
         if (millis() < disabledToMs) {
             eventReady = false;
             return;
@@ -69,11 +82,11 @@ namespace IO { namespace X10 {
         }
     }
 
-    void RFReceiver::disableMs(uint32_t ms) {
+    void X10RFReceiver::disableMs(uint32_t ms) {
         disabledToMs = millis() + ms;
     }
 
-    void RFReceiver::receive() {
+    void X10RFReceiver::receive() {
         uint32_t currentTs = micros();
         uint32_t lengthUs = currentTs - riseUs;
         riseUs = currentTs;
@@ -125,6 +138,10 @@ namespace IO { namespace X10 {
 
             receivedCount++;
         }
+    }
+
+    void X10RFReceiver::addInterruptHandler(std::function<void()> handler) {
+        customInterruptHandler = std::move(handler);
     }
 
 }} // ns

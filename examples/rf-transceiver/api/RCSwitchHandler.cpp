@@ -31,22 +31,24 @@
 
 namespace Service { namespace API {
 
-        RCSwitchHandler::RCSwitchHandler(RFTransmitter* transmitter) {
-            this->transmitter = transmitter;
-
+        RCSwitchHandler::RCSwitchHandler() {
             // HomeGenie Mini module
             auto rfModule = new Module();
-            rfModule->domain = IO::IOEventDomains::HomeAutomation_RemoteControl;
+            rfModule->domain = IOEventDomains::HomeAutomation_RemoteControl;
             rfModule->address = CONFIG_RCSwitchRF_MODULE_ADDRESS;
             rfModule->type = "Sensor";
-            rfModule->name = "RF"; //TODO: CONFIG_RCSwitchRF_MODULE_NAME;
+            rfModule->name = "RC RF"; //TODO: CONFIG_RCSwitchRF_MODULE_NAME;
+
             // explicitly enable "scheduling" features for this module
             rfModule->setProperty("Widget.Implements.Scheduling", "1");
+            rfModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+
             // add properties
-            rfModule->setProperty(IOEventPaths::Receiver_RawData, "");
+            rawDataParameter = new ModuleParameter(IOEventPaths::Receiver_RawData);
+            rfModule->properties.add(rawDataParameter);
+            rawDataParameter->value = "";
 
             moduleList.add(rfModule);
-
         }
 
         void RCSwitchHandler::init() {
@@ -56,11 +58,28 @@ namespace Service { namespace API {
         bool RCSwitchHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
         if (command->Domain == (IOEventDomains::HomeAutomation_RemoteControl)
             && command->Address == CONFIG_RCSwitchRF_MODULE_ADDRESS
-            && command->Command == "Control.SendRaw") {
+            && command->Command == "Control.SendRaw"
+            && command->OptionsString.length() > 2) {
+
+            auto sendRepeat = command->getOption(1).toInt();
+            if (sendRepeat <= 0 || sendRepeat > 100) sendRepeat = 1; // default send repeat = 1
+            auto sendDelay = command->getOption(2).toInt();
+            if (sendDelay <= 0 || sendDelay > 10000) sendDelay = 1; // default delay = 1ms
+
+            // parse type info
+            auto hexType = command->OptionsString.substring(0, 2);
+            long type = strtol(hexType.c_str(), nullptr, 16);
+            auto bitLength = type >> 3;
+            auto bitProtocol = type & 0x0F; // actually not used
 
             // parse long data from options string
-            long data = atol(command->OptionsString.c_str());
-            transmitter->sendCommand(data, 24, 1, 0);
+            auto dataString = command->OptionsString.substring(2);
+            long data = strtol(dataString.c_str(), nullptr, 16);
+
+            receiver->disable();
+            transmitter->sendCommand(data, bitLength, sendRepeat, sendDelay);
+            receiver->enable();
+
             responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             return true;
@@ -76,16 +95,59 @@ namespace Service { namespace API {
                                       const char* domain, const char* address,
                                       const char *eventPath, void *eventData, IOEventDataType dataType) {
 
-        String event = String((char*)eventPath);
-        /*
-         * RCS RF Receiver "Sensor.RawData" event
-         */
-        if (String(address) == CONFIG_RCSwitchRF_MODULE_ADDRESS && event == (IOEventPaths::Receiver_RawData) /*&& ioManager.getRCSReceiver().isEnabled()*/) {
-            // TODO: ...
-            return true;
+        auto module = getModule(domain, address);
+        if (module) {
+            String event = String((char*)eventPath);
+            /*
+             * X10 RF Receiver "Sensor.RawData" event
+             */
+            if (String(address) == CONFIG_RCSwitchRF_MODULE_ADDRESS && event == (IOEventPaths::Receiver_RawData) /*&& ioManager.getRCSReceiver().isEnabled()*/) {
+                // decode event data (X10 RF packet)
+                auto data = ((uint8_t *) eventData);
+
+                uint8_t type = data[0];
+                uint8_t b0 = data[1];
+                uint8_t b1 = data[2];
+                uint8_t b2 = data[3];
+
+                //String rawDataString = Utility::byteToHex(type) + "-" + Utility::byteToHex((b0)) + "-" + Utility::byteToHex((b1)) + "-" + Utility::byteToHex(b2) + "-" + Utility::byteToHex(b3) + ((type == 0x29) ? "-00-00" : "");
+                String rawDataString = Utility::byteToHex(type) + Utility::byteToHex((b0)) + Utility::byteToHex((b1)) + Utility::byteToHex(b2);
+                rawDataString.toUpperCase();
+                Logger::info(":%s [RCSwitch::RFReceiver] >> [%s]", HOMEGENIEMINI_NS_PREFIX, rawDataString.c_str());
+
+                // repeat can start only after 300 ms
+                if (rawDataString.equals(lastEvent) && (millis() - lastEventTimestamp) < 500) {
+                    return false;
+                }
+
+                if (!rawDataString.equals(lastEvent) || (millis() - eventTimestamp) >= 500) {
+                    lastEventTimestamp = millis();
+                }
+
+                lastEvent = rawDataString;
+                eventTimestamp = millis();
+
+                auto bitLength = type >> 3;
+                auto bitProtocol = type & 0x0F;
+//Serial.printf("\nBit length = %d, Protocol = %d\n\n", bitLength, bitProtocol);
+
+                rawDataParameter->setValue(rawDataString.c_str());
+                HomeGenie::getInstance()->getEventRouter().signalEvent(
+                        QueuedMessage(domain, CONFIG_RCSwitchRF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData,
+                                      rawDataString,
+                                      nullptr, IOEventDataType::Undefined));
+
+
+                if (ledBlinkHandler) {
+                    ledBlinkHandler(rawDataString.c_str());
+                }
+
+                return true;
+            }
         }
 
         return false;
+
     }
 
     Module* RCSwitchHandler::getModule(const char* domain, const char* address) {
@@ -98,6 +160,19 @@ namespace Service { namespace API {
     }
     LinkedList<Module*>* RCSwitchHandler::getModuleList() {
         return &moduleList;
+    }
+
+    void RCSwitchHandler::setOnDataReady(std::function<void(const char*)> callback) {
+        ledBlinkHandler = std::move(callback);
+    }
+
+    void RCSwitchHandler::setTransmitter(RFTransmitter *transmitter) {
+        this->transmitter = transmitter;
+    }
+
+    void RCSwitchHandler::setReceiver(RFReceiver *receiver) {
+        this->receiver = receiver;
+        receiver->setModule(getModule(IOEventDomains::HomeAutomation_RemoteControl, CONFIG_RCSwitchRF_MODULE_ADDRESS));
     }
 
 }}

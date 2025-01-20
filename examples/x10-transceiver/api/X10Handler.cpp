@@ -53,7 +53,7 @@ namespace Service { namespace API {
         rfModule->domain = IO::IOEventDomains::HomeAutomation_X10;
         rfModule->address = CONFIG_X10RF_MODULE_ADDRESS;
         rfModule->type = "Sensor";
-        rfModule->name = "RF"; //TODO: CONFIG_X10RF_MODULE_NAME;
+        rfModule->name = "X10 RF"; //TODO: CONFIG_X10RF_MODULE_NAME;
 
         // explicitly enable "scheduling" features for this module
         rfModule->setProperty("Widget.Implements.Scheduling", "1");
@@ -67,7 +67,9 @@ namespace Service { namespace API {
 
         moduleList.add(rfModule);
 
-        auto defaultHouseCode = Config::getSetting("x10-hcode", "a").charAt(0);
+        auto hc = Config::getSetting("x10-hcode", "a");
+        hc.toLowerCase();
+        auto defaultHouseCode = hc.charAt(0);
 
         // Add 16 X10 modules for default house code
         // module address: "<house_code_a_p><unit_number_1_16>"
@@ -79,6 +81,7 @@ namespace Service { namespace API {
             auto module = new Module();
             module->domain = IOEventDomains::HomeAutomation_X10;
             module->address = address;
+            module->type = "Dimmer";
             module->setProperty(IOEventPaths::Status_Level, "0", 0, Number);
             moduleList.add(module);
         }
@@ -100,19 +103,22 @@ namespace Service { namespace API {
 
             auto commandString = command->getOption(0);
             auto sendRepeat = command->getOption(1).toInt();
-            if (sendRepeat <= 0 || sendRepeat > 100) sendRepeat = 1; // default send repeat = 1
+            if (sendRepeat < 0 || sendRepeat > 100) sendRepeat = 0;
+            if (sendRepeat == 0 && transmitter != nullptr) {
+                sendRepeat = transmitter->
+                        getConfiguration()->getSendRepeat();
+            }
             auto sendDelay = command->getOption(2).toInt();
-            if (sendDelay <= 0 || sendDelay > 10000) sendDelay = 1; // default delay = 1ms
+            if (sendDelay <= 0 || sendDelay > 10000) sendDelay = 1;
 
             uint8_t data[commandString.length() / 2];
             Utility::getBytes(commandString, data);
 
-            // only 0x20 standard type message are currently supported
             if (receiver != nullptr) {
-                receiver->disableMs(500);
+                receiver->disableMs(sendRepeat > 0 ? (sendRepeat * sendDelay) : 500);
             }
             if (transmitter != nullptr) {
-                transmitter->sendCommand(&data[1], sizeof(data) - 1, sendRepeat);
+                transmitter->sendCommand(&data[1], sizeof(data) - 1, sendRepeat, sendDelay);
             }
             responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
@@ -181,7 +187,7 @@ namespace Service { namespace API {
                     receiver->disableMs(500);
                 }
                 if (transmitter != nullptr) {
-                    transmitter->sendCommand(&data[1], sizeof(data) - 1, sendRepeat);
+                    transmitter->sendCommand(&data[1], sizeof(data) - 1, sendRepeat, 1);
                 }
             }
             responseCallback->writeAll(ApiHandlerResponseStatus::OK);
@@ -233,6 +239,11 @@ namespace Service { namespace API {
                 receiverRawData->setValue(rawDataString.c_str());
                 HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString,
                                                                                      nullptr, IOEventDataType::Undefined));
+
+                if (ledBlinkHandler) {
+                    ledBlinkHandler(rawDataString.c_str());
+                }
+
 
                 // 0x20 = standard, 0x29 = security
                 switch (type) {
@@ -296,11 +307,16 @@ namespace Service { namespace API {
         return &moduleList;
     }
 
-    void X10Handler::setReceiver(RFReceiver *r) {
+    void X10Handler::setReceiver(X10RFReceiver *r) {
         receiver = r;
+        r->setModule(rfModule);
     }
 
-    void X10Handler::setTransmitter(RFTransmitter *t) {
+    void X10Handler::setTransmitter(X10RFTransmitter *t) {
         transmitter = t;
+    }
+
+    void X10Handler::setOnDataReady(std::function<void(const char*)> callback) {
+        ledBlinkHandler = std::move(callback);
     }
 }}
