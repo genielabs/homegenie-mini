@@ -158,8 +158,8 @@ namespace Net {
         Logger::verbose("%s loop() << END", NETMANAGER_LOG_PREFIX);
     }
 
-    NTPClient& NetManager::getTimeClient() {
-        return timeClient->getTimeClient();
+    TimeClient* NetManager::getTimeClient() {
+        return timeClient;
     }
 
 #ifndef DISABLE_BLUETOOTH

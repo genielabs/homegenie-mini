@@ -188,7 +188,7 @@ namespace Service {
 
 #ifndef DISABLE_AUTOMATION
     void HomeGenie::onSchedule(Automation::Schedule *schedule) {
-        if (netManager.getTimeClient().isUpdated()) {
+        if (netManager.getTimeClient()->isTimeSet() || netManager.getTimeClient()->getNTPClient().isUpdated()) {
 
             ProgramEngine::run(schedule);
 

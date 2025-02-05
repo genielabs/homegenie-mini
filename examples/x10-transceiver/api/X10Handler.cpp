@@ -31,33 +31,17 @@
 
 namespace Service { namespace API {
 
-    enum ModuleType {
-        Switch = 0,
-        Light,
-        Dimmer,
-        MotionDetector,
-        DoorWindow
-    };
-
-    String DeviceTypes[] = {
-            "Dimmer",
-            "Light",
-            "Switch",
-            "Sensor", // Generic sensor
-            "DoorWindow"
-    };
-
     X10Handler::X10Handler() {
         // RF module
         rfModule = new Module();
         rfModule->domain = IO::IOEventDomains::HomeAutomation_X10;
         rfModule->address = CONFIG_X10RF_MODULE_ADDRESS;
-        rfModule->type = "Sensor";
+        rfModule->type = ModuleApi::ModuleType::Sensor;
         rfModule->name = "X10 RF"; //TODO: CONFIG_X10RF_MODULE_NAME;
 
         // explicitly enable "scheduling" features for this module
-        rfModule->setProperty("Widget.Implements.Scheduling", "1");
-        rfModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+        rfModule->setProperty(Implements::Scheduling, "true");
+        rfModule->setProperty(Implements::Scheduling_ModuleEvents, "true");
 
         // set properties
         receiverRawData = new ModuleParameter(IOEventPaths::Receiver_RawData);
@@ -81,7 +65,7 @@ namespace Service { namespace API {
             auto module = new Module();
             module->domain = IOEventDomains::HomeAutomation_X10;
             module->address = address;
-            module->type = "Dimmer";
+            module->type = ModuleApi::ModuleType::Dimmer;
             module->setProperty(IOEventPaths::Status_Level, "0", 0, Number);
             moduleList.add(module);
         }
@@ -229,6 +213,18 @@ namespace Service { namespace API {
                 String rawDataString = Utility::byteToHex(type) + Utility::byteToHex((b0)) + Utility::byteToHex((b1)) + Utility::byteToHex(b2) + Utility::byteToHex(b3) + ((type == 0x29) ? "0000" : "");
                 rawDataString.toUpperCase();
                 Logger::info(":%s [X10::RFReceiver] >> [%s]", HOMEGENIEMINI_NS_PREFIX, rawDataString.c_str());
+
+                // repeat can start only after "repeatDelay" ms
+                uint16_t repeatDelay = 500;
+                if (rawDataString.equals(lastEvent) && (millis() - lastEventTimestamp) < repeatDelay) {
+                    eventTimestamp = millis();
+                    return false;
+                }
+                if (!rawDataString.equals(lastEvent) || (millis() - eventTimestamp) >= repeatDelay / 2) {
+                    lastEventTimestamp = millis();
+                    lastEvent = rawDataString;
+                }
+                eventTimestamp = millis();
 
                 // Decode RF message data to X10Message class
                 auto *decodedMessage = new X10Message();

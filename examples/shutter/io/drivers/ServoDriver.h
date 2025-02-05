@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -27,11 +27,6 @@
  *
  */
 
-
-// Note that with a 360 servo the accuracy of positioning isn't very precise,
-// for a precise position seeking is required a stepper motor
-
-
 #ifndef HOMEGENIE_MINI_SERVODRIVER_H
 #define HOMEGENIE_MINI_SERVODRIVER_H
 
@@ -47,148 +42,168 @@
 
 namespace IO { namespace Components {
 
-    static bool ServoDriver_triggered;
+    using namespace Service::API::ShutterApi;
+    using namespace Configuration::Servo;
 
-
-        static int lastCommand = 0;
-        static int revolutions = 0;
-        static int revolutionsMax = 17;
-        static bool stopRequested = false;
-        static unsigned long lastTickMs = 0;
-        static float currentLevel = 0;
-        static float targetLevel = -1;
-        static int direction = -1; // reverse open/close
-
-
-        class ServoDriver: public Task, public IShutterDriver {
+    class ServoDriver: public Task, public IShutterDriver {
     private:
-        String domain = IO::IOEventDomains::Automation_Components;
-        String address = SERVO_MODULE_ADDRESS;
         Servo* servoDriver;
 
-        const int servoPin = CONFIG_ServoMotorPin;
+        int servoPin;
+        int idx;
 
-        const int frequency = 330; // Hz // Standard is 50(hz) servo
+        const int frequency = 50; // Hz // Standard is 50(hz) servo
+
         int minUs = 500;
         int maxUs = 2500;
         int stopUs = 1500;
-        int stepSpeed = 800; // [1 .. 1000] microseconds
+
+        const int stepSpeedMax = 10;
+        int stepSpeed = 5; // [1 .. <stepSpeedMax>]
+
+        float minAngle = 0;
+        float maxAngle = 180;
+
+        int lastCommand = 0;
+        float currentLevel = 0;
+        float targetLevel = -1;
+        int direction = -1; // reverse open/close
 
         unsigned long lastEventMs = 0;
 
+        bool isCalibrating = false;
+        bool stopRequested = false;
+
     public:
-        ServoDriver() {}
+        ServoDriver(int pin, int index) {
+            servoPin = pin;
+            this->idx = index;
+        }
+        ~ServoDriver() override {
+            servoDriver->release();
+            delete servoDriver;
+        }
+
         void init() override {
             Logger::info("|  - %s (PIN=%d MIN=%d MAX=%d)", SERVO_DRIVER_NS_PREFIX, servoPin, minUs, maxUs);
             servoDriver = new Servo();
             servoDriver->setPeriodHertz(frequency);
             servoDriver->attach(servoPin, minUs, maxUs);
 
-            ServoDriver_triggered = false;
-            pinMode(3, INPUT_PULLUP);
-            attachInterrupt(3, [] {
-
-// TODO: should consider speed?
-                ServoDriver_triggered = millis() - lastTickMs > 100;
-                lastTickMs = millis();
-
-                if (ServoDriver_triggered) {
-                    if (lastCommand != SHUTTER_COMMAND_NONE) {
-                        revolutions += (lastCommand == SHUTTER_COMMAND_OPEN ? 1 : -1);
-                        float level =  (float)revolutions / (float)revolutionsMax;
-                        if (revolutions <= 0 || revolutions >= revolutionsMax || (targetLevel != -1 && level == targetLevel)) {
-                            stopRequested = true;
-                        }
-                    }
-                }
-
-            }, CHANGE);
+            // Read stored config or apply default values.
+            auto k = K(AngleSpeed, idx);
+            configure(k, Config::getSetting(k, "5").c_str());
+            k = K(AngleMin, idx);
+            configure(k, Config::getSetting(k, "0").c_str());
+            k = K(AngleMax, idx);
+            configure(k, Config::getSetting(k, "180").c_str());
 
             Logger::info("|  ✔ %s", SERVO_DRIVER_NS_PREFIX);
         }
-        void calibrate() override {
+        void calibrate(bool enable) override {
+            // Calibration has no effect on this driver
+            isCalibrating = enable;
+        }
+        void configure(const char* k, const char* v) override {
+            auto key = String(k);
+            auto value = String(v);
+            if (key.equals(K(AngleSpeed, idx))) {
+                stepSpeed = value.toInt();
+                if (stepSpeedMax - stepSpeed > 0) {
+                    setLoopInterval(1 + (float)(stepSpeedMax - stepSpeed - 1) * 3);
+                } else {
+                    setLoopInterval(10);
+                }
+            } else if (key.equals(K(AngleMin, idx))) {
+                minAngle = value.toFloat();
+            } else if (key.equals(K(AngleMax, idx))) {
+                maxAngle = value.toFloat();
+            }
+            Logger::info("@%s::configure [%s = %s]", SERVO_DRIVER_NS_PREFIX, key.c_str(), value.c_str());
+        }
 
-            // TODO: ....
-
-        }
-        void speed(float s) override {
-            // s ->  ]0.0 .. 1.0[
-            stepSpeed = s * 1000;
-        }
-        void stop() override {
-            servoDriver->write(stopUs);
-        }
         void open() override {
-            if (lastCommand != SHUTTER_COMMAND_NONE || revolutions == revolutionsMax) {
+            if (lastCommand != SHUTTER_COMMAND_NONE) {
                 stopRequested = true;
             } else {
-                servoDriver->write(stopUs + stepSpeed * direction);
+                direction = 1;
+                targetLevel = 1;
                 lastCommand = SHUTTER_COMMAND_OPEN;
-                lastTickMs = millis();
             }
         }
         void close() override {
-            if (lastCommand != SHUTTER_COMMAND_NONE || revolutions == 0) {
+            if (lastCommand != SHUTTER_COMMAND_NONE) {
                 stopRequested = true;
             } else {
-                servoDriver->write(stopUs - stepSpeed * direction);
+                direction = -1;
+                targetLevel = 0;
                 lastCommand = SHUTTER_COMMAND_CLOSE;
-                lastTickMs = millis();
             }
         }
         void level(float level) override {
-            targetLevel = round((level / 100.f) * revolutionsMax) / revolutionsMax;
+            targetLevel = level / 100.f;
             float levelDiff = targetLevel - currentLevel;
             if (levelDiff < 0) {
-                close();
+                direction = -1;
+                lastCommand = SHUTTER_COMMAND_CLOSE;
             } else if (levelDiff > 0) {
+                direction = 1;
+                lastCommand = SHUTTER_COMMAND_OPEN;
+            }
+        }
+        void toggle() override {
+            if (currentLevel > 0) {
+                close();
+            } else {
                 open();
             }
         }
 
+        void stop() override {
+            servoDriver->write(stopUs);
+        }
+
         void loop() override {
 
-            if (lastCommand != SHUTTER_COMMAND_NONE && (millis() - lastTickMs > 1000)) {
-
-                // MOTOR ERROR!!!!! DID NOT RECEIVE "PULSE" for 1000ms
-
-                String err = "No pulse received from motor.";
-                Logger::info("@%s [%s %s]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Error), err.c_str());
-                eventSender->sendEvent(IOEventPaths::Status_Error, &err, IOEventDataType::Text);
-
-                stopRequested = true;
-
-                // TODO: SHOULD GO BACK TO THE POSITION WHERE STARTED THE COMMAND
+            if (stopRequested) {
+                stopRequested = false;
+                lastCommand = SHUTTER_COMMAND_NONE;
+                targetLevel = currentLevel;
+                Logger::info("@%s [%s %.2f]", SERVO_DRIVER_NS_PREFIX, (IOEventPaths::Status_Level),
+                             currentLevel);
+                eventSender->sendEvent(IOEventPaths::Status_Level, &currentLevel, IOEventDataType::Float);
             }
 
-            if (stopRequested) {
+            if (currentLevel != targetLevel && targetLevel >= 0) {
 
-                stopRequested = false;
-                stop();
-                currentLevel = (float)revolutions / (float)revolutionsMax;
-                lastCommand = SHUTTER_COMMAND_NONE;
-                targetLevel = -1;
-                Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), currentLevel);
-                eventSender->sendEvent(IOEventPaths::Status_Level, &currentLevel, IOEventDataType::Float);
-
-            } else if (lastCommand == SHUTTER_COMMAND_OPEN) {
-
-                if (millis() - lastEventMs > EVENT_EMIT_FREQUENCY) {
-                    float level = (float)revolutions / (float)revolutionsMax;
-                    lastEventMs = millis();
-                    Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), level);
-                    eventSender->sendEvent(IOEventPaths::Status_Level, &level, IOEventDataType::Float);
+                currentLevel += (.00555f * direction);
+                if ((stepSpeedMax - stepSpeed == 0)
+                    || (direction > 0 && currentLevel > targetLevel)
+                    || (direction < 0 && currentLevel < targetLevel)) {
+                    currentLevel = targetLevel;
+                    lastEventMs = 0;
                 }
 
-            } else if (lastCommand == SHUTTER_COMMAND_CLOSE) {
+                if (currentLevel > 1) currentLevel = 1;
+                if (currentLevel < 0) currentLevel = 0;
+
+                // treated as angle if value < MIN_PULSE_WIDTH
+                servoDriver->write((int)(round((maxAngle - minAngle) * currentLevel) + minAngle));
+
 
                 if (millis() - lastEventMs > EVENT_EMIT_FREQUENCY) {
-                    float level =  (float)revolutions / (float)revolutionsMax;
                     lastEventMs = millis();
-                    Logger::info("@%s [%s %.2f]", SHUTTER_CONTROL_NS_PREFIX, (IOEventPaths::Status_Level), level);
-                    eventSender->sendEvent(IOEventPaths::Status_Level, &level, IOEventDataType::Float);
+                    Logger::info("@%s [%s %.2f]", SERVO_DRIVER_NS_PREFIX, (IOEventPaths::Status_Level),
+                                 currentLevel);
+                    eventSender->sendEvent(IOEventPaths::Status_Level, &currentLevel, IOEventDataType::Float);
                 }
 
+
+                if (currentLevel == 1 || currentLevel == 0 || currentLevel == targetLevel) {
+                    currentLevel = targetLevel;
+                    stopRequested = true;
+                    lastCommand = SHUTTER_COMMAND_NONE;
+                }
             }
 
         }

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -36,12 +36,12 @@ namespace Service { namespace API {
             auto rfModule = new Module();
             rfModule->domain = IOEventDomains::HomeAutomation_RemoteControl;
             rfModule->address = CONFIG_RCSwitchRF_MODULE_ADDRESS;
-            rfModule->type = "Sensor";
+            rfModule->type = ModuleApi::ModuleType::Sensor;
             rfModule->name = "RC RF"; //TODO: CONFIG_RCSwitchRF_MODULE_NAME;
 
             // explicitly enable "scheduling" features for this module
-            rfModule->setProperty("Widget.Implements.Scheduling", "1");
-            rfModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+            rfModule->setProperty(Implements::Scheduling, "true");
+            rfModule->setProperty(Implements::Scheduling_ModuleEvents, "true");
 
             // add properties
             rawDataParameter = new ModuleParameter(IOEventPaths::Receiver_RawData);
@@ -115,16 +115,16 @@ namespace Service { namespace API {
                 rawDataString.toUpperCase();
                 Logger::info(":%s [RCSwitch::RFReceiver] >> [%s]", HOMEGENIEMINI_NS_PREFIX, rawDataString.c_str());
 
-                // repeat can start only after 300 ms
-                if (rawDataString.equals(lastEvent) && (millis() - lastEventTimestamp) < 500) {
+                // repeat can start only after "repeatDelay" ms
+                uint16_t repeatDelay = 500;
+                if (rawDataString.equals(lastEvent) && (millis() - lastEventTimestamp) < repeatDelay) {
+                    eventTimestamp = millis();
                     return false;
                 }
-
-                if (!rawDataString.equals(lastEvent) || (millis() - eventTimestamp) >= 500) {
+                if (!rawDataString.equals(lastEvent) || (millis() - eventTimestamp) >= repeatDelay / 2) {
                     lastEventTimestamp = millis();
+                    lastEvent = rawDataString;
                 }
-
-                lastEvent = rawDataString;
                 eventTimestamp = millis();
 
                 auto bitLength = type >> 3;

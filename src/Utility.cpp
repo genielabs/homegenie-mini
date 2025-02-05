@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -199,8 +199,8 @@ time_t Utility::relativeUtcHoursToLocalTime(double relativeHours, time_t dt)  {
 }
 
 void Utility::simpleJsonStringEscape(String& s) {
-    s.replace("\"", "\\\"");
     s.replace("\\", "\\\\");
+    s.replace("\"", "\\\"");
     s.replace("\b", "\\b");
     s.replace("\f", "\\f");
     s.replace("\n", "\\n");

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -33,31 +33,36 @@
 #include <HomeGenie.h>
 #include <Utility.h>
 
+#include "../api/ShutterApi.h"
+
 #include "drivers/ServoDriver.h"
+#include "drivers/ServoEncoderDriver.h"
 #include "drivers/StepperDriver.h"
 
 namespace IO { namespace Components {
 
     using namespace Service;
+    using namespace ShutterApi::Configuration;
 
     class ShutterControl : public IIOEventSender {
     private:
-        IShutterDriver* shutterDriver;
+        int idx;
+        IShutterDriver* shutterDriver = nullptr;
+        bool calibrateMode = false;
     public:
-        ShutterControl() {
-            shutterDriver = new ServoDriver();
-            //shutterDriver = new StepperDriver();
-            shutterDriver->eventSender = this;
-        }
+        explicit ShutterControl(int index);
 
         void begin() override;
 
         void open();
         void close();
-        void setLevel(float level);
-        void setSpeed(float speed);
+        void toggle();
 
-        void calibrate(); // TODO:....
+        void setLevel(float);
+
+        void setType(const char*);
+        void calibrate();
+        void configure(const char*, const char*);
     };
 
 }}

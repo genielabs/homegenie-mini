@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -79,7 +79,7 @@ namespace IO {
 #ifndef DISABLE_DATA_PROCESSING
                 if (isNumericDataType(dataType)) {
                     auto moduleParameter = module->getProperty(eventPath);
-                    if (moduleParameter != nullptr) {
+                    if (moduleParameter != nullptr && !moduleParameter->name.startsWith("System.")) {
                         Statistics::collect(moduleParameter);
                     }
                 }

@@ -34,12 +34,15 @@
 
 #include <dhtnew.h>
 
+#include "../../api/SensorApi.h"
+
 #define DHTXX_NS_PREFIX       "IO::Sensors::DHTxx"
 #define SENSOR_SAMPLING_RATE  30000L
 
 namespace IO { namespace Sensors {
 
     using namespace Service;
+    using namespace SensorApi::Configuration;
 
     class DHTxxSensorData {
     public:

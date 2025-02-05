@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -37,7 +37,7 @@ namespace Service { namespace API {
         miniModule = new Module();
         miniModule->domain = IO::IOEventDomains::HomeAutomation_HomeGenie;
         miniModule->address = CONFIG_BUILTIN_MODULE_ADDRESS;
-        miniModule->type = "Sensor";
+        miniModule->type = ModuleApi::ModuleType::Sensor;
         miniModule->name = Config::system.friendlyName;
         miniModule->description = "HomeGenie Mini node";
         moduleList.add(miniModule);
@@ -48,10 +48,10 @@ namespace Service { namespace API {
         for (int m = 0; m < 8; m++) {
             auto in = String("io-typ0");
             in.concat(m + 1);
-            auto moduleType = Config::getSetting(in.c_str(), "Dimmer");
+            auto moduleType = Config::getSetting(in.c_str(), ModuleApi::ModuleType::Dimmer);
             in.replace("-typ0", "-pin0");
             int gpioNum = Config::getSetting(in.c_str(), "-1").toInt();
-            if (gpioNum >= 0 && moduleType != "Sensor") { // TODO: enable INPUT channels (Sensor)
+            if (gpioNum >= 0 && moduleType != ModuleApi::ModuleType::Sensor) { // TODO: enable INPUT channels (Sensor)
                 auto address = String(gpioNum);
                 auto module = new Module();
                 module->domain = IO::IOEventDomains::HomeAutomation_HomeGenie;
@@ -61,7 +61,7 @@ namespace Service { namespace API {
                 module->description = "";
                 auto propLevel = new ModuleParameter(IOEventPaths::Status_Level, "");
                 module->properties.add(propLevel);
-                if (moduleType == "Sensor") {
+                if (moduleType == ModuleApi::ModuleType::Sensor) {
 // TODO: ............
                 } else {
                     // Recall last stored level (switchable modules only)
@@ -72,6 +72,8 @@ namespace Service { namespace API {
                 moduleList.add(module);
             }
         }
+
+        updateSystemModule();
     }
 
     bool HomeGenieHandler::canHandleDomain(String* domain) {
@@ -285,6 +287,7 @@ namespace Service { namespace API {
                 homeGenie->writeGroupListJSON(responseCallback);
                 return true;
             } else if (request->Command == ConfigApi::Modules_List) {
+                updateSystemModule();
                 responseCallback->beginGetLength();
                 homeGenie->writeModuleListJSON(responseCallback);
                 responseCallback->endGetLength();
@@ -293,6 +296,9 @@ namespace Service { namespace API {
             } else if (request->Command == ConfigApi::Modules_Get) {
                 String domain = request->getOption(0);
                 String address = request->getOption(1);
+                if (domain.equals(miniModule->domain) && address.equals(miniModule->address)) {
+                    updateSystemModule();
+                }
                 responseCallback->beginGetLength();
                 auto contentLength = (size_t)homeGenie->writeModuleJSON(responseCallback, &domain, &address);
                 responseCallback->endGetLength();
@@ -508,66 +514,16 @@ namespace Service { namespace API {
                     String time = request->getOption(1);
                     long seconds = time.substring(0, time.length() - 3).toInt();
                     long ms = time.substring(time.length() - 3).toInt();
-                    Config::getRTC()->setTime(seconds, ms);
                     homeGenie->getNetManager()
-                        .getTimeClient()
-                        .setEpochTime(Config::getRTC()->getLocalEpoch());
+                        .getTimeClient()->setTime(seconds, ms);
 
                     responseCallback->writeAll(ApiHandlerResponseText::OK);
                     return true;
 #endif
                 } else if (method == ConfigApi::SystemApi::System_Info) {
-                    JsonDocument doc;
-                    auto obj = doc.add<JsonObject>();
-                    obj["Release"] = doc.add<JsonObject>();
-                    obj["Release"]["Name"] = CONFIG_DEVICE_MODEL_NAME;
-                    obj["Release"]["Version"] = CONFIG_DEVICE_MODEL_NUMBER;
-                    obj["Release"]["ReleaseDate"] = ReleaseBuildDate;
-                    obj["Id"] = Config::system.id;
-                    obj["Name"] = Config::system.friendlyName;
-#ifdef ESP8266
-                    obj["Release"]["Runtime"] = "esp8266";
-                    obj["Platform"] = "espressif8266";
-                    obj["Runtime"] = "2.6.3";
-#else
-                    obj["Release"]["Runtime"] = "esp32";
-                    obj["Platform"] = "espressif32";
-                    obj["Runtime"] = "6.6.0";
-#endif
-                    obj["TimeZoneId"] = Config::zone.id;
-                    obj["TimeZone"] = Config::zone.description;
-                    obj["UtcOffset"] = Config::zone.offset;
-                    obj["LocalTime"] = homeGenie->getNetManager().getTimeClient().getFormattedDate();
-                    obj["Configuration"] = doc.add<JsonObject>();
-                    // Default group name
-                    String defaultGroupName = Config::getSetting(CONFIG_KEY_device_group, "Dashboard");
-                    obj["Configuration"]["Group"] = defaultGroupName;
-                    // Location info
-                    obj["Configuration"]["Location"] = doc.add<JsonObject>();
-                    obj["Configuration"]["Location"]["name"] = Config::zone.name;
-                    obj["Configuration"]["Location"]["latitude"] = Config::zone.latitude;
-                    obj["Configuration"]["Location"]["longitude"] = Config::zone.longitude;
-                    /*
-                    // Location sun data
-                    obj["Configuration"]["Location"]["sunData"] = doc.add<JsonObject>();
-                    time_t now = time(0);
-                    auto sd = gmtime(&now);
-                    // Calculate the times of sunrise, transit, and sunset, in hours (UTC) (relative from midnight of the selected day)
-                    double relTransit, relSunrise, relSunset;
-                    calcSunriseSunset(sd->tm_year + 1900, sd->tm_mon + 1, sd->tm_mday, Config::zone.latitude, Config::zone.longitude, relTransit, relSunrise, relSunset);
-                    // Translate to epoch time
-                    time_t sunrise = Utility::relativeUtcHoursToLocalTime(relSunrise, now);
-                    time_t sunset = Utility::relativeUtcHoursToLocalTime(relSunset, now);
-                    time_t solarNoon = Utility::relativeUtcHoursToLocalTime(relTransit, now);
-                    obj["Configuration"]["Location"]["sunData"]["Sunrise"] = sunrise;
-                    obj["Configuration"]["Location"]["sunData"]["Sunset"] = sunset;
-                    obj["Configuration"]["Location"]["sunData"]["SolarNoon"] = solarNoon;
-                    */
 
-                    String output;
-                    serializeJson(obj, output);
-
-                    responseCallback->writeAll(output.c_str());
+                    auto info = updateSystemModule();
+                    responseCallback->writeAll(info);
                     return true;
 
                 }
@@ -671,6 +627,58 @@ namespace Service { namespace API {
         }
         moduleList.add(module);
         return true;
+    }
+
+    void HomeGenieHandler::getSystemInfoJson(String& output) {
+        auto homeGenie = HomeGenie::getInstance();
+        JsonDocument doc;
+        auto obj = doc.add<JsonObject>();
+        obj["Release"] = doc.add<JsonObject>();
+        obj["Release"]["Name"] = CONFIG_DEVICE_MODEL_NAME;
+        obj["Release"]["Version"] = CONFIG_DEVICE_MODEL_NUMBER;
+        obj["Release"]["ReleaseDate"] = ReleaseBuildDate;
+        obj["Release"]["Runtime"] = BUILD_ENV_NAME;
+        obj["Id"] = Config::system.id;
+        obj["Name"] = Config::system.friendlyName;
+        obj["Runtime"] = BUILD_ENV_NAME;
+        obj["Platform"] = BUILD_PLATFORM;
+        obj["TimeZoneId"] = Config::zone.id;
+        obj["TimeZone"] = Config::zone.description;
+        obj["UtcOffset"] = Config::zone.offset;
+        obj["LocalTime"] = homeGenie->getNetManager().getTimeClient()->getNTPClient().getFormattedDate();
+        obj["Configuration"] = doc.add<JsonObject>();
+        // Default group name
+        String defaultGroupName = Config::getSetting(CONFIG_KEY_device_group, "Dashboard");
+        obj["Configuration"]["Group"] = defaultGroupName;
+        // Location info
+        obj["Configuration"]["Location"] = doc.add<JsonObject>();
+        obj["Configuration"]["Location"]["name"] = Config::zone.name;
+        obj["Configuration"]["Location"]["latitude"] = Config::zone.latitude;
+        obj["Configuration"]["Location"]["longitude"] = Config::zone.longitude;
+        /*
+        // Location sun data
+        obj["Configuration"]["Location"]["sunData"] = doc.add<JsonObject>();
+        time_t now = time(0);
+        auto sd = gmtime(&now);
+        // Calculate the times of sunrise, transit, and sunset, in hours (UTC) (relative from midnight of the selected day)
+        double relTransit, relSunrise, relSunset;
+        calcSunriseSunset(sd->tm_year + 1900, sd->tm_mon + 1, sd->tm_mday, Config::zone.latitude, Config::zone.longitude, relTransit, relSunrise, relSunset);
+        // Translate to epoch time
+        time_t sunrise = Utility::relativeUtcHoursToLocalTime(relSunrise, now);
+        time_t sunset = Utility::relativeUtcHoursToLocalTime(relSunset, now);
+        time_t solarNoon = Utility::relativeUtcHoursToLocalTime(relTransit, now);
+        obj["Configuration"]["Location"]["sunData"]["Sunrise"] = sunrise;
+        obj["Configuration"]["Location"]["sunData"]["Sunset"] = sunset;
+        obj["Configuration"]["Location"]["sunData"]["SolarNoon"] = solarNoon;
+        */
+        serializeJson(obj, output);
+    }
+
+    const char* HomeGenieHandler::updateSystemModule() {
+        String info;
+        getSystemInfoJson(info);
+        miniModule->setProperty(ModuleApi::Property::SystemInfo, info);
+        return miniModule->getProperty(ModuleApi::Property::SystemInfo)->value.c_str();
     }
 
 }}

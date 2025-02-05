@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -44,6 +44,8 @@ namespace IO { namespace Sensors {
         readSensorData();
         // signal value changes
         if (currentData.temperature != t) {
+            float temperatureAdjust = Config::getSetting(DHT_Sensor::TemperatureAdjust, "0").toFloat();
+            currentData.temperature = currentData.temperature + temperatureAdjust;
             Logger::info("@%s [%s %0.2f]", DHTXX_NS_PREFIX, IOEventPaths::Sensor_Temperature, currentData.temperature);
             sendEvent(IOEventPaths::Sensor_Temperature, &currentData.temperature, SensorTemperature);
         }

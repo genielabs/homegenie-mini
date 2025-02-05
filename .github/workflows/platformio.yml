@@ -15,6 +15,10 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Get Head Commit Message
+        id: get_head_commit_message
+        run: echo "HEAD_COMMIT_MESSAGE=$(git log -1 --no-merges --pretty=%B)" >> "$GITHUB_ENV"
+
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
@@ -32,5 +36,5 @@ jobs:
         with:
           files: |
             ./artifacts/*.zip
-          body: ${{ github.event.workflow_run.head_commit.message }}
+          body: ${{ env.HEAD_COMMIT_MESSAGE }}
           generate_release_notes: true

@@ -32,40 +32,32 @@
 namespace Net {
     // Time sync
     WiFiUDP ntpUDP;
-    NTPClient timeClient(ntpUDP);
+    NTPClient ntpClient(ntpUDP);
 
     void TimeClient::begin() {
         // Initialize a NTPClient to get time
-        timeClient.begin();
+        ntpClient.begin();
         // Set offset time in seconds to adjust for your timezone, for example:
         // GMT +1 = 3600
         // GMT +8 = 28800
         // GMT -1 = -3600
         // GMT 0 = 0
-        timeClient.setTimeOffset(0);
+        ntpClient.setTimeOffset(0);
     }
 
     void TimeClient::loop() {
 
-#ifdef ESP32
-        if (rtcTimeSet && Config::getRTC()->getLocalEpoch() > 1712031624) {
-            if (millis() - lastTimeCheck > 60000) {
-                lastTimeCheck = millis();
-                if (!timeClient.isUpdated()) {
-                    // sync TimeClient with RTC
-                    timeClient.setEpochTime(Config::getRTC()->getLocalEpoch());
-                    Logger::info("|  - TimeClient: synced with RTC");
-                }
-            }
-        } else
+#ifndef ESP8266
+        // synch with NTP at least once a day
+        if (!rtcTimeSet || Config::getRTC()->getLocalEpoch() < 1712031624 || (millis() - lastTimeCheck) > (1440 * 60000))
 #endif
-        if (WiFi.isConnected() && millis() - lastTimeCheck > 60000) {
-            lastTimeCheck = millis();
-            if (!timeClient.isUpdated()) {
-                if (timeClient.update()) {
+        if (WiFi.isConnected() && (millis() - lastTimeCheck) > 60000) {
+            if (!ntpClient.isUpdated()) {
+                if (ntpClient.update()) {
                     // TimeClient synced with NTP
-#ifdef ESP32
-                    Config::getRTC()->setTime(timeClient.getEpochTime(), 0);
+                    Config::statusLedOff();
+#ifndef ESP8266
+                    Config::getRTC()->setTime(ntpClient.getEpochTime(), 0);
                     rtcTimeSet = true;
                     Logger::info("|  - RTC updated via TimeClient (NTP)");
 #endif
@@ -75,12 +67,21 @@ namespace Net {
                     Logger::warn("|  x TimeClient: NTP update failed!");
                 }
             }
+            lastTimeCheck = millis();
         }
 
     }
 
-    NTPClient& TimeClient::getTimeClient() {
-        return timeClient;
+    void TimeClient::setTime(unsigned long seconds, int ms) {
+#ifndef ESP8266
+        rtcTimeSet = true;
+        Config::getRTC()->setTime(seconds, ms);
+        ntpClient.setEpochTime(Config::getRTC()->getLocalEpoch());
+#endif
+    }
+
+    NTPClient& TimeClient::getNTPClient() {
+        return ntpClient;
     }
 
 }

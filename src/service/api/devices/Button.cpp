@@ -31,7 +31,7 @@ namespace Service { namespace API { namespace devices {
         module = new Module();
         module->domain = domain;
         module->address = address;
-        module->type = "Switch";
+        module->type = ModuleApi::ModuleType::Switch;
         module->name = name;
         // set properties
         module->setProperty(IOEventPaths::Status_Level, "0");

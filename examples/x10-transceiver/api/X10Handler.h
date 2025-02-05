@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -31,6 +31,7 @@
 #define HOMEGENIE_MINI_X10APIHANDLER_H
 
 #include <HomeGenie.h>
+#include <service/api/CommonApi.h>
 
 #include "../configuration.h"
 #include "../io/X10Message.h"
@@ -42,6 +43,7 @@
 namespace Service { namespace API {
 
     using namespace IO::X10;
+    using namespace Service::API::WidgetApi;
 
     class X10Handler : public APIHandler {
     private:
@@ -51,6 +53,11 @@ namespace Service { namespace API {
         ModuleParameter* receiverCommand;
         X10RFTransmitter* transmitter = nullptr;
         X10RFReceiver* receiver = nullptr;
+
+        unsigned long eventTimestamp = 0;
+        String lastEvent;
+        unsigned long lastEventTimestamp = 0;
+
         std::function<void(const char*)> ledBlinkHandler = nullptr;
 
     public:

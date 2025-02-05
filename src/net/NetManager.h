@@ -126,8 +126,8 @@ namespace Net {
         void writeAll(const char* s) override {
             if (requestId != nullptr) {
                 //auto date = TimeClient::getTimeClient().getFormattedDate();
-                unsigned long epoch = TimeClient::getTimeClient().getEpochTime();
-                int ms = TimeClient::getTimeClient().getMilliseconds();
+                unsigned long epoch = TimeClient::getNTPClient().getEpochTime();
+                int ms = TimeClient::getNTPClient().getMilliseconds();
                 //"#", requestId, "", "Response.Data", migRequest.ResponseData
                 // Send as clear text
                 //int sz = 1+snprintf(nullptr, 0, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
@@ -231,7 +231,7 @@ namespace Net {
         void begin();
         void loop() override;
 
-        NTPClient& getTimeClient();
+        TimeClient* getTimeClient();
 #ifndef DISABLE_BLUETOOTH
         BluetoothManager& getBLEManager();
 #endif

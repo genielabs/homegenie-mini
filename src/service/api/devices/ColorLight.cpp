@@ -28,7 +28,7 @@
 namespace Service { namespace API { namespace devices {
 
     ColorLight::ColorLight(const char* domain, const char* address, const char* name): Dimmer(domain, address, name) {
-        module->type = "Color";
+        module->type = ModuleApi::ModuleType::Color;
 
         // add properties
         module->setProperty(IOEventPaths::Status_ColorHsb, "0,0,1,.4");

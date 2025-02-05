@@ -45,18 +45,20 @@ namespace Net {
     class TimeClient: Task {
     public:
         TimeClient() {
-            setLoopInterval(1000);
+            setLoopInterval(5000);
         }
         void begin();
         void loop() override;
-        static NTPClient& getTimeClient();
+        static NTPClient& getNTPClient();
+        void setTime(unsigned long seconds, int ms);
+        bool isTimeSet() { return rtcTimeSet; };
     private:
 #ifdef ESP32
         bool rtcTimeSet = (esp_reset_reason() != ESP_RST_POWERON && esp_reset_reason() != ESP_RST_UNKNOWN);
 #else
         bool rtcTimeSet = false;
 #endif
-        long lastTimeCheck = -100000;
+        long long lastTimeCheck = -100000;
     };
 
 }

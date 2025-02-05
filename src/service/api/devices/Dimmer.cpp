@@ -29,7 +29,7 @@ namespace Service { namespace API { namespace devices {
 
     Dimmer::Dimmer(const char* domain, const char* address, const char* name): Switch(domain, address, name) {
         setLoopInterval(10); // fixed transition frequency
-        module->type = "Dimmer";
+        module->type = ModuleApi::ModuleType::Dimmer;
         onSetStatus([this](SwitchStatus status) {
             level.setLevel(status == SWITCH_STATUS_ON ? onLevel : 0, defaultTransitionMs);
         });

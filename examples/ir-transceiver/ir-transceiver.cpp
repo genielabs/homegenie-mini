@@ -47,7 +47,7 @@ void setup() {
 
     homeGenie = HomeGenie::getInstance();
     auto miniModule = homeGenie->getDefaultModule();
-    miniModule->setProperty("Widget.Implements.Scheduling", "1");
+    miniModule->setProperty(Implements::Scheduling, "true");
 
 #ifdef BOARD_HAS_RGB_LED
     statusLed.setup();

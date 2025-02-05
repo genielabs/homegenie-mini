@@ -184,9 +184,9 @@ namespace Net {
     void HTTPServer::serverSentEvent(WiFiClient &client, String &domain, String &address, String &event, String &value) {
         // id: 1548081759906.19
         // data: {"Timestamp":"2019-01-21T14:42:39.906194Z","UnixTimestamp":1548081759906.19,"Domain":"HomeAutomation.ZWave","Source":"7","Description":"ZWave Node","Property":"Meter.Watts","Value":0}
-        String date = Net::TimeClient::getTimeClient().getFormattedDate();
-        unsigned long epoch = Net::TimeClient::getTimeClient().getEpochTime();
-        int ms = Net::TimeClient::getTimeClient().getMilliseconds();
+        String date = Net::TimeClient::getNTPClient().getFormattedDate();
+        unsigned long epoch = Net::TimeClient::getNTPClient().getEpochTime();
+        int ms = Net::TimeClient::getNTPClient().getMilliseconds();
         client.printf("id: %lu\n", millis());
         client.printf(R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
                 date.c_str(), epoch, ms, domain.c_str(), address.c_str(), event.c_str(), value.c_str());

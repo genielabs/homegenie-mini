@@ -36,27 +36,19 @@ void setup() {
     auto miniModule = homeGenie->getDefaultModule();
     miniModule->name = "LED Controller";
 
-    // Add to the default module some configuration properties.
-    // Properties starting with `Widget.OptionField.` are special
-    // properties that are used in the HomeGenie Panel app to
-    // display custom buttons, sliders, selectors and other UI controls
-    // to configure parameters of this device implementation
+    // Read stored config
+    ledsPin = (int16_t)Config::getSetting(Configuration::LedsPin).toInt();
+    pixelsType = (int16_t)Config::getSetting(Configuration::LedsType).toInt();
+    pixelsSpeed = (int16_t)Config::getSetting(Configuration::LedsSpeed).toInt();
+    // the following settings can also be configured from the app
+    ledsCount = abs(Config::getSetting(Configuration::LedsCount).toInt());
+    maxPower = Config::getSetting(Configuration::LedsPower).toInt();
+    if (maxPower <= 0) maxPower = DEFAULT_MAX_POWER;
 
-    // Number select control to set the number of LEDs of the strip
-    miniModule->setProperty("Widget.OptionField.LED.count",
-                            "number:LED.count:1:1920:1:led_count");
-    // Number select control to set maximum percentage of power that can be drawn
-    miniModule->setProperty("Widget.OptionField.LED.power",
-                            "number:LED.power:5:100:25:led_power");
+    // Add UI options to configure this device using the app
+    setupControllerOptions(miniModule);
 
-    // The following are the actual properties where
-    // UI controls implemented by `Widget.Options`
-    // read/write values from/to.
-    mpLedCount = new ModuleParameter("LED.count", "0");
-    miniModule->properties.add(mpLedCount);
-    mpMaxPower = new ModuleParameter("LED.power", "25");
-    miniModule->properties.add(mpMaxPower);
-
+    // Setup builtin RGB status led
     statusLed.setup();
     colorLight = statusLed.getColorLight();
 
@@ -73,42 +65,22 @@ void setup() {
 
     } else {
 
-        // Get LED strip config
-        ledsCount = abs(Config::getSetting("leds-cnt").toInt());
-        ledsPin = (int16_t)Config::getSetting("leds-pin").toInt();
-        pixelsType = (int16_t)Config::getSetting("leds-typ").toInt();
-        pixelsSpeed = (int16_t)Config::getSetting("leds-spd").toInt();
-        maxPower = Config::getSetting("leds-pwr").toInt();
-        if (maxPower <= 0) maxPower = DEFAULT_MAX_POWER;
         createPixels();
-        // default values
-        mpLedCount->value = String(ledsCount);
-        mpMaxPower->value = String(maxPower);
 
-        // Setup main LEDs control module
+        // colorLight is the main control module
         colorLight->onSetColor([](LightColor color) {
             statusLed.setCurrentColor(color);
             fx_reset(pixels, color);
         });
-        homeGenie->addAPIHandler(colorLight);
 
         auto module = colorLight->module;
         module->name = "Smart Light";
 
-        // Add to the ColorLight module some configuration properties:
-        // - dropdown list control to select the light animation effect
-        module->setProperty("Widget.OptionField.FX.Rainbow",
-                            "select:FX.Style:light_style:solid|rainbow|rainbow_2|white_stripes|white_stripes_2|kaleidoscope");
-        // - dropdown list control to enable the strobe effect
-        module->setProperty("Widget.OptionField.FX.Strobe",
-                            "select:FX.Strobe:strobe_effect:off|slow|medium|fast");
+        // Add ColorLight UI options for setting
+        // animation style and strobe effects.
+        setupColorLightOptions(module);
 
-        mpFxStyle = new ModuleParameter("FX.Style", lightStyleNames[0]);
-        module->properties.add(mpFxStyle);
-        mpFxStrobe = new ModuleParameter("FX.Strobe", "off");
-        module->properties.add(mpFxStrobe);
-
-        // Setup control buttons
+        // Setup physical control buttons
         setupControlButtons(module);
 
 #ifndef DISABLE_AUTOMATION
@@ -140,33 +112,23 @@ void loop()
 
         if (millis() - lastRefreshTs > refreshMs)
         {
-            // Update current rendering style if changed
-            uint8_t selectedStyleIndex = getLightStyleIndex(mpFxStyle->value);
-            if (currentStyleIndex != selectedStyleIndex) {
-                currentStyleIndex = selectedStyleIndex;
-            }
-
-            // enable / disable strobe light
-            if (strobeFxTickMs > 0 && mpFxStrobe->value == "off") {
-                strobeFxTickMs = 0;
-            } else if (strobeFxTickMs == 0 && mpFxStrobe->value != "off") {
-                strobeFxTickMs = millis();
-            }
 
             if (!strobeOff && strobeFxTickMs > 0 && millis() - strobeFxTickMs > ((strobeFxDurationMs + strobeFxIntervalMs) * (mpFxStrobe->value == "slow" ? 3 : mpFxStrobe->value == "medium" ? 2 : 1))) {
 
-                // strobe off
+                // Strobe tick OFF: hide strobe light
                 strobeOff = true;
 
             } else if (strobeFxTickMs > 0 && (millis() - strobeFxTickMs <= strobeFxDurationMs || strobeOff)) {
 
-                // show strobe light for `strobeFxDurationMs` milliseconds (25)
+                // Strobe tick ON: show strobe light for `strobeFxDurationMs` milliseconds (25)
                 auto c = LightColor();
                 c.setColor(0, 0, 1, 0);
                 fx_solid(pixels, c, 0);
                 strobeOff = false;
 
             } else {
+
+                // Apply selected effect (FX.Style)
 
                 auto currentColor = statusLed.getCurrentColor();
                 // apply selected light style
@@ -199,7 +161,7 @@ void loop()
             refresh();
 
             lastRefreshTs = millis();
-            if (strobeOff) {
+            if (strobeFxTickMs > 0 && strobeOff) {
                 strobeFxTickMs = lastRefreshTs;
             }
         }
@@ -211,24 +173,6 @@ void loop()
         } else if (buttonCommand == BUTTON_COMMAND_STEP_BRIGHT && millis() - lastStepCommandTs > BUTTON_COMMAND_STEP_INTERVAL) {
             lastStepCommandTs = millis();
             colorLight->bright(0);
-        }
-
-        // check if number of pixels was changed
-        if (ledsCount != mpLedCount->value.toInt()) {
-
-            disposePixels();
-
-            ledsCount = mpLedCount->value.toInt();
-            Config::saveSetting("leds-cnt", mpLedCount->value);
-
-            // re-create pixels with the new length
-            createPixels();
-
-        }
-        // check if max power value was changed
-        if (maxPower != mpMaxPower->value.toInt() && mpMaxPower->value.toInt() > 0) {
-            maxPower = mpMaxPower->value.toInt();
-            Config::saveSetting("leds-pwr", mpMaxPower->value);
         }
 
     }

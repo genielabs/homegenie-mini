@@ -167,7 +167,7 @@ namespace Service {
 
 #if !(defined DISABLE_MQTT_BROKER || defined DISABLE_MQTT_CLIENT)
             // MQTT
-            auto date = TimeClient::getTimeClient().getFormattedDate();
+            auto date = TimeClient::getNTPClient().getFormattedDate();
             auto topic = String(Config::system.id + "/" + domain + "/" + sender + "/event");
             auto json = HomeGenie::createModuleParameter(eventPath, m.value.c_str(), date.c_str());
             auto details = String(json);
@@ -183,8 +183,8 @@ namespace Service {
 #endif
             // WS
             if (netManager->getWebSocketServer().connectedClients() > 0) {
-                unsigned long epoch = TimeClient::getTimeClient().getEpochTime();
-                int ms = TimeClient::getTimeClient().getMilliseconds();
+                unsigned long epoch = TimeClient::getNTPClient().getEpochTime();
+                int ms = TimeClient::getNTPClient().getMilliseconds();
                 /*
                 // Send as clear text
                 int sz = 1+snprintf(nullptr, 0, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",

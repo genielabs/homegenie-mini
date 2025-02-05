@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -32,21 +32,50 @@
 
 #include <HomeGenie.h>
 
+#include "ShutterApi.h"
 #include "../io/ShutterControl.h"
 
 namespace Service { namespace API {
 
         using namespace IO::Components;
+        using namespace ShutterApi;
+
+        class ParameterListener: public ModuleParameter::UpdateListener {
+        private:
+            ShutterControl* shutterControl;
+        public:
+            explicit ParameterListener(ShutterControl* sc) {
+                shutterControl = sc;
+            }
+            void onUpdate(ModuleParameter* option) override {
+                // The '=' symbol is used here as a special
+                // character to separate optional value's
+                // language-id string from actual value
+                auto v = option->value;
+                if (v.indexOf("=") > 0) {
+                    v = option->value = v.substring(v.indexOf("=") + 1);
+                }
+                if (!option->getConfigKey().isEmpty()) {
+                    shutterControl->configure(option->getConfigKey().c_str(), v.c_str());
+                }
+            }
+        };
+
+        class ShutterModule: public Module {
+        public:
+            ShutterControl* shutterControl;
+        };
 
         class ShutterHandler : public APIHandler {
         private:
-            LinkedList<Module*> moduleList;
-            Module* shutterModule;
-            ModuleParameter* shutterLevel;
-            ShutterControl* shutterControl;
+            LinkedList<ShutterModule*> moduleList;
+            ShutterModule* addModule(int index);
+
         public:
-            ShutterHandler(ShutterControl* shutterControl);
+            explicit ShutterHandler();
+
             void init() override;
+
             bool canHandleDomain(String* domain) override;
             bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
             bool handleEvent(IIOEventSender *sender,

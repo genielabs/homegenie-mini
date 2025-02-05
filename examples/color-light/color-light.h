@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -34,8 +34,33 @@
 #include "StatusLed.h"
 StatusLed statusLed;
 
+namespace ColorLightApi {
+    namespace Options {
+        namespace Controller {
+            const char LED_count[] = "LED.count";
+            const char LED_power[] = "LED.power";
+        }
+        namespace Light {
+            const char FX_Style[] = "FX.Style";
+            const char FX_Strobe[] = "FX.Strobe";
+        }
+    }
+
+    namespace Configuration {
+        static const char LedsPin[] = "leds-pin";
+        static const char LedsType[] = "leds-typ";
+        static const char LedsSpeed[] = "leds-spd";
+        static const char LedsCount[] = "leds-cnt";
+        static const char LedsPower[] = "leds-pwr";
+    }
+
+}
+
 using namespace Service;
 using namespace Service::API::devices;
+using namespace Service::ModuleApi;
+
+using namespace ColorLightApi;
 
 HomeGenie* homeGenie;
 bool isConfigured = false;
@@ -89,9 +114,6 @@ uint8_t getLightStyleIndex(String& styleName) {
     return 0;
 }
 
-ModuleParameter* mpLedCount;
-ModuleParameter* mpMaxPower;
-ModuleParameter* mpFxStyle;
 ModuleParameter* mpFxStrobe;
 
 // Buttons state variables
@@ -246,8 +268,8 @@ void setupDefaultSchedules() {
         // UI state data
         s->data = R"({"action":{"template":{"forEach":{"config":{"color":"#FF9100|30.0"},"enabled":true,"id":"command_set_color"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[],"from":"","itemType":3,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})";
         // Device types allowed
-        s->boundDevices.add(new String("Dimmer"));
-        s->boundDevices.add(new String("Color"));
+        s->boundDevices.add(new String(ModuleType::Dimmer));
+        s->boundDevices.add(new String(ModuleType::Color));
         Scheduler::addSchedule(s);
     }
 
@@ -259,8 +281,8 @@ void setupDefaultSchedules() {
         // UI state data
         s->data = R"({"action":{"template":{"forEach":{"config":{"color":"#0099FF|30.0"},"enabled":true,"id":"command_set_color"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[],"from":"","itemType":3,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})";
         // Device types allowed
-        s->boundDevices.add(new String("Dimmer"));
-        s->boundDevices.add(new String("Color"));
+        s->boundDevices.add(new String(ModuleType::Dimmer));
+        s->boundDevices.add(new String(ModuleType::Color));
         Scheduler::addSchedule(s);
     }
 
@@ -272,9 +294,9 @@ void setupDefaultSchedules() {
         // UI state data
         s->data = R"({"action":{"template":{"forEach":{"config":{},"enabled":true,"id":"command_turn_off"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[],"from":"","itemType":1,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[{"end":"02:00","start":"02:00"}],"to":""})";
         // Device types allowed
-        s->boundDevices.add(new String("Light"));
-        s->boundDevices.add(new String("Dimmer"));
-        s->boundDevices.add(new String("Color"));
+        s->boundDevices.add(new String(ModuleType::Light));
+        s->boundDevices.add(new String(ModuleType::Dimmer));
+        s->boundDevices.add(new String(ModuleType::Color));
         Scheduler::addSchedule(s);
     }
 
@@ -286,3 +308,102 @@ void setupDefaultSchedules() {
 
 }
 #endif // DISABLE_AUTOMATION
+
+
+// UI options update listener
+static class : public ModuleParameter::UpdateListener {
+public:
+    void onUpdate(ModuleParameter* option) override {
+
+        if (option->is(Options::Light::FX_Style)) {
+
+            // Update current rendering style
+            auto style = getLightStyleIndex(option->value);
+            if (style != currentStyleIndex) currentStyleIndex = style;
+
+        } else if (option->is(Options::Light::FX_Strobe)) {
+
+            // enable / disable strobe light
+            if (strobeFxTickMs > 0 && option->value == "off") {
+                strobeFxTickMs = 0;
+            } else if (strobeFxTickMs == 0 && option->value != "off") {
+                strobeFxTickMs = millis();
+            }
+
+        } else if (option->is(Options::Controller::LED_count)) {
+
+            // number of pixels changed
+            disposePixels();
+            // update current leds count
+            ledsCount = option->value.toInt();
+            // re-create pixels with the new length
+            createPixels();
+
+        } else if (option->is(Options::Controller::LED_power)) {
+
+            // max power value changed, update it
+            maxPower = option->value.toInt();
+
+        }
+
+    }
+
+} optionUpdateListener;
+
+void setupControllerOptions(Module* miniModule) {
+    // Number select control to set the number of LEDs of the strip
+    miniModule->addWidgetOption(
+            // name, value
+            Options::Controller::LED_count, String(ledsCount).c_str(),
+            // type
+            UI_WIDGETS_FIELD_TYPE_NUMBER
+            // label
+            ":led_count"
+            // min:max:default
+            ":1:1920:1"
+    )->withConfigKey(Configuration::LedsCount)->addUpdateListener(&optionUpdateListener);
+    // Number select control to set maximum percentage of power that can be drawn
+    miniModule->addWidgetOption(
+            // name, value
+            Options::Controller::LED_power, String(maxPower).c_str(),
+            // type
+            UI_WIDGETS_FIELD_TYPE_NUMBER
+            // label
+            ":led_power"
+            // min:max:default
+            ":5:100:25"
+    )->withConfigKey(Configuration::LedsPower)->addUpdateListener(&optionUpdateListener);
+}
+void setupColorLightOptions(Module* module) {
+    // - dropdown list control to select the light animation effect
+    module->addWidgetOption(
+            // name, value
+            Options::Light::FX_Style, lightStyleNames[0],
+            // type
+            UI_WIDGETS_FIELD_TYPE_SELECT
+            // label
+            ":light_style"
+            // options
+            ":solid"  // TODO¨: create from `lightStyleNames` array
+            "|rainbow"
+            "|rainbow_2"
+            "|white_stripes"
+            "|white_stripes_2"
+            "|kaleidoscope"
+    )->addUpdateListener(&optionUpdateListener);
+    // - dropdown list control to enable the strobe effect
+    mpFxStrobe = module->addWidgetOption(
+            // name, value
+            Options::Light::FX_Strobe, "off",
+            // type
+            UI_WIDGETS_FIELD_TYPE_SELECT
+            // label
+            ":strobe_effect"
+            // options
+            ":off"
+            "|slow"
+            "|medium"
+            "|fast"
+    );
+    mpFxStrobe->addUpdateListener(&optionUpdateListener);
+}

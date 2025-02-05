@@ -27,6 +27,7 @@
 #define HOMEGENIE_MINI_TRANSCEIVERHANDLER_H
 
 #include <HomeGenie.h>
+#include <service/api/CommonApi.h>
 
 #include "../configuration.h"
 #include "../io/IRReceiver.h"
@@ -35,6 +36,7 @@
 namespace Service { namespace API {
 
     using namespace IO::IR;
+    using namespace Service::API::WidgetApi;
 
     class IRTransceiverHandler : public APIHandler, IRTransmitterListener {
     private:

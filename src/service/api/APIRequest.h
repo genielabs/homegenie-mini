@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -33,56 +33,12 @@
 #include <io/Logger.h>
 
 #include "Config.h"
+#include "CommonApi.h"
 
 #define APIREQUEST_LOG_PREFIX           "@Service::ApiRequest"
 
 
 namespace Service { namespace API {
-
-    namespace ControlApi {
-        // generic switch / light
-        static const char Control_On[] = {"Control.On"};
-        static const char Control_Off[] = {"Control.Off"};
-        static const char Control_Toggle[] = {"Control.Toggle"};
-        static const char Control_Level[] = {"Control.Level"};
-        static const char Control_ColorHsb[] = {"Control.ColorHsb"};
-        // shutters / door locks
-        static const char Control_Open[] = {"Control.Open"};
-        static const char Control_Close[] = {"Control.Close"};
-    }
-
-    namespace AutomationApi {
-        static const char Programs_Enable[] = {"Programs.Enable"};
-        static const char Programs_Disable[] = {"Programs.Disable"};
-        static const char Scheduling_Add[] = {"Scheduling.Add"};
-        static const char Scheduling_Update[] = {"Scheduling.Update"};
-        static const char Scheduling_Get[] = {"Scheduling.Get"};
-        static const char Scheduling_ModuleUpdate[] = {"Scheduling.ModuleUpdate"};
-        static const char Scheduling_ListOccurrences[] = {"Scheduling.ListOccurrences"};
-        static const char Scheduling_Enable[] = {"Scheduling.Enable"};
-        static const char Scheduling_Disable[] = {"Scheduling.Disable"};
-        static const char Scheduling_Delete[] = {"Scheduling.Delete"};
-        static const char Scheduling_List[] = {"Scheduling.List"};
-        static const char Scheduling_Templates[] = {"Scheduling.Templates"};
-    }
-
-    namespace ConfigApi {
-        static const char Modules_List[] = {"Modules.List"};
-        static const char Modules_Get[] = {"Modules.Get"};
-        static const char Modules_ParameterGet[] = {"Modules.ParameterGet"};
-        static const char Modules_ParameterSet[] = {"Modules.ParameterSet"};
-        static const char Modules_StatisticsGet[] = {"Modules.StatisticsGet"};
-        static const char Groups_List[] = {"Groups.List"};
-        static const char WebSocket_GetToken[] = {"WebSocket.GetToken"};
-        static const char System_Configure[] = {"System.Configure"};
-        namespace SystemApi {
-            static const char Location_Get[] = {"Location.Get"};
-            static const char Location_Set[] = {"Location.Set"};
-            static const char System_Info[] = {"System.Info"};
-            static const char System_DataSet[] = {"System.DataSet"};
-            static const char System_TimeSet[] = {"System.TimeSet"};
-        }
-    }
 
     class APIRequest {
     public:

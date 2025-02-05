@@ -166,6 +166,7 @@ namespace Net {
         }
 
         void broadcast(String *topic, String *payload) override {
+            if (!clientStarted) return;
             if (enableEncryption) {
                 int ci = topic->indexOf("/");
                 if (ci > 0) {

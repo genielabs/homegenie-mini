@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -31,6 +31,7 @@
 #define HOMEGENIE_MINI_RCSWITCHHANDLER_H
 
 #include <HomeGenie.h>
+#include <service/api/CommonApi.h>
 
 #include "../configuration.h"
 #include "../io/RFReceiver.h"
@@ -39,6 +40,7 @@
 namespace Service { namespace API {
 
     using namespace IO::RCS;
+    using namespace Service::API::WidgetApi;
 
     class RCSwitchHandler : public APIHandler {
     private:
@@ -46,9 +48,11 @@ namespace Service { namespace API {
         RFReceiver* receiver;
         RFTransmitter* transmitter;
         ModuleParameter* rawDataParameter{};
+
         unsigned long eventTimestamp = 0;
         String lastEvent;
         unsigned long lastEventTimestamp = 0;
+
         std::function<void(const char*)> ledBlinkHandler = nullptr;
 
     public:

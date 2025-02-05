@@ -104,11 +104,20 @@ void setup() {
         }
 #endif
 
-        // add custom properties to default module
-        controlModuleParameter = new ModuleParameter("RemoteControl.EndPoint", Config::getSetting("ctrl-mod"));
-        miniModule->properties.add(controlModuleParameter);
-        miniModule->setProperty("Widget.OptionField.RemoteControl.EndPoint",
-                                "module.text:any:switch,light,dimmer,color,shutter:any:uri"); // last option can be "uri" or "id"
+        // Add UI control to set the module associated
+        // to the light control activity example
+
+        miniModule->addWidgetOption(
+            // name, value
+            "RemoteControl.EndPoint", Config::getSetting("ctrl-mod").c_str(),
+                // type
+                UI_WIDGETS_FIELD_TYPE_MODULE_TEXT
+                // options
+                ":any"
+                ":switch,light,dimmer,color,shutter"
+                ":any"
+                ":uri"
+        );
 
         // Add activities to UI
 

@@ -160,6 +160,7 @@ public:
 
     static String getSetting(const char* key, const char* defaultValue = "") {
         String value = defaultValue;
+        // key length is limited to 15 chars.
         String k = String("$") + String(key);
         Preferences preferences;
         if (preferences.begin(CONFIG_SYSTEM_NAME, true)) {
@@ -185,6 +186,15 @@ public:
             }
         }
         return value;
+    }
+    static const char* getKey(const char* key, int i) {
+        String configKey = key;
+        if (i > 0) {
+            configKey = configKey + String("#") + String(i);
+        }
+        char* k = new char[configKey.length() + 1];
+        configKey.toCharArray(k, configKey.length() + 1);
+        return k;
     }
 
     static void statusLedOn();

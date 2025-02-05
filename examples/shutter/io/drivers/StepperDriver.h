@@ -1,6 +1,31 @@
-//
-// Created by gene on 08/01/24.
-//
+/*
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
+ *
+ *
+ * This file is part of HomeGenie-Mini (HGM).
+ *
+ *  HomeGenie-Mini is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HomeGenie-Mini is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with HomeGenie-Mini.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * Authors:
+ * - Generoso Martello <gene@homegenie.it>
+ *
+ *
+ * Releases:
+ * - 2024-01-08 Initial release
+ *
+ */
 
 #ifndef HOMEGENIE_MINI_STEPPERDRIVER_H
 #define HOMEGENIE_MINI_STEPPERDRIVER_H
@@ -11,6 +36,8 @@
 #include "../IShutterDriver.h"
 
 #define STEPPER_DRIVER_NS_PREFIX "IO::Components:ShutterControl::StepperDriver"
+
+// TODO: this is a work in progress/draft... hard coded stuff to be re-arranged
 
 // ULN2003 Motor Driver Pins
 #define IN1 19
@@ -26,8 +53,6 @@ namespace IO { namespace Components {
     };
     class StepperDriver: public Task, public IShutterDriver {
     private:
-        String domain = IO::IOEventDomains::Automation_Components;
-        String address = SERVO_MODULE_ADDRESS;
         const int stepsPerRevolution = 2048;  // change this to fit the number of steps per revolution
         int currentPosition = 0;
         int stepIncrement = 1;
@@ -36,8 +61,21 @@ namespace IO { namespace Components {
         unsigned long lastEventMs = 0;
         StepperDirection currentMotion = STEPPER_DIRECTION_NONE;
         Stepper* myStepper;
+
+        bool isCalibrating = false;
+
+        void sendLevel() {
+            float currentLevel = ((float)currentPosition / (float)maxPosition);
+            Logger::info("@%s [%s %.4f]", STEPPER_DRIVER_NS_PREFIX, IOEventPaths::Status_Level, currentLevel);
+            eventSender->sendEvent(IOEventPaths::Status_Level, &currentLevel, IOEventDataType::Float);
+        }
+
     public:
-        StepperDriver() {}
+        StepperDriver() {
+        }
+        ~StepperDriver() override {
+            delete myStepper;
+        }
         void init() override {
             //Logger::info("|  - %s (PIN=%d MIN=%d MAX=%d)", STEPPER_DRIVER_NS_PREFIX, servoPin, minUs, maxUs);
             myStepper = new Stepper(stepsPerRevolution, IN1, IN3, IN2, IN4);
@@ -71,11 +109,13 @@ namespace IO { namespace Components {
                 }
             }
         }
-        void stop() override {
-            currentMotion = STEPPER_DIRECTION_NONE;
-            seekToPosition = -1;
-            sendLevel();
+        void calibrate(bool enable) override {
+            isCalibrating = enable;
         }
+        void configure(const char* k, const char* v) override {
+            // TODO: ..............
+        }
+
         void open() override {
             if (currentMotion != STEPPER_DIRECTION_NONE) stop();
             else currentMotion = STEPPER_DIRECTION_CLOCKWISE;
@@ -92,10 +132,14 @@ namespace IO { namespace Components {
                 close();
             }
         }
-        void sendLevel() {
-            float currentLevel = ((float)currentPosition / (float)maxPosition);
-            Logger::info("@%s [%s %.4f]", SHUTTER_CONTROL_NS_PREFIX, IOEventPaths::Status_Level, currentLevel);
-            eventSender->sendEvent(domain.c_str(), address.c_str(), IOEventPaths::Status_Level, &currentLevel, IOEventDataType::Float);
+        void toggle() override {
+            // TODO: ..............
+        }
+
+        void stop() override {
+            currentMotion = STEPPER_DIRECTION_NONE;
+            seekToPosition = -1;
+            sendLevel();
         }
     };
 }}

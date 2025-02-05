@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -46,6 +46,8 @@ namespace Service { namespace API {
         GPIOPort* gpioPort;
         LinkedList<Module*> moduleList;
         Module* miniModule;
+        const char* updateSystemModule();
+        static void getSystemInfoJson(String& info);
     public:
         explicit HomeGenieHandler(GPIOPort* gpioPort);
         void init() override;

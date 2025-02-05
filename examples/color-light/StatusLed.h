@@ -26,7 +26,7 @@
 #ifndef HOMEGENIE_MINI_STATUSLED_H
 #define HOMEGENIE_MINI_STATUSLED_H
 
-
+#include <service/api/CommonApi.h>
 #include <service/api/devices/ColorLight.h>
 
 #include <Adafruit_NeoPixel.h>
@@ -35,6 +35,7 @@
 
 
 using namespace Service::API::devices;
+using namespace Service::API::WidgetApi;
 
 class StatusLed: Task {
 private:
@@ -86,9 +87,9 @@ public:
 #endif
         // Setup master LED control module
         colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, COLOR_LIGHT_ADDRESS, "Color Light");
-        colorLight->module->setProperty("Widget.Implements.Scheduling", "1");
-        colorLight->module->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
-        colorLight->module->setProperty("Widget.Preference.AudioLight", "true");
+        colorLight->module->setProperty(Implements::Scheduling, "true");
+        colorLight->module->setProperty(Implements::Scheduling_ModuleEvents, "true");
+        colorLight->module->setProperty(Preference::AudioLight, "true");
 
         colorLight->onSetColor([this](LightColor c) {
             if (statusLED != nullptr) {

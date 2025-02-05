@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -31,64 +31,149 @@
 
 namespace Service { namespace API {
 
-    ShutterHandler::ShutterHandler(ShutterControl* shutterControl) {
-        this->shutterControl = shutterControl;
+    ShutterHandler::ShutterHandler() {
 
-        auto domain = IO::IOEventDomains::Automation_Components;
-        // Shutter module
-        shutterModule = new Module();
-        shutterModule->domain = domain;
-        shutterModule->address = SERVO_MODULE_ADDRESS;
-        shutterModule->type = "Shutter";
-        shutterModule->name = "Shutter 1";
-        // add properties
-        shutterLevel = new ModuleParameter(IOEventPaths::Status_Level);
-        shutterModule->properties.add(shutterLevel);
-
-        shutterControl->setModule(shutterModule);
-
-        moduleList.add(shutterModule);
     }
 
     void ShutterHandler::init() {
 
-    }
+        for (int i = 1; i <= 8; i++) {
 
+            auto controlPin = Config::getSetting(K(ControlPin, i), "-1").toInt();
+            if (controlPin < 0) continue;
+
+            auto shutterControl = new ShutterControl(i);
+            auto shutterModule = addModule(i);
+
+            // TODO: maybe this cross referencing can be avoided
+            //       incorporating module into shutterControl
+            shutterControl->setModule(shutterModule);
+            shutterModule->shutterControl = shutterControl;
+
+            HomeGenie::getInstance()->addIOHandler(shutterControl);
+
+            auto optionUpdateListener = new ParameterListener(shutterControl);
+
+            shutterModule->addWidgetOption(
+                    // name, value
+                    Options::Shutter_Motor, "0", // "0" = "Servo", "1" = "ServoEncoder"
+                    // field type
+                    UI_WIDGETS_FIELD_TYPE_SELECT_FILTER
+                    // label
+                    ":motor_type"
+                    // options
+                    ":motor_servo=Servo"
+                    "|motor_servo_encoder=ServoEncoder"
+// TODO: stepper driver not yet completed (wip)
+//                "|motor_stepper=Stepper"
+            )->withConfigKey(K(MotorType, i))->addUpdateListener(optionUpdateListener);
+
+            // Servo options
+
+            shutterModule->addWidgetOption(
+                    // name, value
+                    Options::Shutter_Motor_Servo_AngleSpeed, "5",
+                    // field type
+                    UI_WIDGETS_FIELD_TYPE_NUMBER
+                    // label
+                    ":speed"
+                    // min:max:default
+                    ":1:10:5"
+            )->withConfigKey(K(AngleSpeed, i))->addUpdateListener(optionUpdateListener);
+
+            shutterModule->addWidgetOption(
+                    // name, value
+                    Options::Shutter_Motor_Servo_AngleMin, "0",
+                    // field type
+                    UI_WIDGETS_FIELD_TYPE_NUMBER
+                    // label
+                    ":angle_min_value"
+                    // min:max:default
+                    ":0:180:0"
+            )->withConfigKey(K(AngleMin, i))->addUpdateListener(optionUpdateListener);
+
+            shutterModule->addWidgetOption(
+                    // name, value
+                    Options::Shutter_Motor_Servo_AngleMax, "180",
+                    // field type
+                    UI_WIDGETS_FIELD_TYPE_NUMBER
+                    // label
+                    ":angle_max_value"
+                    // min:max:default
+                    ":0:180:180"
+            )->withConfigKey(K(AngleMax, i))->addUpdateListener(optionUpdateListener);
+
+
+            // ServoEncoder options
+            shutterModule->addWidgetOption(
+                    // name, value
+                    Options::Shutter_Motor_ServoEncoder_Speed, "5",
+                    // field type
+                    UI_WIDGETS_FIELD_TYPE_NUMBER
+                    // label
+                    ":speed"
+                    // min:max:default
+                    ":1:10:5"
+            )->withConfigKey(K(MotorSpeed, i))->addUpdateListener(optionUpdateListener);
+
+            shutterModule->addWidgetOption(
+                    // name, value
+                    Options::Shutter_Motor_ServoEncoder_Steps, "15",
+                    // field type
+                    UI_WIDGETS_FIELD_TYPE_NUMBER
+                    // label
+                    ":motor_steps"
+                    // min:max:default
+                    ":1:100:15"
+            )->withConfigKey(K(MotorSteps, i))->addUpdateListener(optionUpdateListener);
+
+            shutterModule->addWidgetOption(
+                    // name, value (shown as button text)
+                    Options::Shutter_Motor_ServoEncoder_Calibrate, Calibration::StartLabel,
+                    // field type
+                    UI_WIDGETS_FIELD_TYPE_BUTTON
+                    // label
+                    ":calibration"
+                    // API command to call on click
+                    ":Shutter.Calibrate"
+            )->addUpdateListener(optionUpdateListener);
+
+        }
+
+    }
 
     bool ShutterHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
 
-        if (command->Domain == (IOEventDomains::Automation_Components)
-            && command->Address == SERVO_MODULE_ADDRESS) {
+        auto module = (ShutterModule*)getModule(command->Domain.c_str(), command->Address.c_str());
 
-            if (command->Command == "Control.Level") {
+        if (module != nullptr) {
+            auto shutterControl = module->shutterControl;
+
+            if (command->Command == ControlApi::Control_Level) {
 
                 float level = command->OptionsString.toFloat();
-
                 shutterControl->setLevel(level);
-
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
-            } else if (command->Command == "Control.Close" || command->Command == "Control.Off") {
+            } else if (command->Command == ControlApi::Control_Toggle) {
+
+                shutterControl->toggle();
+                responseCallback->writeAll(ApiHandlerResponseStatus::OK);
+
+            } else if (command->Command == ControlApi::Control_Close || command->Command == ControlApi::Control_Off) {
 
                 shutterControl->close();
-
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
-            } else if (command->Command == "Control.Open" || command->Command == "Control.On") {
+            } else if (command->Command == ControlApi::Control_Open || command->Command == ControlApi::Control_On) {
 
                 shutterControl->open();
-
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
-            } else if (command->Command == "Shutter.Speed") {
+            } else if (command->Command == ShutterApi::Shutter_Calibrate) {
 
-                shutterControl->setSpeed(command->OptionsString.toFloat());
-
+                shutterControl->calibrate();
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
-
-            } else if (command->Command == "Shutter.Calibrate") {
-
-                // TODO: ...
 
             } else {
 
@@ -137,14 +222,39 @@ namespace Service { namespace API {
 
     Module* ShutterHandler::getModule(const char* domain, const char* address) {
         for (int i = 0; i < moduleList.size(); i++) {
-            Module* module = moduleList.get(i);
+            auto module = moduleList.get(i);
             if (module->domain.equals(domain) && module->address.equals(address))
                 return module;
         }
         return nullptr;
     }
     LinkedList<Module*>* ShutterHandler::getModuleList() {
-        return &moduleList;
+        return reinterpret_cast<LinkedList<Data::Module *> *>(&moduleList);
+    }
+
+    ShutterModule* ShutterHandler::addModule(int index) {
+
+        // Shutter module
+        auto shutterModule = new ShutterModule();
+        shutterModule->domain = IO::IOEventDomains::Automation_Components;
+        shutterModule->address = String("S") + String(index);
+        shutterModule->type = "Shutter";
+        shutterModule->name = String("Motor ") + String(index);
+
+        // Explicitly enable "scheduling" features for this module
+        shutterModule->setProperty(WidgetApi::Implements::Scheduling, "true");
+
+        // Set widget prefs
+        // (if you want your motors be able to dance with music, uncomment the next line :)
+        //shutterModule->setProperty(WidgetApi::Preference::AudioLight, "true");
+
+        // Add level property
+        auto shutterLevel = new ModuleParameter(IOEventPaths::Status_Level);
+        shutterModule->properties.add(shutterLevel);
+
+        moduleList.add(shutterModule);
+
+        return shutterModule;
     }
 
 }}

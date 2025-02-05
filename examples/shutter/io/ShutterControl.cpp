@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -31,8 +31,15 @@
 
 namespace IO { namespace Components {
 
+    ShutterControl::ShutterControl(int i) {
+        idx = i;
+    }
+
     void ShutterControl::begin() {
-        shutterDriver->init();
+        // read current config
+        auto type = K(MotorType, idx);
+        auto cfgMotorType = Config::getSetting(type, "Servo");
+        configure(type, cfgMotorType.c_str());
     }
 
     void ShutterControl::open() {
@@ -44,12 +51,41 @@ namespace IO { namespace Components {
     void ShutterControl::setLevel(float level) {
         shutterDriver->level(level);
     }
-    void ShutterControl::setSpeed(float s) {
-        shutterDriver->speed(s);
+    void ShutterControl::toggle() {
+        shutterDriver->toggle();
+    }
+
+    void ShutterControl::configure(const char* k, const char* v) {
+        auto key = String(k);
+        if (key.equals(K(MotorType, idx))) {
+            setType(v);
+        } else {
+            shutterDriver->configure(k, v);
+        }
+    }
+
+    void ShutterControl::setType(const char* t) {
+        String type = t;
+        delete shutterDriver;
+        shutterDriver = nullptr;
+        auto controlPin = Config::getSetting(K(ControlPin, idx), "-1").toInt();
+        if (controlPin < 0) return;
+        if (type == MotorTypeValues::Stepper) {
+// TODO: read pins config
+            shutterDriver = new StepperDriver(/* controlPin, ..., index */);
+        } else if (type == MotorTypeValues::ServoEncoder) {
+            auto encoderPin = Config::getSetting(K(EncoderPin, idx), "-1").toInt();
+            shutterDriver = new ServoEncoderDriver(controlPin, encoderPin, idx);
+        } else {
+            shutterDriver = new ServoDriver(controlPin, idx);
+        }
+        shutterDriver->eventSender = this;
+        shutterDriver->init();
     }
 
     void ShutterControl::calibrate() {
-        // TODO: ...
+        calibrateMode = !calibrateMode;
+        shutterDriver->calibrate(calibrateMode);
     }
 
 }}

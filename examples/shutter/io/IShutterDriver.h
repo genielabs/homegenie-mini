@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -31,25 +31,29 @@
 #define HOMEGENIE_MINI_ISHUTTERDRIVER_H
 
 #define SHUTTER_CONTROL_NS_PREFIX "IO::Components:ShutterControl"
-#define SERVO_MODULE_ADDRESS "S1"
 
 #define SHUTTER_COMMAND_NONE 0
 #define SHUTTER_COMMAND_OPEN 1
 #define SHUTTER_COMMAND_CLOSE 2
 
-#define EVENT_EMIT_FREQUENCY 500
+#define EVENT_EMIT_FREQUENCY 250
 
 namespace IO { namespace Components {
     class IShutterDriver {
     public:
         virtual void init() = 0;
-        virtual void stop() = 0;
+
         virtual void open() = 0;
         virtual void close() = 0;
         virtual void level(float) = 0;
-        virtual void calibrate() = 0;
-        virtual void speed(float) = 0;
+        virtual void toggle() = 0;
+        virtual void stop() = 0;
+
+        virtual void calibrate(bool) = 0;
+        virtual void configure(const char*, const char*) = 0;
+
         IIOEventSender* eventSender = nullptr;
+        virtual ~IShutterDriver() = default;
     };
 }}
 

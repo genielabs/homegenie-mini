@@ -1,12 +1,38 @@
-//
-// Created by gene on 21/06/24.
-//
+/*
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
+ *
+ *
+ * This file is part of HomeGenie-Mini (HGM).
+ *
+ *  HomeGenie-Mini is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  HomeGenie-Mini is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with HomeGenie-Mini.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * Authors:
+ * - Generoso Martello <gene@homegenie.it>
+ *
+ *
+ * Releases:
+ * - 2024-06-21 Initial release
+ *
+ */
 
 #ifndef HOMEGENIE_MINI_COMMONSENSORS_H
 #define HOMEGENIE_MINI_COMMONSENSORS_H
 
 #include "../color-light/StatusLed.h"
 
+#include "api/SensorApi.h"
 #include "io/sensors/DS18B20.h"
 #include "io/sensors/MotionSensor.h"
 #include "io/sensors/DHTxx.h"
@@ -14,6 +40,9 @@
 #include "io/sensors/TCS34725.h"
 
 using namespace IO::Sensors;
+
+using namespace ModuleApi;
+using namespace SensorApi::Configuration;
 
 #ifndef DISABLE_AUTOMATION
 void setupMotionSensorSchedules(Module* sensorModule) {
@@ -26,10 +55,10 @@ void setupMotionSensorSchedules(Module* sensorModule) {
         // UI state data
         s->data = R"({"action":{"template":{"forEach":{"config":{},"enabled":true,"id":"command_turn_on"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[{"condition":">","module":"HomeAutomation.HomeGenie/mini","property":"Sensor.MotionDetect","value":"0"},{"condition":"<","module":"HomeAutomation.HomeGenie/mini","property":"Sensor.Luminance","value":"70"}],"from":"","itemType":1,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})";
         // Device types allowed
-        s->boundDevices.add(new String("Switch"));
-        s->boundDevices.add(new String("Light"));
-        s->boundDevices.add(new String("Dimmer"));
-        s->boundDevices.add(new String("Color"));
+        s->boundDevices.add(new String(ModuleType::Switch));
+        s->boundDevices.add(new String(ModuleType::Light));
+        s->boundDevices.add(new String(ModuleType::Dimmer));
+        s->boundDevices.add(new String(ModuleType::Color));
         Scheduler::addSchedule(s);
     }
 
@@ -41,10 +70,10 @@ void setupMotionSensorSchedules(Module* sensorModule) {
         // UI state data
         s->data = R"({"action":{"template":{"forEach":{"config":{},"enabled":true,"id":"command_turn_off"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[{"condition":">=","module":"HomeAutomation.HomeGenie/mini","property":"Status.IdleTime","value":"5"},{"condition":">","module":"HomeAutomation.HomeGenie/mini","property":"Sensor.Luminance","value":"50"}],"from":"","itemType":1,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})";
         // Device types allowed
-        s->boundDevices.add(new String("Switch"));
-        s->boundDevices.add(new String("Light"));
-        s->boundDevices.add(new String("Dimmer"));
-        s->boundDevices.add(new String("Color"));
+        s->boundDevices.add(new String(ModuleType::Switch));
+        s->boundDevices.add(new String(ModuleType::Light));
+        s->boundDevices.add(new String(ModuleType::Dimmer));
+        s->boundDevices.add(new String(ModuleType::Color));
         Scheduler::addSchedule(s);
     }
 
@@ -56,10 +85,10 @@ void setupMotionSensorSchedules(Module* sensorModule) {
         // UI state data
         s->data = R"({"action":{"template":{"forEach":{"config":{},"enabled":true,"id":"command_toggle"},"forEnd":{"config":{},"enabled":false,"id":null},"forStart":{"config":{},"enabled":false,"id":null}},"type":"template"},"event":[{"condition":">=","module":"HomeAutomation.HomeGenie/mini","property":"Sensor.MotionDetect","value":"0"}],"from":"","itemType":1,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})";
         // Device types allowed
-        s->boundDevices.add(new String("Switch"));
-        s->boundDevices.add(new String("Light"));
-        s->boundDevices.add(new String("Dimmer"));
-        s->boundDevices.add(new String("Color"));
+        s->boundDevices.add(new String(ModuleType::Switch));
+        s->boundDevices.add(new String(ModuleType::Light));
+        s->boundDevices.add(new String(ModuleType::Dimmer));
+        s->boundDevices.add(new String(ModuleType::Color));
         // Custom status led (builtin NeoPixel RGB LED)
         auto pin = Config::getSetting("stld-pin");
         int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
@@ -69,11 +98,13 @@ void setupMotionSensorSchedules(Module* sensorModule) {
         Scheduler::addSchedule(s);
     }
 
-    if (true || Scheduler::getScheduleList().size() == 0) {
+    /*
+    if (...) {
 
-        // TODO: if added at least one schedule then  ->  Scheduler::save();
+        // TODO: if added at least one schedule then  ->  Scheduler::save();  (?)
 
     }
+    */
 
 }
 #endif
@@ -81,28 +112,41 @@ void setupMotionSensorSchedules(Module* sensorModule) {
 void includeCommonSensors(HomeGenie* homeGenie, Module* sensorModule) {
 
     // Light sensor
-    if (Config::getSetting("ligh-typ").equals("ldr")) {
-        auto lightSensor = new LightSensor(Config::getSetting("ligh-pin").toInt());
+    if (Config::getSetting(Light_Sensor::SensorType).equals("ldr")) {
+        auto lightSensor = new LightSensor(Config::getSetting(Light_Sensor::SensorPin).toInt());
         lightSensor->setModule(sensorModule);
         homeGenie->addIOHandler(lightSensor);
     }
 
     // Color sensor TCS-3472x
-    if (Config::getSetting("colr-typ").equals("tcs3472")) {
+    if (Config::getSetting(Color_Sensor::SensorType).equals("tcs3472")) {
         //TCS34725 colorSensor;
-        auto sdaPin = Config::getSetting("colr-sda").toInt();
-        auto sclPin = Config::getSetting("colr-scl").toInt();
+        auto sdaPin = Config::getSetting(Color_Sensor::SDA).toInt();
+        auto sclPin = Config::getSetting(Color_Sensor::SCL).toInt();
         auto colorSensor = new TCS34725(sdaPin, sclPin);
         colorSensor->setModule(sensorModule);
         homeGenie->addIOHandler(colorSensor);
     }
 
     // Motion sensor
-    if (Config::getSetting("motn-typ").equals("switch")) {
-        uint8_t motionSensorPin = Config::getSetting("motn-pin").toInt();
+    if (Config::getSetting(Motion_Sensor::SensorType).equals("switch")) {
+        uint8_t motionSensorPin = Config::getSetting(Motion_Sensor::SensorPin).toInt();
         auto motionSensor = new MotionSensor(motionSensorPin);
         motionSensor->setModule(sensorModule);
         homeGenie->addIOHandler(motionSensor);
+        // Add temperature "adjust" UI option:
+        // temp. reading offset can be adjusted from -9 to +9
+        auto temperatureAdjust = Config::getSetting(DHT_Sensor::TemperatureAdjust, "0");
+        homeGenie->getDefaultModule()->addWidgetOption(
+            // name, value
+            "Temperature.Adjust", temperatureAdjust.c_str(),
+                // type
+                UI_WIDGETS_FIELD_TYPE_NUMBER
+                // label
+                ":temperature_adjust"
+                // min:max:default
+                ":-9:9:0"
+        )->withConfigKey(DHT_Sensor::TemperatureAdjust);
 #ifndef DISABLE_AUTOMATION
         // Add example schedules/scenes for motion sensor
         setupMotionSensorSchedules(sensorModule);
@@ -110,20 +154,20 @@ void includeCommonSensors(HomeGenie* homeGenie, Module* sensorModule) {
     }
 
     // Temperature sensor
-    if (Config::getSetting("soth-typ").equals("ds18b20")) {
-        auto temperatureSensor = new DS18B20(Config::getSetting("soth-pin").toInt());
+    if (Config::getSetting(DSB18_Sensor::SensorType).equals("ds18b20")) {
+        auto temperatureSensor = new DS18B20(Config::getSetting(DSB18_Sensor::SensorPin).toInt());
         temperatureSensor->setModule(sensorModule);
         homeGenie->addIOHandler(temperatureSensor);
     }
 
     // DHT-xx Temperature and humidity sensor
-    uint8_t dhtSensorPint = Config::getSetting("sdht-pin").toInt();
-    if (Config::getSetting("sdht-typ").equals("22")) {
-        auto dhtSensor = new DHTxx(22, dhtSensorPint);
+    uint8_t dhtSensorPin = Config::getSetting(DHT_Sensor::SensorPin).toInt();
+    if (Config::getSetting(DHT_Sensor::SensorType).equals("22")) {
+        auto dhtSensor = new DHTxx(22, dhtSensorPin);
         dhtSensor->setModule(sensorModule);
         homeGenie->addIOHandler((IIOEventSender*)dhtSensor);
-    } else if (Config::getSetting("sdht-typ").equals("11")) {
-        auto dhtSensor = new DHTxx(11, dhtSensorPint);
+    } else if (Config::getSetting(DHT_Sensor::SensorType).equals("11")) {
+        auto dhtSensor = new DHTxx(11, dhtSensorPin);
         dhtSensor->setModule(sensorModule);
         homeGenie->addIOHandler((IIOEventSender*)dhtSensor);
     }

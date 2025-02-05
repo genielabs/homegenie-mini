@@ -41,12 +41,12 @@ namespace Service { namespace API {
         auto irModule = new Module();
         irModule->domain = IO::IOEventDomains::HomeAutomation_RemoteControl;
         irModule->address = CONFIG_IR_MODULE_ADDRESS;
-        irModule->type = "Sensor";
+        irModule->type = ModuleApi::ModuleType::Sensor;
         irModule->name = CONFIG_IR_MODULE_ADDRESS; //TODO: CONFIG_IR_MODULE_NAME;
 
         // explicitly enable "scheduling" features for this module
-        irModule->setProperty("Widget.Implements.Scheduling", "1");
-        irModule->setProperty("Widget.Implements.Scheduling.ModuleEvents", "1");
+        irModule->setProperty(Implements::Scheduling, "true");
+        irModule->setProperty(Implements::Scheduling_ModuleEvents, "true");
 
         // add properties
         rawDataParameter = new ModuleParameter(IOEventPaths::Receiver_RawData);
