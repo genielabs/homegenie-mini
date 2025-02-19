@@ -43,7 +43,7 @@ namespace Net {
     using namespace MQTT;
     using namespace IO;
 
-    typedef std::function<void(uint8_t num, const char* domain, const char* address, const char* command)> ApiRequestEvent;
+    typedef std::function<void(uint8_t num, const char* domain, const char* address, const char* command, const char* options, const char* data)> ApiRequestEvent;
 
     /// Simple MQTT Broker implementation over WebSockets
     class MQTTServer : MQTTChannel, Task {

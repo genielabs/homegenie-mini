@@ -28,7 +28,7 @@
 
 #include "defs.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 #include <LovyanGFX.hpp>
 #include <LinkedList.h>
@@ -240,6 +240,6 @@ namespace UI {
 
 }
 
-#endif // DISABLE_UI
+#endif // ENABLE_UI
 
 #endif //HOMEGENIE_MINI_ACTIVITY_H

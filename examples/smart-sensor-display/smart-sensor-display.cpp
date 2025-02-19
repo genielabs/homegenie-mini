@@ -59,6 +59,20 @@ ModuleParameter* controlModuleParameter = nullptr;
 
 SwitchControlActivity* switchControl;
 
+
+// UI options update listener
+static class : public ModuleParameter::UpdateListener {
+public:
+    void onUpdate(ModuleParameter* option) override {
+        Serial.println(option->value);
+        controlModuleUrl = option->value;
+        switchControl->setModuleUrl(controlModuleUrl);
+        Config::saveSetting("ctrl-mod", controlModuleUrl);
+        IO::Logger::info("Control module set to: %s", controlModuleUrl.c_str());
+    }
+} optionUpdateListener;
+
+
 Dashboard* dashboard;
 
 void setup() {
@@ -69,6 +83,8 @@ void setup() {
 
     homeGenie = HomeGenie::getInstance();
     miniModule = homeGenie->getDefaultModule();
+    miniModule->setProperty(Implements::Scheduling, "true");
+    miniModule->setProperty(Implements::Scheduling_ModuleEvents, "true");
 
     /*
     // Init accel./gyro chip
@@ -109,7 +125,7 @@ void setup() {
 
         miniModule->addWidgetOption(
             // name, value
-            "RemoteControl.EndPoint", Config::getSetting("ctrl-mod").c_str(),
+            "RemoteControl.EndPoint", "",
                 // type
                 UI_WIDGETS_FIELD_TYPE_MODULE_TEXT
                 // options
@@ -117,7 +133,7 @@ void setup() {
                 ":switch,light,dimmer,color,shutter"
                 ":any"
                 ":uri"
-        );
+        )->withConfigKey("ctrl-mod")->addUpdateListener(&optionUpdateListener);
 
         // Add activities to UI
 

@@ -25,7 +25,7 @@
 
 #include "GaugeExampleActivity.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 namespace UI { namespace Activities { namespace Examples {
 
@@ -146,4 +146,4 @@ namespace UI { namespace Activities { namespace Examples {
 
 }}}
 
-#endif // DISABLE_UI
+#endif // ENABLE_UI

@@ -73,7 +73,6 @@
 #ifdef ESP8266
     #undef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
     #define DISABLE_MQTT_CLIENT
-    #define DISABLE_UI
     #define DISABLE_BLUETOOTH
     #define WebServer ESP8266WebServer
 #endif

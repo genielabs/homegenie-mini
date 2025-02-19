@@ -25,7 +25,7 @@
 
 #include "Dashboard.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 #include "GestureHelper.h"
 #include "AnimationHelper.h"
@@ -198,4 +198,4 @@ Activity* Dashboard::getPreviousActivity() {
     return activityList.get(prevActivityIndex);
 }
 
-#endif // DISABLE_UI
+#endif // ENABLE_UI

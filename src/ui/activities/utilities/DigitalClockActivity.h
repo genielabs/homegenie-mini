@@ -28,7 +28,7 @@
 
 #include "ui/Activity.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 #include "ui/bitmaps/HomeGenieLogo.h"
 
@@ -77,6 +77,6 @@ namespace UI { namespace Activities { namespace Utilities {
 
 }}}
 
-#endif //DISABLE_UI
+#endif //ENABLE_UI
 
 #endif //HOMEGENIE_MINI_DIGITALCLOCK_H

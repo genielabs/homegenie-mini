@@ -25,7 +25,7 @@
 
 #include "AnalogClockActivity.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 namespace UI { namespace Activities { namespace Utilities {
 
@@ -140,4 +140,4 @@ namespace UI { namespace Activities { namespace Utilities {
 
 }}}
 
-#endif //DISABLE_UI
+#endif //ENABLE_UI

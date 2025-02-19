@@ -28,7 +28,7 @@
 
 #include "defs.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 #include <LovyanGFX.hpp>
 #include <LinkedList.h>
@@ -94,6 +94,6 @@ private:
     TouchDirection swipeDirection;
 };
 
-#endif // DISABLE_UI
+#endif // ENABLE_UI
 
 #endif //HOMEGENIE_MINI_DASHBOARD_H

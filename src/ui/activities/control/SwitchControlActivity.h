@@ -28,7 +28,7 @@
 
 #include "defs.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 #include <HTTPClient.h>
 
@@ -233,6 +233,6 @@ namespace UI { namespace Activities { namespace Control {
 
 }}}
 
-#endif // DISABLE_UI
+#endif // ENABLE_UI
 
 #endif //HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H

@@ -25,7 +25,7 @@
 
 #include "SwitchControlActivity.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 namespace UI { namespace Activities { namespace Control {
 
@@ -98,4 +98,4 @@ namespace UI { namespace Activities { namespace Control {
 
 }}}
 
-#endif // DISABLE_UI
+#endif // ENABLE_UI

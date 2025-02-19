@@ -21,7 +21,7 @@ Contributors:
 
 #include "Touch_CST816S_fix.hpp"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 namespace UI { namespace Drivers { namespace Input {
 
@@ -171,4 +171,4 @@ namespace UI { namespace Drivers { namespace Input {
 
 }}}
 
-#endif //DISABLE_UI
+#endif //ENABLE_UI

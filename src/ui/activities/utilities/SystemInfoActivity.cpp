@@ -4,7 +4,7 @@
 
 #include "SystemInfoActivity.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 namespace UI { namespace Activities { namespace Utilities {
 
@@ -150,4 +150,4 @@ namespace UI { namespace Activities { namespace Utilities {
 
 }}}
 
-#endif
+#endif // ENABLE_UI

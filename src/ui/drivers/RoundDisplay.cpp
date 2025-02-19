@@ -25,7 +25,7 @@
 
 #include "RoundDisplay.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 namespace UI { namespace Drivers {
 
@@ -145,4 +145,4 @@ namespace UI { namespace Drivers {
 
 }}
 
-#endif // DISABLE_UI
+#endif // ENABLE_UI

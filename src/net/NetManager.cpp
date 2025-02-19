@@ -120,17 +120,36 @@ namespace Net {
 
 #ifndef DISABLE_MQTT_BROKER
         mqttServer = new MQTTServer();
-        mqttServer->onRequest([this](uint8_t num, const char* domain, const char* address, const char* command) {
-
+        mqttServer->onRequest([this](uint8_t num, const char* domain, const char* address, const char* command, const char* options, const char* data) {
             auto c = String(command);
             if (c == "Module.Describe") {
-                String topic = Config::system.id + "/" + domain + "/" + address + "/description";
-                String apiCommand = "/api/" + String(IOEventDomains::HomeAutomation_HomeGenie) + "/Config/Modules.Get/" + domain + "/" + address;
+                String topic = Config::system.id;
+                topic.concat("/");
+                topic.concat(domain);
+                topic.concat("/");
+                topic.concat(address);
+                topic.concat("/description");
+                String apiCommand = "/api/";
+                apiCommand.concat(IOEventDomains::HomeAutomation_HomeGenie);
+                apiCommand.concat("/Config/Modules.Get/");
+                apiCommand.concat(domain);
+                apiCommand.concat("/");
+                apiCommand.concat(address);
                 auto cb = MQTTResponseCallback((MQTTChannel*)mqttServer, &topic);
                 netRequestHandler->onNetRequest(mqttServer, apiCommand.c_str(), &cb);
             } else {
-                String apiCommand = "/api/" + String(domain) + "/" + String(address) + "/" + c;
-                auto cb = MQTTResponseCallback((MQTTChannel*)mqttServer, nullptr);
+                String apiCommand = String("/api/");
+                apiCommand.concat(domain);
+                apiCommand.concat("/");
+                apiCommand.concat(address);
+                apiCommand.concat("/");
+                apiCommand.concat(command);
+                apiCommand.concat("/");
+                apiCommand.concat(options);
+                apiCommand.concat("/plain/");
+                apiCommand.concat(data);
+                String t = "/void";
+                auto cb = MQTTResponseCallback((MQTTChannel*)mqttServer, &t);
                 netRequestHandler->onNetRequest(mqttServer, apiCommand.c_str(), &cb);
             }
 

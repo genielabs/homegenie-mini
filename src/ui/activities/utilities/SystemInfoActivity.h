@@ -7,7 +7,7 @@
 
 #include "HomeGenie.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 #include "ui/Activity.h"
 #include "ui/components/RoundButton.h"
@@ -106,6 +106,6 @@ namespace UI  { namespace Activities { namespace Utilities {
 
 }}}
 
-#endif //DISABLE_UI
+#endif //ENABLE_UI
 
 #endif //HOMEGENIE_MINI_SYSTEMINFOACTIVITY_H

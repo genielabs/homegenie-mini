@@ -93,7 +93,9 @@ namespace Net {
                         auto domain = String((const char*)doc["Domain"]);
                         auto address = String((const char*)doc["Address"]);
                         auto command = String((const char*)doc["Command"]);
-                        apiCallback(num, domain.c_str(), address.c_str(), command.c_str());
+                        auto options = String((const char*)doc["OptionsString"]);
+                        auto data = String((const char*)doc["Data"]);
+                        apiCallback(num, domain.c_str(), address.c_str(), command.c_str(), options.c_str(), data.c_str());
                     }
                     doc.clear();
 

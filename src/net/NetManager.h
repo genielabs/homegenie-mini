@@ -92,23 +92,39 @@ namespace Net {
             topic = destinationTopic;
         }
         void beginGetLength() override {
+            contentLength = 0;
             buffer = "";
+            disableOutput = true;
         };
         void endGetLength() override {
-            mqtt->broadcast(topic, &buffer);
+            buffer = "";
+            disableOutput = false;
         };
         void write(const char* s) override {
-            buffer += s;
+            buffer.concat(s);
+            if (contentLength > 0 && contentLength == buffer.length() && !disableOutput) {
+                auto t = String(topic->c_str());
+                auto o = String(buffer);
+                mqtt->broadcast(&t, &o);
+                buffer = "";
+            } else {
+                contentLength += strlen(s);
+            }
         };
         void writeAll(const char* s) override {
+            contentLength += strlen(s);
             buffer = s;
-            mqtt->broadcast(topic, &buffer);
+            if (!disableOutput) {
+                mqtt->broadcast(topic, &buffer);
+                contentLength = 0;
+            }
         };
         void error(const char* s) override {};
     private:
         MQTTChannel* mqtt;
         String* topic;
         String buffer;
+        bool disableOutput = false;
     };
 #endif
 
@@ -170,16 +186,6 @@ namespace Net {
 
     // WebServerResponseCallback
     class WebServerResponseCallback : public ResponseCallback {
-    private:
-        WebServer* server;
-        bool disableOutput = false;
-        void sendHeaders() {
-            server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-            server->sendHeader("Pragma", "no-cache");
-            server->sendHeader("Expires", "0");
-            server->setContentLength(contentLength);
-            server->send(200, "application/json; charset=utf-8", "");
-        }
     public:
         WebServerResponseCallback(WebServer* server) {
             this->server = server;
@@ -207,6 +213,16 @@ namespace Net {
         }
         void error(const char* s) override {
             server->send(400, "application/json", s);
+        }
+    private:
+        WebServer* server;
+        bool disableOutput = false;
+        void sendHeaders() {
+            server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            server->sendHeader("Pragma", "no-cache");
+            server->sendHeader("Expires", "0");
+            server->setContentLength(contentLength);
+            server->send(200, "application/json; charset=utf-8", "");
         }
     };
 

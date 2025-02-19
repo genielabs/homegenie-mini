@@ -37,6 +37,8 @@
 
 #include <io/Logger.h>
 
+#include <utility>
+
 #define MQTT_VERSION_3_1_1              4
 
 #define MQTTBROKER_NS_PREFIX           "Net::MQTT::MQTTBrokerMini"
@@ -108,11 +110,11 @@ namespace Net { namespace MQTT {
         public:
             MQTTBrokerMini(WebSocketsServer *webSocket);
 
-            void begin(void);
+            void begin();
 
             void setCallback(callback_t cb);
 
-            void unsetCallback(void);
+            void unsetCallback();
 
             void parsing(uint8_t num, uint8_t *payload, uint16_t length);
 
@@ -120,7 +122,7 @@ namespace Net { namespace MQTT {
 
             void broadcast(uint8_t num, String topic_name, uint8_t *payload, uint16_t length_payload);
             void broadcast(String topic_name, uint8_t *payload, uint16_t length_payload) {
-                broadcast(MQTTBROKER_LOCAL_CLIENT_ID, topic_name, payload, length_payload);
+                broadcast(MQTTBROKER_LOCAL_CLIENT_ID, std::move(topic_name), payload, length_payload);
             };
 
             void disconnect(uint8_t num);
@@ -135,12 +137,12 @@ namespace Net { namespace MQTT {
             WebSocketsServer *WS;
             callback_t callback;
 
-            void runCallback(uint8_t num, Events_t event, uint8_t *topic_name = NULL, uint16_t length_topic_name = 0,
-                             uint8_t *payload = NULL, uint16_t length_payload = 0);
+            void runCallback(uint8_t num, Events_t event, uint8_t *topic_name = nullptr, uint16_t length_topic_name = 0,
+                             uint8_t *payload = nullptr, uint16_t length_payload = 0);
 
             void sendAnswer(uint8_t num, uint8_t fixed_header_comm, uint8_t fixed_header_lsb = 0,
-                            uint8_t fixed_header_remaining_length = 0, uint8_t *variable_header = NULL,
-                            uint8_t variable_header_length = 0, uint8_t *payload = NULL, uint16_t payload_length = 0);
+                            uint8_t fixed_header_remaining_length = 0, uint8_t *variable_header = nullptr,
+                            uint8_t variable_header_length = 0, uint8_t *payload = nullptr, uint16_t payload_length = 0);
 
             void sendMessage(uint8_t num, uint8_t *topic_name, uint16_t length_topic_name, uint8_t *payload,
                              uint16_t length_payload);

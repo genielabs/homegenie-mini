@@ -53,6 +53,7 @@ namespace Data {
             this->address = address;
             this->name = name;
             this->description = description;
+            this->type = "Program";
         }
         bool isEnabled = false;
     };

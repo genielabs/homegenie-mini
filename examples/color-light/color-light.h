@@ -220,7 +220,7 @@ void setupControlButtons(Module* miniModule) {
     }
     auto btn2_pin = Config::getSetting("btn2-pin", "-1").toInt();
     if (btn2_pin >= 0) {
-        auto button2 = new Button(IO::IOEventDomains::HomeAutomation_HomeGenie, "B1", "Button 1", btn2_pin);
+        auto button2 = new Button(IO::IOEventDomains::HomeAutomation_HomeGenie, "B2", "Button 2", btn2_pin);
         button2->onSetStatus([](Service::API::devices::ButtonStatus status) {
             if (status == BUTTON_STATUS_PRESSED) {
                 if (button1Pressed && (buttonCommand == BUTTON_COMMAND_NONE || buttonCommand == BUTTON_COMMAND_PRESET_COLORS)) {

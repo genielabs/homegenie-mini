@@ -75,9 +75,9 @@ namespace Net { namespace MQTT {
 
                 variable_header[0] = 0x01 & SESSION_PRESENT_ZERO; //Anyway create a new Session
 
-                DEBUG_MQTTBROKER(":%s [%d] >> CONNECT [Protocol level = %d, Connect flags = %X]\n", MQTTBROKER_NS_PREFIX, num,
-                                 Protocol_level, Connect_flags);
-                DEBUG_MQTTBROKER_HEX(payload, length);
+                //DEBUG_MQTTBROKER(":%s [%d] >> CONNECT [Protocol level = %d, Connect flags = %X]\n", MQTTBROKER_NS_PREFIX, num,
+                //                 Protocol_level, Connect_flags);
+                //DEBUG_MQTTBROKER_HEX(payload, length);
 
                 if (Protocol_level == MQTT_VERSION_3_1_1) {
                     variable_header[1] = CONNECT_ACCEPTED;
@@ -125,10 +125,10 @@ namespace Net { namespace MQTT {
                     Packet_identifier_length = 2;
                 } // else without packet identifier
 
-                DEBUG_MQTTBROKER(
-                        ":%s [%d] >> PUBLISH [DUP = %d, QoS = %d, RETAIN = %d, Rem_len = %d, Topic_len = %d]\n", MQTTBROKER_NS_PREFIX,
-                        num, DUP, QoS, RETAIN, Remaining_length, Length_topic_name);
-                DEBUG_MQTTBROKER_HEX(payload, length);
+                //DEBUG_MQTTBROKER(
+                //        ":%s [%d] >> PUBLISH [DUP = %d, QoS = %d, RETAIN = %d, Rem_len = %d, Topic_len = %d]\n", MQTTBROKER_NS_PREFIX,
+                //        num, DUP, QoS, RETAIN, Remaining_length, Length_topic_name);
+                //DEBUG_MQTTBROKER_HEX(payload, length);
 
                 runCallback(num, EVENT_PUBLISH, &payload[4 + offset], Length_topic_name,
                             &payload[4 + offset + Packet_identifier_length + Length_topic_name],
@@ -142,10 +142,10 @@ namespace Net { namespace MQTT {
                 uint16_t Packet_identifier = MSB_LSB(&payload[2]);
                 uint16_t Length_MSB_LSB = MSB_LSB(&payload[4]);
                 uint8_t Requesteed_QoS = payload[6 + Length_MSB_LSB];
-                DEBUG_MQTTBROKER(
-                        ":%s [%d] >> SUBSCRIBE [Packet identifier = %d, Length = %d, Requested QoS = %d]\n", MQTTBROKER_NS_PREFIX,
-                        num, Packet_identifier, Length_MSB_LSB, Requesteed_QoS);
-                DEBUG_MQTTBROKER_HEX(payload, length);
+                //DEBUG_MQTTBROKER(
+                //        ":%s [%d] >> SUBSCRIBE [Packet identifier = %d, Length = %d, Requested QoS = %d]\n", MQTTBROKER_NS_PREFIX,
+                //        num, Packet_identifier, Length_MSB_LSB, Requesteed_QoS);
+                //DEBUG_MQTTBROKER_HEX(payload, length);
                 sendAnswer(num, SUBACK, 0, 3, &payload[2], 2, &Requesteed_QoS, 1);
                 runCallback(num, EVENT_SUBSCRIBE, &payload[6], Length_MSB_LSB);
             }
@@ -154,29 +154,29 @@ namespace Net { namespace MQTT {
             {
                 uint16_t Packet_identifier = MSB_LSB(&payload[2]);
                 uint16_t Length_MSB_LSB = MSB_LSB(&payload[4]);
-                DEBUG_MQTTBROKER(":%s [%d] >> UNSUBSCRIBE [Packet identifier = %d, Length = %d]\n", MQTTBROKER_NS_PREFIX, num,
-                                 Packet_identifier, Length_MSB_LSB);
-                DEBUG_MQTTBROKER_HEX(payload, length);
+                //DEBUG_MQTTBROKER(":%s [%d] >> UNSUBSCRIBE [Packet identifier = %d, Length = %d]\n", MQTTBROKER_NS_PREFIX, num,
+                //                 Packet_identifier, Length_MSB_LSB);
+                //DEBUG_MQTTBROKER_HEX(payload, length);
                 sendAnswer(num, UNSUBACK, 0, 2, &payload[2], 2);
             }
                 break;
             case PINGREQ: //12
             {
-                DEBUG_MQTTBROKER(":%s [%d] >> PINGREQ\n", MQTTBROKER_NS_PREFIX, num);
-                DEBUG_MQTTBROKER_HEX(payload, length);
+                //DEBUG_MQTTBROKER(":%s [%d] >> PINGREQ\n", MQTTBROKER_NS_PREFIX, num);
+                //DEBUG_MQTTBROKER_HEX(payload, length);
                 sendAnswer(num, PINGRESP);
             }
                 break;
             case DISCONNECT: //14
             {
-                DEBUG_MQTTBROKER(":%s [%d] >> DISCONNECT\n", MQTTBROKER_NS_PREFIX, num);
-                DEBUG_MQTTBROKER_HEX(payload, length);
+                //DEBUG_MQTTBROKER(":%s [%d] >> DISCONNECT\n", MQTTBROKER_NS_PREFIX, num);
+                //DEBUG_MQTTBROKER_HEX(payload, length);
                 disconnect(num);
             }
                 break;
             default: {
-                DEBUG_MQTTBROKER(":%s [%d] >> UNKNOWN COMMAND\n", MQTTBROKER_NS_PREFIX, num);
-                DEBUG_MQTTBROKER_HEX(payload, length);
+                //DEBUG_MQTTBROKER(":%s [%d] >> UNKNOWN COMMAND\n", MQTTBROKER_NS_PREFIX, num);
+                //DEBUG_MQTTBROKER_HEX(payload, length);
             }
         }
     }
@@ -224,59 +224,58 @@ namespace Net { namespace MQTT {
                                       uint16_t length_payload) {
         if (!clientIsConnected(num)) return;
 
-        uint16_t i;
-        uint16_t remaining_length = length_topic_name + length_payload;
+        uint32_t i;
+        uint32_t remaining_length = length_topic_name + length_payload;
 
-        remaining_length += 2;
+        remaining_length += 2; // protocol name length is stored in 2 bytes
 
+        // bytes required to store remaining length number
         int rc = 0;
-        if (remaining_length < 128)
+        if (remaining_length < 128) {
             rc = 1;
-        else if (remaining_length < 16384)
+        } else if (remaining_length < 16384) {
             rc = 2;
-//    else if (remaining_length < 2097152)
-//        rc = 3;
-//    else
-//        rc = 2;
+        } else if (remaining_length < 2097152) {
+            rc = 3;
+        } else {
+            rc = 4;
+        }
 
-        uint8_t answer_msg[remaining_length + rc + MQTTBROKER_VHEADER_MIN_LENGTH];
+        const uint32_t buffer_size = remaining_length + rc + MQTTBROKER_VHEADER_MIN_LENGTH;
+        uint8_t answer_msg[buffer_size];
 
         answer_msg[0] = (PUBLISH << 4) | 0x00; //DUP, QoS, RETAIN
 
-        {
-            int rc = 1;
-
-            // remaining length
-            uint16_t length = remaining_length;
-            do {
-                char d = (length % 128);
-                length /= 128;
-                /* if there are more digits to encode, set the top bit of this digit */
-                if (length > 0) {
-                    d |= 0x80;
-                }
-                answer_msg[rc++] = (uint8_t)d;
-            } while (length > 0);
-
-            // topic length
-            answer_msg[rc++] = length_topic_name >> 8;
-            answer_msg[rc++] = length_topic_name & 0xFF;
-        }
+        int cb = 1;
+        // remaining length
+        uint16_t length = remaining_length;
+        do {
+            char d = (length % 128);
+            length /= 128;
+            /* if there are more digits to encode, set the top bit of this digit */
+            if (length > 0) {
+                d |= 0x80;
+            }
+            answer_msg[cb++] = (uint8_t)d;
+        } while (length > 0);
+        // topic length
+        answer_msg[cb++] = length_topic_name >> 8;
+        answer_msg[cb] = length_topic_name & 0xFF;
 
         rc += MQTTBROKER_VHEADER_MIN_LENGTH;
 
         // topic name
         for (i = 0; i < length_topic_name; i++){
-            answer_msg[rc+i] = *(topic_name++);
+            answer_msg[rc + i] = *(topic_name++);
         }
         // message payload
         for (i = 0; i < length_payload; i++) {
-            answer_msg[length_topic_name+rc+i] = *(payload++);
+            answer_msg[length_topic_name + rc + i] = *(payload++);
         }
 
         delay(0);
-        DEBUG_MQTTBROKER(":%s [%d] << SENDMESSAGE\n", MQTTBROKER_NS_PREFIX, num);
-        DEBUG_MQTTBROKER_HEX((uint8_t *) &answer_msg, remaining_length + rc);
+        //DEBUG_MQTTBROKER(":%s [%d] << SENDMESSAGE\n", MQTTBROKER_NS_PREFIX, num);
+        //DEBUG_MQTTBROKER_HEX((uint8_t *) &answer_msg, remaining_length + rc);
 
         WS->sendBIN(num, (const uint8_t *) &answer_msg, remaining_length + rc - 2);
     }
@@ -301,10 +300,10 @@ namespace Net { namespace MQTT {
 
         switch (fixed_header_comm) {
             case CONNACK: //2
-                DEBUG_MQTTBROKER(":%s [%d] << CONNACK\n", MQTTBROKER_NS_PREFIX, num);
+                //DEBUG_MQTTBROKER(":%s [%d] << CONNACK\n", MQTTBROKER_NS_PREFIX, num);
                 break;
             case PUBACK: //4 QoS level 1
-                DEBUG_MQTTBROKER(":%s [%d] << PUBACK\n", MQTTBROKER_NS_PREFIX, num);
+                //DEBUG_MQTTBROKER(":%s [%d] << PUBACK\n", MQTTBROKER_NS_PREFIX, num);
                 break;
             case PUBREC: //5 QoS level 2, part 1
                 break;
@@ -314,18 +313,18 @@ namespace Net { namespace MQTT {
                 break;
             case SUBACK: //9
                 answer_msg[i] = *payload;
-                DEBUG_MQTTBROKER(":%s [%d] << SUBACK\n", MQTTBROKER_NS_PREFIX, num);
+                //DEBUG_MQTTBROKER(":%s [%d] << SUBACK\n", MQTTBROKER_NS_PREFIX, num);
                 break;
             case UNSUBACK: //11
-                DEBUG_MQTTBROKER(":%s [%d] << UNSUBACK\n", MQTTBROKER_NS_PREFIX, num);
+                //DEBUG_MQTTBROKER(":%s [%d] << UNSUBACK\n", MQTTBROKER_NS_PREFIX, num);
                 break;
             case PINGRESP: //13
-                DEBUG_MQTTBROKER(":%s [%d] << PINGRESP\n", MQTTBROKER_NS_PREFIX, num);
+                //DEBUG_MQTTBROKER(":%s [%d] << PINGRESP\n", MQTTBROKER_NS_PREFIX, num);
                 break;
             default:
                 return;
         }
-        DEBUG_MQTTBROKER_HEX((uint8_t *) &answer_msg, fixed_header_remaining_length + 2);
+        //DEBUG_MQTTBROKER_HEX((uint8_t *) &answer_msg, fixed_header_remaining_length + 2);
 
         delay(0);
         WS->sendBIN(num, (const uint8_t *) &answer_msg, fixed_header_remaining_length + 2);

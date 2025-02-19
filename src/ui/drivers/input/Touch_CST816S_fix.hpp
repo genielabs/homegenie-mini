@@ -22,7 +22,7 @@ Contributors:
 
 #include "defs.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 #include <LovyanGFX.h>
 #include <lgfx/v1/Touch.hpp>
@@ -77,6 +77,6 @@ namespace UI { namespace Drivers { namespace Input {
 
 }}}
 
-#endif //DISABLE_UI
+#endif //ENABLE_UI
 
 #endif //HOMEGENIE_MINI_TOUCH_CST816S_FIX_H

@@ -28,7 +28,7 @@
 
 #include "defs.h"
 
-#ifndef DISABLE_UI
+#ifdef ENABLE_UI
 
 #include "input/Touch_CST816S_fix.hpp"
 
@@ -64,6 +64,6 @@ namespace UI { namespace Drivers {
 
 }}
 
-#endif // DISABLE_UI
+#endif // ENABLE_UI
 
 #endif //HOMEGENIE_MINI_ROUNDDISPLAY_H
