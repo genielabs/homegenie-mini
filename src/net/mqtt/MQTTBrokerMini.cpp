@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -32,32 +32,26 @@
 
 namespace Net { namespace MQTT {
 
-    static MQTTBrokerClient_t MQTTclients[MQTTBROKER_CLIENT_MAX + 1]; //Last is MQTTBROKER_LOCAL_CLIENT_ID
+    static MQTTBrokerClient_t brokerClients[MQTTBROKER_CLIENT_MAX + 1]; //Last is MQTTBROKER_LOCAL_CLIENT_ID
 
     MQTTBrokerMini::MQTTBrokerMini(WebSocketsServer *webSocket) {
         WS = webSocket;
     }
 
-    void MQTTBrokerMini::setCallback(callback_t cb) {
+    void MQTTBrokerMini::setCallback(const callback_t& cb) {
         callback = cb;
-    }
-
-    void MQTTBrokerMini::unsetCallback(void) {
-        callback = nullptr;
     }
 
     void MQTTBrokerMini::runCallback(uint8_t num, Events_t event, uint8_t *topic_name, uint16_t length_topic_name,
                                       uint8_t *payload, uint16_t length_payload) {
         if (callback) {
-            delay(0); // TODO: <-- not sure what this delay is for
-            String topic = data_to_string(topic_name, length_topic_name);
-            callback(num, &event, &topic, payload, length_payload);
+            callback(num, &event, topic_name, length_topic_name, payload, length_payload);
         }
     }
 
-    void MQTTBrokerMini::begin(void) {
-        unsetCallback();
-        for (auto &MQTTclient : MQTTclients) {
+    void MQTTBrokerMini::begin() {
+        setCallback(nullptr);
+        for (auto &MQTTclient : brokerClients) {
             MQTTclient.status = false;
         }
     }
@@ -66,128 +60,105 @@ namespace Net { namespace MQTT {
         if (numIsIncorrect(num)) return;
 
         switch (*payload >> 4) {
-            case CONNECT: //1
-            {
-                uint8_t variable_header[2];
-                uint8_t Protocol_level = payload[8];
-                uint8_t Connect_flags = payload[9];
-                uint16_t Length_MSB_LSB = MSB_LSB(&payload[12]);
+            case CONNECT: {
+                    // 1 - CONNECT
 
-                variable_header[0] = 0x01 & SESSION_PRESENT_ZERO; //Anyway create a new Session
+                    uint8_t variable_header[2];
+                    uint8_t Protocol_level = payload[8];
+                    //uint8_t Connect_flags = payload[9];
+                    uint16_t Length_MSB_LSB = MSB_LSB(&payload[12]);
 
-                //DEBUG_MQTTBROKER(":%s [%d] >> CONNECT [Protocol level = %d, Connect flags = %X]\n", MQTTBROKER_NS_PREFIX, num,
-                //                 Protocol_level, Connect_flags);
-                //DEBUG_MQTTBROKER_HEX(payload, length);
+                    // Create a new session anyway
+                    variable_header[0] = 0x01 & SESSION_PRESENT_ZERO;
 
-                if (Protocol_level == MQTT_VERSION_3_1_1) {
-                    variable_header[1] = CONNECT_ACCEPTED;
-                    connect(num);
-                    sendAnswer(num, CONNACK, 0, 2, variable_header, 2);
-                    runCallback(num, EVENT_CONNECT, &payload[14], Length_MSB_LSB);
-                } else {
-                    variable_header[1] = CONNECT_REFUSED_UPV;
-                    sendAnswer(num, CONNACK, 0, 2, variable_header, 2);
-                    disconnect(num);
-                }
-            }
-                break;
-            case PUBLISH: //3
-            {
-                uint8_t DUP = (*payload >> 3) & 0x1;
-                uint8_t QoS = (*payload >> 1) & 0x3;
-                uint8_t RETAIN = (*payload) & 0x1;
-                //uint8_t Remaining_length = payload[1];
-                uint16_t Remaining_length = 0;
-                //uint16_t Length_topic_name = MSB_LSB(&payload[2]);
-                uint16_t Length_topic_name = 0;
-#define MAX_NO_OF_REMAINING_LENGTH_BYTES 4
-                uint16_t len = 0;
-                uint8_t multiplier = 1;
-                uint8_t offset = -1;
-                do {
-                    if (++len > MAX_NO_OF_REMAINING_LENGTH_BYTES) {
-                        // TODO: HANDLE MALFORMED PACKET
-                        break;
+                    if (Protocol_level == MQTT_VERSION_3_1_1) {
+                        variable_header[1] = CONNECT_ACCEPTED;
+                        connect(num);
+                        sendAnswer(num, CONNACK, 0, 2, variable_header, 2);
+                        runCallback(num, EVENT_CONNECT, &payload[14], Length_MSB_LSB);
+                    } else {
+                        variable_header[1] = CONNECT_REFUSED_UPV;
+                        sendAnswer(num, CONNACK, 0, 2, variable_header, 2);
+                        disconnect(num);
                     }
-                    Remaining_length += ((payload[len] & 127) * multiplier);
-                    multiplier *= 128;
-                    offset++;
-                } while ((payload[len] & 128) != 0);
+                } break;
+            case PUBLISH: {
+                    // 3 - PUBLISH
+                    uint8_t DUP = (*payload >> 3) & 0x1;
+                    uint8_t QoS = (*payload >> 1) & 0x3;
+                    uint8_t RETAIN = (*payload) & 0x1;
+                    //uint8_t Remaining_length = payload[1];
+                    uint16_t Remaining_length = 0;
+                    //uint16_t Length_topic_name = MSB_LSB(&payload[2]);
+                    uint16_t Length_topic_name = 0;
+#define MAX_NO_OF_REMAINING_LENGTH_BYTES 4
+                    uint16_t len = 0;
+                    uint8_t multiplier = 1;
+                    uint8_t offset = -1;
+                    do {
+                        if (++len > MAX_NO_OF_REMAINING_LENGTH_BYTES) {
+                            // TODO: HANDLE MALFORMED PACKET
+                            break;
+                        }
+                        Remaining_length += ((payload[len] & 127) * multiplier);
+                        multiplier *= 128;
+                        offset++;
+                    } while ((payload[len] & 128) != 0);
 
-                //Length_topic_name = MSB_LSB(&payload[len]);
-                Length_topic_name = (payload[len + 1] * 256) + payload[len + 2];
+                    //Length_topic_name = MSB_LSB(&payload[len]);
+                    Length_topic_name = (payload[len + 1] * 256) + payload[len + 2];
 
-                uint8_t *Packet_identifier = nullptr;
-                uint8_t Packet_identifier_length = 0;
+                    uint8_t *Packet_identifier = nullptr;
+                    uint8_t Packet_identifier_length = 0;
 
-                if (QoS > 0) {
-                    Packet_identifier = &payload[4 + Length_topic_name];
-                    Packet_identifier_length = 2;
-                } // else without packet identifier
+                    if (QoS > 0) {
+                        Packet_identifier = &payload[4 + Length_topic_name];
+                        Packet_identifier_length = 2;
+                    } // else without packet identifier
 
-                //DEBUG_MQTTBROKER(
-                //        ":%s [%d] >> PUBLISH [DUP = %d, QoS = %d, RETAIN = %d, Rem_len = %d, Topic_len = %d]\n", MQTTBROKER_NS_PREFIX,
-                //        num, DUP, QoS, RETAIN, Remaining_length, Length_topic_name);
-                //DEBUG_MQTTBROKER_HEX(payload, length);
+                    runCallback(num, EVENT_PUBLISH, &payload[4 + offset], Length_topic_name,
+                                &payload[4 + offset + Packet_identifier_length + Length_topic_name],
+                                Remaining_length - 2 - Packet_identifier_length - Length_topic_name);
 
-                runCallback(num, EVENT_PUBLISH, &payload[4 + offset], Length_topic_name,
-                            &payload[4 + offset + Packet_identifier_length + Length_topic_name],
-                            Remaining_length - 2 - Packet_identifier_length - Length_topic_name);
-
-                //QoS = 0 don't need answer
-            }
-                break;
-            case SUBSCRIBE: //8
-            {
-                uint16_t Packet_identifier = MSB_LSB(&payload[2]);
-                uint16_t Length_MSB_LSB = MSB_LSB(&payload[4]);
-                uint8_t Requesteed_QoS = payload[6 + Length_MSB_LSB];
-                //DEBUG_MQTTBROKER(
-                //        ":%s [%d] >> SUBSCRIBE [Packet identifier = %d, Length = %d, Requested QoS = %d]\n", MQTTBROKER_NS_PREFIX,
-                //        num, Packet_identifier, Length_MSB_LSB, Requesteed_QoS);
-                //DEBUG_MQTTBROKER_HEX(payload, length);
-                sendAnswer(num, SUBACK, 0, 3, &payload[2], 2, &Requesteed_QoS, 1);
-                runCallback(num, EVENT_SUBSCRIBE, &payload[6], Length_MSB_LSB);
-            }
-                break;
-            case UNSUBSCRIBE: //10
-            {
-                uint16_t Packet_identifier = MSB_LSB(&payload[2]);
-                uint16_t Length_MSB_LSB = MSB_LSB(&payload[4]);
-                //DEBUG_MQTTBROKER(":%s [%d] >> UNSUBSCRIBE [Packet identifier = %d, Length = %d]\n", MQTTBROKER_NS_PREFIX, num,
-                //                 Packet_identifier, Length_MSB_LSB);
-                //DEBUG_MQTTBROKER_HEX(payload, length);
-                sendAnswer(num, UNSUBACK, 0, 2, &payload[2], 2);
-            }
-                break;
-            case PINGREQ: //12
-            {
-                //DEBUG_MQTTBROKER(":%s [%d] >> PINGREQ\n", MQTTBROKER_NS_PREFIX, num);
-                //DEBUG_MQTTBROKER_HEX(payload, length);
-                sendAnswer(num, PINGRESP);
-            }
-                break;
-            case DISCONNECT: //14
-            {
-                //DEBUG_MQTTBROKER(":%s [%d] >> DISCONNECT\n", MQTTBROKER_NS_PREFIX, num);
-                //DEBUG_MQTTBROKER_HEX(payload, length);
-                disconnect(num);
-            }
-                break;
+                    //QoS = 0 does not require to answer
+                } break;
+            case SUBSCRIBE: {
+                    // 8 - SUBSCRIBE
+                    //uint16_t Packet_identifier = MSB_LSB(&payload[2]);
+                    uint16_t Length_MSB_LSB = MSB_LSB(&payload[4]);
+                    uint8_t requestedQoS = payload[6 + Length_MSB_LSB];
+                    sendAnswer(num, SUBACK, 0, 3, &payload[2], 2, &requestedQoS, 1);
+                    runCallback(num, EVENT_SUBSCRIBE, &payload[6], Length_MSB_LSB);
+                } break;
+            case UNSUBSCRIBE: {
+                    // 10 - UNSUBSCRIBE
+                    //uint16_t Packet_identifier = MSB_LSB(&payload[2]);
+                    //uint16_t Length_MSB_LSB = MSB_LSB(&payload[4]);
+                    sendAnswer(num, UNSUBACK, 0, 2, &payload[2], 2);
+                } break;
+            case PINGREQ: {
+                    // 12 - PINGREQ
+                    sendAnswer(num, PINGRESP);
+                } break;
+            case DISCONNECT: {
+                    // 14 - DISCONNECT
+                    disconnect(num);
+                } break;
             default: {
-                //DEBUG_MQTTBROKER(":%s [%d] >> UNKNOWN COMMAND\n", MQTTBROKER_NS_PREFIX, num);
-                //DEBUG_MQTTBROKER_HEX(payload, length);
+                    // UNKNOWN COMMAND
+                    //DEBUG_MQTTBROKER(":%s [%d] >> UNKNOWN COMMAND\n", MQTTBROKER_NS_PREFIX, num);
+                    //DEBUG_MQTTBROKER_HEX(payload, length);
             }
         }
     }
 
-    void MQTTBrokerMini::publish(uint8_t num, String topic, uint8_t *payload, uint16_t length) {
-        sendMessage(num, (uint8_t *) &topic[0], topic.length(), payload, length);
+    void MQTTBrokerMini::publish(uint8_t num, uint8_t* topic, uint16_t topic_length, uint8_t *payload, uint16_t length) {
+        sendMessage(num, topic, topic_length, payload, length);
     }
 
     void MQTTBrokerMini::disconnect(uint8_t num) {
         if (numIsIncorrect(num)) return;
-        MQTTclients[num].status = false;
+        brokerClients[num].status = false;
         WS->disconnect(num);
         runCallback(num, EVENT_DISCONNECT);
     }
@@ -195,7 +166,7 @@ namespace Net { namespace MQTT {
     bool MQTTBrokerMini::clientIsConnected(uint8_t num) {
         if (num == MQTTBROKER_LOCAL_CLIENT_ID) return true; //Always true
         if (numIsIncorrect(num)) return false;
-        return MQTTclients[num].status;
+        return brokerClients[num].status;
     }
 
 /*
@@ -218,8 +189,6 @@ namespace Net { namespace MQTT {
         }
     }
 
-
-    // TODO: check out this method!! there might be a memory leak
     void MQTTBrokerMini::sendMessage(uint8_t num, uint8_t *topic_name, uint16_t length_topic_name, uint8_t *payload,
                                       uint16_t length_payload) {
         if (!clientIsConnected(num)) return;
@@ -242,7 +211,17 @@ namespace Net { namespace MQTT {
         }
 
         const uint32_t buffer_size = remaining_length + rc + MQTTBROKER_VHEADER_MIN_LENGTH;
-        uint8_t answer_msg[buffer_size];
+
+#ifdef BOARD_HAS_PSRAM
+        auto answer_msg = (uint8_t *) ps_malloc(buffer_size);
+#else
+        auto answer_msg = (uint8_t *) malloc(buffer_size);
+#endif
+
+        if (answer_msg == nullptr) {
+            Serial.println("Error: could not allocate message buffer.");
+            return;
+        }
 
         answer_msg[0] = (PUBLISH << 4) | 0x00; //DUP, QoS, RETAIN
 
@@ -273,15 +252,14 @@ namespace Net { namespace MQTT {
             answer_msg[length_topic_name + rc + i] = *(payload++);
         }
 
-        delay(0);
-        //DEBUG_MQTTBROKER(":%s [%d] << SENDMESSAGE\n", MQTTBROKER_NS_PREFIX, num);
-        //DEBUG_MQTTBROKER_HEX((uint8_t *) &answer_msg, remaining_length + rc);
+        int data_length = remaining_length + rc;
+        WS->sendBIN(num, answer_msg, data_length - 2);
 
-        WS->sendBIN(num, (const uint8_t *) &answer_msg, remaining_length + rc - 2);
+        free(answer_msg);
     }
 
     void MQTTBrokerMini::connect(uint8_t num) {
-        MQTTclients[num].status = true;
+        brokerClients[num].status = true;
     }
 
     uint16_t MQTTBrokerMini::MSB_LSB(uint8_t *msb_byte) {
@@ -326,20 +304,19 @@ namespace Net { namespace MQTT {
         }
         //DEBUG_MQTTBROKER_HEX((uint8_t *) &answer_msg, fixed_header_remaining_length + 2);
 
-        delay(0);
         WS->sendBIN(num, (const uint8_t *) &answer_msg, fixed_header_remaining_length + 2);
     }
 
     MQTTBrokerClient_t* MQTTBrokerMini::getClients() {
-        return MQTTclients;
+        return brokerClients;
     }
 
-    void MQTTBrokerMini::broadcast(uint8_t num, String topic_name, uint8_t *payload, uint16_t length_payload) {
+    void MQTTBrokerMini::broadcast(uint8_t num, uint8_t* topic_name, uint16_t topic_length, uint8_t *payload, uint16_t length_payload) {
         for (uint8_t i = 0; i < MQTTBROKER_CLIENT_MAX; i++) {
             // TODO: send only if subscribed to topic
             // TODO; -> subscription not yet handled!
-            if (i != num && MQTTclients[i].status) {
-                publish(i, (topic_name).c_str(), payload, length_payload);
+            if (i != num && brokerClients[i].status) {
+                publish(i, topic_name, topic_length, payload, length_payload);
             }
         }
     }

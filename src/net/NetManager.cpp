@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -120,7 +120,7 @@ namespace Net {
 
 #ifndef DISABLE_MQTT_BROKER
         mqttServer = new MQTTServer();
-        mqttServer->onRequest([this](uint8_t num, const char* domain, const char* address, const char* command, const char* options, const char* data) {
+        mqttServer->onRequest([this](uint8_t num, const char* cid, const char* tid, const char* domain, const char* address, const char* command, const char* options, const char* data) {
             auto c = String(command);
             if (c == "Module.Describe") {
                 String topic = Config::system.id;
@@ -138,6 +138,10 @@ namespace Net {
                 auto cb = MQTTResponseCallback((MQTTChannel*)mqttServer, &topic);
                 netRequestHandler->onNetRequest(mqttServer, apiCommand.c_str(), &cb);
             } else {
+                String topic = cid;
+                topic.concat("/MQTT.Listeners/");
+                topic.concat(tid);
+                topic.concat("/response");
                 String apiCommand = String("/api/");
                 apiCommand.concat(domain);
                 apiCommand.concat("/");
@@ -148,8 +152,7 @@ namespace Net {
                 apiCommand.concat(options);
                 apiCommand.concat("/plain/");
                 apiCommand.concat(data);
-                String t = "/void";
-                auto cb = MQTTResponseCallback((MQTTChannel*)mqttServer, &t);
+                auto cb = MQTTResponseCallback((MQTTChannel*)mqttServer, &topic);
                 netRequestHandler->onNetRequest(mqttServer, apiCommand.c_str(), &cb);
             }
 

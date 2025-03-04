@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -36,9 +36,9 @@
 
 #define DS18B20_NS_PREFIX                      "IO::Sensors::DS18B10"
 #define DS18B20_SAMPLING_RATE           60000L
-#define DS18B20_READ_ERROR              -1000
+#define DS18B20_READ_ERROR              (-1000)
 // TODO: maybe put this as a configurable parameter through API
-#define DS18B20_MEASURE_OFFSET          (float_t)-2.00
+#define DS18B20_MEASURE_OFFSET          ((float_t)-2.00)
 
 namespace IO { namespace Sensors {
 

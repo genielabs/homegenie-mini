@@ -48,8 +48,8 @@ private:
     bool helloWorldActive = true;
 
     // Status LED activity signal callback
-    bool signalRfReceive = false;
-    unsigned long signalRfReceiveTs = 0;
+    bool activityBlink = false;
+    unsigned long activityBlinkTs = 0;
     LightColor currentColor;
     ColorLight* colorLight;
 
@@ -93,7 +93,7 @@ public:
 
         colorLight->onSetColor([this](LightColor c) {
             if (statusLED != nullptr) {
-                statusLED->setPixelColor(0, c.getRed(), c.getGreen(), c.getBlue());
+                statusLED->setPixelColor(0, (int)round(c.getRed()), (int)round(c.getGreen()), (int)round(c.getBlue()));
                 statusLED->show();
                 currentColor.setColor(c.getHue(), c.getSaturation(), c.getValue(), 0);
             }
@@ -125,10 +125,10 @@ public:
             }
         }
 
-        if (signalRfReceive && millis() - signalRfReceiveTs > 50) {
-            signalRfReceive = false;
+        if (activityBlink && millis() - activityBlinkTs > 50) {
+            activityBlink = false;
             if (statusLED != nullptr) {
-                statusLED->setPixelColor(0, currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue());
+                statusLED->setPixelColor(0, (int)round(currentColor.getRed()), (int)round(currentColor.getGreen()), (int)round(currentColor.getBlue()));
                 statusLED->show();
             }
         }
@@ -139,12 +139,16 @@ public:
             statusLED->setPixelColor(0, r, g, b);
             statusLED->show();
         }
-        signalRfReceive = true;
-        signalRfReceiveTs = millis();
+        activityBlink = true;
+        activityBlinkTs = millis();
     }
 
     bool isEnabled() {
         return statusLED != nullptr;
+    }
+
+    void setLED(Adafruit_NeoPixel* led) {
+        statusLED = led;
     }
     Adafruit_NeoPixel* getLed() {
         return statusLED;
@@ -152,11 +156,12 @@ public:
     ColorLight* getColorLight() {
         return colorLight;
     }
-    LightColor& getCurrentColor() {
-        return currentColor;
-    }
+
     void setCurrentColor(LightColor c) {
         currentColor = c;
+    }
+    LightColor& getCurrentColor() {
+        return currentColor;
     }
 
 };

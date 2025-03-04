@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -72,7 +72,7 @@ namespace IO { namespace Sensors {
         void begin() override;
         void loop() override;
     private:
-        // Set DHTxx pin number
+        // Set DHTxx pin
         uint8_t inputPin = 0;
         // Temperature and humidity sensor
         DHTNEW* dht;

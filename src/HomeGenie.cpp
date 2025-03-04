@@ -45,7 +45,7 @@ namespace Service {
         }
 
         // Logger initialization
-        Logger::begin(LOG_LEVEL_TRACE);
+        Logger::begin(HOMEGENIE_LOG_LEVEL);
 
         // Welcome message
         Logger::info("%s %s", CONFIG_DEVICE_MODEL_NAME, CONFIG_DEVICE_MODEL_NUMBER);

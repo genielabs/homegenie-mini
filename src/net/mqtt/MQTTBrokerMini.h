@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -103,35 +103,33 @@ namespace Net { namespace MQTT {
             EVENT_DISCONNECT,
         } Events_t;
 
-        typedef std::function<void(uint8_t num, const Events_t* event, const String* topic_name, uint8_t *payload,
+        typedef std::function<void(uint8_t num, const Events_t* event, uint8_t* topic_name, uint16_t opic_length, uint8_t *payload,
                                   uint16_t length_payload)> callback_t;
 
         class MQTTBrokerMini {
         public:
-            MQTTBrokerMini(WebSocketsServer *webSocket);
+            explicit MQTTBrokerMini(WebSocketsServer *webSocket);
 
             void begin();
 
-            void setCallback(callback_t cb);
-
-            void unsetCallback();
+            void setCallback(const callback_t& cb);
 
             void parsing(uint8_t num, uint8_t *payload, uint16_t length);
 
-            void publish(uint8_t num, String topic, uint8_t *payload, uint16_t length);
+            void publish(uint8_t num, uint8_t* topic, uint16_t topic_length, uint8_t *payload, uint16_t length);
 
-            void broadcast(uint8_t num, String topic_name, uint8_t *payload, uint16_t length_payload);
-            void broadcast(String topic_name, uint8_t *payload, uint16_t length_payload) {
-                broadcast(MQTTBROKER_LOCAL_CLIENT_ID, std::move(topic_name), payload, length_payload);
+            void broadcast(uint8_t num, uint8_t* topic_name, uint16_t topic_length, uint8_t *payload, uint16_t length_payload);
+            void broadcast(uint8_t* topic_name, uint16_t topic_length, uint8_t *payload, uint16_t length_payload) {
+                broadcast(MQTTBROKER_LOCAL_CLIENT_ID, topic_name, topic_length, payload, length_payload);
             };
 
             void disconnect(uint8_t num);
 
-            bool clientIsConnected(uint8_t num);
+            static bool clientIsConnected(uint8_t num);
 
             MQTTBrokerClient_t *getClients();
 
-            String data_to_string(uint8_t *data, uint16_t length);
+            static String data_to_string(uint8_t *data, uint16_t length);
 
         private:
             WebSocketsServer *WS;
@@ -144,12 +142,11 @@ namespace Net { namespace MQTT {
                             uint8_t fixed_header_remaining_length = 0, uint8_t *variable_header = nullptr,
                             uint8_t variable_header_length = 0, uint8_t *payload = nullptr, uint16_t payload_length = 0);
 
-            void sendMessage(uint8_t num, uint8_t *topic_name, uint16_t length_topic_name, uint8_t *payload,
-                             uint16_t length_payload);
+            void sendMessage(uint8_t num, uint8_t* topic, uint16_t topic_length, uint8_t *payload, uint16_t length);
 
             void connect(uint8_t num);
 
-            bool numIsIncorrect(uint8_t num);
+            static bool numIsIncorrect(uint8_t num);
 
             uint16_t MSB_LSB(uint8_t *msb_byte);
         };

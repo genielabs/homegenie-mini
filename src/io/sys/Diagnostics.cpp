@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -59,6 +59,8 @@ namespace IO { namespace System {
             Logger::trace("@%s [%s %s]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_Status, isWifiConnected ? SystemStatus::WIFI_CONNECTED : SystemStatus::WIFI_DISCONNECTED);
             sendEvent(IOEventPaths::System_Status, isWifiConnected ? (void*)&SystemStatus::WIFI_CONNECTED : (void*)&SystemStatus::WIFI_DISCONNECTED, Text);
         }
+
+        // TODO: implement "WiFi.SignalStrength" --> WiFi.RSSI()
 
     }
 

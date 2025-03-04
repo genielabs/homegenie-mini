@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -31,9 +31,6 @@
 
 namespace Net {
 
-    WebSocketsServer* ws;
-    MQTTBrokerMini* mb;
-
     uint8_t* buf = nullptr;
     size_t totalLength = 0;
 
@@ -43,17 +40,14 @@ namespace Net {
         webSocket = new WebSocketsServer(8000, "", "mqtt");
         mqttBroker = new MQTTBrokerMini(webSocket);
 
-        ws = webSocket;
-        mb = mqttBroker;
-
         webSocket->begin();
         webSocket->onEvent([this](uint8_t n, WStype_t t, uint8_t * p, size_t l) {
             webSocketEvent(n, t, p, l);
         });
 
         mqttBroker->begin();
-        mqttBroker->setCallback([this](uint8_t n, const Net::MQTT::Events_t* e, const String* topic_name, uint8_t* payload, uint16_t payload_length) {
-            mqttCallback(n, e, topic_name, payload, payload_length);
+        mqttBroker->setCallback([this](uint8_t n, const Net::MQTT::Events_t* e, uint8_t* topic_name, uint16_t topic_length, uint8_t* payload, uint16_t payload_length) {
+            mqttCallback(n, e, topic_name, topic_length, payload, payload_length);
         });
         Logger::info("|  ✔ MQTT service");
 
@@ -65,44 +59,47 @@ namespace Net {
         }
     }
 
-    void MQTTServer::mqttCallback(uint8_t num, const Events_t* event, const String* topic_name, uint8_t* payload,
+    void MQTTServer::mqttCallback(uint8_t num, const Events_t* event, uint8_t* topic_name, uint16_t topic_length, uint8_t* payload,
                                         uint16_t length_payload) {
         switch (*event){
             case EVENT_CONNECT: {
-                IO::Logger::trace(":%s [%d] >> CONNECT from '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
+                // IO::Logger::trace(":%s [%d] >> CONNECT from '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
                 break;
             }
             case EVENT_SUBSCRIBE: {
-                IO::Logger::trace(":%s [%d] >> SUBSCRIBE to '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
+                // IO::Logger::trace(":%s [%d] >> SUBSCRIBE to '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
                 break;
             }
             case EVENT_PUBLISH: {
-                IO::Logger::trace(":%s [%d] >> PUBLISH to '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
-
+                // IO::Logger::trace(":%s [%d] >> PUBLISH to '%s'", MQTTBROKER_NS_PREFIX, num, (*topic_name).c_str());
                 auto controlTopic = String ("/") + Config::system.id + String("/command");
 #if ESP8266
-                auto msg = mb->data_to_string(payload, length_payload);
+                auto topic = mqttBroker->data_to_string(topic_name, topic_length);
 #else
-                auto msg = String(payload, length_payload);
+                auto topic = String(topic_name, topic_length);
 #endif
-                if ((*topic_name).endsWith(controlTopic)) { // initial part is the source node id, ending part is the destination node
+                if (topic.endsWith(controlTopic)) { // initial part is the source node id, ending part is the destination node
 
                     JsonDocument doc;
-                    deserializeJson(doc, msg);
+                    deserializeJson(doc, payload, length_payload);
                     if (apiCallback != nullptr && doc.containsKey("Domain") && doc.containsKey("Address") && doc.containsKey("Command")) {
-                        auto domain = String((const char*)doc["Domain"]);
-                        auto address = String((const char*)doc["Address"]);
-                        auto command = String((const char*)doc["Command"]);
-                        auto options = String((const char*)doc["OptionsString"]);
-                        auto data = String((const char*)doc["Data"]);
-                        apiCallback(num, domain.c_str(), address.c_str(), command.c_str(), options.c_str(), data.c_str());
+                        apiCallback(
+                                num,
+                                doc["ClientId"],
+                                doc["TransactionId"],
+                                doc["Domain"],
+                                doc["Address"],
+                                doc["Command"],
+                                doc["OptionsString"],
+                                doc["Data"]
+                            );
                     }
                     doc.clear();
 
                 } else {
 
                     // broadcast message to subscribed clients
-                    mb->broadcast((*topic_name).c_str(), payload, length_payload);
+                    mqttBroker->broadcast(topic_name, topic_length, payload, length_payload);
 
                 }
 
@@ -118,7 +115,7 @@ namespace Net {
     void MQTTServer::webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
         switch(type) {
             case WStype_DISCONNECTED: {
-                if (mb->clientIsConnected(num)) mb->disconnect(num);
+                if (MQTTBrokerMini::clientIsConnected(num)) mqttBroker->disconnect(num);
             }
             break;
             case WStype_TEXT: {
@@ -160,7 +157,7 @@ namespace Net {
                     free(old);
                 }
                 if (buf != nullptr && totalLength > 0) {
-                    mb->parsing(num, buf, (uint16_t) totalLength);
+                    mqttBroker->parsing(num, buf, (uint16_t) totalLength);
                 }
                 totalLength = 0;
                 free(buf);
@@ -168,18 +165,22 @@ namespace Net {
             }
                 break;
             case WStype_BIN: {
-                mb->parsing(num, payload, (uint16_t) length);
+                mqttBroker->parsing(num, payload, (uint16_t) length);
             }
             break;
         }
     }
 
-    void MQTTServer::broadcast(String *topic, String *payload) {
-        mb->broadcast(*topic, (uint8_t *)payload->c_str(), (uint16_t)payload->length());
+    void MQTTServer::broadcast(uint8_t num, String *topic, String *payload) {
+        mqttBroker->broadcast(num, (uint8_t*)topic->c_str(), topic->length(), (uint8_t *)payload->c_str(), (uint16_t)payload->length());
     }
 
-    void MQTTServer::broadcast(uint8_t num, String *topic, String *payload) {
-        mb->broadcast(num, *topic, (uint8_t *)payload->c_str(), (uint16_t)payload->length());
+    void MQTTServer::broadcast(String *topic, String *payload) {
+        mqttBroker->broadcast((uint8_t*)topic->c_str(), topic->length(), (uint8_t*)payload->c_str(), payload->length());
+    }
+
+    void MQTTServer::broadcast(uint8_t* topic,uint16_t topic_length, uint8_t *payload, size_t length) {
+        mqttBroker->broadcast(topic, topic_length, payload, length);
     }
 
 }

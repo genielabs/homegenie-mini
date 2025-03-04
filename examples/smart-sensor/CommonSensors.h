@@ -33,6 +33,9 @@
 #include "../color-light/StatusLed.h"
 
 #include "api/SensorApi.h"
+#ifdef ESP_CAMERA_SUPPORTED
+#include "api/CameraHandler.h"
+#endif
 #include "io/sensors/DS18B20.h"
 #include "io/sensors/MotionSensor.h"
 #include "io/sensors/DHTxx.h"
@@ -134,19 +137,6 @@ void includeCommonSensors(HomeGenie* homeGenie, Module* sensorModule) {
         auto motionSensor = new MotionSensor(motionSensorPin);
         motionSensor->setModule(sensorModule);
         homeGenie->addIOHandler(motionSensor);
-        // Add temperature "adjust" UI option:
-        // temp. reading offset can be adjusted from -9 to +9
-        auto temperatureAdjust = Config::getSetting(DHT_Sensor::TemperatureAdjust, "0");
-        homeGenie->getDefaultModule()->addWidgetOption(
-            // name, value
-            "Temperature.Adjust", temperatureAdjust.c_str(),
-                // type
-                UI_WIDGETS_FIELD_TYPE_NUMBER
-                // label
-                ":temperature_adjust"
-                // min:max:default
-                ":-9:9:0"
-        )->withConfigKey(DHT_Sensor::TemperatureAdjust);
 #ifndef DISABLE_AUTOMATION
         // Add example schedules/scenes for motion sensor
         setupMotionSensorSchedules(sensorModule);
@@ -172,6 +162,28 @@ void includeCommonSensors(HomeGenie* homeGenie, Module* sensorModule) {
         homeGenie->addIOHandler((IIOEventSender*)dhtSensor);
     }
 
+#ifdef ESP_CAMERA_SUPPORTED
+    if (Config::getSetting(Camera_Sensor::SensorType).equals("esp32-cam")) {
+        // Add camera handler
+        auto cameraHandler = new CameraHandler();
+        cameraHandler->setModule(sensorModule);
+        homeGenie->addAPIHandler(cameraHandler);
+        // Add module (dimmable light) for built-in camera flash
+        const int flashPin = cameraHandler->getFlashPin();
+        if (flashPin >= 0) {
+            pinMode(flashPin, OUTPUT);
+            auto flashLight = new Dimmer(IOEventDomains::HomeAutomation_HomeGenie, "LED", "LED");
+            flashLight->onSetStatus([flashPin](Service::API::devices::SwitchStatus status) {
+                analogWrite(flashPin, status == SWITCH_STATUS_ON ? GPIO_PORT_LEVEL_MAX : 0);
+            });
+            flashLight->onSetLevel([flashPin](float level) {
+                auto v = (int) round(level * GPIO_PORT_LEVEL_MAX);
+                analogWrite(flashPin, v);
+            });
+            homeGenie->addAPIHandler(flashLight);
+        }
+    }
+#endif
 }
 
 #endif //HOMEGENIE_MINI_COMMONSENSORS_H

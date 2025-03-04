@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -66,6 +66,8 @@ namespace Net {
 
 #ifndef DISABLE_SSE
         static HTTPServer* i = this;
+        // enable CORS to allow client-side image buffering
+        //httpServer.enableCORS(true);
         httpServer.on("/api/HomeAutomation.HomeGenie/Logging/RealTime.EventStream/", HTTP_GET, []() {
             i->sseClientAccept();
         });

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -72,6 +72,7 @@ namespace Net {
         virtual void endGetLength() = 0;
         virtual void write(const char* s) = 0;
         virtual void writeAll(const char* s) = 0;
+        virtual void writeBinary(const char* contentType, uint8_t* data, size_t length) = 0;
         virtual void error(const char* s) = 0;
     };
 
@@ -81,6 +82,7 @@ namespace Net {
         void endGetLength() override {};
         void write(const char* s) override {};
         void writeAll(const char* s) override {};
+        void writeBinary(const char* contentType, uint8_t* data, size_t length) override {};
         void error(const char* s) override {};
     };
 
@@ -103,11 +105,9 @@ namespace Net {
         void write(const char* s) override {
             buffer.concat(s);
             if (contentLength > 0 && contentLength == buffer.length() && !disableOutput) {
-                auto t = String(topic->c_str());
-                auto o = String(buffer);
-                mqtt->broadcast(&t, &o);
+                mqtt->broadcast(topic, &buffer);
                 buffer = "";
-            } else {
+            } else if (disableOutput) {
                 contentLength += strlen(s);
             }
         };
@@ -118,6 +118,10 @@ namespace Net {
                 mqtt->broadcast(topic, &buffer);
                 contentLength = 0;
             }
+        };
+        void writeBinary(const char* contentType, uint8_t* data, size_t length) override {
+            mqtt->broadcast((uint8_t *)topic->c_str(), topic->length(), data, length);
+            contentLength = 0;
         };
         void error(const char* s) override {};
     private:
@@ -141,9 +145,9 @@ namespace Net {
         void write(const char* s) override {};
         void writeAll(const char* s) override {
             if (requestId != nullptr) {
-                //auto date = TimeClient::getTimeClient().getFormattedDate();
                 unsigned long epoch = TimeClient::getNTPClient().getEpochTime();
                 int ms = TimeClient::getNTPClient().getMilliseconds();
+                //auto date = TimeClient::getTimeClient().getFormattedDate();
                 //"#", requestId, "", "Response.Data", migRequest.ResponseData
                 // Send as clear text
                 //int sz = 1+snprintf(nullptr, 0, R"(data: {"Timestamp":"%s","UnixTimestamp":%lu%03d,"Description":"","Domain":"%s","Source":"%s","Property":"%s","Value":"%s"})",
@@ -154,7 +158,6 @@ namespace Net {
                 //ws->sendTXT(cid, msg);
 
                 // Send binary packed message
-
                 MsgPack::Packer packer;
                 struct timeval tv_now{};
                 gettimeofday(&tv_now, nullptr);
@@ -176,6 +179,32 @@ namespace Net {
                 requestId->clear();
                 requestId = nullptr;
             }
+        };
+        void writeBinary(const char* contentType, uint8_t* data, size_t length) override {
+            unsigned long epoch = TimeClient::getNTPClient().getEpochTime();
+            int ms = TimeClient::getNTPClient().getMilliseconds();
+
+            // Send binary packed message
+            MsgPack::Packer packer;
+            struct timeval tv_now{};
+            gettimeofday(&tv_now, nullptr);
+            MsgPack::object::timespec t = {
+                    .tv_sec  = tv_now.tv_sec, /* int64_t  */
+                    .tv_nsec = static_cast<uint32_t>(tv_now.tv_usec) / 10000  /* uint32_t */
+            };
+            packer.packTimestamp(t);
+            auto epochs = String(epoch) + ms;
+            packer.packFloat((epoch * 1000.0f) + ms);
+            packer.pack(F("#"));
+            packer.pack(requestId->c_str());
+            packer.pack("");
+            packer.pack(F("Response.Data"));
+            packer.pack(data, length);
+            ws->sendBIN(cid, packer.data(), packer.size());
+            packer.clear();
+
+            requestId->clear();
+            requestId = nullptr;
         };
         void error(const char* s) override {};
     private:
@@ -209,6 +238,16 @@ namespace Net {
             if (server != nullptr && !disableOutput) {
                 sendHeaders();
                 server->sendContent(s);
+            }
+        }
+        void writeBinary(const char* contentType, uint8_t* data, size_t length) override {
+            contentLength += length;
+            if (server != nullptr && !disableOutput) {
+                server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+                server->sendHeader("Pragma", "no-cache");
+                server->sendHeader("Expires", "0");
+                server->setContentLength(length);
+                server->send_P(200, contentType, (const char*)data, length);
             }
         }
         void error(const char* s) override {

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -62,9 +62,9 @@ void IO::Sensors::TCS34725::loop() {
     if (c == 0) {
         r = g = b = 0;
     } else {
-        r = round((float)r / (float)sum * 255.0);
-        g = round((float)g / (float)sum * 255.0);
-        b = round((float)b / (float)sum * 255.0);
+        r = (uint16_t)round((float)r / (float)sum * 255.0);
+        g = (uint16_t)round((float)g / (float)sum * 255.0);
+        b = (uint16_t)round((float)b / (float)sum * 255.0);
     }
 
     // send event with read values if changed

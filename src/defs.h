@@ -86,6 +86,9 @@
 #elif ESP32_S3
     #undef DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
+#elif ESP32
+    #undef DISABLE_BLUETOOTH_LE
+    #define DISABLE_BLUETOOTH_CLASSIC
 #else
     #define DISABLE_BLUETOOTH_LE
 #endif
@@ -146,6 +149,10 @@
     #define CONFIG_TOUCH_SCL 26
     #define CONFIG_TOUCH_RST 34
 
+#endif
+
+#ifndef HOMEGENIE_LOG_LEVEL
+#define HOMEGENIE_LOG_LEVEL LOG_LEVEL_TRACE
 #endif
 
 #endif // HOMEGENIE_MINI_DEFS_H

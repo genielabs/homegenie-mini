@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/.dummy" />
+      <file path="$PROJECT_DIR$/.pio" />
+      <file path="$PROJECT_DIR$/CMakeFiles" />
+      <file path="$PROJECT_DIR$/artifacts" />
+      <file path="$PROJECT_DIR$/cmake-build-debug" />
+      <file path="$PROJECT_DIR$/managed_components" />
+    </excludeRoots>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="PlatformIOSettings">
     <option name="linkedExternalProjectsSettings">
@@ -14,4 +24,5 @@
     </option>
   </component>
   <component name="PlatformIOWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="WestSettings"><![CDATA[{}]]></component>
 </project>

@@ -305,6 +305,22 @@ namespace Service { namespace API {
                 if (contentLength == 0) return false;
                 homeGenie->writeModuleJSON(responseCallback, &domain, &address);
                 return true;
+            } else if (request->Command == ConfigApi::Modules_UpdateInfo) {
+                auto domain = request->getOption(0);
+                auto address = request->getOption(1);
+                auto module = homeGenie->getModule(&domain, &address);
+                if (module != nullptr) {
+                    JsonDocument doc;
+                    DeserializationError error = deserializeJson(doc, request->Data);
+                    if (!error.code()) {
+                        if (doc.containsKey("name") && doc.containsKey("description")) {
+                            module->name = doc["name"].as<String>();
+                            module->description = doc["description"].as<String>();
+                            // TODO: deviceType ....
+// TODO: implement data persistence -- should persist name change
+                        }
+                    }
+                }
             } else if (request->Command == ConfigApi::Modules_ParameterGet) {
                 auto domain = request->getOption(0);
                 auto address = request->getOption(1);

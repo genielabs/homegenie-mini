@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -97,7 +97,7 @@ namespace IO { namespace Sensors {
         byte MSB = data[1];
         byte LSB = data[0];
 
-        return (((MSB << 8) | LSB) / 16.0f) + DS18B20_MEASURE_OFFSET;
+        return ((float)((MSB << 8) | LSB) / 16.0f) + DS18B20_MEASURE_OFFSET;
     }
 
     void DS18B20::setInputPin(const uint8_t pinNumber) {

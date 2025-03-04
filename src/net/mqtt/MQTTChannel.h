@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -34,6 +34,7 @@ namespace Net {
     public:
         virtual void broadcast(uint8_t num, String *topic, String *payload) {};
         virtual void broadcast(String *topic, String *payload) = 0;
+        virtual void broadcast(uint8_t* topic, uint16_t topic_length, uint8_t* payload, size_t payload_length) = 0;
     };
 }
 

@@ -149,13 +149,13 @@ public:
         wifiConfiguredCallback = std::move(callback);
     }
 
-    static bool saveSetting(const char* key, String& value) {
+    static bool saveSetting(const char* key, String value) {
         String k = String("$") + String(key);
         Preferences preferences;
         preferences.begin(CONFIG_SYSTEM_NAME, false);
         preferences.putString(k.c_str(), value);
         preferences.end();
-        return false; // TODO: ?!?
+        return false; // TODO: ?!? return *true* if saved otherwise *false*
     }
 
     static String getSetting(const char* key, const char* defaultValue = "") {

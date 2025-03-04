@@ -45,7 +45,7 @@
 #define GPIO_PORT_NS_PREFIX           "IO::GPIO::GPIOPort"
 
 #define GPIO_PORT_LEVEL_MIN       0.0F
-#define GPIO_PORT_LEVEL_MAX       254.0F
+#define GPIO_PORT_LEVEL_MAX       255.0F
 
 namespace IO { namespace GPIO {
 

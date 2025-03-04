@@ -31,8 +31,10 @@
 #define HOMEGENIE_MINI_COMMONAPI_H
 
 #define UI_WIDGETS_FIELD_TYPE_NUMBER "number"
+#define UI_WIDGETS_FIELD_TYPE_SLIDER "slider"
 #define UI_WIDGETS_FIELD_TYPE_BUTTON "button"
 #define UI_WIDGETS_FIELD_TYPE_SELECT "select"
+#define UI_WIDGETS_FIELD_TYPE_CHECKBOX "checkbox"
 #define UI_WIDGETS_FIELD_TYPE_SELECT_FILTER "select.filter"
 #define UI_WIDGETS_FIELD_TYPE_MODULE_TEXT "module.text"
 
@@ -68,6 +70,7 @@ namespace Service { namespace API {
     namespace ConfigApi {
         static const char Modules_List[] = "Modules.List";
         static const char Modules_Get[] = "Modules.Get";
+        static const char Modules_UpdateInfo[] = "Modules.UpdateInfo";
         static const char Modules_ParameterGet[] = "Modules.ParameterGet";
         static const char Modules_ParameterSet[] = "Modules.ParameterSet";
         static const char Modules_StatisticsGet[] = "Modules.StatisticsGet";
@@ -84,6 +87,7 @@ namespace Service { namespace API {
     }
 
     namespace WidgetApi {
+        static const char DisplayModule[] = "Widget.DisplayModule";
         namespace Implements {
             static const char Scheduling[] = "Widget.Implements.Scheduling";
             static const char Scheduling_ModuleEvents[] = "Widget.Implements.Scheduling.ModuleEvents";

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -43,7 +43,7 @@ namespace Net {
     using namespace MQTT;
     using namespace IO;
 
-    typedef std::function<void(uint8_t num, const char* domain, const char* address, const char* command, const char* options, const char* data)> ApiRequestEvent;
+    typedef std::function<void(uint8_t num, const char* sender, const char* tid, const char* domain, const char* address, const char* command, const char* options, const char* data)> ApiRequestEvent;
 
     /// Simple MQTT Broker implementation over WebSockets
     class MQTTServer : MQTTChannel, Task {
@@ -56,10 +56,11 @@ namespace Net {
         }
 
         void webSocketEvent(uint8_t num, WStype_t type, uint8_t* payload, size_t length);
-        void mqttCallback(uint8_t num, const Events_t* event, const String* topic_name, uint8_t* payload, uint16_t length_payload);
+        void mqttCallback(uint8_t num, const Events_t* event, uint8_t* topic_name, uint16_t topic_length, uint8_t* payload, uint16_t length_payload);
 
         void broadcast(String *topic, String *payload) override;
         void broadcast(uint8_t num, String *topic, String *payload) override;
+        void broadcast(uint8_t* topic, uint16_t topic_length, uint8_t *payload, size_t length) override;
 
     private:
         WebSocketsServer* webSocket = nullptr;
