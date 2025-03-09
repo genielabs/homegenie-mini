@@ -29,7 +29,7 @@ In addition to default system options the following configuration options are av
 | `camr-typ`  | Camera sensor type (ESP32)           | "" ("esp32-cam" to enable camera)       |   
 | `camr-pwr`  | Camera Power down signal GPIO#       | -1                                      |  
 | `camr-xcl`  | Camera XClock GPIO#                  | 15                                      | 
-| `camr-xfr`  | Camera XClock frequency Hz           | 20000000 (16000000 - 25000000)          | 
+| `camr-xfr`  | Camera XClock frequency Hz           | 20000000 (16000000 - 24000000)          | 
 | `camr-vsn`  | Camera Vertical sync. GPIO#          | 6                                       | 
 | `camr-hrf`  | Camera Horizontal sync. ref. GPIO#   | 7                                       |
 | `camr-pcl`  | Camera Pixel clock GPIO#             | 13                                      |
@@ -72,7 +72,7 @@ where the optional `<target>` suffix can be one of the following:
   `-c3`
 - ESP32-S3  
   `-s3`
-- ESP32-S3 N16R8V
+- ESP32-S3 N16R8V  
   `-s3-n16r8v`
 - ESP32 D1 Mini    
   `-d1-mini-esp32`

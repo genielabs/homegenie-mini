@@ -27,55 +27,44 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_CAMERAHANDLER_H
-#define HOMEGENIE_MINI_CAMERAHANDLER_H
+#ifndef HOMEGENIE_MINI_ESP32CAMERA_H
+#define HOMEGENIE_MINI_ESP32CAMERA_H
 
 #ifdef ESP_CAMERA_SUPPORTED
 
 #include <HomeGenie.h>
+#include <src/service/api/devices/Dimmer.h>
+#include <src/service/api/devices/Camera.h>
 
 #include "esp_camera.h"
 #include "soc/rtc_cntl_reg.h"
 
-#include "SensorApi.h"
+#include "../../api/SensorApi.h"
 
-namespace Service { namespace API {
+namespace IO { namespace Sensors {
 
     using namespace Service;
+    using namespace Service::devices;
+
     using namespace SensorApi::Configuration;
 
-    class CameraHandler : public APIHandler {
+    class Esp32Camera {
     public:
-        explicit CameraHandler();
 
-        void init() override;
-
-        bool canHandleDomain(String* domain) override;
-        bool handleRequest(APIRequest *request, ResponseCallback* responseCallback) override;
-        bool handleEvent(IIOEventSender *sender,
-                         const char* domain, const char* address,
-                         const char *eventPath, void *eventData, IOEventDataType dataType) override;
-
-        Module* getModule(const char* domain, const char* address) override;
-        LinkedList<Module*>* getModuleList() override;
-
-        static int getFlashPin();
-
-        static void setModule(Module* module);
+        explicit Esp32Camera(devices::Camera* cameraHandler);
 
         static void cameraStart();
         static void cameraStop();
 
-        static Module* module;
+        static void init(Camera *pCamera);
 
     private:
-        static LinkedList<Module*> moduleList;
-
+        static camera_fb_t* cameraFrame;
         static bool initialized;
-        static int flashGpioNum;
+        static FrameBuffer* currentFrame;
+        static Esp32Camera* instance;
 
         static void applySettings();
-
     };
 
     // UI options update listener
@@ -105,7 +94,7 @@ namespace Service { namespace API {
                     v = configValueNormalize(Options::Image_Quality, 10, 63, v);
                     s->set_quality(s, v);
                 } else if (option->is(Options::Image_Resolution)) {
-                    CameraHandler::cameraStop();
+                    Esp32Camera::cameraStop();
                 }
             }
         }
@@ -128,4 +117,4 @@ namespace Service { namespace API {
 
 #endif // ESP_CAMERA_SUPPORTED
 
-#endif //HOMEGENIE_MINI_CAMERAHANDLER_H
+#endif //HOMEGENIE_MINI_ESP32CAMERA_H

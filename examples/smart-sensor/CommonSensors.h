@@ -34,7 +34,7 @@
 
 #include "api/SensorApi.h"
 #ifdef ESP_CAMERA_SUPPORTED
-#include "api/CameraHandler.h"
+#include "examples/smart-sensor/io/sensors/Esp32Camera.h"
 #endif
 #include "io/sensors/DS18B20.h"
 #include "io/sensors/MotionSensor.h"
@@ -165,23 +165,10 @@ void includeCommonSensors(HomeGenie* homeGenie, Module* sensorModule) {
 #ifdef ESP_CAMERA_SUPPORTED
     if (Config::getSetting(Camera_Sensor::SensorType).equals("esp32-cam")) {
         // Add camera handler
-        auto cameraHandler = new CameraHandler();
-        cameraHandler->setModule(sensorModule);
+        auto cameraHandler = new Camera(IOEventDomains::HomeAutomation_HomeGenie, "Camera", "Smart Camera");
         homeGenie->addAPIHandler(cameraHandler);
-        // Add module (dimmable light) for built-in camera flash
-        const int flashPin = cameraHandler->getFlashPin();
-        if (flashPin >= 0) {
-            pinMode(flashPin, OUTPUT);
-            auto flashLight = new Dimmer(IOEventDomains::HomeAutomation_HomeGenie, "LED", "LED");
-            flashLight->onSetStatus([flashPin](Service::API::devices::SwitchStatus status) {
-                analogWrite(flashPin, status == SWITCH_STATUS_ON ? GPIO_PORT_LEVEL_MAX : 0);
-            });
-            flashLight->onSetLevel([flashPin](float level) {
-                auto v = (int) round(level * GPIO_PORT_LEVEL_MAX);
-                analogWrite(flashPin, v);
-            });
-            homeGenie->addAPIHandler(flashLight);
-        }
+        // Initialize Esp32Camera
+        Esp32Camera::init(cameraHandler);
     }
 #endif
 }

@@ -34,6 +34,7 @@ namespace Net {
 
     MQTTRequestHandler* MQTTClient::requestHandler = nullptr;
     bool MQTTClient::enableEncryption = false;
+    bool MQTTClient::isConnected = false;
 
     MQTTClient::MQTTClient() {
         setLoopInterval(2000);
@@ -96,9 +97,9 @@ namespace Net {
         clientId = uuid.toCharArray();
 #if ESP_IDF_VERSION_MAJOR >= 5
         mqtt_cfg.credentials.client_id = clientId.c_str();
-            mqtt_cfg.broker.address.uri = brokerUrl.c_str();
-            mqtt_cfg.credentials.username = username.c_str();
-            mqtt_cfg.credentials.authentication.password = password.c_str();
+        mqtt_cfg.broker.address.uri = brokerUrl.c_str();
+        mqtt_cfg.credentials.username = username.c_str();
+        mqtt_cfg.credentials.authentication.password = password.c_str();
 #else
         mqtt_cfg.client_id = clientId.c_str();
         mqtt_cfg.uri = brokerUrl.c_str();
@@ -145,6 +146,20 @@ namespace Net {
 
     }
 
+    void MQTTClient::broadcast(String *topic, String *payload) {
+        if (!clientStarted || !isConnected) return;
+        encrypt(topic, payload);
+        esp_mqtt_client_publish(client, topic->c_str(), payload->c_str(), static_cast<uint16_t>(payload->length()), 0, 0);
+    }
+
+    void MQTTClient::broadcast(uint8_t* topic, uint16_t topic_length, uint8_t *byte_payload, size_t length) {
+        if (!clientStarted || !isConnected) return;
+        auto payload = String(byte_payload, length);
+        auto t = String(topic, topic_length);
+        encrypt(&t, &payload);
+        esp_mqtt_client_publish(client, t.c_str(), payload.c_str(), static_cast<uint16_t>(length), 0, 0);
+    }
+
     void MQTTClient::encrypt(String *topic, String *payload) {
         if (enableEncryption) {
             int ci = topic->indexOf("/");
@@ -158,20 +173,6 @@ namespace Net {
             }
             encryptionFilter(payload);
         }
-    }
-
-    void MQTTClient::broadcast(String *topic, String *payload) {
-        if (!clientStarted) return;
-        encrypt(topic, payload);
-        esp_mqtt_client_enqueue(client, topic->c_str(), payload->c_str(), static_cast<uint16_t>(payload->length()), 0, 0, true);
-    }
-
-    void MQTTClient::broadcast(uint8_t* topic, uint16_t topic_length, uint8_t *byte_payload, size_t length) {
-        if (!clientStarted) return;
-        auto payload = String(byte_payload, length);
-        auto t = String(topic, topic_length);
-        encrypt(&t, &payload);
-        esp_mqtt_client_enqueue(client, t.c_str(), payload.c_str(), static_cast<uint16_t>(length), 0, 0, true);
     }
 
     void MQTTClient::encryptTopic(String *topic) {
@@ -254,9 +255,11 @@ namespace Net {
                     String topic = Config::system.id + "/#";
                     esp_mqtt_client_subscribe(client, topic.c_str(), 1);
                 }
+                isConnected = true;
             } break;
 
             case MQTT_EVENT_DISCONNECTED:
+                isConnected = false;
                 break;
             case MQTT_EVENT_SUBSCRIBED:
                 break;
@@ -350,6 +353,7 @@ namespace Net {
                 }
                 break;
                 */
+                isConnected = false;
             default:
                 break;
         }

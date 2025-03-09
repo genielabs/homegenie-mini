@@ -28,163 +28,37 @@
  */
 #ifdef ESP_CAMERA_SUPPORTED
 
-#include "CameraHandler.h"
+#include "Esp32Camera.h"
 
-namespace Service { namespace API {
-    bool CameraHandler::initialized = false;
-    int CameraHandler::flashGpioNum = -1;
-    LinkedList<Module*> CameraHandler::moduleList;
-    Module* CameraHandler::module = nullptr;
+namespace IO { namespace Sensors {
 
+    camera_fb_t* Esp32Camera::cameraFrame = nullptr;
+    bool Esp32Camera::initialized = false;
+    FrameBuffer* Esp32Camera::currentFrame = new FrameBuffer();
+    Esp32Camera* Esp32Camera::instance = nullptr;
 
+    Esp32Camera::Esp32Camera(devices::Camera *cameraHandler) {
 
-    CameraHandler::CameraHandler() = default;
-
-    void CameraHandler::init() {
-        //cameraStart();
-    }
-
-    bool CameraHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
-        if (command->Command == "Camera.GetPicture") {
+        // Set the frame request handler
+        cameraHandler->onFrameRequest([]{
             if (!initialized) {
                 cameraStart();
             }
-            camera_fb_t *fb = esp_camera_fb_get();
-            responseCallback->writeBinary("image/jpeg", fb->buf, fb->len);
-            esp_camera_fb_return(fb);
-            return true;
-        }
-        return false;
-    }
+            cameraFrame = esp_camera_fb_get();
+            currentFrame->buffer = cameraFrame->buf;
+            currentFrame->length = cameraFrame->len;
+            return currentFrame;
+        });
+        cameraHandler->onFrameRelease([]() {
+            esp_camera_fb_return(cameraFrame);
+        });
 
-    bool CameraHandler::canHandleDomain(String* domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
-    }
+        // Get Camera handler module
+        auto module = cameraHandler->getModuleList()->get(0);
 
-    bool CameraHandler::handleEvent(IIOEventSender *sender,
-                                     const char* domain, const char* address,
-                                     const char *eventPath, void *eventData, IOEventDataType dataType) {
-        auto module = getModule(domain, address);
-        if (module) {
-            auto event = String((char *) eventPath);
-            // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto m = QueuedMessage(domain, address, event.c_str(), "",
-                                   nullptr, IOEventDataType::Undefined);
-            // Data type handling
-            switch (dataType) {
-                case Number:
-                    m.value = String(*(int32_t *) eventData);
-                    break;
-                case Float:
-                    m.value = String(*(float *) eventData);
-                    break;
-                case Text:
-                    m.value = String(*(String *) eventData);
-                    break;
-                default:
-                    m.value = String(*(int32_t *) eventData);
-            }
-            module->setProperty(event, m.value,
-                                nullptr, IOEventDataType::Undefined);
-            HomeGenie::getInstance()->getEventRouter().signalEvent(m);
-        }
-        return false;
-    }
-
-    Module* CameraHandler::getModule(const char* domain, const char* address) {
-        for (int i = 0; i < moduleList.size(); i++) {
-            auto module = moduleList.get(i);
-            if (module->domain.equals(domain) && module->address.equals(address))
-                return module;
-        }
-        return nullptr;
-    }
-    LinkedList<Module*>* CameraHandler::getModuleList() {
-        return reinterpret_cast<LinkedList<Data::Module *> *>(&moduleList);
-    }
-
-    int CameraHandler::getFlashPin() {
-        return flashGpioNum;
-    }
-
-    void CameraHandler::setModule(Module *module) {
-        CameraHandler::module = module;
-        // configure main module
+        // Configure camera module UI widget
         module->setProperty(WidgetApi::DisplayModule, "homegenie/generic/camerainput");
-        // Add options for brightness control
-        auto brightnessControl = Config::getSetting(Camera_Sensor::BrightnessControl, "0");
-        module->addWidgetOption(
-                // name, value
-                Options::Controls_Brightness, brightnessControl.c_str(),
-                // type
-                UI_WIDGETS_FIELD_TYPE_SLIDER
-                // label
-                ":brightness_control"
-                // min:max:default
-                ":-2:2:0"
-        )->withConfigKey(Camera_Sensor::BrightnessControl)->addUpdateListener(&optionUpdateListener);
-        // Add options for saturation control
-        auto saturationControl = Config::getSetting(Camera_Sensor::SaturationControl, "0");
-        module->addWidgetOption(
-                // name, value
-                Options::Controls_Saturation, saturationControl.c_str(),
-                // type
-                UI_WIDGETS_FIELD_TYPE_SLIDER
-                // label
-                ":saturation_control"
-                // min:max:default
-                ":-2:2:0"
-        )->withConfigKey(Camera_Sensor::SaturationControl)->addUpdateListener(&optionUpdateListener);
-        // Add options for contrast control
-        auto contrastControl = Config::getSetting(Camera_Sensor::ContrastControl, "0");
-        module->addWidgetOption(
-                // name, value
-                Options::Controls_Contrast, contrastControl.c_str(),
-                // type
-                UI_WIDGETS_FIELD_TYPE_SLIDER
-                // label
-                ":contrast_control"
-                // min:max:default
-                ":-2:2:0"
-        )->withConfigKey(Camera_Sensor::ContrastControl)->addUpdateListener(&optionUpdateListener);
-        // Add option for image effects
-        auto effectControl = Config::getSetting(Camera_Sensor::EffectControl, "0");
-        module->addWidgetOption(
-                // name,   value
-                Options::Controls_Effect, effectControl.c_str(),
-                // type
-                UI_WIDGETS_FIELD_TYPE_SELECT
-                // label
-                ":special_effect"
-                // options (keys separated by pipe)
-                ":no_effect=0"
-                "|negative=1"
-                "|grayscale=2"
-                "|red_tint=3"
-                "|green_tint=4"
-                "|blue_tint=5"
-                "|sepia=6"
-        )->withConfigKey(Camera_Sensor::EffectControl)->addUpdateListener(&optionUpdateListener);
-        // Add options for horizontal mirror
-        auto horizontalMirror = Config::getSetting(Camera_Sensor::HMirrorControl, "0");
-        module->addWidgetOption(
-                // name, value
-                Options::Controls_HMirror, horizontalMirror.c_str(),
-                // type
-                UI_WIDGETS_FIELD_TYPE_CHECKBOX
-                // label
-                ":horizontal_mirror"
-        )->withConfigKey(Camera_Sensor::HMirrorControl)->addUpdateListener(&optionUpdateListener);
-        // Add options for vertical flip
-        auto verticalFlip = Config::getSetting(Camera_Sensor::VFlipControl, "0");
-        module->addWidgetOption(
-                // name, value
-                Options::Controls_VFlip, verticalFlip.c_str(),
-                // type
-                UI_WIDGETS_FIELD_TYPE_CHECKBOX
-                // label
-                ":vertical_flip"
-        )->withConfigKey(Camera_Sensor::VFlipControl)->addUpdateListener(&optionUpdateListener);
+
         // Add options for image quality
         auto imageQuality = Config::getSetting(Camera_Sensor::ImageQuality, "20");
         module->addWidgetOption(
@@ -198,14 +72,14 @@ namespace Service { namespace API {
                 ":10:63:20"
         )->withConfigKey(Camera_Sensor::ImageQuality)->addUpdateListener(&optionUpdateListener);
 
+        // Add option for image size
         size_t psramSize = esp_spiram_get_size();
-        // Add option for image effects
         char resolutionOptions[512];
-        if (psramSize == 0) {
+        if (psramSize == 0) { // NO PSRAM
             snprintf(resolutionOptions, sizeof(resolutionOptions),
                      UI_WIDGETS_FIELD_TYPE_SELECT
                      ":image_resolution"
-                     "|QQVGA (160x120)=%d"
+                     ":QQVGA (160x120)=%d"
                      "|QCIF (176x144)=%d"
                      "|HQVGA (240x176)=%d",
                      (uint8_t)FRAMESIZE_QQVGA, (uint8_t)FRAMESIZE_QCIF,
@@ -214,7 +88,7 @@ namespace Service { namespace API {
             snprintf(resolutionOptions, sizeof(resolutionOptions),
                      UI_WIDGETS_FIELD_TYPE_SELECT
                      ":image_resolution"
-                     "|QQVGA (160x120)=%d"
+                     ":QQVGA (160x120)=%d"
                      "|QCIF (176x144)=%d"
                      "|HQVGA (240x176)=%d"
                      "|QVGA (320x240)=%d"
@@ -229,7 +103,7 @@ namespace Service { namespace API {
             snprintf(resolutionOptions, sizeof(resolutionOptions),
                      UI_WIDGETS_FIELD_TYPE_SELECT
                      ":image_resolution"
-                     "|QQVGA (160x120)=%d"
+                     ":QQVGA (160x120)=%d"
                      "|QCIF (176x144)=%d"
                      "|HQVGA (240x176)=%d"
                      "|QVGA (320x240)=%d"
@@ -247,7 +121,7 @@ namespace Service { namespace API {
             snprintf(resolutionOptions, sizeof(resolutionOptions),
                      UI_WIDGETS_FIELD_TYPE_SELECT
                      ":image_resolution"
-                     "|QCIF (176x144)=%d"
+                     ":QCIF (176x144)=%d"
                      "|HQVGA (240x176)=%d"
                      "|QVGA (320x240)=%d"
                      "|HVGA (480x320)=%d"
@@ -267,9 +141,90 @@ namespace Service { namespace API {
                 Options::Image_Resolution, imageResolution.c_str(),
                 resolutionOptions
         )->withConfigKey(Camera_Sensor::ImageResolution)->addUpdateListener(&optionUpdateListener);
+
+        // Add options for brightness control
+        auto brightnessControl = Config::getSetting(Camera_Sensor::BrightnessControl, "0");
+        module->addWidgetOption(
+                // name, value
+                Options::Controls_Brightness, brightnessControl.c_str(),
+                // type
+                UI_WIDGETS_FIELD_TYPE_SLIDER
+                // label
+                ":brightness_control"
+                // min:max:default
+                ":-2:2:0"
+        )->withConfigKey(Camera_Sensor::BrightnessControl)->addUpdateListener(&optionUpdateListener);
+
+        // Add options for saturation control
+        auto saturationControl = Config::getSetting(Camera_Sensor::SaturationControl, "0");
+        module->addWidgetOption(
+                // name, value
+                Options::Controls_Saturation, saturationControl.c_str(),
+                // type
+                UI_WIDGETS_FIELD_TYPE_SLIDER
+                // label
+                ":saturation_control"
+                // min:max:default
+                ":-2:2:0"
+        )->withConfigKey(Camera_Sensor::SaturationControl)->addUpdateListener(&optionUpdateListener);
+
+        // Add options for contrast control
+        auto contrastControl = Config::getSetting(Camera_Sensor::ContrastControl, "0");
+        module->addWidgetOption(
+                // name, value
+                Options::Controls_Contrast, contrastControl.c_str(),
+                // type
+                UI_WIDGETS_FIELD_TYPE_SLIDER
+                // label
+                ":contrast_control"
+                // min:max:default
+                ":-2:2:0"
+        )->withConfigKey(Camera_Sensor::ContrastControl)->addUpdateListener(&optionUpdateListener);
+
+        // Add option for image effects
+        auto effectControl = Config::getSetting(Camera_Sensor::EffectControl, "0");
+        module->addWidgetOption(
+                // name,   value
+                Options::Controls_Effect, effectControl.c_str(),
+                // type
+                UI_WIDGETS_FIELD_TYPE_SELECT
+                // label
+                ":special_effect"
+                // options (keys separated by pipe)
+                ":no_effect=0"
+                "|negative=1"
+                "|grayscale=2"
+                "|red_tint=3"
+                "|green_tint=4"
+                "|blue_tint=5"
+                "|sepia=6"
+        )->withConfigKey(Camera_Sensor::EffectControl)->addUpdateListener(&optionUpdateListener);
+
+        // Add options for horizontal mirror
+        auto horizontalMirror = Config::getSetting(Camera_Sensor::HMirrorControl, "0");
+        module->addWidgetOption(
+                // name, value
+                Options::Controls_HMirror, horizontalMirror.c_str(),
+                // type
+                UI_WIDGETS_FIELD_TYPE_CHECKBOX
+                // label
+                ":horizontal_mirror"
+        )->withConfigKey(Camera_Sensor::HMirrorControl)->addUpdateListener(&optionUpdateListener);
+
+        // Add options for vertical flip
+        auto verticalFlip = Config::getSetting(Camera_Sensor::VFlipControl, "0");
+        module->addWidgetOption(
+                // name, value
+                Options::Controls_VFlip, verticalFlip.c_str(),
+                // type
+                UI_WIDGETS_FIELD_TYPE_CHECKBOX
+                // label
+                ":vertical_flip"
+        )->withConfigKey(Camera_Sensor::VFlipControl)->addUpdateListener(&optionUpdateListener);
+
     }
 
-    void CameraHandler::applySettings() {
+    void Esp32Camera::applySettings() {
         sensor_t * camera = esp_camera_sensor_get();
         camera->set_brightness(camera, Config::getSetting(Camera_Sensor::BrightnessControl, "0").toInt());     // -2 to 2
         camera->set_contrast(camera, Config::getSetting(Camera_Sensor::ContrastControl, "0").toInt());         // -2 to 2
@@ -295,7 +250,7 @@ namespace Service { namespace API {
         camera->set_colorbar(camera, 0);                                                      // 0 = disable , 1 = enable
     }
 
-    void CameraHandler::cameraStart() {
+    void Esp32Camera::cameraStart() {
         if (initialized) return;
         //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
         /*
@@ -362,12 +317,18 @@ namespace Service { namespace API {
         }
     }
 
-    void CameraHandler::cameraStop() {
+    void Esp32Camera::cameraStop() {
         esp_err_t err = esp_camera_deinit();
         if (err != ESP_OK) {
             Serial.println("Error de-initializing camera sensor");
         }
         initialized = false;
+    }
+
+    void Esp32Camera::init(Camera* cameraHandler) {
+        if (instance == nullptr) {
+            instance = new Esp32Camera(cameraHandler);
+        }
     }
 
 }}

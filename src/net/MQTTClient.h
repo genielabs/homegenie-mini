@@ -79,6 +79,7 @@ namespace Net {
     private:
         static String encryptionKey;
         static bool enableEncryption;
+        static bool isConnected;
         String clientId;
         String brokerUrl;
         String username;
