@@ -59,11 +59,28 @@ namespace Service { namespace API { namespace devices {
         void onFrameRelease(std::function<void()> callback) {
             setOnFrameReleaseCallback = std::move(callback);
         }
+        void onFileSave(std::function<bool()> callback) {
+            setOnFileSaveCallback = std::move(callback);
+        }
+        /*
+        // TODO: file enumeration resulted to be very slow
+        //       disabled / aiming to a better implementation
+        //
+        void onFileList(std::function<String()> callback) {
+            setOnFileListCallback = std::move(callback);
+        }
+        void onFileDelete(std::function<bool()> callback) {
+            setOnFileDeleteCallback = std::move(callback);
+        }
+        */
 
     private:
         LinkedList<Module*> moduleList;
         std::function<FrameBuffer*()> setOnFrameRequestCallback = nullptr;
         std::function<void()> setOnFrameReleaseCallback = nullptr;
+        std::function<bool()> setOnFileSaveCallback = nullptr;
+        //std::function<String()> setOnFileListCallback = nullptr;
+        //std::function<bool()> setOnFileDeleteCallback = nullptr;
     };
 
 

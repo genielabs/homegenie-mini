@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -36,9 +36,13 @@ namespace IO { namespace Sensors {
     bool Esp32Camera::initialized = false;
     FrameBuffer* Esp32Camera::currentFrame = new FrameBuffer();
     Esp32Camera* Esp32Camera::instance = nullptr;
+    bool Esp32Camera::sdcardInitialized = false;
 
     Esp32Camera::Esp32Camera(devices::Camera *cameraHandler) {
-
+#ifndef ESP32_S3
+        // On classic ESP32-CAM the internal LED has inverted on/off behaviour
+        Config::StatusLedInvert = true;
+#endif
         // Set the frame request handler
         cameraHandler->onFrameRequest([]{
             if (!initialized) {
@@ -52,7 +56,18 @@ namespace IO { namespace Sensors {
         cameraHandler->onFrameRelease([]() {
             esp_camera_fb_return(cameraFrame);
         });
-
+        cameraHandler->onFileSave([]() {
+            auto rtc = Config::getRTC();
+            char folderName[20];
+            char fullPath[50];
+            sprintf(folderName, "/%02d%02d%02d", rtc->getYear(), rtc->getMonth(), rtc->getDay());
+            sprintf(fullPath, "%s/%02d%02d%02d%02d%02d%02d%03d.jpg", folderName, rtc->getYear(), rtc->getMonth(), rtc->getDay(), rtc->getHour(true), rtc->getMinute(), rtc->getSecond(), rtc->getMillis());
+            if (Esp32Camera::sdcardInitialized || Esp32Camera::initMicroSDCard()) {
+                // TODO: emit event `Camera.SDCard.LastSaved` Serial.println(fileName);
+                return Esp32Camera::takeNewPhoto(folderName, fullPath);
+            }
+            return false;
+        });
         // Get Camera handler module
         auto module = cameraHandler->getModuleList()->get(0);
 
@@ -73,7 +88,7 @@ namespace IO { namespace Sensors {
         )->withConfigKey(Camera_Sensor::ImageQuality)->addUpdateListener(&optionUpdateListener);
 
         // Add option for image size
-        size_t psramSize = esp_spiram_get_size();
+        auto psramSize = esp_spiram_get_size();
         char resolutionOptions[512];
         if (psramSize == 0) { // NO PSRAM
             snprintf(resolutionOptions, sizeof(resolutionOptions),
@@ -81,25 +96,13 @@ namespace IO { namespace Sensors {
                      ":image_resolution"
                      ":QQVGA (160x120)=%d"
                      "|QCIF (176x144)=%d"
-                     "|HQVGA (240x176)=%d",
-                     (uint8_t)FRAMESIZE_QQVGA, (uint8_t)FRAMESIZE_QCIF,
-                     (uint8_t)FRAMESIZE_HQVGA);
-        } else if (psramSize <= 2097152) {
-            snprintf(resolutionOptions, sizeof(resolutionOptions),
-                     UI_WIDGETS_FIELD_TYPE_SELECT
-                     ":image_resolution"
-                     ":QQVGA (160x120)=%d"
-                     "|QCIF (176x144)=%d"
                      "|HQVGA (240x176)=%d"
-                     "|QVGA (320x240)=%d"
-                     "|CIF (400x296)=%d"
-                     "|HVGA (480x320)=%d"
-                     "|VGA (640x480)=%d"
-                     "|SVGA (800x600)=%d",
+                     "|240x240 (240x240)=%d"
+                     "|QVGA (320x240)=%d",
                      (uint8_t)FRAMESIZE_QQVGA, (uint8_t)FRAMESIZE_QCIF,
-                     (uint8_t)FRAMESIZE_HQVGA, (uint8_t)FRAMESIZE_QVGA, (uint8_t)FRAMESIZE_CIF,
-                     (uint8_t)FRAMESIZE_HVGA, (uint8_t)FRAMESIZE_VGA, (uint8_t)FRAMESIZE_SVGA);
-        } else if (psramSize <= 4194304) {
+                     (uint8_t)FRAMESIZE_HQVGA, (uint8_t)FRAMESIZE_240X240,
+                     (uint8_t)FRAMESIZE_QVGA);
+        } else if (psramSize <= 2097152) {
             snprintf(resolutionOptions, sizeof(resolutionOptions),
                      UI_WIDGETS_FIELD_TYPE_SELECT
                      ":image_resolution"
@@ -121,6 +124,7 @@ namespace IO { namespace Sensors {
             snprintf(resolutionOptions, sizeof(resolutionOptions),
                      UI_WIDGETS_FIELD_TYPE_SELECT
                      ":image_resolution"
+                     // 2MP
                      ":QCIF (176x144)=%d"
                      "|HQVGA (240x176)=%d"
                      "|QVGA (320x240)=%d"
@@ -130,10 +134,27 @@ namespace IO { namespace Sensors {
                      "|XGA (1024x768)=%d"
                      "|HD (1280x720)=%d"
                      "|SXGA (1280x1024)=%d"
-                     "|UXGA (1600x1200)=%d",
+                     "|UXGA (1600x1200)=%d"
+                     // 3MP
+                     "|FHD (1920x1080)=%d"
+                     "|P_HD (720x1280)=%d"
+                     "|P_3MP (864x1536)=%d"
+                     "|QXGA (2048x1536)=%d"
+                     "|QHD (2560x1440)=%d"
+                     "|WQXGA (2560x1600)=%d"
+                     "|P_FHD (1080x1920)=%d"
+                     "|QSXGA (2560x1920)=%d",
+                     // 2MP
                      (uint8_t)FRAMESIZE_QCIF, (uint8_t)FRAMESIZE_HQVGA, (uint8_t)FRAMESIZE_QVGA,
                      (uint8_t)FRAMESIZE_HVGA, (uint8_t)FRAMESIZE_VGA, (uint8_t)FRAMESIZE_SVGA,
-                     (uint8_t)FRAMESIZE_XGA, (uint8_t)FRAMESIZE_HD, (uint8_t)FRAMESIZE_SXGA, (uint8_t)FRAMESIZE_UXGA);
+                     (uint8_t)FRAMESIZE_XGA, (uint8_t)FRAMESIZE_HD, (uint8_t)FRAMESIZE_SXGA,
+                     (uint8_t)FRAMESIZE_UXGA,
+                     // 3MP
+                     (uint8_t)FRAMESIZE_FHD, (uint8_t)FRAMESIZE_P_HD, (uint8_t)FRAMESIZE_P_3MP,
+                     (uint8_t)FRAMESIZE_QXGA,
+                     // 5MP
+                     (uint8_t)FRAMESIZE_QHD, (uint8_t)FRAMESIZE_WQXGA, (uint8_t)FRAMESIZE_P_FHD,
+                     (uint8_t)FRAMESIZE_QSXGA);
         }
         auto imageResolution = Config::getSetting(Camera_Sensor::ImageResolution, "0");
         module->addWidgetOption(
@@ -244,14 +265,20 @@ namespace IO { namespace Sensors {
         camera->set_wpc(camera, 1);                                                           // 0 = disable , 1 = enable
         camera->set_raw_gma(camera, 1);                                                       // 0 = disable , 1 = enable
         camera->set_lenc(camera, 1);                                                          // 0 = disable , 1 = enable
-        camera->set_hmirror(camera, Config::getSetting(Camera_Sensor::HMirrorControl, "false").toInt());           // 0 = disable , 1 = enable
-        camera->set_vflip(camera, Config::getSetting(Camera_Sensor::VFlipControl, "false").toInt());               // 0 = disable , 1 = enable
+        camera->set_hmirror(camera, Config::getSetting(Camera_Sensor::HMirrorControl, "false").equals("true") ? 1 : 0);
+        camera->set_vflip(camera, Config::getSetting(Camera_Sensor::VFlipControl, "false").equals("true") ? 1 : 0);
         camera->set_dcw(camera, 1);                                                           // 0 = disable , 1 = enable
         camera->set_colorbar(camera, 0);                                                      // 0 = disable , 1 = enable
     }
 
-    void Esp32Camera::cameraStart() {
+    void Esp32Camera::cameraStart(camera_grab_mode_t grabMode) {
         if (initialized) return;
+#ifndef ESP32_S3
+        // Disable WPS button on ESP32-CAM classic model
+        // because GPIO0 is also used for X_CLOCK line
+        // and would cause WPS reset when camera is enabled
+        Config::ServiceButtonPin = -1;
+#endif
         //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
         /*
         // TODO: add MMC support
@@ -261,27 +288,28 @@ namespace IO { namespace Sensors {
         camera_config_t config;
         config.ledc_channel = LEDC_CHANNEL_0;
         config.ledc_timer = LEDC_TIMER_0;
+
         // default settings works for ESP32-S3 CAMERA board and compatible
-        config.pin_d0 = Config::getSetting(Camera_Sensor::CameraPin_cd0, "11").toInt();
-        config.pin_d1 = Config::getSetting(Camera_Sensor::CameraPin_cd1, "9").toInt();
-        config.pin_d2 = Config::getSetting(Camera_Sensor::CameraPin_cd2, "8").toInt();
-        config.pin_d3 = Config::getSetting(Camera_Sensor::CameraPin_cd3, "10").toInt();
-        config.pin_d4 = Config::getSetting(Camera_Sensor::CameraPin_cd4, "12").toInt();
-        config.pin_d5 = Config::getSetting(Camera_Sensor::CameraPin_cd5, "18").toInt();
-        config.pin_d6 = Config::getSetting(Camera_Sensor::CameraPin_cd6, "17").toInt();
-        config.pin_d7 = Config::getSetting(Camera_Sensor::CameraPin_cd7, "16").toInt();
-        config.pin_xclk = Config::getSetting(Camera_Sensor::CameraPin_xcl, "15").toInt();
-        config.pin_pclk = Config::getSetting(Camera_Sensor::CameraPin_pcl, "13").toInt();
-        config.pin_vsync = Config::getSetting(Camera_Sensor::CameraPin_vsn, "6").toInt();
-        config.pin_href = Config::getSetting(Camera_Sensor::CameraPin_hrf, "7").toInt();
-        config.pin_sccb_sda = Config::getSetting(Camera_Sensor::CameraPin_sda, "4").toInt();
-        config.pin_sccb_scl = Config::getSetting(Camera_Sensor::CameraPin_scl, "5").toInt();
+        config.pin_d0 = Config::getSetting(Camera_Sensor::CameraPin_cd0, ESP_CAMERA_CD0).toInt();
+        config.pin_d1 = Config::getSetting(Camera_Sensor::CameraPin_cd1, ESP_CAMERA_CD1).toInt();
+        config.pin_d2 = Config::getSetting(Camera_Sensor::CameraPin_cd2, ESP_CAMERA_CD2).toInt();
+        config.pin_d3 = Config::getSetting(Camera_Sensor::CameraPin_cd3, ESP_CAMERA_CD3).toInt();
+        config.pin_d4 = Config::getSetting(Camera_Sensor::CameraPin_cd4, ESP_CAMERA_CD4).toInt();
+        config.pin_d5 = Config::getSetting(Camera_Sensor::CameraPin_cd5, ESP_CAMERA_CD5).toInt();
+        config.pin_d6 = Config::getSetting(Camera_Sensor::CameraPin_cd6, ESP_CAMERA_CD6).toInt();
+        config.pin_d7 = Config::getSetting(Camera_Sensor::CameraPin_cd7, ESP_CAMERA_CD7).toInt();
+        config.pin_xclk = Config::getSetting(Camera_Sensor::CameraPin_xcl, ESP_CAMERA_XCL).toInt();
+        config.pin_pclk = Config::getSetting(Camera_Sensor::CameraPin_pcl, ESP_CAMERA_PCL).toInt();
+        config.pin_vsync = Config::getSetting(Camera_Sensor::CameraPin_vsn, ESP_CAMERA_VSN).toInt();
+        config.pin_href = Config::getSetting(Camera_Sensor::CameraPin_hrf, ESP_CAMERA_HRF).toInt();
+        config.pin_sccb_sda = Config::getSetting(Camera_Sensor::CameraPin_sda, ESP_CAMERA_SDA).toInt();
+        config.pin_sccb_scl = Config::getSetting(Camera_Sensor::CameraPin_scl, ESP_CAMERA_SCL).toInt();
 
-        config.pin_pwdn = Config::getSetting(Camera_Sensor::CameraPin_pwr, "-1").toInt();
-        config.pin_reset = Config::getSetting(Camera_Sensor::CameraPin_rst, "-1").toInt();
+        config.pin_pwdn = Config::getSetting(Camera_Sensor::CameraPin_pwr, ESP_CAMERA_PWR).toInt();
+        config.pin_reset = Config::getSetting(Camera_Sensor::CameraPin_rst, ESP_CAMERA_RST).toInt();
 
-        config.xclk_freq_hz = Config::getSetting(Camera_Sensor::CameraPin_xfr, "20000000").toInt();
-        config.jpeg_quality = Config::getSetting(Camera_Sensor::ImageQuality, "20").toInt();
+        config.xclk_freq_hz = Config::getSetting(Camera_Sensor::CameraPin_xfr, ESP_CAMERA_XFR).toInt();
+        config.jpeg_quality = Config::getSetting(Camera_Sensor::ImageQuality, ESP_CAMERA_QUALITY).toInt();
         config.pixel_format = PIXFORMAT_JPEG;
 
         // Validate and apply frame size settings
@@ -290,13 +318,17 @@ namespace IO { namespace Sensors {
             res = FRAMESIZE_QQVGA;
             Config::saveSetting(Camera_Sensor::ImageResolution, String(FRAMESIZE_QQVGA));
         }
+        // Max 3MP resolution
         if (res > FRAMESIZE_QXGA) {
             res = FRAMESIZE_QXGA;
             Config::saveSetting(Camera_Sensor::ImageResolution, String(FRAMESIZE_QXGA));
         }
         config.frame_size = res;
 
-        config.fb_count = 2;
+        auto psramSize = esp_spiram_get_size();
+        config.fb_count = (psramSize > 0) ? Config::getSetting(Camera_Sensor::CameraCfg_fbc, "2").toInt() : 1;
+        config.grab_mode = grabMode;
+
         esp_err_t err = esp_camera_init(&config);
         if (err == ESP_OK) {
             initialized = true;

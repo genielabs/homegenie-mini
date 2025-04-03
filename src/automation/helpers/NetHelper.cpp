@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -33,13 +33,7 @@ namespace Automation { namespace Helpers {
     HTTPClient NetHelper::http;
 
     String NetHelper::httpGet(String &url) {
-        WiFiClient* client;
-        if (url.startsWith("https://")) {
-            client = new WiFiClientSecure();
-            ((WiFiClientSecure*)client)->setInsecure();
-        } else {
-            client = new WiFiClient();
-        }
+        auto client = getClient(url);
         String response;
         if (http.begin(*client, url)) {
             //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -56,7 +50,35 @@ namespace Automation { namespace Helpers {
                 Serial.printf("[HTTP] GET... failed, error: %s\n", HTTPClient::errorToString(httpCode).c_str());
             }
         } else {
-            // TODO: ...
+            // TODO: report error...
+        }
+        delete client;
+        return response;
+    }
+
+
+// TODO: implement "withCredentials(user, pass)"
+
+
+    String NetHelper::httpPost(String& url, String& data) {
+        auto client = getClient(url);
+        String response;
+        if (http.begin(*client, url)) {
+            //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+            int httpCode = http.POST(data);
+            if (httpCode > 0) {
+                // Server response
+                if (httpCode == HTTP_CODE_OK) {
+                    response = http.getString();
+                } else {
+                    // Server reported error code
+                    //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+                }
+            } else {
+                Serial.printf("[HTTP] GET... failed, error: %s\n", HTTPClient::errorToString(httpCode).c_str());
+            }
+        } else {
+            // TODO: report error...
         }
         delete client;
         return response;
@@ -65,4 +87,16 @@ namespace Automation { namespace Helpers {
     bool NetHelper::ping(String &host) {
         return Ping.ping(host.c_str());
     }
+
+    WiFiClient* NetHelper::getClient(String &url) {
+        WiFiClient* client;
+        if (url.startsWith("https://")) {
+            client = new WiFiClientSecure();
+            ((WiFiClientSecure*)client)->setInsecure();
+        } else {
+            client = new WiFiClient();
+        }
+        return client;
+    }
+
 }}

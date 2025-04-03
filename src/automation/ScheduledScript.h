@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -90,6 +90,7 @@ namespace Automation {
         static duk_ret_t boundModules_property_avg(duk_context *ctx);
 
         static duk_ret_t netHelper_call(duk_context *ctx);
+        static duk_ret_t netHelper_post(duk_context *ctx);
         static duk_ret_t netHelper_ping(duk_context *ctx);
 
         static const char* getProperty(duk_context *ctx, const char* propertyPath);

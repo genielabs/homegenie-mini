@@ -77,6 +77,14 @@ namespace Service { namespace API {
                 const static char CameraPin_cd7[]       = "camr-cd7";
                 const static char CameraPin_pwr[]       = "camr-pwr";
                 const static char CameraPin_rst[]       = "camr-rst";
+                const static char CameraCfg_fbc[]       = "camr-fbc";
+
+                const static char SdCard_clk[]          = "sdmc-clk";
+                const static char SdCard_cmd[]          = "sdmc-cmd";
+                const static char SdCard_pd0[]          = "sdmc-pd0";
+                const static char SdCard_pd1[]          = "sdmc-pd1";
+                const static char SdCard_pd2[]          = "sdmc-pd2";
+                const static char SdCard_pd3[]          = "sdmc-pd3";
 
                 const static char BrightnessControl[]   = "bri-ctrl";
                 const static char SaturationControl[]   = "sat-ctrl";

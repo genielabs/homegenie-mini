@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -35,6 +35,7 @@ ZoneConfig Config::zone;
 SystemConfig Config::system;
 short Config::ServiceButtonPin = -1;
 short Config::StatusLedPin = -1;
+bool Config::StatusLedInvert = false;
 
 bool Config::isStatusLedOn = false;
 std::function<void(bool)> Config::ledCallback = nullptr;
@@ -43,12 +44,12 @@ bool Config::wpsRequest = false;
 
 void Config::statusLedOn() {
     isStatusLedOn = true;
-    if (Config::StatusLedPin >= 0) digitalWrite(Config::StatusLedPin, HIGH);
+    if (Config::StatusLedPin >= 0) digitalWrite(Config::StatusLedPin, StatusLedInvert ? LOW : HIGH);
     if (ledCallback != nullptr) ledCallback(true);
 }
 void Config::statusLedOff() {
     isStatusLedOn = false;
-    if (Config::StatusLedPin >= 0) digitalWrite(Config::StatusLedPin, LOW);
+    if (Config::StatusLedPin >= 0) digitalWrite(Config::StatusLedPin, StatusLedInvert ? HIGH : LOW);
     if (ledCallback != nullptr) ledCallback(false);
 }
 void Config::statusLedCallback(std::function<void(bool)> callback) {

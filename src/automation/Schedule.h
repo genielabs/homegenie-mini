@@ -134,7 +134,7 @@ namespace Automation {
         }
 
         bool isEnabled = true;
-        bool onModuleEvent;
+        bool onModuleEvent = false;
         String name;
         String description;
         String data;

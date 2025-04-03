@@ -100,14 +100,23 @@ void setupMotionSensorSchedules(Module* sensorModule) {
         }
         Scheduler::addSchedule(s);
     }
+}
 
-    /*
-    if (...) {
+void setupCameraSensorSchedules(Module* cameraModule) {
 
-        // TODO: if added at least one schedule then  ->  Scheduler::save();  (?)
-
+    // Create "Motion.Timeout" schedule
+    if (Scheduler::get("Camera.TimeLapse") == nullptr) {
+        auto s = new Schedule("Camera.TimeLapse", "Take a picture every minute and save it to SD card.", "", "", "$$.boundModules\n  .command('Camera.FileSave')\n  .submit();\n");
+        s->boundModules.add(cameraModule->getReference());
+        s->cronExpression = "* * * * *";
+        // UI state data
+        s->data = R"({"action":{"template":{"forEach":{"commands":[{"config":{},"id":"command_camera_filesave","uuid":-4731392927778313137}],"enabled":true,"id":null,"script":null},"forEnd":{"commands":[],"enabled":false,"id":null,"script":null},"forStart":{"commands":[],"enabled":false,"id":null,"script":null}},"type":"template"},"event":[],"from":"","itemType":3,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})";
+        // Device types allowed
+        s->boundDevices.add(new String(ModuleType::Sensor));
+        // Not enabled by default
+        s->isEnabled = false;
+        Scheduler::addSchedule(s);
     }
-    */
 
 }
 #endif
@@ -165,10 +174,14 @@ void includeCommonSensors(HomeGenie* homeGenie, Module* sensorModule) {
 #ifdef ESP_CAMERA_SUPPORTED
     if (Config::getSetting(Camera_Sensor::SensorType).equals("esp32-cam")) {
         // Add camera handler
-        auto cameraHandler = new Camera(IOEventDomains::HomeAutomation_HomeGenie, "Camera", "Smart Camera");
+        auto cameraHandler = new Camera(IOEventDomains::HomeAutomation_HomeGenie, "Camera", "Camera Sensor");
         homeGenie->addAPIHandler(cameraHandler);
         // Initialize Esp32Camera
         Esp32Camera::init(cameraHandler);
+#ifndef DISABLE_AUTOMATION
+        // Add example schedule (time-lapse)
+        setupCameraSensorSchedules(cameraHandler->getModuleList()->get(0));
+#endif
     }
 #endif
 }

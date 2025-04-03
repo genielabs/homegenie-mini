@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -108,6 +108,7 @@ public:
     static short ServiceButtonPin;
     const static uint16_t ConfigureButtonPushInterval = 3000;
     static short StatusLedPin;
+    static bool StatusLedInvert;
     static bool isStatusLedOn;
     static bool wpsRequest;
     static ZoneConfig zone;

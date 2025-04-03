@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -41,6 +41,50 @@
 
 #include "../../api/SensorApi.h"
 
+
+#define ESP_CAMERA_QUALITY "20"
+#ifdef ESP32_S3
+#define ESP_CAMERA_PWR "-1"
+#define ESP_CAMERA_XCL "15"
+#define ESP_CAMERA_XFR "24000000"
+#define ESP_CAMERA_VSN "6"
+#define ESP_CAMERA_HRF "7"
+#define ESP_CAMERA_PCL "13"
+#define ESP_CAMERA_SDA "4"
+#define ESP_CAMERA_SCL "5"
+#define ESP_CAMERA_CD0 "11"
+#define ESP_CAMERA_CD1 "9"
+#define ESP_CAMERA_CD2 "8"
+#define ESP_CAMERA_CD3 "10"
+#define ESP_CAMERA_CD4 "12"
+#define ESP_CAMERA_CD5 "18"
+#define ESP_CAMERA_CD6 "17"
+#define ESP_CAMERA_CD7 "16"
+#define ESP_CAMERA_RST "-1"
+#else
+#define ESP_CAMERA_PWR "32"
+#define ESP_CAMERA_XCL "0"
+#define ESP_CAMERA_XFR "20000000"
+#define ESP_CAMERA_VSN "25"
+#define ESP_CAMERA_HRF "23"
+#define ESP_CAMERA_PCL "22"
+#define ESP_CAMERA_SDA "26"
+#define ESP_CAMERA_SCL "27"
+#define ESP_CAMERA_CD0 "5"
+#define ESP_CAMERA_CD1 "18"
+#define ESP_CAMERA_CD2 "19"
+#define ESP_CAMERA_CD3 "21"
+#define ESP_CAMERA_CD4 "36"
+#define ESP_CAMERA_CD5 "39"
+#define ESP_CAMERA_CD6 "34"
+#define ESP_CAMERA_CD7 "35"
+#define ESP_CAMERA_RST "-1"
+#endif
+
+#include "FS.h"
+#include "SD_MMC.h"
+
+
 namespace IO { namespace Sensors {
 
     using namespace Service;
@@ -53,7 +97,7 @@ namespace IO { namespace Sensors {
 
         explicit Esp32Camera(devices::Camera* cameraHandler);
 
-        static void cameraStart();
+        static void cameraStart(camera_grab_mode_t grabMode = CAMERA_GRAB_WHEN_EMPTY);
         static void cameraStop();
 
         static void init(Camera *pCamera);
@@ -61,10 +105,71 @@ namespace IO { namespace Sensors {
     private:
         static camera_fb_t* cameraFrame;
         static bool initialized;
+        static bool sdcardInitialized;
         static FrameBuffer* currentFrame;
         static Esp32Camera* instance;
 
         static void applySettings();
+
+        static bool initMicroSDCard() {
+            if (sdcardInitialized) return true;
+            auto sdmc_clk = Config::getSetting(Camera_Sensor::SdCard_clk, "-1").toInt();
+            auto sdmc_cmd = Config::getSetting(Camera_Sensor::SdCard_cmd, "-1").toInt();
+            auto sdmc_pd0 = Config::getSetting(Camera_Sensor::SdCard_pd0, "-1").toInt();
+            auto sdmc_pd1 = Config::getSetting(Camera_Sensor::SdCard_pd1, "-1").toInt();
+            auto sdmc_pd2 = Config::getSetting(Camera_Sensor::SdCard_pd2, "-1").toInt();
+            auto sdmc_pd3 = Config::getSetting(Camera_Sensor::SdCard_pd3, "-1").toInt();
+            if (sdmc_clk != -1 && sdmc_cmd != -1 && sdmc_pd0 != -1) {
+                // Start the MicroSD card
+                SD_MMC.setPins(sdmc_clk, sdmc_cmd, sdmc_pd0, sdmc_pd1, sdmc_pd2, sdmc_pd3);
+                if (!SD_MMC.begin("/sdcard", true)) {
+                    Serial.println("MicroSD Card Mount Failed");
+                    return false;
+                }
+                uint8_t cardType = SD_MMC.cardType();
+                if (cardType == CARD_NONE) {
+                    Serial.println("No MicroSD Card found");
+                    return false;
+                }
+                sdcardInitialized = true;
+            }
+            return sdcardInitialized;
+        }
+
+        static bool takeNewPhoto(const char* folder, const char* fullPath) {
+            bool success = false;
+            if (!initialized) {
+                cameraStart();
+            }
+            if (initialized)  {
+                // Camera sensor successfully initialized
+                auto psramSize = esp_spiram_get_size();
+                int frames = (psramSize > 0) ? Config::getSetting(Camera_Sensor::CameraCfg_fbc, "2").toInt() : 1;
+                // empty cache
+                for (int i = 0; i < frames; i++) {
+                    camera_fb_t* fb = esp_camera_fb_get();
+                    esp_camera_fb_return(fb);
+                }
+                camera_fb_t* fb = esp_camera_fb_get();
+                if (!fb) {
+                    // Capture failed
+                    return false;
+                }
+                // Save to file
+                fs::FS &fs = SD_MMC;
+                if (!fs.exists(folder)) {
+                    fs.mkdir(folder);
+                }
+                File file = fs.open(fullPath, FILE_WRITE);
+                if (file) {
+                    success = file.write(fb->buf, fb->len) == fb->len;
+                }
+                file.close();
+                esp_camera_fb_return(fb);
+            }
+            return success;
+        }
+
     };
 
     // UI options update listener

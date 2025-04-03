@@ -45,11 +45,33 @@ namespace Service { namespace API { namespace devices {
 
     bool Camera::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
         if (command->Command == "Camera.GetPicture") {
-
             FrameBuffer* fb = setOnFrameRequestCallback();
             responseCallback->writeBinary("image/jpeg", fb->buffer, fb->length);
             setOnFrameReleaseCallback();
-
+            return true;
+        /*
+        // TODO: file enumeration resulted to be very slow
+        //       disabled / aiming to a better implementation
+        //
+        } else if (command->Command == "Camera.FileList") {
+            responseCallback->writeAll(setOnFileListCallback().c_str());
+            return true;
+        } else if (command->Command == "Camera.FileLoad") {
+        } else if (command->Command == "Camera.FileDelete") {
+            // TODO: ... add filename param
+            if (setOnFileDeleteCallback()) {
+                responseCallback->writeAll(ApiHandlerResponseStatus::OK);
+            } else {
+                responseCallback->writeAll(ApiHandlerResponseStatus::ERROR);
+            }
+            return true;
+        */
+        } else if (command->Command == "Camera.FileSave") {
+            if (setOnFileSaveCallback()) {
+                responseCallback->writeAll(ApiHandlerResponseStatus::OK);
+            } else {
+                responseCallback->writeAll(ApiHandlerResponseStatus::ERROR);
+            }
             return true;
         }
         return false;

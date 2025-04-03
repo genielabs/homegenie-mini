@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -44,6 +44,9 @@ namespace Automation {
             "      },\n"
             "      call: function() {\n"
             "        return __netHelper_call(_url);\n"
+            "      },\n"
+            "      post: function(data) {\n"
+            "        return __netHelper_post(_url, data);\n"
             "      },\n"
             "      ping: function(host) {\n"
             "        return __netHelper_ping(host);\n"
@@ -157,6 +160,9 @@ namespace Automation {
         duk_push_c_lightfunc(ctx, netHelper_call, 1, 1, 0);
         duk_put_global_string(ctx, "__netHelper_call");
 
+        duk_push_c_lightfunc(ctx, netHelper_post, 2, 2, 0);
+        duk_put_global_string(ctx, "__netHelper_post");
+
         duk_push_c_lightfunc(ctx, netHelper_ping, 1, 1, 0);
         duk_put_global_string(ctx, "__netHelper_ping");
 
@@ -249,6 +255,14 @@ namespace Automation {
     duk_ret_t ScheduledScript::netHelper_call(duk_context *ctx) {
         String url = duk_to_string(ctx, 0);
         String response = Helpers::NetHelper::httpGet(url);
+        duk_push_string(ctx, response.c_str());
+        return 1;
+    }
+
+    duk_ret_t ScheduledScript::netHelper_post(duk_context *ctx) {
+        String url = duk_to_string(ctx, 0);
+        String data = duk_to_string(ctx, 1);
+        String response = Helpers::NetHelper::httpPost(url, data);
         duk_push_string(ctx, response.c_str());
         return 1;
     }
