@@ -33,9 +33,9 @@
 #include <HomeGenie.h>
 #include <Stepper.h>
 
-#include "../IShutterDriver.h"
+#include "../IMotorDriver.h"
 
-#define STEPPER_DRIVER_NS_PREFIX "IO::Components:ShutterControl::StepperDriver"
+#define STEPPER_DRIVER_NS_PREFIX "IO::Components:MotorControl::StepperDriver"
 
 // TODO: this is a work in progress/draft... hard coded stuff to be re-arranged
 
@@ -51,7 +51,7 @@ namespace IO { namespace Components {
         STEPPER_DIRECTION_CLOCKWISE,
         STEPPER_DIRECTION_COUNTERCLOCKWISE
     };
-    class StepperDriver: public Task, public IShutterDriver {
+    class StepperDriver: public Task, public IMotorDriver {
     private:
         const int stepsPerRevolution = 2048;  // change this to fit the number of steps per revolution
         int currentPosition = 0;
@@ -73,7 +73,8 @@ namespace IO { namespace Components {
     public:
         StepperDriver() {
         }
-        ~StepperDriver() override {
+        void release() override {
+            setDisposed();
             delete myStepper;
         }
         void init() override {

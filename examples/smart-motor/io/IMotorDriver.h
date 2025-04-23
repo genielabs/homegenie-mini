@@ -27,19 +27,19 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_ISHUTTERDRIVER_H
-#define HOMEGENIE_MINI_ISHUTTERDRIVER_H
+#ifndef HOMEGENIE_MINI_IMOTORDRIVER_H
+#define HOMEGENIE_MINI_IMOTORDRIVER_H
 
-#define SHUTTER_CONTROL_NS_PREFIX "IO::Components:ShutterControl"
+#define MOTOR_CONTROL_NS_PREFIX "IO::Components:MotorControl"
 
-#define SHUTTER_COMMAND_NONE 0
-#define SHUTTER_COMMAND_OPEN 1
-#define SHUTTER_COMMAND_CLOSE 2
+#define MOTOR_COMMAND_NONE 0
+#define MOTOR_COMMAND_OPEN 1
+#define MOTOR_COMMAND_CLOSE 2
 
 #define EVENT_EMIT_FREQUENCY 250
 
 namespace IO { namespace Components {
-    class IShutterDriver {
+    class IMotorDriver {
     public:
         virtual void init() = 0;
 
@@ -51,10 +51,11 @@ namespace IO { namespace Components {
 
         virtual void calibrate(bool) = 0;
         virtual void configure(const char*, const char*) = 0;
+        virtual void release() = 0;
 
         IIOEventSender* eventSender = nullptr;
-        virtual ~IShutterDriver() = default;
+        virtual ~IMotorDriver() = default;
     };
 }}
 
-#endif //HOMEGENIE_MINI_ISHUTTERDRIVER_H
+#endif //HOMEGENIE_MINI_IMOTORDRIVER_H

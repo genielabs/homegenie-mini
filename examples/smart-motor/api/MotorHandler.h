@@ -27,25 +27,25 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_SHUTTERHANDLER_H
-#define HOMEGENIE_MINI_SHUTTERHANDLER_H
+#ifndef HOMEGENIE_MINI_MOTORHANDLER_H
+#define HOMEGENIE_MINI_MOTORHANDLER_H
 
 #include <HomeGenie.h>
 
-#include "ShutterApi.h"
-#include "../io/ShutterControl.h"
+#include "MotorApi.h"
+#include "../io/MotorControl.h"
 
 namespace Service { namespace API {
 
         using namespace IO::Components;
-        using namespace ShutterApi;
+        using namespace MotorApi;
 
         class ParameterListener: public ModuleParameter::UpdateListener {
         private:
-            ShutterControl* shutterControl;
+            MotorControl* motorControl;
         public:
-            explicit ParameterListener(ShutterControl* sc) {
-                shutterControl = sc;
+            explicit ParameterListener(MotorControl* sc) {
+                motorControl = sc;
             }
             void onUpdate(ModuleParameter* option) override {
                 // The '=' symbol is used here as a special
@@ -56,23 +56,23 @@ namespace Service { namespace API {
                     v = option->value = v.substring(v.indexOf("=") + 1);
                 }
                 if (!option->getConfigKey().isEmpty()) {
-                    shutterControl->configure(option->getConfigKey().c_str(), v.c_str());
+                    motorControl->configure(option->getConfigKey().c_str(), v.c_str());
                 }
             }
         };
 
-        class ShutterModule: public Module {
+        class MotorModule: public Module {
         public:
-            ShutterControl* shutterControl;
+            MotorControl* motorControl;
         };
 
-        class ShutterHandler : public APIHandler {
+        class MotorHandler : public APIHandler {
         private:
-            LinkedList<ShutterModule*> moduleList;
-            ShutterModule* addModule(int index);
+            LinkedList<MotorModule*> moduleList;
+            MotorModule* addModule(int index);
 
         public:
-            explicit ShutterHandler();
+            explicit MotorHandler();
 
             void init() override;
 
@@ -87,4 +87,4 @@ namespace Service { namespace API {
         };
 
 }}
-#endif //HOMEGENIE_MINI_SHUTTERHANDLER_H
+#endif //HOMEGENIE_MINI_MOTORHANDLER_H

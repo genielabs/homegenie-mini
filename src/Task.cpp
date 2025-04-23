@@ -38,7 +38,7 @@ Task::Task() {
 bool Task::willLoop() {
 
     unsigned long now = millis();
-    return now - lastLoopTs >= loopInterval;
+    return !disposed && now - lastLoopTs >= loopInterval;
 
 }
 

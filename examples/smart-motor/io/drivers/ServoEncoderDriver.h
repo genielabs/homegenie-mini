@@ -35,18 +35,18 @@
 #include <io/Logger.h>
 
 #include "../../configuration.h"
-#include "../../api/ShutterApi.h"
-#include "../IShutterDriver.h"
+#include "../../api/MotorApi.h"
+#include "../IMotorDriver.h"
 
 
-#define SERVO_ENCODER_DRIVER_NS_PREFIX "IO::Components:ShutterControl::ServoEncoderDriver"
+#define SERVO_ENCODER_DRIVER_NS_PREFIX "IO::Components:MotorControl::ServoEncoderDriver"
 
 namespace IO { namespace Components {
 
-    using namespace Service::API::ShutterApi;
+    using namespace Service::API::MotorApi;
     using namespace Configuration::ServoEncoder;
 
-    class ServoEncoderDriver: public Task, public IShutterDriver {
+    class ServoEncoderDriver: public Task, public IMotorDriver {
     private:
         Servo* servoDriver;
 
@@ -61,8 +61,8 @@ namespace IO { namespace Components {
         int stepSpeed = 500; // [1 .. 1000] microseconds
 
         unsigned long lastEventMs = 0;
-        unsigned int minPulseDuration = 100;
-        unsigned int maxPulseTimeout = 1500;
+        unsigned int minPulseDuration = 30;
+        unsigned int maxPulseTimeout = 3000;
 
         bool ServoEncoderDriver_triggered;
 
@@ -88,6 +88,10 @@ namespace IO { namespace Components {
             stopRequested = true;
         }
 
+        unsigned int getTimeoutMs() const {
+            return maxPulseTimeout - (stepSpeed * 1.5);
+        }
+
         void gpioEncoderHandler(int speed = 0) {
 
             if (!hasGpioEncoder()) {
@@ -95,19 +99,18 @@ namespace IO { namespace Components {
                 ServoEncoderDriver_triggered = millis() - lastTickMs >= (1500.0 - speed) / 4.0f;
             }
 
-            if (lastCommand != SHUTTER_COMMAND_NONE) {
+            if (lastCommand != MOTOR_COMMAND_NONE) {
 
                 if (hasGpioEncoder()) {
-
                     // encoder switch is pressed
                     if (digitalRead(gpioEncoderPin) == LOW) {
                         lastTickMs = millis();
                         // wait until it's released for max. `maxPulseTimeout` ms
                         while (digitalRead(gpioEncoderPin) == LOW) {
-                            if (millis() - lastTickMs > maxPulseTimeout) break;
+                            if (millis() - lastTickMs > getTimeoutMs()) break;
                         }
                         auto pulseDuration = (millis() - lastTickMs);
-                        if (pulseDuration > maxPulseTimeout) {
+                        if (pulseDuration > getTimeoutMs()) {
                             // The encoder switch was held down for too long,
                             // a mechanical issue might have occurred.
                             ServoEncoderDriver_triggered = false;
@@ -124,7 +127,7 @@ namespace IO { namespace Components {
                         // or electronics issue might have occurred.
                         ServoEncoderDriver_triggered = false;
                         auto elapsed = millis() - lastTickMs;
-                        if (elapsed > maxPulseTimeout) {
+                        if (elapsed > getTimeoutMs()) {
                             reportEncoderError();
                         }
                     }
@@ -132,7 +135,7 @@ namespace IO { namespace Components {
                 }
 
                 if (ServoEncoderDriver_triggered) {
-                    stepsCount += (lastCommand == SHUTTER_COMMAND_OPEN ? 1 : -1);
+                    stepsCount += (lastCommand == MOTOR_COMMAND_OPEN ? 1 : -1);
                     if (isCalibrating) {
                         // Allow only one step per-command
                         // if calibration mode is active to
@@ -168,8 +171,10 @@ namespace IO { namespace Components {
             this->idx = index;
             setLoopInterval(10);
         }
-        ~ServoEncoderDriver() override {
+        void release() override {
+            setDisposed();
             servoDriver->release();
+            servoDriver->detach();
             delete servoDriver;
         }
 
@@ -214,11 +219,11 @@ namespace IO { namespace Components {
             if (isCalibrating) {
                 stepsCount = 0;
                 stepsMax = 1;
-                eventSender->sendEvent(Options::Shutter_Motor_ServoEncoder_Steps,
+                eventSender->sendEvent(Options::Motor_ServoEncoder_Steps,
                                        &stepsMax,
                                        IOEventDataType::Number);
                 String endCalibrationText = Calibration::EndLabel;
-                eventSender->sendEvent(Options::Shutter_Motor_ServoEncoder_Calibrate,
+                eventSender->sendEvent(Options::Motor_ServoEncoder_Calibrate,
                                        &endCalibrationText,
                                        IOEventDataType::Text);
                 int level = 0;
@@ -227,36 +232,36 @@ namespace IO { namespace Components {
                                        IOEventDataType::Number);
             } else {
                 String endCalibrationText = Calibration::StartLabel;
-                eventSender->sendEvent(Options::Shutter_Motor_ServoEncoder_Calibrate,
+                eventSender->sendEvent(Options::Motor_ServoEncoder_Calibrate,
                                        &endCalibrationText,
                                        IOEventDataType::Text);
             }
         }
 
         void open() override {
-            if (lastCommand != SHUTTER_COMMAND_NONE || (stepsCount == stepsMax && !isCalibrating)) {
+            if (lastCommand != MOTOR_COMMAND_NONE || (stepsCount == stepsMax && !isCalibrating)) {
                 stopRequested = true;
             } else {
                 direction = 1;
                 lastTickMs = millis();
-                lastCommand = SHUTTER_COMMAND_OPEN;
+                lastCommand = MOTOR_COMMAND_OPEN;
                 // The next lines work when calibration is active
                 // to adjust end level (fully open)
                 if (stepsCount == stepsMax) {
                     stepsMax++;
-                    eventSender->sendEvent(Options::Shutter_Motor_ServoEncoder_Steps,
+                    eventSender->sendEvent(Options::Motor_ServoEncoder_Steps,
                                            &stepsMax,
                                            IOEventDataType::Number);
                 }
             }
         }
         void close() override {
-            if (lastCommand != SHUTTER_COMMAND_NONE || (stepsCount == 0 && !isCalibrating)) {
+            if (lastCommand != MOTOR_COMMAND_NONE || (stepsCount == 0 && !isCalibrating)) {
                 stopRequested = true;
             } else {
                 direction = -1;
                 lastTickMs = millis();
-                lastCommand = SHUTTER_COMMAND_CLOSE;
+                lastCommand = MOTOR_COMMAND_CLOSE;
                 // The next line works when calibration is active
                 // to adjust start position (fully shut)
                 if (stepsCount == 0) stepsCount++;
@@ -268,19 +273,19 @@ namespace IO { namespace Components {
             if (levelDiff < 0) {
                 direction = -1;
                 lastTickMs = millis();
-                lastCommand = SHUTTER_COMMAND_CLOSE;
+                lastCommand = MOTOR_COMMAND_CLOSE;
                 // The next line works when calibration is active
                 // to adjust start position (fully shut)
                 if (stepsCount == 0) stepsCount++;
             } else if (levelDiff > 0) {
                 direction = 1;
                 lastTickMs = millis();
-                lastCommand = SHUTTER_COMMAND_OPEN;
+                lastCommand = MOTOR_COMMAND_OPEN;
                 // The next lines work when calibration is active
                 // to adjust end level (fully open)
                 if (stepsCount == stepsMax) {
                     stepsMax++;
-                    eventSender->sendEvent(Options::Shutter_Motor_ServoEncoder_Steps,
+                    eventSender->sendEvent(Options::Motor_ServoEncoder_Steps,
                                            &stepsMax,
                                            IOEventDataType::Number);
                 }
@@ -308,13 +313,13 @@ namespace IO { namespace Components {
                 stopRequested = false;
                 stop();
                 currentLevel = (float) stepsCount / (float) stepsMax;
-                lastCommand = SHUTTER_COMMAND_NONE;
+                lastCommand = MOTOR_COMMAND_NONE;
                 targetLevel = -1;
                 Logger::info("@%s [%s %.2f]", SERVO_ENCODER_DRIVER_NS_PREFIX, (IOEventPaths::Status_Level),
                              currentLevel);
                 eventSender->sendEvent(IOEventPaths::Status_Level, &currentLevel, IOEventDataType::Float);
 
-            } else if (lastCommand == SHUTTER_COMMAND_OPEN) {
+            } else if (lastCommand == MOTOR_COMMAND_OPEN) {
 
                 if (millis() - lastEventMs > EVENT_EMIT_FREQUENCY) {
                     float level = (float) stepsCount / (float) stepsMax;
@@ -327,7 +332,7 @@ namespace IO { namespace Components {
                     }
                 }
 
-            } else if (lastCommand == SHUTTER_COMMAND_CLOSE) {
+            } else if (lastCommand == MOTOR_COMMAND_CLOSE) {
 
                 if (millis() - lastEventMs > EVENT_EMIT_FREQUENCY) {
                     float level = (float) stepsCount / (float) stepsMax;
@@ -342,7 +347,7 @@ namespace IO { namespace Components {
 
             }
 
-            if (lastCommand != SHUTTER_COMMAND_NONE) {
+            if (lastCommand != MOTOR_COMMAND_NONE) {
                 servoDriver->writeMicroseconds(stopUs + (stepSpeed * direction));
             }
 

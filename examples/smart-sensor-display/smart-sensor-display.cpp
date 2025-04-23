@@ -130,7 +130,7 @@ void setup() {
                 UI_WIDGETS_FIELD_TYPE_MODULE_TEXT
                 // options
                 ":any"
-                ":switch,light,dimmer,color,shutter"
+                ":switch,light,dimmer,color,shutter,motor"
                 ":any"
                 ":uri"
         )->withConfigKey("ctrl-mod")->addUpdateListener(&optionUpdateListener);

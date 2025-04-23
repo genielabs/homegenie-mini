@@ -27,13 +27,13 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_SHUTTERCONTROL_H
-#define HOMEGENIE_MINI_SHUTTERCONTROL_H
+#ifndef HOMEGENIE_MINI_MOTORCONTROL_H
+#define HOMEGENIE_MINI_MOTORCONTROL_H
 
 #include <HomeGenie.h>
 #include <Utility.h>
 
-#include "../api/ShutterApi.h"
+#include "../api/MotorApi.h"
 
 #include "drivers/ServoDriver.h"
 #include "drivers/ServoEncoderDriver.h"
@@ -42,15 +42,15 @@
 namespace IO { namespace Components {
 
     using namespace Service;
-    using namespace ShutterApi::Configuration;
+    using namespace MotorApi::Configuration;
 
-    class ShutterControl : public IIOEventSender {
+    class MotorControl : public IIOEventSender {
     private:
         int idx;
-        IShutterDriver* shutterDriver = nullptr;
+        IMotorDriver* motorDriver = nullptr;
         bool calibrateMode = false;
     public:
-        explicit ShutterControl(int index);
+        explicit MotorControl(int index);
 
         void begin() override;
 
@@ -67,4 +67,4 @@ namespace IO { namespace Components {
 
 }}
 
-#endif //HOMEGENIE_MINI_SHUTTERCONTROL_H
+#endif //HOMEGENIE_MINI_MOTORCONTROL_H

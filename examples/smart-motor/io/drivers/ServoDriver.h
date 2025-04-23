@@ -35,17 +35,17 @@
 #include <io/Logger.h>
 
 #include "../../configuration.h"
-#include "../../io/IShutterDriver.h"
+#include "../../io/IMotorDriver.h"
 
 
-#define SERVO_DRIVER_NS_PREFIX "IO::Components:ShutterControl::ServoDriver"
+#define SERVO_DRIVER_NS_PREFIX "IO::Components:MotorControl::ServoDriver"
 
 namespace IO { namespace Components {
 
-    using namespace Service::API::ShutterApi;
+    using namespace Service::API::MotorApi;
     using namespace Configuration::Servo;
 
-    class ServoDriver: public Task, public IShutterDriver {
+    class ServoDriver: public Task, public IMotorDriver {
     private:
         Servo* servoDriver;
 
@@ -79,8 +79,10 @@ namespace IO { namespace Components {
             servoPin = pin;
             this->idx = index;
         }
-        ~ServoDriver() override {
+        void release() override {
+            setDisposed();
             servoDriver->release();
+            servoDriver->detach();
             delete servoDriver;
         }
 
@@ -123,21 +125,21 @@ namespace IO { namespace Components {
         }
 
         void open() override {
-            if (lastCommand != SHUTTER_COMMAND_NONE) {
+            if (lastCommand != MOTOR_COMMAND_NONE) {
                 stopRequested = true;
             } else {
                 direction = 1;
                 targetLevel = 1;
-                lastCommand = SHUTTER_COMMAND_OPEN;
+                lastCommand = MOTOR_COMMAND_OPEN;
             }
         }
         void close() override {
-            if (lastCommand != SHUTTER_COMMAND_NONE) {
+            if (lastCommand != MOTOR_COMMAND_NONE) {
                 stopRequested = true;
             } else {
                 direction = -1;
                 targetLevel = 0;
-                lastCommand = SHUTTER_COMMAND_CLOSE;
+                lastCommand = MOTOR_COMMAND_CLOSE;
             }
         }
         void level(float level) override {
@@ -145,10 +147,10 @@ namespace IO { namespace Components {
             float levelDiff = targetLevel - currentLevel;
             if (levelDiff < 0) {
                 direction = -1;
-                lastCommand = SHUTTER_COMMAND_CLOSE;
+                lastCommand = MOTOR_COMMAND_CLOSE;
             } else if (levelDiff > 0) {
                 direction = 1;
-                lastCommand = SHUTTER_COMMAND_OPEN;
+                lastCommand = MOTOR_COMMAND_OPEN;
             }
         }
         void toggle() override {
@@ -167,7 +169,7 @@ namespace IO { namespace Components {
 
             if (stopRequested) {
                 stopRequested = false;
-                lastCommand = SHUTTER_COMMAND_NONE;
+                lastCommand = MOTOR_COMMAND_NONE;
                 targetLevel = currentLevel;
                 Logger::info("@%s [%s %.2f]", SERVO_DRIVER_NS_PREFIX, (IOEventPaths::Status_Level),
                              currentLevel);
@@ -202,7 +204,7 @@ namespace IO { namespace Components {
                 if (currentLevel == 1 || currentLevel == 0 || currentLevel == targetLevel) {
                     currentLevel = targetLevel;
                     stopRequested = true;
-                    lastCommand = SHUTTER_COMMAND_NONE;
+                    lastCommand = MOTOR_COMMAND_NONE;
                 }
             }
 

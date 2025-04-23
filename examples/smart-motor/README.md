@@ -1,11 +1,11 @@
-# shutter
+# smart-motor
 
-A smart shutter device and generic servo motor driver. Supports accurate positioning
+A smart motor device and generic servo motor driver. Supports accurate positioning
 also using continuous rotation servos by using a GPIO switch as encoder pulse.
 The default version of this firmware can control up to 8 motors simultaneously.
 
 
-- [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/shutter/)
+- [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/smart-motor/)
 
 
 ## Firmware configuration
@@ -19,7 +19,7 @@ where `<n>` is the number of the motor (from 1 to 8):
 | `stld-typ`     | Status LED type                        | RGB/RGBW order mask (see code for ref.) |
 | `stld-spd`     | Status LED speed                       | 0 (0=800kHz, 256=400kHz)                |
 | `motr-typ#<n>` | Motor type ('Servo' or 'ServoEncoder') | 'Servo'                                 |   
-| `ctrl-pin#<n>` | Control GPIO#                          | 6                                       |
+| `motr-pin#<n>` | Motor signal GPIO#                     | 6                                       |
 
 
 ### Parameters for `motr-typ`= '`ServoEncoder`'
@@ -47,7 +47,7 @@ as explained in the [Getting started](../../getting-started#custom-firmware) pag
 and using the following commands for flashing the firmware:
 
 ```bash
-pio run -e shutter[<target>] -t upload
+pio run -e smart-motor[<target>] -t upload
 ```
 
 where the optional `<target>` suffix can be one of the following:
@@ -59,5 +59,7 @@ where the optional `<target>` suffix can be one of the following:
   `-c3`
 - ESP32-S3  
   `-s3`
+- Arduino Nano ESP32-S3
+  `-s3-nano`
 - ESP32 D1 Mini    
   `-d1-mini-esp32`

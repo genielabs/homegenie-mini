@@ -47,7 +47,7 @@ namespace Service { namespace API {
         static const char Control_Toggle[] = "Control.Toggle";
         static const char Control_Level[] = "Control.Level";
         static const char Control_ColorHsb[] = "Control.ColorHsb";
-        // shutters / door locks
+        // shutters/ motors / door locks
         static const char Control_Open[] = "Control.Open";
         static const char Control_Close[] = "Control.Close";
     }

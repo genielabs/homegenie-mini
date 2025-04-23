@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_SHUTTERAPI_H
-#define HOMEGENIE_MINI_SHUTTERAPI_H
+#ifndef HOMEGENIE_MINI_MOTORAPI_H
+#define HOMEGENIE_MINI_MOTORAPI_H
 
 #include <Config.h>
 
@@ -36,31 +36,34 @@
 
 namespace Service { namespace API {
 
-    namespace ShutterApi {
+    namespace MotorApi {
 
+        const char Motor_Calibrate[] =
+                "Motor.Calibrate";
+        // alias of Motor.Calibrate
         const char Shutter_Calibrate[] =
                 "Shutter.Calibrate";
 
         namespace Options {
-            const char Shutter_Motor[] =
-                    "Shutter.Motor";
-            const char Shutter_Motor_Servo_AngleMin[] =
-                    "Shutter.Motor.Servo.AngleMin";
-            const char Shutter_Motor_Servo_AngleMax[] =
-                    "Shutter.Motor.Servo.AngleMax";
-            const char Shutter_Motor_Servo_AngleSpeed[] =
-                    "Shutter.Motor.Servo.AngleSpeed";
-            const char Shutter_Motor_ServoEncoder_Speed[] =
-                    "Shutter.Motor.ServoEncoder.Speed";
-            const char Shutter_Motor_ServoEncoder_Steps[] =
-                    "Shutter.Motor.ServoEncoder.Steps";
-            const char Shutter_Motor_ServoEncoder_Calibrate[] =
-                    "Shutter.Motor.ServoEncoder.Calibrate";
+            const char Motor_Type[] =
+                    "Motor.Type";
+            const char Motor_Servo_AngleMin[] =
+                    "Motor.Type.Servo.AngleMin";
+            const char Motor_Servo_AngleMax[] =
+                    "Motor.Type.Servo.AngleMax";
+            const char Motor_Servo_AngleSpeed[] =
+                    "Motor.Type.Servo.AngleSpeed";
+            const char Motor_ServoEncoder_Speed[] =
+                    "Motor.Type.ServoEncoder.Speed";
+            const char Motor_ServoEncoder_Steps[] =
+                    "Motor.Type.ServoEncoder.Steps";
+            const char Motor_ServoEncoder_Calibrate[] =
+                    "Motor.Type.ServoEncoder.Calibrate";
         }
 
         namespace Configuration {
             static const char MotorType[] = "motr-typ";
-            static const char ControlPin[] = "ctrl-pin";
+            static const char ControlPin[] = "motr-pin";
             namespace MotorTypeValues {
                 static const char Servo[] = "Servo";
                 static const char ServoEncoder[] = "ServoEncoder";
@@ -89,4 +92,4 @@ namespace Service { namespace API {
 
 }}
 
-#endif //HOMEGENIE_MINI_SHUTTERAPI_H
+#endif //HOMEGENIE_MINI_MOTORAPI_H

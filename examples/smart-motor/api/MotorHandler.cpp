@@ -27,36 +27,36 @@
  *
  */
 
-#include "ShutterHandler.h"
+#include "MotorHandler.h"
 
 namespace Service { namespace API {
 
-    ShutterHandler::ShutterHandler() {
+    MotorHandler::MotorHandler() {
 
     }
 
-    void ShutterHandler::init() {
+    void MotorHandler::init() {
 
         for (int i = 1; i <= 8; i++) {
 
             auto controlPin = Config::getSetting(K(ControlPin, i), "-1").toInt();
             if (controlPin < 0) continue;
 
-            auto shutterControl = new ShutterControl(i);
-            auto shutterModule = addModule(i);
+            auto motorControl = new MotorControl(i);
+            auto motorModule = addModule(i);
 
             // TODO: maybe this cross referencing can be avoided
-            //       incorporating module into shutterControl
-            shutterControl->setModule(shutterModule);
-            shutterModule->shutterControl = shutterControl;
+            //       incorporating module into motorControl
+            motorControl->setModule(motorModule);
+            motorModule->motorControl = motorControl;
 
-            HomeGenie::getInstance()->addIOHandler(shutterControl);
+            HomeGenie::getInstance()->addIOHandler(motorControl);
 
-            auto optionUpdateListener = new ParameterListener(shutterControl);
+            auto optionUpdateListener = new ParameterListener(motorControl);
 
-            shutterModule->addWidgetOption(
+            motorModule->addWidgetOption(
                     // name, value
-                    Options::Shutter_Motor, "0", // "0" = "Servo", "1" = "ServoEncoder"
+                    Options::Motor_Type, "Servo", // "Servo", "ServoEncoder" or "Stepper"
                     // field type
                     UI_WIDGETS_FIELD_TYPE_SELECT_FILTER
                     // label
@@ -70,9 +70,9 @@ namespace Service { namespace API {
 
             // Servo options
 
-            shutterModule->addWidgetOption(
+            motorModule->addWidgetOption(
                     // name, value
-                    Options::Shutter_Motor_Servo_AngleSpeed, "5",
+                    Options::Motor_Servo_AngleSpeed, "5",
                     // field type
                     UI_WIDGETS_FIELD_TYPE_NUMBER
                     // label
@@ -81,9 +81,9 @@ namespace Service { namespace API {
                     ":1:10:5"
             )->withConfigKey(K(AngleSpeed, i))->addUpdateListener(optionUpdateListener);
 
-            shutterModule->addWidgetOption(
+            motorModule->addWidgetOption(
                     // name, value
-                    Options::Shutter_Motor_Servo_AngleMin, "0",
+                    Options::Motor_Servo_AngleMin, "0",
                     // field type
                     UI_WIDGETS_FIELD_TYPE_NUMBER
                     // label
@@ -92,9 +92,9 @@ namespace Service { namespace API {
                     ":0:180:0"
             )->withConfigKey(K(AngleMin, i))->addUpdateListener(optionUpdateListener);
 
-            shutterModule->addWidgetOption(
+            motorModule->addWidgetOption(
                     // name, value
-                    Options::Shutter_Motor_Servo_AngleMax, "180",
+                    Options::Motor_Servo_AngleMax, "180",
                     // field type
                     UI_WIDGETS_FIELD_TYPE_NUMBER
                     // label
@@ -105,9 +105,9 @@ namespace Service { namespace API {
 
 
             // ServoEncoder options
-            shutterModule->addWidgetOption(
+            motorModule->addWidgetOption(
                     // name, value
-                    Options::Shutter_Motor_ServoEncoder_Speed, "5",
+                    Options::Motor_ServoEncoder_Speed, "5",
                     // field type
                     UI_WIDGETS_FIELD_TYPE_NUMBER
                     // label
@@ -116,9 +116,9 @@ namespace Service { namespace API {
                     ":1:10:5"
             )->withConfigKey(K(MotorSpeed, i))->addUpdateListener(optionUpdateListener);
 
-            shutterModule->addWidgetOption(
+            motorModule->addWidgetOption(
                     // name, value
-                    Options::Shutter_Motor_ServoEncoder_Steps, "15",
+                    Options::Motor_ServoEncoder_Steps, "15",
                     // field type
                     UI_WIDGETS_FIELD_TYPE_NUMBER
                     // label
@@ -127,52 +127,52 @@ namespace Service { namespace API {
                     ":1:100:15"
             )->withConfigKey(K(MotorSteps, i))->addUpdateListener(optionUpdateListener);
 
-            shutterModule->addWidgetOption(
+            motorModule->addWidgetOption(
                     // name, value (shown as button text)
-                    Options::Shutter_Motor_ServoEncoder_Calibrate, Calibration::StartLabel,
+                    Options::Motor_ServoEncoder_Calibrate, Calibration::StartLabel,
                     // field type
                     UI_WIDGETS_FIELD_TYPE_BUTTON
                     // label
                     ":calibration"
                     // API command to call on click
-                    ":Shutter.Calibrate"
+                    ":Motor.Calibrate"
             )->addUpdateListener(optionUpdateListener);
 
         }
 
     }
 
-    bool ShutterHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
+    bool MotorHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
 
-        auto module = (ShutterModule*)getModule(command->Domain.c_str(), command->Address.c_str());
+        auto module = (MotorModule*)getModule(command->Domain.c_str(), command->Address.c_str());
 
         if (module != nullptr) {
-            auto shutterControl = module->shutterControl;
+            auto motorControl = module->motorControl;
 
             if (command->Command == ControlApi::Control_Level) {
 
                 float level = command->OptionsString.toFloat();
-                shutterControl->setLevel(level);
+                motorControl->setLevel(level);
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             } else if (command->Command == ControlApi::Control_Toggle) {
 
-                shutterControl->toggle();
+                motorControl->toggle();
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             } else if (command->Command == ControlApi::Control_Close || command->Command == ControlApi::Control_Off) {
 
-                shutterControl->close();
+                motorControl->close();
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             } else if (command->Command == ControlApi::Control_Open || command->Command == ControlApi::Control_On) {
 
-                shutterControl->open();
+                motorControl->open();
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
-            } else if (command->Command == ShutterApi::Shutter_Calibrate) {
+            } else if (command->Command == MotorApi::Motor_Calibrate || command->Command == MotorApi::Shutter_Calibrate) {
 
-                shutterControl->calibrate();
+                motorControl->calibrate();
                 responseCallback->writeAll(ApiHandlerResponseStatus::OK);
 
             } else {
@@ -186,13 +186,13 @@ namespace Service { namespace API {
         return false;
     }
 
-    bool ShutterHandler::canHandleDomain(String* domain) {
+    bool MotorHandler::canHandleDomain(String* domain) {
         return domain->equals(IO::IOEventDomains::Automation_Components);
     }
 
-    bool ShutterHandler::handleEvent(IIOEventSender *sender,
-                                     const char* domain, const char* address,
-                                     const char *eventPath, void *eventData, IOEventDataType dataType) {
+    bool MotorHandler::handleEvent(IIOEventSender *sender,
+                                   const char* domain, const char* address,
+                                   const char *eventPath, void *eventData, IOEventDataType dataType) {
         auto module = getModule(domain, address);
         if (module) {
             auto event = String((char *) eventPath);
@@ -220,7 +220,7 @@ namespace Service { namespace API {
         return false;
     }
 
-    Module* ShutterHandler::getModule(const char* domain, const char* address) {
+    Module* MotorHandler::getModule(const char* domain, const char* address) {
         for (int i = 0; i < moduleList.size(); i++) {
             auto module = moduleList.get(i);
             if (module->domain.equals(domain) && module->address.equals(address))
@@ -228,33 +228,36 @@ namespace Service { namespace API {
         }
         return nullptr;
     }
-    LinkedList<Module*>* ShutterHandler::getModuleList() {
+    LinkedList<Module*>* MotorHandler::getModuleList() {
         return reinterpret_cast<LinkedList<Data::Module *> *>(&moduleList);
     }
 
-    ShutterModule* ShutterHandler::addModule(int index) {
+    MotorModule* MotorHandler::addModule(int index) {
 
-        // Shutter module
-        auto shutterModule = new ShutterModule();
-        shutterModule->domain = IO::IOEventDomains::Automation_Components;
-        shutterModule->address = String("S") + String(index);
-        shutterModule->type = "Shutter";
-        shutterModule->name = String("Motor ") + String(index);
+        // Motor module
+        auto motorModule = new MotorModule();
+        motorModule->domain = IO::IOEventDomains::Automation_Components;
+        motorModule->address = String("S") + String(index);
+        motorModule->type = "Motor";
+        motorModule->name = String("Motor ") + String(index);
+
+        // Display module using "Shutter" widget
+        motorModule->setProperty(WidgetApi::DisplayModule, "homegenie/generic/shutter");
 
         // Explicitly enable "scheduling" features for this module
-        shutterModule->setProperty(WidgetApi::Implements::Scheduling, "true");
+        motorModule->setProperty(WidgetApi::Implements::Scheduling, "true");
 
         // Set widget prefs
         // (if you want your motors be able to dance with music, uncomment the next line :)
-        //shutterModule->setProperty(WidgetApi::Preference::AudioLight, "true");
+        //motorModule->setProperty(WidgetApi::Preference::AudioLight, "true");
 
         // Add level property
-        auto shutterLevel = new ModuleParameter(IOEventPaths::Status_Level);
-        shutterModule->properties.add(shutterLevel);
+        auto motorLevel = new ModuleParameter(IOEventPaths::Status_Level);
+        motorModule->properties.add(motorLevel);
 
-        moduleList.add(shutterModule);
+        moduleList.add(motorModule);
 
-        return shutterModule;
+        return motorModule;
     }
 
 }}

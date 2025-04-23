@@ -51,7 +51,15 @@ public:
      * Set task loop() schedule interval.
      * @param interval_ms schedule interval in milliseconds.
      */
-    void setLoopInterval(uint64_t interval_ms) { loopInterval = interval_ms; };
+    void setLoopInterval(uint64_t interval_ms) { loopInterval = interval_ms; }
+
+    /**
+     * Flag the task as disposed
+     */
+    void setDisposed() {
+        disposed = true;
+        // TODO: implement task `delete` in TaskManager to release memory
+    }
 
     /// Pointer to the next task
     Task* nextTask = nullptr;
@@ -60,13 +68,14 @@ public:
 
     void loopExit();
     uint64_t taskIdleTime() const;
-    uint64_t uptime() {
+    uint64_t uptime() const {
         return millis() - creationTs;
     }
 
 private:
     uint64_t creationTs;
     uint64_t loopInterval = 0;
+    bool disposed = false;
 protected:
     uint64_t lastLoopTs = 0;
 };

@@ -27,65 +27,67 @@
  *
  */
 
-#include "ShutterControl.h"
+#include "MotorControl.h"
 
 namespace IO { namespace Components {
 
-    ShutterControl::ShutterControl(int i) {
+    MotorControl::MotorControl(int i) {
         idx = i;
     }
 
-    void ShutterControl::begin() {
+    void MotorControl::begin() {
         // read current config
         auto type = K(MotorType, idx);
         auto cfgMotorType = Config::getSetting(type, "Servo");
         configure(type, cfgMotorType.c_str());
     }
 
-    void ShutterControl::open() {
-        shutterDriver->open();
+    void MotorControl::open() {
+        motorDriver->open();
     }
-    void ShutterControl::close() {
-        shutterDriver->close();
+    void MotorControl::close() {
+        motorDriver->close();
     }
-    void ShutterControl::setLevel(float level) {
-        shutterDriver->level(level);
+    void MotorControl::setLevel(float level) {
+        motorDriver->level(level);
     }
-    void ShutterControl::toggle() {
-        shutterDriver->toggle();
+    void MotorControl::toggle() {
+        motorDriver->toggle();
     }
 
-    void ShutterControl::configure(const char* k, const char* v) {
+    void MotorControl::configure(const char* k, const char* v) {
         auto key = String(k);
         if (key.equals(K(MotorType, idx))) {
             setType(v);
         } else {
-            shutterDriver->configure(k, v);
+            motorDriver->configure(k, v);
         }
     }
 
-    void ShutterControl::setType(const char* t) {
+    void MotorControl::setType(const char* t) {
         String type = t;
-        delete shutterDriver;
-        shutterDriver = nullptr;
+        if (motorDriver != nullptr) {
+            motorDriver->release();
+            motorDriver = nullptr;
+        }
         auto controlPin = Config::getSetting(K(ControlPin, idx), "-1").toInt();
         if (controlPin < 0) return;
         if (type == MotorTypeValues::Stepper) {
 // TODO: read pins config
-            shutterDriver = new StepperDriver(/* controlPin, ..., index */);
+            motorDriver = new StepperDriver(/* controlPin, ..., index */);
         } else if (type == MotorTypeValues::ServoEncoder) {
             auto encoderPin = Config::getSetting(K(EncoderPin, idx), "-1").toInt();
-            shutterDriver = new ServoEncoderDriver(controlPin, encoderPin, idx);
+            motorDriver = new ServoEncoderDriver(controlPin, encoderPin, idx);
         } else {
-            shutterDriver = new ServoDriver(controlPin, idx);
+            motorDriver = new ServoDriver(controlPin, idx);
         }
-        shutterDriver->eventSender = this;
-        shutterDriver->init();
+        motorDriver->eventSender = this;
+        motorDriver->init();
     }
 
-    void ShutterControl::calibrate() {
+    void MotorControl::calibrate() {
         calibrateMode = !calibrateMode;
-        shutterDriver->calibrate(calibrateMode);
+        motorDriver->calibrate(calibrateMode);
     }
 
 }}

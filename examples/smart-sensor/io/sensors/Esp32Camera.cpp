@@ -140,6 +140,7 @@ namespace IO { namespace Sensors {
                      "|P_HD (720x1280)=%d"
                      "|P_3MP (864x1536)=%d"
                      "|QXGA (2048x1536)=%d"
+                     // 5MP
                      "|QHD (2560x1440)=%d"
                      "|WQXGA (2560x1600)=%d"
                      "|P_FHD (1080x1920)=%d"

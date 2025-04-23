@@ -31,7 +31,7 @@
 
 #include <HomeGenie.h>
 
-#include "api/ShutterHandler.h"
+#include "api/MotorHandler.h"
 
 #ifdef BOARD_HAS_RGB_LED
 #include "../color-light/StatusLed.h"
@@ -45,7 +45,7 @@ HomeGenie* homeGenie;
 
 void setup() {
     // Default name shown in SNMP/UPnP advertising
-    Config::system.friendlyName = "Smart Shutter";
+    Config::system.friendlyName = "Smart Motor";
 
     homeGenie = HomeGenie::getInstance();
 
@@ -54,8 +54,8 @@ void setup() {
     statusLed.setup();
 #endif
 
-    auto shutterHandler = new ShutterHandler();
-    homeGenie->addAPIHandler(shutterHandler);
+    auto motorHandler = new MotorHandler();
+    homeGenie->addAPIHandler(motorHandler);
 
     homeGenie->begin();
 }
