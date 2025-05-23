@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -29,13 +29,13 @@
 
 namespace UI { namespace Activities { namespace Control {
 
-    void SwitchControlActivity::attach(lgfx::LGFX_Device* displayDevice) {
-        this->Activity::attach(displayDevice);
+    void SwitchControlActivity::attach(LGFX_Device* displayDevice) {
+        Activity::attach(displayDevice);
     }
 
     void SwitchControlActivity::onResume() {
 
-        canvas->setColorDepth(lgfx::color_depth_t::palette_2bit);
+        canvas->setColorDepth(lgfx::palette_2bit);
         // text color
         canvas->setPaletteColor(1, LGFX_Sprite::color565(255, 255, 255));
         // accent color
@@ -43,17 +43,21 @@ namespace UI { namespace Activities { namespace Control {
         // warn color
         canvas->setPaletteColor(3, LGFX_Sprite::color565(255, 20, 20));
 
-        int hw = (int)round((float)canvas->width() / 2.0f);
-        canvas->drawCircle(hw, hw, hw, 1);
-        canvas->drawCircle(hw, hw, hw - 1, 1);
+        auto hw = (int32_t)round((float)diameter / 2.0f);
+        auto ox = (int32_t)round((float)(canvas->width() - diameter) / 2.0f);
+        auto oy = (int32_t)round((float)(canvas->height() - diameter) / 2.0f);
+
+        canvas->drawCircle(ox + hw, oy + hw, hw, 1);
+        canvas->drawCircle(ox + hw, oy + hw, hw - 1, 1);
 
         if (toggleButton == nullptr) {
             // add input controls to this activity
-            int toggleButtonRadius = (int)round((float)hw / 1.25f); // 96px on a 240w display
-            toggleButton = new RoundButton(canvas, hw, hw, toggleButtonRadius);
-// TODO: module->Name;
-            toggleButton->setTitle("Light");
+            auto toggleButtonRadius = (uint16_t)round((float)hw / 1.25f); // 96px on a 240w display
+            toggleButton = new RoundButton(canvas, ox + hw, oy + hw, toggleButtonRadius);
+            toggleButton->setTitle(module.name.c_str());
             addControl((InputControl*)toggleButton);
+        } else {
+            toggleButton->setLocation(ox + hw, oy + hw);
         }
 
         drawNavigationButtons();

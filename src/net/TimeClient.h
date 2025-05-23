@@ -51,7 +51,9 @@ namespace Net {
         void loop() override;
         static NTPClient& getNTPClient();
         void setTime(unsigned long seconds, int ms);
-        bool isTimeSet() { return rtcTimeSet; };
+        bool isTimeSet() const { return rtcTimeSet; };
+        void invalidate();
+
     private:
 #ifdef ESP32
         bool rtcTimeSet = (esp_reset_reason() != ESP_RST_POWERON && esp_reset_reason() != ESP_RST_UNKNOWN);

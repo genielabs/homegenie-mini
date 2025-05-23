@@ -33,8 +33,8 @@ namespace Automation { namespace Helpers {
     HTTPClient NetHelper::http;
 
     String NetHelper::httpGet(String &url) {
-        auto client = getClient(url);
         String response;
+        auto client = getClient(url);
         if (http.begin(*client, url)) {
             //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
             int httpCode = http.GET();
@@ -61,8 +61,8 @@ namespace Automation { namespace Helpers {
 
 
     String NetHelper::httpPost(String& url, String& data) {
-        auto client = getClient(url);
         String response;
+        auto client = getClient(url);
         if (http.begin(*client, url)) {
             //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
             int httpCode = http.POST(data);

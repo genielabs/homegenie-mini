@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -40,6 +40,7 @@ namespace IO {
         const char Sensor_Temperature[]  = "Sensor.Temperature";
         const char Sensor_Humidity[]  = "Sensor.Humidity";
         const char Sensor_MotionDetect[]  = "Sensor.MotionDetect";
+        const char Sensor_Orientation[]  = "Sensor.Orientation";
         const char Status_Level[]  = "Status.Level";
         const char Status_ColorHsb[]  = "Status.ColorHsb";
         const char Status_IdleTime[]  = "Status.IdleTime";

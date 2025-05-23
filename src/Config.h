@@ -67,6 +67,7 @@ const static char CONFIG_KEY_system_zone_name[] = {"system:zn_nam"};
 const static char CONFIG_KEY_system_zone_offset[] = {"system:zn_ofs"};
 const static char CONFIG_KEY_system_zone_lat[] = {"system:zn_lat"};
 const static char CONFIG_KEY_system_zone_lng[] = {"system:zn_lng"};
+const static char CONFIG_KEY_system_ntp_server[] = {"system:ntpsrv"};
 const static char CONFIG_KEY_screen_rotation[] = {"screen:rotate"};
 
 class ZoneConfig {
@@ -93,6 +94,7 @@ public:
     String friendlyName;
     String systemMode;
     String ssid, pass;
+    String ntpServer;
 
     SystemConfig() {
         id = "";
@@ -100,6 +102,7 @@ public:
         systemMode = "";
         ssid = "";
         pass = "";
+        ntpServer = "pool.ntp.org";
     }
 };
 
@@ -173,7 +176,25 @@ public:
             // Lookup config factory defaults only if the value does not exist
             String config = STRING_VALUE(DEFAULT_CONFIG);
             if (!config.isEmpty()) {
+#ifdef BOARD_HAS_PSRAM
+                struct SpiRamAllocator : ArduinoJson::Allocator {
+                    void* allocate(size_t size) override {
+                        return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);
+                    }
+
+                    void deallocate(void* pointer) override {
+                        heap_caps_free(pointer);
+                    }
+
+                    void* reallocate(void* ptr, size_t new_size) override {
+                        return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
+                    }
+                };
+                SpiRamAllocator allocator;
+                JsonDocument doc(&allocator);
+#else
                 JsonDocument doc;
+#endif
                 DeserializationError error = deserializeJson(doc, config);
                 if (error.code() == 0) {
                     auto params = doc.as<JsonObject>();
@@ -217,6 +238,7 @@ public:
             system.systemMode = preferences.getString(CONFIG_KEY_system_mode, system.systemMode);
             system.ssid = preferences.getString(CONFIG_KEY_wifi_ssid, system.ssid);
             system.pass = preferences.getString(CONFIG_KEY_wifi_password, system.pass);
+            system.ntpServer = preferences.getString(CONFIG_KEY_system_ntp_server, system.ntpServer);
             // Time Zone
             zone.id = preferences.getString(CONFIG_KEY_system_zone_id, zone.id);
             zone.description = preferences.getString(CONFIG_KEY_system_zone_description, zone.description);
@@ -231,6 +253,7 @@ public:
             preferences.putString(CONFIG_KEY_system_mode, system.systemMode);
             preferences.putString(CONFIG_KEY_wifi_ssid, system.ssid);
             preferences.putString(CONFIG_KEY_wifi_password, system.pass);
+            preferences.putString(CONFIG_KEY_system_ntp_server, system.ntpServer);
             // Time Zone
             preferences.putString(CONFIG_KEY_system_zone_id, zone.id);
             preferences.putString(CONFIG_KEY_system_zone_description, zone.description);

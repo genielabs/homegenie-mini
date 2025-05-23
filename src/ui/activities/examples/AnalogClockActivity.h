@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -23,29 +23,34 @@
  *
  */
 
+// Adapted from:
+//     https://github.com/lovyan03/LovyanGFX/tree/master/examples/Sprite/ClockSample
+
 #ifndef HOMEGENIE_MINI_ANALOGCLOCKACTIVITY_H
 #define HOMEGENIE_MINI_ANALOGCLOCKACTIVITY_H
 
-#include "defs.h"
+#include "ui/Activity.h"
 
 #ifdef ENABLE_UI
 
 #include "NTPClient.h"
 
-#include "ui/Activity.h"
-
-namespace UI { namespace Activities { namespace Utilities {
+namespace UI { namespace Activities { namespace Examples {
 
     class AnalogClockActivity: public Activity, LGFX_Sprite {
     public:
         AnalogClockActivity() {
             setDrawInterval(100);  // Task.h - 100ms loop frequency
         }
-        void attach(lgfx::LGFX_Device* display) override {
-            this->Activity::attach(display);
+        void attach(LGFX_Device* display) override {
+            Activity::attach(display);
 
-            diameter = (float)display->width();
-            center = radius = (diameter / 2.0f);
+            if (display->width() < display->height()) {
+                diameter = (float)display->width();
+            } else {
+                diameter = (float)display->height();
+            }
+            radius = (diameter / 2.0f);
             zoom = (float)(std::min(display->width(), display->height())) / diameter;
         }
 
@@ -59,7 +64,6 @@ namespace UI { namespace Activities { namespace Utilities {
         LGFX_Sprite* secondsNeedle = nullptr;
 
         float diameter;
-        float center;
         float radius;
         int maskColor = TFT_TRANSPARENT;
         float zoom;

@@ -2,3 +2,5 @@
 nvs,      data, nvs,     36K,     28K,
 factory,  app,  factory, 64K,     3912K,
 spiffs,   data, spiffs,  3976K,   120K,
+#factory,  app,  factory, 64K,     2456K,
+#spiffs,   data, spiffs,  2520K,   1576K,

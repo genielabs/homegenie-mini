@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -67,6 +67,10 @@ public:
     static void simpleJsonStringEscape(String& s);
     static bool isNumeric(const char* s) {
         return strlen(s) > 0 && strspn(s, "0123456789.") == strlen(s);
+    }
+    static float roundDecimals(float value, unsigned int n_decimals = 1) {
+        float multiplier = std::pow(10.0f, static_cast<float>(n_decimals));
+        return std::round(value * multiplier) / multiplier;
     }
 private:
     static float max(float a, float b, float c) {

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -25,8 +25,16 @@
 
 #include "SensorValuesActivity.h"
 
+void SensorValuesActivity::attach(LGFX_Device* display) {
+    this->Activity::attach(display);
+}
+
 void SensorValuesActivity::onResume() {
-    canvas->setColorDepth(8);
+#ifdef BOARD_HAS_PSRAM
+    canvas->setColorDepth(lgfx::rgb565_2Byte);
+#else
+    canvas->setColorDepth(lgfx::rgb332_1Byte);
+#endif
 }
 
 void SensorValuesActivity::onPause() {
@@ -34,34 +42,40 @@ void SensorValuesActivity::onPause() {
 
 void SensorValuesActivity::onDraw()
 {
+    // Activity width and height
+    int32_t width = 240;
+    int32_t height = 240;
+
+    // Offsets (x and y) to center things in the actual canvas
+    int32_t ox = (canvas->width() - width) / 2;
+    int32_t oy = (canvas->height() - height) / 2;
 
     // Background image
-    canvas->pushImageDMA(0, 0, 240, 240, bitmap_background_1, lgfx::color_depth_t::rgb565_2Byte, canvas->getPalette());
-//    canvas->pushImageRotateZoom(0, 0, 0, 0, 0, 1, 1, 240, 240, bitmap_background_1, lgfx::color_depth_t::rgb565_2Byte, canvas->getPalette());
+    canvas->pushImageDMA(ox, oy, width, height, bitmap_background_1, lgfx::color_depth_t::rgb565_2Byte, canvas->getPalette());
+//    canvas->pushImageRotateZoom(ox, oy, 0, 0, 0, 1, 1, width, height, bitmap_background_1, lgfx::color_depth_t::rgb565_2Byte, canvas->getPalette());
 
     canvas->setTextColor(TFT_WHITE);
 
     // Device name
     canvas->setFont(&fonts::Roboto_Thin_24);
     canvas->setTextColor(TFT_WHITE);
-    canvas->drawCenterString(Config::system.friendlyName, (float)canvas->width() / 2.0f, 56);
+    canvas->drawCenterString(Config::system.friendlyName, (float)canvas->width() / 2.0f, oy + 56);
 
     // Temperature
     canvas->setFont(&fonts::Font6);
-    canvas->setCursor(52, 102);
-    String temperatureValue = "--";
+    canvas->setCursor(ox + 52, oy + 102);
     auto temperature = this->sensorModule->getProperty(IOEventPaths::Sensor_Temperature);
-    if (temperature != nullptr && temperature->value != nullptr) {
-        canvas->printf("%.1f", *(float_t*)temperature->data);
+    if (temperature != nullptr && temperature->value != nullptr && temperature->data != nullptr) {
+        canvas->printf("%.1f", *(float_t *) temperature->data);
     } else {
         canvas->print("--");
     }
     // Humidity
     canvas->setFont(&fonts::DejaVu24);
-    canvas->setCursor(194, 112);
+    canvas->setCursor(ox + 194, oy + 112);
     auto humidity = this->sensorModule->getProperty(IOEventPaths::Sensor_Humidity);
-    if (humidity != nullptr && humidity->value != nullptr) {
-        canvas->printf("%.0f", *(float_t*)humidity->data);
+    if (humidity != nullptr && humidity->value != nullptr && humidity->data != nullptr) {
+        canvas->printf("%.0f", *(float_t *) humidity->data);
     } else {
         canvas->print("--");
     }
@@ -69,10 +83,7 @@ void SensorValuesActivity::onDraw()
     // Date and time
     canvas->setFont(&fonts::AsciiFont8x16);
     auto rtc = Config::getRTC();
-    canvas->drawCenterString(rtc->getDate(), (float)canvas->width() / 2.0f, 165);
+    canvas->drawCenterString(rtc->getDate(), (float)canvas->width() / 2.0f, oy + 165);
     canvas->setFont(&fonts::DejaVu24);
-    canvas->drawCenterString(rtc->getTime(), (float)canvas->width() / 2.0f, 194);
-
+    canvas->drawCenterString(rtc->getTime(), (float)canvas->width() / 2.0f, oy + 194);
 }
-
-

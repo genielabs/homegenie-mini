@@ -57,9 +57,10 @@ namespace Automation {
 
     class ScheduleInfo {
     public:
-        long onPreviousMinute = -1;
-        long onNextMinute = -1;
-        long onThisMinute = -1;
+        time_t onPreviousMinute = -1;
+        time_t onNextMinute = -1;
+        time_t onThisMinute = -1;
+        time_t lastProcessedMinute = -1;
     };
 
     class Schedule {
@@ -85,19 +86,37 @@ namespace Automation {
         }
 
         bool occursUpdate(time_t ts) {
-            auto now = ExtendedCron::normalizeStartTime(ts);
-            // cache values for next and previous occurrence
-            // this is used for `$$.onNext()` and `$$.onPrevious()`
-            // helper methods in HG JavaScript API
-            if (info.onNextMinute > 645120000) {
+            const uint8_t oneMinuteInSeconds = 60;
+            time_t now = ExtendedCron::normalizeStartTime(ts);
+
+            if (now <= RTC_SYNC_THRESHOLD) {
+                if (info.lastProcessedMinute != now) {
+                    info.onPreviousMinute = 0;
+                    info.onThisMinute = 0;
+                    info.onNextMinute = 0;
+                    info.lastProcessedMinute = now;
+                }
+                return false;
+            }
+
+            if (info.lastProcessedMinute == now) {
+                return info.onThisMinute != 0;
+            }
+
+            unsigned long st = millis();
+            bool canSlide = (info.lastProcessedMinute != -1) &&
+                            (now == info.lastProcessedMinute + oneMinuteInSeconds);
+            if (canSlide) {
                 info.onPreviousMinute = info.onThisMinute;
                 info.onThisMinute = info.onNextMinute;
-                info.onNextMinute = occurs(now + 60) ? now + 60 : 0;
+                info.onNextMinute = occurs(now + oneMinuteInSeconds) ? (now + oneMinuteInSeconds) : 0;
             } else {
-                info.onPreviousMinute = occurs(now - 60) ? now - 60 : 0;
+                info.onPreviousMinute = occurs(now - oneMinuteInSeconds) ? (now - oneMinuteInSeconds) : 0;
                 info.onThisMinute = occurs(now) ? now : 0;
-                info.onNextMinute = occurs(now + 60) ? now + 60 : 0;
+                info.onNextMinute = occurs(now + oneMinuteInSeconds) ? (now + oneMinuteInSeconds) : 0;
             }
+
+            info.lastProcessedMinute = now;
             return info.onThisMinute != 0;
         }
 
@@ -134,6 +153,7 @@ namespace Automation {
         }
 
         bool isEnabled = true;
+        bool triggered = false;
         bool onModuleEvent = false;
         String name;
         String description;
@@ -144,6 +164,7 @@ namespace Automation {
         LinkedList<String *> boundDevices; // list of device types that can use this schedule
         LinkedList<ModuleReference*> boundModules; // list of modules using this schedule
         LinkedList<ModuleReference*> eventModules; // list of modules that will start this schedule when the value of a parameter of these modules changes
+        static const long RTC_SYNC_THRESHOLD = 645120000;
 
     private:
         time_t lastOccurrence;

@@ -32,31 +32,29 @@
 
 namespace IO { namespace Sensors {
 
+    camera_config_t Esp32Camera::config;
     camera_fb_t* Esp32Camera::cameraFrame = nullptr;
     bool Esp32Camera::initialized = false;
+    bool Esp32Camera::isBusy = false;
     FrameBuffer* Esp32Camera::currentFrame = new FrameBuffer();
     Esp32Camera* Esp32Camera::instance = nullptr;
     bool Esp32Camera::sdcardInitialized = false;
+    devices::Camera* Esp32Camera::apiHandler = nullptr;
 
-    Esp32Camera::Esp32Camera(devices::Camera *cameraHandler) {
+    Esp32Camera::Esp32Camera(devices::Camera* cameraHandler) {
 #ifndef ESP32_S3
         // On classic ESP32-CAM the internal LED has inverted on/off behaviour
         Config::StatusLedInvert = true;
 #endif
+        apiHandler = cameraHandler;
         // Set the frame request handler
-        cameraHandler->onFrameRequest([]{
-            if (!initialized) {
-                cameraStart();
-            }
-            cameraFrame = esp_camera_fb_get();
-            currentFrame->buffer = cameraFrame->buf;
-            currentFrame->length = cameraFrame->len;
-            return currentFrame;
+        apiHandler->onFrameRequest([](uint8_t frameSize = 0, uint8_t quality = 0){
+            return Esp32Camera::cameraGetFrame(frameSize, quality);
         });
-        cameraHandler->onFrameRelease([]() {
-            esp_camera_fb_return(cameraFrame);
+        apiHandler->onFrameRelease([]() {
+            Esp32Camera::cameraReleaseFrame();
         });
-        cameraHandler->onFileSave([]() {
+        apiHandler->onFileSave([]() {
             auto rtc = Config::getRTC();
             char folderName[20];
             char fullPath[50];
@@ -69,7 +67,7 @@ namespace IO { namespace Sensors {
             return false;
         });
         // Get Camera handler module
-        auto module = cameraHandler->getModuleList()->get(0);
+        auto module = apiHandler->module;
 
         // Configure camera module UI widget
         module->setProperty(WidgetApi::DisplayModule, "homegenie/generic/camerainput");
@@ -247,7 +245,7 @@ namespace IO { namespace Sensors {
     }
 
     void Esp32Camera::applySettings() {
-        sensor_t * camera = esp_camera_sensor_get();
+        sensor_t* camera = esp_camera_sensor_get();
         camera->set_brightness(camera, Config::getSetting(Camera_Sensor::BrightnessControl, "0").toInt());     // -2 to 2
         camera->set_contrast(camera, Config::getSetting(Camera_Sensor::ContrastControl, "0").toInt());         // -2 to 2
         camera->set_saturation(camera, Config::getSetting(Camera_Sensor::SaturationControl, "0").toInt());     // -2 to 2
@@ -286,7 +284,6 @@ namespace IO { namespace Sensors {
         SD_MMC.begin();
         EEPROM.begin(16);
         */
-        camera_config_t config;
         config.ledc_channel = LEDC_CHANNEL_0;
         config.ledc_timer = LEDC_TIMER_0;
 
@@ -319,10 +316,10 @@ namespace IO { namespace Sensors {
             res = FRAMESIZE_QQVGA;
             Config::saveSetting(Camera_Sensor::ImageResolution, String(FRAMESIZE_QQVGA));
         }
-        // Max 3MP resolution
-        if (res > FRAMESIZE_QXGA) {
-            res = FRAMESIZE_QXGA;
-            Config::saveSetting(Camera_Sensor::ImageResolution, String(FRAMESIZE_QXGA));
+        // Max 5MP resolution
+        if (res > FRAMESIZE_QSXGA) {
+            res = FRAMESIZE_QSXGA;
+            Config::saveSetting(Camera_Sensor::ImageResolution, String(FRAMESIZE_QSXGA));
         }
         config.frame_size = res;
 

@@ -108,6 +108,14 @@ namespace Service { namespace API {
             static const char Dimmer[] = "Dimmer";
             static const char Color[] = "Color";
             static const char Sensor[] = "Sensor";
+            static const char Motor[] = "Motor";
+        }
+    }
+
+    namespace CameraApi {
+        static const char Camera_GetPicture[] = "Camera.GetPicture";
+        namespace Property {
+            static const char RemoteCamera_EndPoint[] = "RemoteCamera.EndPoint";
         }
     }
 }}

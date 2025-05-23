@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -49,10 +49,14 @@ namespace UI { namespace Activities { namespace Utilities {
             setDrawInterval(10);  // Task.h - 100ms loop frequency
         }
 
-        void attach(lgfx::LGFX_Device* displayDevice) override {
+        void attach(LGFX_Device* displayDevice) override {
             this->Activity::attach(displayDevice);
 
-            diameter = (float) display->width();
+            if (display->width() < display->height()) {
+                diameter = (float)display->width();
+            } else {
+                diameter = (float)display->height();
+            }
             center = diameter / 2.0f;
             zoom = (float) (std::min(display->width(), display->height())) / diameter;
         }

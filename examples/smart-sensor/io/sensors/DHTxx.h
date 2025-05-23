@@ -58,20 +58,60 @@ namespace IO { namespace Sensors {
 
     class DHTxx : Task, public IIOEventSender {
     public:
+        float temperatureAdjust = 0;
+
         DHTxx(uint8_t dhtType, uint8_t pin) {
-            setLoopInterval(2000); // initial reading delay
+            setLoopInterval(3000); // initial reading delay
             inputPin = pin;
             dht = new DHTNEW(inputPin);
             dht->setType(dhtType);
+            optionUpdateListener = new ParameterListener(this);
+        }
+        ~DHTxx() {
+            delete dht;
+            delete optionUpdateListener;
         }
         void setModule(Module* m) override {
             IIOEventSender::setModule(m);
             m->setProperty(IOEventPaths::Sensor_Temperature, "0");
             m->setProperty(IOEventPaths::Sensor_Humidity, "0");
+            // Add temperature "adjust" UI option:
+            // temp. reading offset can be adjusted from -9 to +9
+            temperatureAdjust = Config::getSetting(DHT_Sensor::TemperatureAdjust, "0").toFloat();
+            m->addWidgetOption(
+                    // name, value
+                    "Temperature.Adjust", String(temperatureAdjust).c_str(),
+                    // type
+                    UI_WIDGETS_FIELD_TYPE_NUMBER
+                    // label
+                    ":temperature_adjust"
+                    // min:max:default
+                    ":-9:9:0"
+            )->withConfigKey(DHT_Sensor::TemperatureAdjust)->addUpdateListener(optionUpdateListener);
         }
         void begin() override;
         void loop() override;
     private:
+
+        class ParameterListener: public ModuleParameter::UpdateListener {
+        private:
+            DHTxx* dhtSensor;
+        public:
+            explicit ParameterListener(DHTxx* sc) {
+                dhtSensor = sc;
+            }
+            void onUpdate(ModuleParameter* option) override {
+                // The '=' symbol is used here as a special
+                // character to separate optional value's
+                // language-id string from actual value
+                auto v = option->value;
+                if (v.indexOf("=") > 0) {
+                    v = option->value = v.substring(v.indexOf("=") + 1);
+                }
+                dhtSensor->temperatureAdjust = v.toFloat();
+            }
+        };
+
         // Set DHTxx pin
         uint8_t inputPin = 0;
         // Temperature and humidity sensor
@@ -80,6 +120,7 @@ namespace IO { namespace Sensors {
         DHTxxSensorData currentData;
         const float DHT_READ_ERROR = -999;
         void readSensorData();
+        ParameterListener* optionUpdateListener;
     };
 
 }}

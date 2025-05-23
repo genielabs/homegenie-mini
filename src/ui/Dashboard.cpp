@@ -51,9 +51,7 @@ void Dashboard::loop() {
             } else {
                 cx = AnimationHelper::animateFloat(currentShiftX, 0, progress, ANIMATION_EASING_LINEAR);
             }
-            if (nextActivity != nullptr) {
-                nextActivity->setDrawOffset(cx - (float)(display->width() * direction * (switchActivity ? 1 : -1)), 0);
-            }
+            nextActivity->setDrawOffset(cx - (float) (display->width() * direction * (switchActivity ? 1 : -1)), 0);
             if (activity != nullptr) {
                 activity->setDrawOffset(cx, 0);
             }
@@ -62,9 +60,7 @@ void Dashboard::loop() {
         if (switchActivity) {
             setForegroundActivity(nextActivity);
         } else {
-            if (nextActivity != nullptr) {
-                nextActivity->pause();
-            }
+            nextActivity->pause();
             if (activity != nullptr) {
                 activity->setDrawOffset(0, 0);
             }
@@ -121,8 +117,9 @@ void Dashboard::setForegroundActivity(Activity* activity) {
     for (const auto &a: activityList) {
         if (a == activity) {
             currentActivityIndex = idx;
+        } else {
+            a->pause();
         }
-        a->pause();
         idx++;
     }
     activity->resume();
@@ -156,8 +153,10 @@ void Dashboard::onSwipe(SwipeEvent e) {
 }
 void Dashboard::onPan(PanEvent e) {
     auto activity = getForegroundActivity();
-    if (activity != nullptr) {
-
+    if (activity != nullptr && !activity->isLocked()) {
+#ifndef DISABLE_LVGL
+        LvglDriver::disableInput = true;
+#endif
         activity->pan(e);
 
         if (activityList.size() > 1 && (e.touchPoint.direction == TOUCH_DIRECTION_LEFT || e.touchPoint.direction == TOUCH_DIRECTION_RIGHT)) {
@@ -167,8 +166,8 @@ void Dashboard::onPan(PanEvent e) {
             }
             nextActivity = next;
             nextActivity->resume();
-            nextActivity->setDrawOffset(e.touchPoint.shiftX + (float)display->width()*(e.touchPoint.shiftX > 0 ? -1 : 1), 0);
-
+            nextActivity->setDrawOffset(
+                    e.touchPoint.shiftX + (float) display->width() * (e.touchPoint.shiftX > 0 ? -1 : 1), 0);
             activity->setDrawOffset(e.touchPoint.shiftX, 0);
         }
 
@@ -179,7 +178,11 @@ void Dashboard::onTouch(PointerEvent e) {
 
 }
 void Dashboard::onRelease(PointerEvent e) {
-
+#ifndef DISABLE_LVGL
+    if (LvglDriver::disableInput) {
+        LvglDriver::disableInput = false;
+    }
+#endif
 }
 Activity* Dashboard::getNextActivity() {
     int nextActivityIndex = 0;
@@ -196,6 +199,16 @@ Activity* Dashboard::getPreviousActivity() {
         prevActivityIndex = activityList.size() - 1;
     }
     return activityList.get(prevActivityIndex);
+}
+
+void Dashboard::invalidate() {
+    for (const auto &item: activityList) {
+        item->pause();
+    }
+    auto current = getForegroundActivity();
+    if (current != nullptr) {
+        current->resume();
+    }
 }
 
 #endif // ENABLE_UI

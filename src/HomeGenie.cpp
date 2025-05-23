@@ -180,6 +180,8 @@ namespace Service {
             // TODO: should gracefully stop all activities and drivers
 
             PowerManager::sleep();
+        } else if (PowerManager::getWakeUpReason() != ESP_SLEEP_WAKEUP_UNDEFINED) {
+            getNetManager().getTimeClient()->invalidate();
         }
 #endif
 

@@ -38,6 +38,7 @@
 #include "io/Logger.h"
 
 #include "drivers/RoundDisplay.h"
+#include "LvglDriver.h"
 
 #include "Activity.h"
 
@@ -49,11 +50,12 @@ using namespace UI;
 class Dashboard: public Task, public GestureListener {
 
 public:
-    Dashboard(lgfx::LGFX_Device* display) {
-//        setLoopInterval(10); // Task.h
+    explicit Dashboard(LGFX_Device* display) {
+        //setLoopInterval(10); // Task.h
 
         this->display = display;
-        display->setColorDepth(16);
+        display->setColorDepth(lgfx::rgb565_2Byte);
+        display->initDMA();
         gestureHelper = new GestureHelper(this);
 
         // apply display preferences
@@ -69,6 +71,11 @@ public:
 
     void loop() override;
 
+    LGFX_Device* getDisplay() {
+        return display;
+    }
+    void invalidate();
+
     Activity* getForegroundActivity();
     void setForegroundActivity(Activity*);
     Activity* getNextActivity();
@@ -82,7 +89,7 @@ public:
     void onRelease(PointerEvent e) override;
 
 private:
-    lgfx::LGFX_Device* display;
+    LGFX_Device* display;
     LinkedList<Activity*> activityList;
     int currentActivityIndex = -1;
     Activity* nextActivity = nullptr;

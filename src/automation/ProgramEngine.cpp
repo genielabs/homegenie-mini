@@ -52,9 +52,9 @@ namespace Automation {
 
 #ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
     [[noreturn]] void ProgramEngine::worker() {
+        auto jobs = &ProgramEngine::scheduleList;
         for(;;) {
-            auto jobs = &ProgramEngine::scheduleList;
-            while (jobs->size() > 0) {
+            if (jobs->size() > 0) {
                 ScheduledScript scheduledScript(jobs->shift());
                 scheduledScript.run();
             }

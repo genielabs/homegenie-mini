@@ -37,6 +37,7 @@ namespace Service {
         static unsigned long lastUserActivityTs;
         static unsigned long deepSleepTimeoutMs;
         static unsigned long wakeUpIntervalMs;
+        static esp_sleep_source_t lastWakeUpReason;
         static gpio_num_t wakeUpGPIO;
         static touch_pad_t wakeUpTouchPadPin;
         PowerManager() {}
@@ -54,6 +55,11 @@ namespace Service {
         }
         static void setWakeUpGPIO(gpio_num_t gpio) {
             wakeUpGPIO = gpio;
+        }
+        static esp_sleep_source_t getWakeUpReason() {
+            auto reason = lastWakeUpReason;
+            lastWakeUpReason = ESP_SLEEP_WAKEUP_UNDEFINED;
+            return reason;
         }
 
     };

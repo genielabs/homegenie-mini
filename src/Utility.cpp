@@ -206,12 +206,22 @@ void Utility::simpleJsonStringEscape(String& s) {
     s.replace("\n", "\\n");
     s.replace("\r", "\\r");
     s.replace("\t", "\\t");
-    for (int c = 0; c < s.length(); c++) {
-        auto ch = s.charAt(c);
-        if ('\x00' <= ch && ch <= '\x1f') {
-            char escaped[6];
-            sprintf(escaped, "\\u%4d", ch);
-            s = s.substring(0, c - 1) + escaped + s.substring(c);
+
+    String result = "";
+    if (s.length() > 0) {
+        result.reserve(s.length() + (s.length() / 2));
+    }
+
+    for (int i = 0; i < s.length(); i++) {
+        char ch = s.charAt(i);
+
+        if (ch >= '\x00' && ch <= '\x1f') {
+            char escaped[7];
+            sprintf(escaped, "\\u%04x", (unsigned int)ch);
+            result += escaped;
+        } else {
+            result += ch;
         }
     }
+    s = result;
 }

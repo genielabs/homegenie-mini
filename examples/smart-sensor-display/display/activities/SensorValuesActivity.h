@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -38,14 +38,12 @@ using namespace UI;
 class SensorValuesActivity: public Activity {
 
 public:
-    SensorValuesActivity(Module* sensorModule) {
+    explicit SensorValuesActivity(Module* sensorModule) {
         setDrawInterval(1000);  // Task.h - 1000ms loop frequency
         this->sensorModule = sensorModule;
     }
 
-    void attach(lgfx::LGFX_Device* display) override {
-        this->Activity::attach(display);
-    }
+    void attach(LGFX_Device* displayDevice) override;
 
     void onResume() override;
     void onPause() override;

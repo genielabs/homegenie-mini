@@ -23,32 +23,20 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_BATTERYSENSOR_H
-#define HOMEGENIE_MINI_BATTERYSENSOR_H
+#ifdef ENABLE_UI
+#ifndef DISABLE_LVGL
 
-#include <HomeGenie.h>
+#include "LvglDriver.h"
 
-#define BATTERY_SENSOR_NS_PREFIX           "IO::Sensors::BatterySensor"
+lv_color_t* LvglDriver::buffer0 = nullptr;
+lv_color_t* LvglDriver::buffer1 = nullptr;
+lv_disp_draw_buf_t LvglDriver::draw_buf;
+LGFX_Device* LvglDriver::display_device = nullptr;
+LGFX_Sprite* LvglDriver::gfx_canvas = nullptr;
+lv_disp_drv_t LvglDriver::display_driver;
+lv_indev_drv_t LvglDriver::indev_drv;
+bool LvglDriver::initialized = false;
+bool LvglDriver::disableInput = false;
 
-namespace IO { namespace Sensors {
-
-    class BatterySensor: Task, public IIOEventSender {
-    public:
-        BatterySensor(uint8_t analogPin) {
-            setLoopInterval(5000); // update every 5 seconds
-            sensorPin = analogPin;
-        }
-        void setModule(Module* m) override {
-            IIOEventSender::setModule(m);
-            m->setProperty(IOEventPaths::Status_Battery, "0");
-        }
-        void begin() override;
-        void loop() override;
-    private:
-        uint8_t sensorPin;
-        float lastBatteryLevel = 0;
-    };
-
-}}
-
-#endif //HOMEGENIE_MINI_BATTERYSENSOR_H
+#endif // DISABLE_LVGL
+#endif // ENABLE_UI

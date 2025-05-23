@@ -44,8 +44,6 @@ namespace IO { namespace Sensors {
         readSensorData();
         // signal value changes
         if (currentData.temperature != t) {
-            float temperatureAdjust = Config::getSetting(DHT_Sensor::TemperatureAdjust, "0").toFloat();
-            currentData.temperature = currentData.temperature + temperatureAdjust;
             Logger::info("@%s [%s %0.2f]", DHTXX_NS_PREFIX, IOEventPaths::Sensor_Temperature, currentData.temperature);
             sendEvent(IOEventPaths::Sensor_Temperature, &currentData.temperature, SensorTemperature);
         }
@@ -66,7 +64,7 @@ namespace IO { namespace Sensors {
             float h = dht->getHumidity();
             float t = dht->getTemperature();
             if (h != DHT_READ_ERROR && t != DHT_READ_ERROR) {
-                currentData.temperature = t;
+                currentData.temperature = t + temperatureAdjust;
                 currentData.humidity = h;
                 break;
             }

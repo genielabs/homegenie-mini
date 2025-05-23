@@ -51,19 +51,6 @@ namespace IO { namespace Sensors {
             IIOEventSender::setModule(m);
             m->setProperty(IOEventPaths::Sensor_MotionDetect, "0");
             m->setProperty(IOEventPaths::Status_IdleTime, "0");
-            // Add temperature "adjust" UI option:
-            // temp. reading offset can be adjusted from -9 to +9
-            auto temperatureAdjust = Config::getSetting(DHT_Sensor::TemperatureAdjust, "0");
-            m->addWidgetOption(
-                    // name, value
-                    "Temperature.Adjust", temperatureAdjust.c_str(),
-                    // type
-                    UI_WIDGETS_FIELD_TYPE_NUMBER
-                    // label
-                    ":temperature_adjust"
-                    // min:max:default
-                    ":-9:9:0"
-            )->withConfigKey(DHT_Sensor::TemperatureAdjust);
         }
         void begin() override;
         void loop() override;

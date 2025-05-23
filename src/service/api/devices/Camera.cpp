@@ -44,10 +44,12 @@ namespace Service { namespace API { namespace devices {
     }
 
     bool Camera::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {
-        if (command->Command == "Camera.GetPicture") {
-            FrameBuffer* fb = setOnFrameRequestCallback();
-            responseCallback->writeBinary("image/jpeg", fb->buffer, fb->length);
-            setOnFrameReleaseCallback();
+        if (command->Command == CameraApi::Camera_GetPicture) {
+            if (setOnFrameRequestCallback != nullptr && setOnFrameReleaseCallback != nullptr) {
+                FrameBuffer *fb = setOnFrameRequestCallback(command->getOption(0).toInt(), command->getOption(1).toInt());
+                responseCallback->writeBinary("image/jpeg", fb->buffer, fb->length);
+                setOnFrameReleaseCallback();
+            }
             return true;
         /*
         // TODO: file enumeration resulted to be very slow
@@ -98,9 +100,10 @@ namespace Service { namespace API { namespace devices {
                 case Float:
                     m.value = String(*(float *) eventData);
                     break;
-                case Text:
-                    m.value = String(*(String *) eventData);
-                    break;
+                case Text: {
+                    auto eventStringPtr = static_cast<String *>(eventData);
+                    m.value = *eventStringPtr;
+                } break;
                 default:
                     m.value = String(*(int32_t *) eventData);
             }

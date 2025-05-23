@@ -207,9 +207,10 @@ namespace Service { namespace API {
                 case Float:
                     m.value = String(*(float *) eventData);
                     break;
-                case Text:
-                    m.value = String(*(String *) eventData);
-                    break;
+                case Text: {
+                    auto eventStringPtr = static_cast<String*>(eventData);
+                    m.value = *eventStringPtr;
+                } break;
                 default:
                     m.value = String(*(int32_t *) eventData);
             }
@@ -238,7 +239,7 @@ namespace Service { namespace API {
         auto motorModule = new MotorModule();
         motorModule->domain = IO::IOEventDomains::Automation_Components;
         motorModule->address = String("S") + String(index);
-        motorModule->type = "Motor";
+        motorModule->type = ModuleType::Motor;
         motorModule->name = String("Motor ") + String(index);
 
         // Display module using "Shutter" widget

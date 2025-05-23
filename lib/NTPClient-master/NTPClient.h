@@ -108,6 +108,8 @@ class NTPClient {
     * Replace the NTP-fetched time with seconds since Jan. 1, 1970
     */
     void setEpochTime(unsigned long secs);
+
+    void setServer(const char *string);
 };
 
 #endif // HOMEGENIE_MINI_NTP_CLIENT_H

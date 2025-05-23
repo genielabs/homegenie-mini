@@ -230,7 +230,10 @@ namespace Service { namespace API {
                     auto obj = arr.add<JsonObject>();
                     obj["CronExpression"] = cronExpression;
                     obj["StartDate"] = dateStart;
-                    auto occurrencesList = obj["Occurrences"] = doc.add<JsonArray>();
+                    //auto occurrencesList = obj["Occurrences"] = doc.add<JsonArray>();
+                    JsonArray occurrencesArray = doc.add<JsonArray>();
+                    obj["Occurrences"] = occurrencesArray;
+                    JsonArray occurrencesList = obj["Occurrences"].as<JsonArray>();
                     for (time_t o : list) {
                         occurrencesList.add((long long)o * 1000); // convert to milliseconds
                     }
@@ -313,11 +316,26 @@ namespace Service { namespace API {
                     JsonDocument doc;
                     DeserializationError error = deserializeJson(doc, request->Data);
                     if (!error.code()) {
-                        if (doc.containsKey("name") && doc.containsKey("description")) {
+                        if (doc["name"].is<const char*>()) {
+                            auto oldName = module->name;
                             module->name = doc["name"].as<String>();
+                            if (module->onNameUpdated != nullptr) {
+                                module->onNameUpdated(oldName.c_str(), module->name.c_str());
+                            }
+                        }
+                        if (doc["description"].is<const char*>()) {
+                            auto oldDescription = module->description;
                             module->description = doc["description"].as<String>();
-                            // TODO: deviceType ....
-// TODO: implement data persistence -- should persist name change
+                            if (module->onDescriptionUpdated != nullptr) {
+                                module->onDescriptionUpdated(oldDescription.c_str(), module->description.c_str());
+                            }
+                        }
+                        if (doc["type"].is<const char*>()) {
+                            auto oldType = module->type;
+                            module->type = doc["type"].as<String>();
+                            if (module->onTypeUpdated != nullptr) {
+                                module->onTypeUpdated(oldType.c_str(), module->type.c_str());
+                            }
                         }
                     }
                 }
@@ -594,7 +612,8 @@ namespace Service { namespace API {
             // Data type handling
             switch (dataType) {
                 case Text: {
-                    m.value = String((const char *) eventData);
+                    auto eventStringPtr = static_cast<String*>(eventData);
+                    m.value = *eventStringPtr;
                 } break;
                 case SensorColorHsv: {
                     auto color = (ColorHSV *) eventData;

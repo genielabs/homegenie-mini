@@ -37,56 +37,25 @@ namespace UI {
 
         // Checks if a point is inside the bounds of a polygon
         // source: https://www.geeksforgeeks.org/how-to-check-if-a-given-point-lies-inside-a-polygon/
-        static bool isInside(Point point, LinkedList<Point> polygon) {
+        static bool isInside(Point point, LinkedList<Point>& polygon) {
             int num_vertices = polygon.size();
-            if (num_vertices == 0) return false;
-
+            if (num_vertices < 3) return false;
             float x = point.x, y = point.y;
             bool inside = false;
-
-            // Store the first point in the polygon and initialize
-            // the second point
-            Point p1 = polygon[0], p2;
-
-            // Loop through each edge in the polygon
-            for (int i = 1; i <= num_vertices; i++) {
-                // Get the next point in the polygon
-                p2 = polygon[i % num_vertices];
-
-                // Check if the point is above the minimum y
-                // coordinate of the edge
-                if (y > min(p1.y, p2.y)) {
-                    // Check if the point is below the maximum y
-                    // coordinate of the edge
-                    if (y <= max(p1.y, p2.y)) {
-                        // Check if the point is to the left of the
-                        // maximum x coordinate of the edge
-                        if (x <= max(p1.x, p2.x)) {
-                            // Calculate the x-intersection of the
-                            // line connecting the point to the edge
-                            float x_intersection
-                                    = (y - p1.y) * (p2.x - p1.x)
-                                      / (p2.y - p1.y)
-                                      + p1.x;
-
-                            // Check if the point is on the same
-                            // line as the edge or to the left of
-                            // the x-intersection
-                            if (p1.x == p2.x
-                                || x <= x_intersection) {
-                                // Flip the inside flag
-                                inside = !inside;
-                            }
-                        }
-                    }
+            Point p1 = polygon[num_vertices - 1];
+            for (int i = 0; i < num_vertices; i++) {
+                Point p2 = polygon[i];
+                if (p1.y == p2.y) {
+                    if (p1.y == y && x >= std::min(p1.x, p2.x) && x <= std::max(p1.x, p2.x)) return true; // Check if it's on a side
+                    p1 = p2;
+                    continue;
                 }
-
-                // Store the current point as the first point for
-                // the next iteration
+                if ( ((p1.y <= y && y < p2.y) || (p2.y <= y && y < p1.y)) &&
+                     (x < (p2.x - p1.x) * (y - p1.y) / (p2.y - p1.y) + p1.x) ) {
+                    inside = !inside;
+                }
                 p1 = p2;
             }
-
-            // Return the value of the inside flag
             return inside;
         }
     };

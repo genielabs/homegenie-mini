@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -63,6 +63,9 @@ namespace Automation {
             if (s->name == name) {
                 s->isEnabled = true;
                 save();
+                // update and cache current occurrences
+                time_t now = time(0);
+                s->occursUpdate(now);
                 break;
             }
         }
@@ -105,66 +108,85 @@ namespace Automation {
         return scheduleList;
     }
 
-    bool firstRun = true;
-    int preemptiveDelay = 0;
+    const int PREEMPTIVE_CHECK_DELAY_MAX = 30000;
+    time_t preemptiveDelayMs = PREEMPTIVE_CHECK_DELAY_MAX;
 #ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
     void Scheduler::worker() {
         for(;;) {
-            auto now = time(0) + preemptiveDelay;
-            tm* t = localtime(&now);
-            if (t->tm_min == lastCheckMinute || now < 645120000) continue; /* continue; */
+            vTaskDelay(1000 * portTICK_PERIOD_MS);
+
+            auto pre_now = time(0) + (preemptiveDelayMs / 1000);
+            tm* t = localtime(&pre_now);
+            if (t->tm_min == lastCheckMinute || pre_now < Schedule::RTC_SYNC_THRESHOLD) {
+                continue;
+            }
             lastCheckMinute = t->tm_min;
+
+            unsigned long startEvaluation = millis();
+            LinkedList<Schedule*> triggeredSchedule;
             for (int i = 0; i < scheduleList.size(); i++) {
                 auto schedule = scheduleList.get(i);
-                // check if schedule is occurring right now and fire `onSchedule` event if so
-                if (schedule->isEnabled && !schedule->wasScheduled(now) && schedule->occursUpdate(now) && !schedule->onModuleEvent) {
-                    schedule->setScheduled(now);
-                    if (!firstRun) {
-                        if (listener != nullptr && schedule->boundModules.size() > 0) {
-                            Logger::info(":%s [Scheduler::Event] >> ['%s' triggered]", SCHEDULER_NS_PREFIX,
-                                         schedule->name.c_str());
-                            listener->onSchedule(schedule);
-                        }
-                    }
+                if (schedule->isEnabled && !schedule->wasScheduled(pre_now) && schedule->occursUpdate(pre_now) && !schedule->onModuleEvent) {
+                    triggeredSchedule.add(schedule);
                 }
             }
-            preemptiveDelay = time(0) + preemptiveDelay - now;
-            if (preemptiveDelay < 0) preemptiveDelay = 0;
-            else if (preemptiveDelay > 30) preemptiveDelay = 30;
-            if (firstRun) {
-                firstRun = false;
-                // 3 are the calculated occurrences on the first run (prev, now, next)
-                preemptiveDelay = preemptiveDelay / 3;
+
+            long actualDelayMs = millis() - startEvaluation;
+            auto pause = preemptiveDelayMs - actualDelayMs;
+            if (triggeredSchedule.size() && pause > 0) {
+                vTaskDelay(pause * portTICK_PERIOD_MS);
             }
-            vTaskDelay(1000 * portTICK_PERIOD_MS);
+            preemptiveDelayMs = actualDelayMs;
+            if (preemptiveDelayMs > PREEMPTIVE_CHECK_DELAY_MAX) preemptiveDelayMs = PREEMPTIVE_CHECK_DELAY_MAX;
+
+            auto now = time(0);
+            for (int i = 0; i < triggeredSchedule.size(); i++) {
+                auto schedule = triggeredSchedule.get(i);
+                schedule->setScheduled(now);
+                if (listener != nullptr && schedule->boundModules.size() > 0) {
+                    Logger::info(":%s [Scheduler::Event] >> ['%s' triggered]", SCHEDULER_NS_PREFIX,
+                                 schedule->name.c_str());
+                    listener->onSchedule(schedule);
+                }
+            }
         }
     }
 #else
     void Scheduler::loop() {
-            auto now = time(0) + preemptiveDelay;
-            tm* t = localtime(&now);
-            if (t->tm_min == lastCheckMinute || now < 645120000) return;
+            auto pre_now = time(0) + (preemptiveDelayMs / 1000);
+            tm* t = localtime(&pre_now);
+            if (t->tm_min == lastCheckMinute || pre_now < Schedule::RTC_SYNC_THRESHOLD) {
+                return;
+            }
             lastCheckMinute = t->tm_min;
+
+            unsigned long startEvaluation = millis();
+            LinkedList<Schedule*> triggeredSchedule;
             for (int i = 0; i < scheduleList.size(); i++) {
                 auto schedule = scheduleList.get(i);
-                if (schedule->isEnabled && !schedule->wasScheduled(now) && schedule->occursUpdate(now) && !schedule->onModuleEvent) {
-                    schedule->setScheduled(now);
-                    if (!firstRun) {
-                        if (listener != nullptr && schedule->boundModules.size() > 0) {
-                            Logger::info(":%s [Scheduler::Event] >> ['%s' triggered]", SCHEDULER_NS_PREFIX,
-                                         schedule->name.c_str());
-                            listener->onSchedule(schedule);
-                        }
-                    }
+                if (schedule->isEnabled && !schedule->wasScheduled(pre_now) && schedule->occursUpdate(pre_now) && !schedule->onModuleEvent) {
+                    triggeredSchedule.add(schedule);
                 }
             }
-            preemptiveDelay = time(0) + preemptiveDelay - now;
-            if (preemptiveDelay < 0) preemptiveDelay = 0;
-            else if (preemptiveDelay > 30) preemptiveDelay = 30;
-            if (firstRun) {
-                firstRun = false;
-                // 3 are the calculated occurrences on the first run (prev, now, next)
-                preemptiveDelay = preemptiveDelay / 3;
+
+            long actualDelayMs = millis() - startEvaluation;
+            auto pause = preemptiveDelayMs - actualDelayMs;
+            if (triggeredSchedule.size() && pause > 0) {
+                // TODO: long delay should be avoided when not running on a separate task
+                delay(pause);
+            }
+            preemptiveDelayMs = actualDelayMs;
+            if (preemptiveDelayMs > PREEMPTIVE_CHECK_DELAY_MAX) preemptiveDelayMs = PREEMPTIVE_CHECK_DELAY_MAX;
+
+            auto now = time(0);
+            for (int i = 0; i < triggeredSchedule.size(); i++) {
+                auto schedule = triggeredSchedule.get(i);
+                schedule->setScheduled(now);
+                if (listener != nullptr && schedule->boundModules.size() > 0) {
+                    Logger::info(":%s [Scheduler::Event] >> ['%s' triggered]", SCHEDULER_NS_PREFIX,
+                                 schedule->name.c_str());
+                    listener->onSchedule(schedule);
+                }
             }
     }
 #endif
@@ -172,7 +194,7 @@ namespace Automation {
     void Scheduler::load() {
         auto fs = LittleFS;
 #ifdef ESP8266
-        if(true==fs.begin( )) {
+        if(true==fs.begin()) {
 #else
         int maxFiles = 1;
         if(true == fs.begin(true, "/littlefs", maxFiles , "spiffs") && fs.exists(ScheduleData::fileName)) {
@@ -313,7 +335,7 @@ namespace Automation {
         }
         String domain = em["Domain"].as<const char *>();
         String address = em["Address"].as<const char *>();
-        return new ModuleReference(serviceId.c_str(), domain.c_str(), address.c_str());
+        return new ModuleReference(serviceId, domain, address);
     }
 
 }

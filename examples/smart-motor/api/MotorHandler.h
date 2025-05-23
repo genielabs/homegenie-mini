@@ -39,6 +39,7 @@ namespace Service { namespace API {
 
         using namespace IO::Components;
         using namespace MotorApi;
+        using namespace Service::API::ModuleApi;
 
         class ParameterListener: public ModuleParameter::UpdateListener {
         private:

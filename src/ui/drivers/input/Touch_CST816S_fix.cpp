@@ -19,9 +19,9 @@ Contributors:
 // CST816 info from here...
 // https://www.waveshare.com/w/upload/c/c2/CST816S_register_declaration.pdf
 
-#include "Touch_CST816S_fix.hpp"
-
 #ifdef ENABLE_UI
+
+#include "Touch_CST816S_fix.hpp"
 
 namespace UI { namespace Drivers { namespace Input {
 

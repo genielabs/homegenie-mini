@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -37,17 +37,16 @@
 #include "InputControl.h"
 #include "GestureHelper.h"
 
+#define CONFIG_KEY_ACTIVITY_TITLE "title-"
+
 namespace UI {
 
     class Activity: private Task, public PointerHandler, public PointerListener, public GestureListener {
 
     public:
 
-        virtual void attach(lgfx::LGFX_Device* displayDevice) {
+        virtual void attach(LGFX_Device* displayDevice) {
             display = displayDevice;
-            float h_center = (float)display->width() / 2.0f;
-            float v_center = (float)display->height() / 2.0f;
-            display->setPivot(h_center, v_center);
         }
 
         void setDrawInterval(uint64_t ms) {
@@ -61,11 +60,8 @@ namespace UI {
         void pause() {
             if (!isPaused) {
                 isPaused = true;
-                // lastLoopTs == 0 -> first loop
-                if (lastLoopTs != 0)  {
-                    onPause();
-                    canvas->deleteSprite();
-                }
+                onPause();
+                canvas->deleteSprite();
             }
         }
         /**
@@ -73,15 +69,13 @@ namespace UI {
          * resources and start loops/refresh activities.
          */
         void resume() {
-            // lastLoopTs == 0 -> first loop
-            if (isPaused /*|| lastLoopTs == 0*/) {
+            if (isPaused) {
                 isPaused = false;
-                if (canvas == nullptr) {
-                    canvas = new LGFX_Sprite(display);
-                }
-                canvas->setColorDepth(lgfx::color_depth_t::grayscale_1bit);
-                canvas->createSprite(display->width(), display->height());
+                initCanvas();
 //                canvas->clear();
+                float h_center = (float)display->width() / 2.0f;
+                float v_center = (float)display->height() / 2.0f;
+                display->setPivot(h_center, v_center);
                 onResume();
             }
         }
@@ -201,8 +195,18 @@ namespace UI {
             control->draw();
         }
 
+        void lock() {
+            locked = true;
+        }
+        void unlock() {
+            locked = false;
+        }
+        bool isLocked() const {
+            return locked;
+        }
+
     protected:
-        lgfx::LGFX_Device* display = nullptr;
+        LGFX_Device* display = nullptr;
         LGFX_Sprite* canvas = nullptr;
         struct Offset {
         public:
@@ -214,9 +218,22 @@ namespace UI {
             draw();
         }
 
+        void initCanvas() {
+            if (canvas == nullptr) {
+                canvas = new LGFX_Sprite(display);
+#ifdef BOARD_HAS_PSRAM
+                canvas->setPsram(true);
+#endif
+                canvas->initDMA();
+            }
+            canvas->setColorDepth(lgfx::color_depth_t::grayscale_1bit);
+            canvas->createSprite(display->width(), display->height());
+        }
+
     private:
         LinkedList<InputControl*> inputControls;
         bool isPaused = true;
+        bool locked = false;
 
         bool willLoop() override {
             bool canLoop = !isPaused && this->Task::willLoop();

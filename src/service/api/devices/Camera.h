@@ -53,7 +53,7 @@ namespace Service { namespace API { namespace devices {
 
         Module* module;
 
-        void onFrameRequest(std::function<FrameBuffer*()> callback) {
+        void onFrameRequest(std::function<FrameBuffer*(int frameSize, int quality)> callback) {
             setOnFrameRequestCallback = std::move(callback);
         }
         void onFrameRelease(std::function<void()> callback) {
@@ -76,7 +76,7 @@ namespace Service { namespace API { namespace devices {
 
     private:
         LinkedList<Module*> moduleList;
-        std::function<FrameBuffer*()> setOnFrameRequestCallback = nullptr;
+        std::function<FrameBuffer*(int8_t resolution, int8_t quality)> setOnFrameRequestCallback = nullptr;
         std::function<void()> setOnFrameReleaseCallback = nullptr;
         std::function<bool()> setOnFileSaveCallback = nullptr;
         //std::function<String()> setOnFileListCallback = nullptr;

@@ -177,6 +177,7 @@ command using the `/api/` prefix, or enter system commands prefixed by `#` chara
 #CONFIG:system-time <hh>:<mm>:<ss>.<ms>
 #CONFIG:system-zone-id <zone_id>
 #CONFIG:system-zone-offset <tz_offset>
+#CONFIG:system-ntp-server <server_address>
 #SET:<parameter_key> <value>
 #GET:<parameter_key> 
 #VERSION

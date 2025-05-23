@@ -255,3 +255,7 @@ void NTPClient::setEpochTime(unsigned long secs) {
     this->_currentEpoc = secs;
     this->_lastUpdate = millis();
 }
+
+void NTPClient::setServer(const char *address) {
+    this->_poolServerName = address;
+}

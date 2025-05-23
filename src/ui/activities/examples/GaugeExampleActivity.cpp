@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -29,24 +29,26 @@
 
 namespace UI { namespace Activities { namespace Examples {
 
-    void GaugeExampleActivity::attach(lgfx::LGFX_Device* displayDevice) {
-        this->Activity::attach(displayDevice);
+    void GaugeExampleActivity::attach(LGFX_Device* displayDevice) {
+        Activity::attach(displayDevice);
     }
 
     void GaugeExampleActivity::onResume() {
 
-        canvas->setColorDepth(lgfx::color_depth_t::palette_2bit);
+        canvas->setColorDepth(lgfx::palette_2bit);
 
         if (base == nullptr) {
 
-
             base = new LGFX_Sprite(canvas);
             needle = new LGFX_Sprite(canvas);
+#ifdef BOARD_HAS_PSRAM
+            base->setPsram(true);
+            needle->setPsram(true);
+#endif
 
             canvas->setColorDepth(lgfx::palette_2bit);
             base->setColorDepth(lgfx::palette_2bit);
             needle->setColorDepth(lgfx::palette_2bit);
-
 
         }
 
@@ -75,7 +77,7 @@ namespace UI { namespace Activities { namespace Examples {
 //        display->setColorDepth(16);
 
         base->setFont(&fonts::Orbitron_Light_24);
-//base->setFont(&fonts::Roboto_Thin_24);
+//        base->setFont(&fonts::Roboto_Thin_24);
 
         base->setTextDatum(lgfx::middle_center);
 

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -91,10 +91,14 @@ namespace UI { namespace Activities { namespace Utilities {
         clockSprite->printf("%02d:%02d", (int)hrs, (int)min);
 
 
+        // Offsets (x and y) to center things in the actual canvas
+        auto ox = (int32_t)round(((float)canvas->width() - diameter) / 2.0f);
+        auto oy = (int32_t)round(((float)canvas->height() - diameter) / 2.0f);
+
         // HomeGenie logos
 //        canvas->drawBitmap(49, 133, logoHomeGenie, 151, 38, PALETTE_COLOR_DIGIT_OFF);
-        canvas->drawBitmap(47, 136, logoHomeGenie, 151, 38, PALETTE_COLOR_TICK_CLEAR);
-        canvas->drawBitmap(48, 134, logoHomeGenie, 151, 38, PALETTE_COLOR_HOMEGENIE);
+        canvas->drawBitmap(ox + 47, oy + 136, logoHomeGenie, 151, 38, PALETTE_COLOR_TICK_CLEAR);
+        canvas->drawBitmap(ox + 48, oy + 134, logoHomeGenie, 151, 38, PALETTE_COLOR_HOMEGENIE);
 //        genieSprite->pushSprite(96, 26);
 
         // Clock ticks
@@ -115,17 +119,20 @@ namespace UI { namespace Activities { namespace Utilities {
         float cos_y = - cos(rad) * ((float)center * 10 / 11.0f);
         float sin_x = - sin(rad) * ((float)center * 10 / 11.0f);
         float pacRotation = -(rad * rad_to_deg);
-        canvas->fillEllipseArc((int)round(center + sin_x), (int)round(center + cos_y), 0, 9, 0, 9, pacRotation + (pacAngle*18.0f/2), pacRotation - (pacAngle*18.0f/2), PALETTE_COLOR_PAC_MAN);
+        canvas->fillEllipseArc(ox + (int)round(center + sin_x), oy + (int)round(center + cos_y), 0, 9, 0, 9, pacRotation + (pacAngle*18.0f/2), pacRotation - (pacAngle*18.0f/2), PALETTE_COLOR_PAC_MAN);
         if (pacAngle + pacAngleInc < 1 || pacAngle + pacAngleInc > 5) pacAngleInc *= -1;
         pacAngle += pacAngleInc;
     }
 
     void DigitalClockActivity::drawDot(float pos, int size, uint32_t palette)
     {
+        // Offsets (x and y) to center things in the actual canvas
+        auto ox = (int32_t)round(((float)canvas->width() - diameter) / 2.0f);
+        auto oy = (int32_t)round(((float)canvas->height() - diameter) / 2.0f);
         float rad = pos * 6.0f * - 0.0174532925f;
         float cos_y = - cos(rad) * ((float)center * 10 / 11.0f);
         float sin_x = - sin(rad) * ((float)center * 10 / 11.0f);
-        canvas->fillCircle((int)round(center + sin_x), (int)round(center + cos_y), size, palette);
+        canvas->fillCircle(ox + (int)round(center + sin_x), oy + (int)round(center + cos_y), size, palette);
     }
 
 }}}

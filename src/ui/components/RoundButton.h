@@ -53,8 +53,12 @@ namespace UI { namespace Components {
 
 
         bool hitTest(float x, float y) override {
-            float r = ((float)w / 2.0f);
-            return (x > cx - r && x < cx + r && y > cy - r && y < cy + r);
+            float radius = ((float)w / 2.0f);
+            float dx = x - cx;
+            float dy = y - cy;
+            float distance_squared = (dx * dx) + (dy * dy);
+            float radius_squared = radius * radius;
+            return distance_squared <= radius_squared;
         }
         void draw() override {
             float r = ((float)w / 2.0f);
@@ -92,6 +96,11 @@ namespace UI { namespace Components {
         }
         void setFont(const lgfx::IFont* f) {
             font = f;
+        }
+
+        void setLocation(int32_t x, int32_t y) {
+            cx = x;
+            cy = y;
         }
     };
 

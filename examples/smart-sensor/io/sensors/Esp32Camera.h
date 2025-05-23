@@ -41,9 +41,27 @@
 
 #include "../../api/SensorApi.h"
 
-
 #define ESP_CAMERA_QUALITY "20"
-#ifdef ESP32_S3
+
+#ifdef ESP32_S3_LCD_CAM
+#define ESP_CAMERA_PWR "17"  // Power down is not used
+#define ESP_CAMERA_XCL "8"
+#define ESP_CAMERA_XFR "20000000"
+#define ESP_CAMERA_VSN "6"
+#define ESP_CAMERA_HRF "4"
+#define ESP_CAMERA_PCL "9"
+#define ESP_CAMERA_SDA "21"
+#define ESP_CAMERA_SCL "16"
+#define ESP_CAMERA_CD0 "12"
+#define ESP_CAMERA_CD1 "13"
+#define ESP_CAMERA_CD2 "15"
+#define ESP_CAMERA_CD3 "11"
+#define ESP_CAMERA_CD4 "14"
+#define ESP_CAMERA_CD5 "10"
+#define ESP_CAMERA_CD6 "7"
+#define ESP_CAMERA_CD7 "2"
+#define ESP_CAMERA_RST "-1" // Software reset will be performed
+#elif ESP32_S3
 #define ESP_CAMERA_PWR "-1"
 #define ESP_CAMERA_XCL "15"
 #define ESP_CAMERA_XFR "24000000"
@@ -102,12 +120,57 @@ namespace IO { namespace Sensors {
 
         static void init(Camera *pCamera);
 
+        static FrameBuffer* cameraGetFrame(uint8_t frameSize = 0, uint8_t quality = 0) {
+            unsigned long ts = millis();
+            while (isBusy) { // perhaps it would be best to use a semaphore
+                // request timeout
+                if (millis() - ts > 50) {
+                    return currentFrame;
+                }
+                delay(1);
+            }
+            isBusy = true;
+
+            if (frameSize > 0 && (framesize_t)frameSize != config.frame_size) {
+                config.frame_size = (framesize_t)frameSize;
+                auto v = String(frameSize);
+                apiHandler->module->setProperty(Options::Image_Resolution, v);
+                QueuedMessage m(apiHandler->module, Options::Image_Resolution, v, &frameSize, Number);
+                HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+            }
+
+            if (!initialized) {
+                cameraStart();
+            }
+
+            if (quality > 0 && quality != config.jpeg_quality) {
+                config.jpeg_quality = quality;
+                auto v = String(quality);
+                apiHandler->module->setProperty(Options::Image_Quality, v);
+                QueuedMessage m(apiHandler->module, Options::Image_Quality, v, &quality, Number);
+                HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+            }
+
+            cameraFrame = esp_camera_fb_get();
+            currentFrame->buffer = cameraFrame->buf;
+            currentFrame->length = cameraFrame->len;
+
+            return currentFrame;
+        }
+        static void cameraReleaseFrame() {
+            esp_camera_fb_return(cameraFrame);
+            isBusy = false;
+        }
+
     private:
         static camera_fb_t* cameraFrame;
+        static bool isBusy;
         static bool initialized;
         static bool sdcardInitialized;
         static FrameBuffer* currentFrame;
         static Esp32Camera* instance;
+        static camera_config_t config;
+        static devices::Camera* apiHandler;
 
         static void applySettings();
 
@@ -141,12 +204,10 @@ namespace IO { namespace Sensors {
             if (!initialized) {
                 cameraStart();
             }
+            // Camera sensor successfully initialized
             if (initialized)  {
-                // Camera sensor successfully initialized
-                auto psramSize = esp_spiram_get_size();
-                int frames = (psramSize > 0) ? Config::getSetting(Camera_Sensor::CameraCfg_fbc, "2").toInt() : 1;
                 // empty cache
-                for (int i = 0; i < frames; i++) {
+                for (int i = 0; i < config.fb_count; i++) {
                     camera_fb_t* fb = esp_camera_fb_get();
                     esp_camera_fb_return(fb);
                 }

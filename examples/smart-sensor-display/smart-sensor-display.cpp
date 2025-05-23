@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -31,82 +31,95 @@
 
 #include <ui/Dashboard.h>
 #include <ui/drivers/RoundDisplay.h>
-//#include <ui/activities/examples//GaugeExampleActivity.h>
-#include <ui/activities/control/SwitchControlActivity.h>
-//#include <ui/activities/utilities/AnalogClockActivity.h>
-#include <ui/activities/utilities/DigitalClockActivity.h>
+#include <ui/drivers/StandardDisplay.h>
 #include <ui/activities/utilities/SystemInfoActivity.h>
+
+#ifdef BOARD_HAS_PSRAM
+#include <ui/activities/control/SwitchControlActivity.h>
+#ifndef DISABLE_LVGL
+#include <ui/activities/control/LevelControlActivity.h>
+#endif
+#ifdef LGFX_EXAMPLES
+#include <ui/activities/examples/GaugeExampleActivity.h>
+#include <ui/activities/examples/AnalogClockActivity.h>
+#endif
+#include <ui/activities/monitor/CameraDisplayActivity.h>
+#include <ui/activities/utilities/DigitalClockActivity.h>
+#endif
 
 #include "smart-sensor/CommonSensors.h"
 
 #include "display/activities/SensorValuesActivity.h"
+
 //#include "io/BatterySensor.h"
-
-// Accelerometer and Gyroscope
-//#include "io/QMI8658.h"
-
+#include "io/InertialSensor.h"
 
 using namespace Service;
+
+#ifdef BOARD_HAS_PSRAM
 using namespace UI::Activities::Control;
-//using namespace UI::Activities::Examples;
+#ifdef LGFX_EXAMPLES
+using namespace UI::Activities::Examples;
+#endif
+using namespace UI::Activities::Monitor;
+#endif
 using namespace UI::Activities::Utilities;
 
 HomeGenie* homeGenie;
 Module* miniModule;
 
-String controlModuleUrl;
-ModuleParameter* controlModuleParameter = nullptr;
-
-SwitchControlActivity* switchControl;
-
-
-// UI options update listener
-static class : public ModuleParameter::UpdateListener {
-public:
-    void onUpdate(ModuleParameter* option) override {
-        Serial.println(option->value);
-        controlModuleUrl = option->value;
-        switchControl->setModuleUrl(controlModuleUrl);
-        Config::saveSetting("ctrl-mod", controlModuleUrl);
-        IO::Logger::info("Control module set to: %s", controlModuleUrl.c_str());
-    }
-} optionUpdateListener;
-
-
 Dashboard* dashboard;
 
 void setup() {
     // Default name shown in SNMP/UPnP advertising
-    Config::system.friendlyName = "Smart Sensor Display";
-
-    //uint8_t batterySensorPin = 1;
+    Config::system.friendlyName = "Smart Display";
 
     homeGenie = HomeGenie::getInstance();
     miniModule = homeGenie->getDefaultModule();
     miniModule->setProperty(Implements::Scheduling, "true");
     miniModule->setProperty(Implements::Scheduling_ModuleEvents, "true");
 
-    /*
-    // Init accel./gyro chip
-    Wire.begin(DEV_SDA_PIN, DEV_SCL_PIN, 400000);
+    LGFX_Device* display;
+    auto displayType = Config::getSetting("disp-typ");
+    if (displayType.equals("ST7789")) {
+        display = (new UI::Drivers::StandardDisplay())->getDisplay();
+    } else {
+        // fallback to "GC9A01"
+        display = (new UI::Drivers::RoundDisplay())->getDisplay();
+    }
+    dashboard = new Dashboard(display);
 
-    QMI8658_enableSensors(QMI8658_CONFIG_AE_ENABLE);
-    //QMI8658_enableWakeOnMotion();
-
-    QMI8658_init();
-    //*/
-
-    auto roundDisplay = (new UI::Drivers::RoundDisplay())->getDisplay();
-    dashboard =
-        new Dashboard(roundDisplay);
+#ifndef DISABLE_LVGL
+    LvglDriver::setDisplay(display);
+#endif
 
     if (Config::isDeviceConfigured()) {
 
         /*
         // Battery sensor
+        uint8_t batterySensorPin = 1;
         auto batterySensor = new BatterySensor(batterySensorPin);
         batterySensor->setModule(miniModule);
         homeGenie->addIOHandler(batterySensor);
+        //*/
+        ///*
+        // Inertial sensor
+        auto imuType = Config::getSetting("imus-typ");
+        if (imuType.equals("QMI8658")) {
+            auto inertialSensor = new InertialSensor();
+            inertialSensor->setModule(miniModule);
+            inertialSensor->onOrientationChange([](InertialSensor::ScreenOrientation orientation) {
+                if (orientation <= InertialSensor::ORIENTATION_LANDSCAPE_RIGHT) {
+                    Preferences preferences;
+                    preferences.begin(CONFIG_SYSTEM_NAME, false);
+                    preferences.putUInt(CONFIG_KEY_screen_rotation, orientation);
+                    preferences.end();
+                    dashboard->getDisplay()->setRotation(orientation);
+                    dashboard->invalidate();
+                }
+            });
+            homeGenie->addIOHandler(inertialSensor);
+        }
         //*/
 
 
@@ -120,38 +133,65 @@ void setup() {
         }
 #endif
 
-        // Add UI control to set the module associated
-        // to the light control activity example
-
-        miniModule->addWidgetOption(
-            // name, value
-            "RemoteControl.EndPoint", "",
-                // type
-                UI_WIDGETS_FIELD_TYPE_MODULE_TEXT
-                // options
-                ":any"
-                ":switch,light,dimmer,color,shutter,motor"
-                ":any"
-                ":uri"
-        )->withConfigKey("ctrl-mod")->addUpdateListener(&optionUpdateListener);
-
         // Add activities to UI
 
+        // This Activity shows basic system info
+        // and buttons to rotate the display
+        // or reconfigure the device connection
         auto systemInfo = new SystemInfoActivity();
         dashboard->addActivity(systemInfo);
 
-        auto digitalClock = new DigitalClockActivity();
-        switchControl = new SwitchControlActivity();
+        // This Activity shows device name, date/time and
+        // temperature + humidity if DHT sensor is enabled
         auto sensorValues = new SensorValuesActivity(miniModule);
-//      auto analogClock = new AnalogClockActivity();
-//      auto gaugeExample = new GaugeExampleActivity();
+
+#ifdef BOARD_HAS_PSRAM
+        // A cute "pac-man" clock
+        auto digitalClock = new DigitalClockActivity();
+        // UI control to switch on/off or set level of
+        // user-definable devices. Each button emits events
+        // that can be automated using the device Scheduler.
+        // It can be configured using HomeGenie Panel app.
+        auto switchControl = new SwitchControlActivity("D1");
+#ifndef DISABLE_LVGL
+        // Similar to the SwitchControl above but using LVGL
+        auto levelControl = new LevelControlActivity("M1");
+#endif
+        // Displays a remote camera via HTTP images feed,
+        // or local camera directly connected to the ESP32.
+        auto cameraDisplay = new CameraDisplayActivity("V1");
+        if (Config::getSetting(Camera_Sensor::SensorType).equals("esp32-cam")) {
+            cameraDisplay->isEsp32Camera = true;
+        }
+#ifdef LGFX_EXAMPLES
+        // UI examples adapted from LoyanGFX library
+        auto analogClock = new AnalogClockActivity();
+        auto gaugeExample = new GaugeExampleActivity();
+#endif
 
         dashboard->addActivity(digitalClock);
         dashboard->addActivity(switchControl);
-        dashboard->addActivity(sensorValues);
-//      dashboard->addActivity(analogClock);
-//      dashboard->addActivity(gaugeExample);
+#ifndef DISABLE_AUTOMATION
+        // Adds scheduler programs to handle on, off and level events
+        setupLevelControlActivitySchedule(&switchControl->module);
+#endif
+#ifndef DISABLE_LVGL
+        dashboard->addActivity(levelControl);
+#ifndef DISABLE_AUTOMATION
+        // Adds scheduler programs to handle on, off and level events
+        setupLevelControlActivitySchedule(&levelControl->module);
+#endif
+#endif
+        dashboard->addActivity(cameraDisplay);
+#ifdef LGFX_EXAMPLES
+        dashboard->addActivity(analogClock);
+        dashboard->addActivity(gaugeExample);
+#endif
+#endif
 
+        dashboard->addActivity(sensorValues);
+
+        // Show the SensorValues Activity on start
         dashboard->setForegroundActivity(sensorValues);
 
     } else {
@@ -171,21 +211,4 @@ void setup() {
 void loop()
 {
     homeGenie->loop();
-
-    // check if configuration parameters changed
-    if (controlModuleParameter != nullptr && controlModuleParameter->value != controlModuleUrl) {
-        controlModuleUrl = controlModuleParameter->value;
-        switchControl->setModuleUrl(controlModuleUrl);
-        Config::saveSetting("ctrl-mod", controlModuleUrl);
-        IO::Logger::info("Control module set to: %s", controlModuleUrl.c_str());
-    }
-
-    /*
-    // Test reading accel/gyro data
-    float acc[3], gyro[3];
-    unsigned int count = 0;
-    QMI8658_read_xyz(acc, gyro, &count);
-    Serial.printf("ACC X %.2f Y %.2f Z %.2f ", acc[0], acc[1], acc[2]);
-    Serial.printf("GYR X %.2f Y %.2f Z %.2f\n", gyro[0], gyro[1], gyro[2]);
-    //*/
 }

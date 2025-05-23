@@ -49,16 +49,16 @@ namespace Data {
         String name;
         String value;
         String updateTime;
-        void* data;
-        IOEventDataType dataType;
+        void* data{};
+        IOEventDataType dataType = IOEventDataType::Undefined;
 
         ModuleParameter() {
             updateTime = getFormattedDate();
         }
-        explicit ModuleParameter(String name): ModuleParameter() {
+        explicit ModuleParameter(const String& name): ModuleParameter() {
             this->name = name;
         };
-        ModuleParameter(String name, String value): ModuleParameter(name) {
+        ModuleParameter(const String& name, const String& value): ModuleParameter(name) {
             setValue(value.c_str());
         };
 
@@ -68,14 +68,14 @@ namespace Data {
         void setValue(const char* v) {
             value = v;
             updateTime = getFormattedDate();
+            // save value if config key is set
+            if (!configKey.isEmpty()) {
+                Config::saveSetting(configKey.c_str(), value);
+            }
             if (updateListeners.size() > 0) {
                 for (auto l : updateListeners) {
                     l->onUpdate(this);
                 }
-            }
-            // save value if config key is set
-            if (!configKey.isEmpty()) {
-                Config::saveSetting(configKey.c_str(), value);
             }
         }
         void setData(void* d, IOEventDataType t) {
@@ -86,6 +86,16 @@ namespace Data {
         ModuleParameter* addUpdateListener(UpdateListener* listener) {
             updateListeners.add(listener);
             return this;
+        }
+        UpdateListener* removeUpdateListener(UpdateListener* listener) {
+            unsigned int i = 0;
+            for (auto l : updateListeners) {
+                if (l == listener) {
+                    return updateListeners.remove(i);
+                }
+                i++;
+            }
+            return nullptr;
         }
         ModuleParameter* withConfigKey(const char* key) {
             configKey = key;
@@ -111,8 +121,18 @@ namespace Data {
         String serviceId;
         String domain;
         String address;
+        ModuleReference(const String& d, const String& a) {
+            serviceId = "";
+            domain = d;
+            address = a;
+        }
         ModuleReference(const char* d, const char* a) {
             serviceId = "";
+            domain = d;
+            address = a;
+        }
+        ModuleReference(const String& s, const String& d, const String& a) {
+            serviceId = s;
             domain = d;
             address = a;
         }
@@ -131,30 +151,23 @@ namespace Data {
         String name;
         String description;
         LinkedList<ModuleParameter*> properties;
-        bool setProperty(String pn, String pv, void* data = nullptr, IOEventDataType dataType = Undefined) {
+
+        std::function<void(const char* oldValue, const char* newValue)> onNameUpdated = nullptr;
+        std::function<void(const char* oldValue, const char* newValue)> onDescriptionUpdated = nullptr;
+        std::function<void(const char* oldValue, const char* newValue)> onTypeUpdated = nullptr;
+
+        bool setProperty(const String& pn, const String& pv, void* data = nullptr, IOEventDataType dataType = Undefined);
+        ModuleParameter* getProperty(const String& pn) const {
             for(int p = 0; p < properties.size(); p++) {
                 auto param = properties.get(p);
-                if (param->is(pn.c_str())) {
-                    param->setValue(pv.c_str());
-                    param->setData(data, dataType);
-                    return true;
-                }
-            }
-            // add new parameter
-            properties.add(new ModuleParameter(pn, pv));
-            return false;
-        }
-        ModuleParameter* getProperty(String pn) const {
-            for(int p = 0; p < properties.size(); p++) {
-                auto param = properties.get(p);
-                if (param->is(pn.c_str())) {
+                if (param != nullptr && param->is(pn.c_str())) {
                     return param;
                 }
             }
             return nullptr;
         }
         ModuleReference* getReference() const {
-            return new ModuleReference(Config::system.id.c_str(), domain.c_str(), address.c_str());
+            return new ModuleReference(Config::system.id, domain, address);
         }
 
         ModuleParameter* addWidgetOption(const char* optionName, const char* value, const char* definition) {

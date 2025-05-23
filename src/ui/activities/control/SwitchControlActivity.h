@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -26,14 +26,13 @@
 #ifndef HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
 #define HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
 
-#include "defs.h"
+#include "ui/Activity.h"
 
 #ifdef ENABLE_UI
 
-#include <HTTPClient.h>
-
 #include "service/api/APIRequest.h"
-#include "ui/Activity.h"
+#include "service/api/devices/Dimmer.h"
+
 #include "ui/components/RoundButton.h"
 #include "ui/AnimationHelper.h"
 #include "ui/Utility.h"
@@ -41,19 +40,28 @@
 namespace UI { namespace Activities { namespace Control {
 
     using namespace Service::API;
+    using namespace Service::API::devices;
+    using namespace Service::ModuleApi;
+    using namespace Service::WidgetApi;
     using namespace UI::Components;
 
     enum SwitchControlButtons {
         CONTROL_BUTTON_ADD = 2,
         CONTROL_BUTTON_SUB = 0,
         CONTROL_BUTTON_ON = 3,
-        CONTROL_BUTTON_OFF = 1
+        CONTROL_BUTTON_OFF = 1,
+        CONTROL_BUTTON_TOGGLE = 4
     };
 
-    class SwitchControlActivity : public Activity {
+    class SwitchControlActivity : public Activity, public APIHandler {
     public:
-        SwitchControlActivity() {
+        LinkedList<Module*> moduleList;
+        Module module;
+
+        explicit SwitchControlActivity(const char* moduleAddress) {
             setDrawInterval(100); // Task.h
+
+            // diameter 240
 
             // OFF button
             buttonOffBounds.add(Point{0, 0});
@@ -76,62 +84,125 @@ namespace UI { namespace Activities { namespace Control {
             buttonDecBounds.add(Point{239, 239});
             buttonDecBounds.add(Point{159, 150});
 
+            module.domain  = IO::IOEventDomains::HomeAutomation_HomeGenie;
+            module.address = moduleAddress;
+            module.type    = ModuleType::Sensor;
+            // load stored name for this module
+            auto key = String(CONFIG_KEY_ACTIVITY_TITLE); key.concat(moduleAddress);
+            module.name = Config::getSetting(key.c_str(), moduleAddress);
+            module.setProperty(Implements::Scheduling, "true");
+            module.setProperty(Implements::Scheduling_ModuleEvents, "true");
+            module.onNameUpdated = [this](const char* oldName, const char* newName) {
+                if (toggleButton != nullptr) {
+                    toggleButton->setTitle(newName);
+                }
+                auto key = String(CONFIG_KEY_ACTIVITY_TITLE);
+                key.concat(module.address);
+                Config::saveSetting(key.c_str(), newName);
+                refresh();
+            };
+            moduleList.add(&module);
+            HomeGenie::getInstance()->addAPIHandler(this);
         }
-        void attach(lgfx::LGFX_Device* displayDevice) override;
+
+        void init() override {
+        }
+        bool canHandleDomain(String* domain) override {
+            return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        }
+        bool handleRequest(APIRequest* request, ResponseCallback* callback) override {
+            return false;
+        }
+        bool handleEvent(IIOEventSender*,
+                         const char* domain, const char* address,
+                         const char *eventPath, void* eventData, IOEventDataType) override {
+            return false;
+        }
+        Module* getModule(const char* domain, const char* address) override {
+            if (module.domain.equals(domain) && module.address.equals(address))
+                return &module;
+            return nullptr;
+        }
+        LinkedList<Module*>* getModuleList() override {
+            return &moduleList;
+        }
+
+        void attach(LGFX_Device* displayDevice) override;
         void onResume() override;
         void onPause() override;
         void onDraw() override;
 
         void onPointerDown(PointerEvent e) override {
-            auto p = Point{e.x, e.y};
+            selectedButton = -1;
+            auto ox = round((float)(canvas->width() - diameter) / 2.0f);
+            auto oy = round((float)(canvas->height() - diameter) / 2.0f);
+            auto p = Point{e.x - ox, e.y - oy};
             if (Utility::isInside(p, buttonOffBounds)) {
                 selectedButton = CONTROL_BUTTON_OFF;
                 refresh();
-            }
-            if (Utility::isInside(p, buttonOnBounds)) {
+            } else if (Utility::isInside(p, buttonOnBounds)) {
                 selectedButton = CONTROL_BUTTON_ON;
                 refresh();
-            }
-            if (Utility::isInside(p, buttonIncBounds)) {
+            } else if (Utility::isInside(p, buttonIncBounds)) {
                 selectedButton = CONTROL_BUTTON_ADD;
                 refresh();
-            }
-            if (Utility::isInside(p, buttonDecBounds)) {
+            } else if (Utility::isInside(p, buttonDecBounds)) {
                 selectedButton = CONTROL_BUTTON_SUB;
+                refresh();
+            } else if (toggleButton->hitTest(p.x, p.y)) {
+                selectedButton = CONTROL_BUTTON_TOGGLE;
                 refresh();
             }
         }
         void onPointerUp(PointerEvent e) override {
             if (selectedButton != -1) {
 // TODO: fire event onNavigationButtonClicked(selectedButton) ...
-
                 showLoaderTs = millis();
-
                 switch (selectedButton) {
-                    case 2: {
+                    case CONTROL_BUTTON_ADD: {
                         if (currentLevel == 100) break;
                         currentLevel += isSwitchedOn ? 10 : 0;
                         if (currentLevel > 100) currentLevel = 100;
-                        bool success = sendCommand(ControlApi::Control_Level, String(currentLevel).c_str());
-                        if (success) isSwitchedOn = true;
+                        auto l = String(currentLevel);
+                        module.setProperty("Sensor.Level", l);
+                        auto m = QueuedMessage(&module, "Sensor.Level", l, &currentLevel, IO::IOEventDataType::Number);
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        isSwitchedOn = true;
                     }
                         break;
-                    case 0: {
+                    case CONTROL_BUTTON_SUB: {
                         if (currentLevel == 10) break;
                         currentLevel -= isSwitchedOn ? 10 : 0;
                         if (currentLevel < 10) currentLevel = 10;
-                        bool success = sendCommand(ControlApi::Control_Level, String(currentLevel).c_str());
-                        if (success) isSwitchedOn = true;
+                        auto l = String(currentLevel);
+                        module.setProperty("Sensor.Level", l);
+                        auto m = QueuedMessage(&module, "Sensor.Level", l, &currentLevel, IO::IOEventDataType::Number);
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        isSwitchedOn = true;
                     }
                         break;
-                    case 3: {
-                        bool success = sendCommand(ControlApi::Control_On);
-                        if (success) isSwitchedOn = true;
+                    case CONTROL_BUTTON_ON: {
+                        module.setProperty("Sensor.Button", "on");
+                        auto l = String(currentLevel);
+                        auto m = QueuedMessage(&module, "Sensor.Button", "on", nullptr, IO::IOEventDataType::Text);
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        isSwitchedOn = true;
                     }
                         break;
-                    case 1: {
-                        bool success = sendCommand(ControlApi::Control_Off);
-                        if (success) isSwitchedOn = false; // off
+                    case CONTROL_BUTTON_OFF: {
+                        module.setProperty("Sensor.Button", "off");
+                        auto l = String(currentLevel);
+                        auto m = QueuedMessage(&module, "Sensor.Button", "off", nullptr, IO::IOEventDataType::Text);
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        isSwitchedOn = false;
+                        break;
+                    }
+                    case CONTROL_BUTTON_TOGGLE: {
+                        module.setProperty("Sensor.Button", "toggle");
+                        auto l = String(currentLevel);
+                        auto m = QueuedMessage(&module, "Sensor.Button", "toggle", nullptr, IO::IOEventDataType::Text);
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        isSwitchedOn = !isSwitchedOn;
                         break;
                     }
                 }
@@ -147,12 +218,7 @@ namespace UI { namespace Activities { namespace Control {
             }
         }
 
-        void setModuleUrl(String baseUrl) {
-            this->moduleBaseUrl = baseUrl;
-        }
-
     private:
-        HTTPClient http;
         LinkedList<Point> buttonOffBounds = LinkedList<Point>();
         LinkedList<Point> buttonOnBounds = LinkedList<Point>();
         LinkedList<Point> buttonIncBounds = LinkedList<Point>();
@@ -162,35 +228,37 @@ namespace UI { namespace Activities { namespace Control {
         unsigned long showLoaderTs = 0;
         unsigned int currentLevel = 50; // 0-100
         bool isSwitchedOn = false;
-        String moduleBaseUrl;
         unsigned long errorReportTs = 0;
+        int32_t diameter = 240;
 
         void drawNavigationButtons() {
             canvas->setFont(&fonts::DejaVu24);
-            int hw = (int)round((float)canvas->width() / 2.0f);
+            auto hw = (int32_t)round((float)diameter / 2.0f);
+            auto ox = (int32_t)round((float)(canvas->width() - diameter) / 2.0f);
+            auto oy = (int32_t)round((float)(canvas->height() - diameter) / 2.0f);
             int toggleButtonRadius = (int)round((float)hw / 2.5f);
             for (int i = 0; i < 100; i += 25) {
                 uint8_t buttonIndex = (i / 25);
                 float angle = 45.0f + (i * 3.6f);
-                canvas->fillArc(hw, hw, hw - 2,  toggleButtonRadius + 3, angle + 3, angle + 87, selectedButton == buttonIndex ? 1 : 0);
-                canvas->fillArc(hw, hw, hw - 2,  toggleButtonRadius + 3, angle - 2, angle + 2, 1);
+                canvas->fillArc(ox + hw, oy + hw, hw - 2,  toggleButtonRadius + 3, angle + 3, angle + 87, selectedButton == buttonIndex ? 1 : 0);
+                canvas->fillArc(ox + hw, oy + hw, hw - 2,  toggleButtonRadius + 3, angle - 2, angle + 2, 1);
                 canvas->setTextColor((selectedButton == buttonIndex) ? 0 : 1);
                 switch (buttonIndex) {
                 case CONTROL_BUTTON_SUB:
                     // DEC button label
-                    canvas->drawCenterString("_", hw, 180);
+                    canvas->drawCenterString("_", ox + hw, oy + 180);
                     break;
                 case CONTROL_BUTTON_ADD:
                     // INC button label
-                    canvas->drawCenterString("+", hw, 28);
+                    canvas->drawCenterString("+", ox + hw, oy + 28);
                     break;
                 case CONTROL_BUTTON_OFF:
                     // OFF button label
-                    canvas->drawCenterString("OFF", 38, hw - 10);
+                    canvas->drawCenterString("OFF", ox + 38, oy + hw - 10);
                     break;
                 case CONTROL_BUTTON_ON:
                     // ON button label
-                    canvas->drawCenterString("ON", 204, hw - 10);
+                    canvas->drawCenterString("ON", ox + 204, oy + hw - 10);
                     break;
                 }
             }
@@ -200,35 +268,6 @@ namespace UI { namespace Activities { namespace Control {
             drawNavigationButtons();
             invalidate();
         }
-
-        // TODO: implement with Automation::Helpers::NetHelper::httpGet
-        bool sendCommand(const char* command, const char* options = "") {
-            String url = moduleBaseUrl;
-            if (!url.endsWith("/")) {
-                url += String("/");
-            }
-            url += String(command) + "/" + String(options);
-            http.begin(url.c_str());
-            //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-            int httpCode = http.GET();
-            if (httpCode > 0) {
-                // Server response
-                if (httpCode == HTTP_CODE_OK) {
-                    String response = http.getString();
-                    // TODO: parse response
-                    //Serial.println(response);
-                    return true;
-                } else {
-                    // Server reported error code
-                    //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-                }
-            } else {
-                //Serial.printf("[HTTP] GET... failed, error: %s\n", HTTPClient::errorToString(httpCode).c_str());
-            }
-            errorReportTs = millis();
-            return false;
-        }
-
     };
 
 }}}

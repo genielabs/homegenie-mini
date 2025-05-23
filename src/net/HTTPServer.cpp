@@ -27,6 +27,8 @@
  *
  */
 
+#include <LittleFS.h>
+
 #include "HTTPServer.h"
 
 #include "net/NetManager.h"
@@ -63,7 +65,22 @@ namespace Net {
         //httpServer.on("/description.xml", HTTP_GET, []() {
         //    SSDPDevice.schema(httpServer.client());
         //});
-
+/*
+        httpServer.on("/", HTTP_GET, []() {
+            auto fs = LittleFS;
+#ifdef ESP8266
+            if(true==fs.begin()) {
+#else
+            if(true == fs.begin(false, "/") && fs.exists("/index.html")) {
+#endif
+                auto f = LittleFS.open("/index.html", FILE_READ);
+                auto html = f.readString();
+                f.close();
+                httpServer.send(200, "text/html", html);
+            }
+        });
+        httpServer.serveStatic("/", LittleFS, "/");
+*/
 #ifndef DISABLE_SSE
         static HTTPServer* i = this;
         // enable CORS to allow client-side image buffering
@@ -148,7 +165,7 @@ namespace Net {
     bool HTTPServer::canHandle(HTTPMethod method, String uri) {
 #endif
         String ssdpUri = String("/") + Config::system.id + String(".xml");
-        if (uri == ssdpUri) {
+        if (uri == ssdpUri || !uri.startsWith("/api/")) {
             return true;
         }
         return false;

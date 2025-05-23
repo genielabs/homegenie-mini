@@ -38,6 +38,7 @@ RTC_DATA_ATTR int wakeUpCount = 0;
 namespace Service {
     unsigned long PowerManager::lastUserActivityTs = 0;
     unsigned long PowerManager::deepSleepTimeoutMs = 30000;
+    esp_sleep_source_t PowerManager::lastWakeUpReason = ESP_SLEEP_WAKEUP_UNDEFINED;
     // wake up sources
     unsigned long PowerManager::wakeUpIntervalMs = 0;
     gpio_num_t PowerManager::wakeUpGPIO = GPIO_NUM_NC;
@@ -48,15 +49,29 @@ namespace Service {
         if (wakeUpCount > 0) {
 
             esp_sleep_wakeup_cause_t wakeup_reason;
-            wakeup_reason = esp_sleep_get_wakeup_cause();
-            switch(wakeup_reason)
+            lastWakeUpReason = esp_sleep_get_wakeup_cause();
+            switch(lastWakeUpReason)
             {
-                case ESP_SLEEP_WAKEUP_EXT0 : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
-                case ESP_SLEEP_WAKEUP_EXT1 : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
-                case ESP_SLEEP_WAKEUP_TIMER : Serial.println("Wakeup caused by timer"); break;
-                case ESP_SLEEP_WAKEUP_TOUCHPAD : Serial.println("Wakeup caused by touchpad"); break;
-                case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
-                default : Serial.printf("Wakeup was not caused by deep sleep: %d\n",wakeup_reason); break;
+                case ESP_SLEEP_WAKEUP_EXT0:
+                    Serial.println("Wakeup caused by external signal using RTC_IO");
+                    break;
+                case ESP_SLEEP_WAKEUP_EXT1:
+                    Serial.println("Wakeup caused by external signal using RTC_CNTL");
+                    break;
+                case ESP_SLEEP_WAKEUP_TIMER:
+                    Serial.println("Wakeup caused by timer");
+                    break;
+                case ESP_SLEEP_WAKEUP_TOUCHPAD:
+                    Serial.println("Wakeup caused by touchpad");
+                    break;
+                case ESP_SLEEP_WAKEUP_ULP:
+                    Serial.println("Wakeup caused by ULP program");
+                    break;
+                default: {
+                    // none of the implemented cases
+                    Serial.printf("Wakeup was not caused by deep sleep: %d\n", lastWakeUpReason);
+                    lastWakeUpReason = ESP_SLEEP_WAKEUP_UNDEFINED;
+                }
             }
 
         } else {

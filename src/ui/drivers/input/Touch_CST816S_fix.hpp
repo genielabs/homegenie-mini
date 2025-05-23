@@ -20,8 +20,6 @@ Contributors:
 #ifndef HOMEGENIE_MINI_TOUCH_CST816S_FIX_H
 #define HOMEGENIE_MINI_TOUCH_CST816S_FIX_H
 
-#include "defs.h"
-
 #ifdef ENABLE_UI
 
 #include <LovyanGFX.h>

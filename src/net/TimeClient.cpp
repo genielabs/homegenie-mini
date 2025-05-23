@@ -35,6 +35,8 @@ namespace Net {
     NTPClient ntpClient(ntpUDP);
 
     void TimeClient::begin() {
+        Logger::info("|  ✔ TimeClient using '%s'", Config::system.ntpServer.c_str());
+        ntpClient.setServer(Config::system.ntpServer.c_str());
         // Initialize a NTPClient to get time
         ntpClient.begin();
         // Set offset time in seconds to adjust for your timezone, for example:
@@ -49,7 +51,7 @@ namespace Net {
 
 #ifndef ESP8266
         // synch with NTP at least once a day
-        if (!rtcTimeSet || Config::getRTC()->getLocalEpoch() < 1712031624 || (millis() - lastTimeCheck) > (1440 * 60000))
+        if (!isTimeSet() || Config::getRTC()->getLocalEpoch() < 1712031624 || (millis() - lastTimeCheck) > (1440 * 60000))
 #endif
         if (WiFi.isConnected() && (millis() - lastTimeCheck) > 60000) {
             if (!ntpClient.isUpdated()) {
@@ -82,6 +84,10 @@ namespace Net {
 
     NTPClient& TimeClient::getNTPClient() {
         return ntpClient;
+    }
+
+    void TimeClient::invalidate() {
+        rtcTimeSet = false;
     }
 
 }

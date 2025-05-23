@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -23,6 +23,9 @@
  *
  */
 
+// Adapted from:
+//     https://github.com/lovyan03/LovyanGFX/blob/master/examples/Sprite/RadgialGauge/RadgialGauge.ino
+
 #ifndef HOMEGENIE_MINI_GAUGEEXAMPLEACTIVITY_H
 #define HOMEGENIE_MINI_GAUGEEXAMPLEACTIVITY_H
 
@@ -38,25 +41,25 @@ namespace UI { namespace Activities { namespace Examples {
         GaugeExampleActivity() {
             setDrawInterval(33); // Task.h
         }
-        void attach(lgfx::LGFX_Device* displayDevice) override;
+        void attach(LGFX_Device* displayDevice) override;
         void onResume() override;
         void onPause() override;
         void onDraw() override;
 
     private:
         LGFX_Sprite* base = nullptr;
-        LGFX_Sprite* needle;
+        LGFX_Sprite* needle{};
 
-        int32_t width = 239;
-        int32_t halfwidth = width >> 1;
+        int32_t width = 239; // TODO: refactor as 'diameter'
+        int32_t halfwidth = width >> 1; // TODO: refactor as 'radius'
         uint16_t transpalette = 0;
-        float zoom;
+        float zoom{};
 
         float value = 0;
         void draw()
         {
-            base->pushSprite(0, 0);
-            canvas->fillCircle(halfwidth, halfwidth, 7, 3);
+            base->pushSprite((canvas->width() - width) / 2.0f, (canvas->height() - width) / 2.0f);
+            canvas->fillCircle((display->width() >> 1), (display->height() >> 1), 7, 3);
             if (value >= 1.5f) {
                 canvas->fillCircle(display->width() >> 1, (display->height() >> 1) + width * 4 / 10, 5, 2);
             }

@@ -29,8 +29,6 @@
 
 #include "Config.h"
 
-#include <utility>
-
 ZoneConfig Config::zone;
 SystemConfig Config::system;
 short Config::ServiceButtonPin = -1;
@@ -86,6 +84,10 @@ void Config::handleConfigCommand(String &message) {
     if (message.startsWith("#CONFIG:system-zone-offset ")) {
         int utcOffset = message.substring(27).toInt(); // minutes
         preferences.putInt(CONFIG_KEY_system_zone_offset, utcOffset);
+    }
+    if (message.startsWith("#CONFIG:system-ntp-server ")) {
+        String ntpServer = message.substring(26);
+        preferences.putString(CONFIG_KEY_system_ntp_server, ntpServer);
     }
     if (message.startsWith("#SET:")) {
         int sep = message.substring(5).indexOf(' ') + 5;

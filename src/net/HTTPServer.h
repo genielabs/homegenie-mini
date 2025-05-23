@@ -55,7 +55,7 @@ namespace Net {
     public:
         void begin();
         void loop() override;
-        static void addHandler(RequestHandler* handler);
+        void addHandler(RequestHandler* handler);
 #ifndef DISABLE_SSE
         // RequestHandler interface methods
 #if ESP_ARDUINO_VERSION_MAJOR > 2

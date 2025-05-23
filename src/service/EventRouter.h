@@ -44,7 +44,7 @@ namespace Service {
     class QueuedMessage {
     public:
         QueuedMessage() = default;
-        QueuedMessage(String domain, String sender, String event, String value, void* data, IO::IOEventDataType type) {
+        explicit QueuedMessage(const String& domain, const String& sender, const String& event, const String& value, void* data, IO::IOEventDataType type) {
             this->domain = domain;
             this->sender = sender;
             this->event = event;
@@ -52,7 +52,7 @@ namespace Service {
             this->data = data;
             this->type = type;
         }
-        QueuedMessage(Data::Module* sender, String event, String value, void* data, IO::IOEventDataType type) {
+        explicit QueuedMessage(Data::Module* sender, const String& event, const String& value, void* data, IO::IOEventDataType type) {
             this->domain = sender->domain;
             this->sender = sender->address;
             this->event = event;

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2025 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -27,22 +27,33 @@
 
 #ifdef ENABLE_UI
 
-namespace UI { namespace Activities { namespace Utilities {
+namespace UI { namespace Activities { namespace Examples {
 
     void AnalogClockActivity::onResume() {
-
-        canvas->setColorDepth(lgfx::color_depth_t::palette_4bit);
-
+#ifdef BOARD_HAS_PSRAM
+        canvas->setColorDepth(lgfx::rgb565_2Byte);
+#else
+        canvas->setColorDepth(lgfx::rgb332_1Byte);
+#endif
         if (clockBaseSprite == nullptr) {
             clockBaseSprite = new LGFX_Sprite(canvas);
+#ifdef BOARD_HAS_PSRAM
+            clockBaseSprite->setPsram(true);
+#endif
             clockBaseSprite->setColorDepth(lgfx::palette_4bit);
         }
         if (hoursMinutesNeedle == nullptr) {
             hoursMinutesNeedle = new LGFX_Sprite(canvas);
+#ifdef BOARD_HAS_PSRAM
+            hoursMinutesNeedle->setPsram(true);
+#endif
             hoursMinutesNeedle->setColorDepth(lgfx::palette_4bit);
         }
         if (secondsNeedle == nullptr) {
             secondsNeedle = new LGFX_Sprite(canvas);
+#ifdef BOARD_HAS_PSRAM
+            secondsNeedle->setPsram(true);
+#endif
             secondsNeedle->setColorDepth(lgfx::palette_4bit);
         }
 
@@ -55,23 +66,23 @@ namespace UI { namespace Activities { namespace Utilities {
 //        clockBaseSprite->setTextFont(2);
         clockBaseSprite->setTextDatum(lgfx::middle_center);
 
-        clockBaseSprite->fillCircle(center, center, radius    , 3);
-        clockBaseSprite->drawCircle(center, center, radius - 1, 15);
+        clockBaseSprite->fillCircle(radius, radius, radius    , 3);
+        clockBaseSprite->drawCircle(radius, radius, radius - 1, 15);
 
         for (int i = 1; i <= 60; ++i) {
             float rad = i * 6 * - 0.0174532925;
-            float cosy = - cos(rad) * (center * 10 / 11);
-            float sinx = - sin(rad) * (center * 10 / 11);
+            float cosy = - cos(rad) * (radius * 10 / 11);
+            float sinx = - sin(rad) * (radius * 10 / 11);
             bool flg = 0 == (i % 5);
-            clockBaseSprite->fillCircle(center + sinx + 1, center + cosy + 1, flg * 3 + 1, 4);
-            clockBaseSprite->fillCircle(center + sinx    , center + cosy    , flg * 3 + 1, 12);
+            clockBaseSprite->fillCircle(radius + sinx + 1, radius + cosy + 1, flg * 3 + 1, 4);
+            clockBaseSprite->fillCircle(radius + sinx    , radius + cosy    , flg * 3 + 1, 12);
             if (flg) {
-                cosy = - cos(rad) * (center * 10 / 13);
-                sinx = - sin(rad) * (center * 10 / 13);
+                cosy = - cos(rad) * (radius * 10 / 13);
+                sinx = - sin(rad) * (radius * 10 / 13);
                 clockBaseSprite->setTextColor(1);
-                clockBaseSprite->drawNumber(i / 5, center + sinx + 1, center + cosy + 4);
+                clockBaseSprite->drawNumber(i / 5, radius + sinx + 1, radius + cosy + 4);
                 clockBaseSprite->setTextColor(15);
-                clockBaseSprite->drawNumber(i / 5, center + sinx    , center + cosy + 3);
+                clockBaseSprite->drawNumber(i / 5, radius + sinx    , radius + cosy + 3);
             }
         }
 
@@ -108,34 +119,42 @@ namespace UI { namespace Activities { namespace Utilities {
         hrs = hrs + (min / 60.0f);
         min = min + (sec / 60.0f);
         sec = sec + (ms / 1000.0f);
-    //    Serial.printf("%02.2f:%02.2f:%02.2f.%02.2f\n", hrs, min, sec, ms);
+
         if (hrs > 12) hrs -= 12;
         float deg_inc = 6.0f;
+
+        // Offsets (x and y) to center things in the actual canvas
+        int32_t ox = (canvas->width() - diameter) / 2;
+        int32_t oy = (canvas->height() - diameter) / 2;
+
+        // copy sprites to the display
+        clockBaseSprite->pushSprite(ox, oy);
 
         drawDot((int)sec % 60, 14);
         drawDot((int)min % 60, 15);
         drawDot((((int)min/60)*5)%60, 15);
 
-        // copy sprites to the display
-
         // hours needle
-        hoursMinutesNeedle->pushRotateZoom(hrs * deg_inc * 5.0f, 1.0, 0.8, maskColor);
+        hoursMinutesNeedle->pushRotateZoom(canvas->getPivotX() + drawOffset.x, canvas->getPivotY(), hrs * deg_inc * 5.0f, 1.0, 0.8, maskColor);
         // minute needle (using same sprite as for hours needle)
-        hoursMinutesNeedle->pushRotateZoom(min * deg_inc , 1.0, 1.0, maskColor);
+        hoursMinutesNeedle->pushRotateZoom(canvas->getPivotX() + drawOffset.x, canvas->getPivotY(), min * deg_inc , 1.0, 1.0, maskColor);
         // seconds needle
-        secondsNeedle->pushRotateZoom(sec * deg_inc, 1.0, 1.0, maskColor);
+        secondsNeedle->pushRotateZoom(canvas->getPivotX() + drawOffset.x, canvas->getPivotY(), sec * deg_inc, 1.0, 1.0, maskColor);
 
-//        canvas->pushRotateZoom(0, zoom, zoom, maskColor);
-        clockBaseSprite->pushSprite(0, 0);
+        canvas->pushRotateZoom(0, zoom, zoom, maskColor);
     }
 
     void AnalogClockActivity::drawDot(int pos, int palette)
     {
+        // Offsets (x and y) to center things in the actual canvas
+        int32_t ox = (canvas->width() - diameter) / 2;
+        int32_t oy = (canvas->height() - diameter) / 2;
+
         bool flg = 0 == (pos % 5);
         float rad = pos * 6 * - 0.0174532925;
-        float cos_y = - cos(rad) * (center * 10 / 11);
-        float sin_x = - sin(rad) * (center * 10 / 11);
-        canvas->fillCircle(center + sin_x, center + cos_y, flg * 3 + 1, palette);
+        float cos_y = - cos(rad) * (radius * 10 / 11);
+        float sin_x = - sin(rad) * (radius * 10 / 11);
+        canvas->fillCircle(ox + radius + sin_x, oy + radius + cos_y, flg * 3 + 1, palette);
     }
 
 }}}
