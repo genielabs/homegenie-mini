@@ -3,7 +3,7 @@
 
 Smart multi-sensor device with display. HomeGenie Mini UI example application.
 
-- [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/smart-sensor/)
+- [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/smart-display/)
 
 
 ## Firmware configuration
@@ -30,7 +30,6 @@ the `smart-sensor-display` firmware offers the following additional configuratio
 | `imus-typ`  | Inertial Measurement Unit type ("QMI8658")                 |          |
 | `imus-sda`  | IMU SDA                                                    |          |
 | `imus-scl`  | IMU SCL                                                    |          |
-| `motn-pms`  | If set to "sleep" enable deep-sleep bound to motion sensor |          |
 
 For default GPIO# values used by the display driver see `ui/drivers/RoundDisplay.h` and
 `ui/drivers/StandardDisplay.h` files.
