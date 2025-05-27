@@ -26,7 +26,7 @@
 #ifndef HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
 #define HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
 
-#include "ui/Activity.h"
+#include "Common.h"
 
 #ifdef ENABLE_UI
 
@@ -156,55 +156,40 @@ namespace UI { namespace Activities { namespace Control {
         }
         void onPointerUp(PointerEvent e) override {
             if (selectedButton != -1) {
-// TODO: fire event onNavigationButtonClicked(selectedButton) ...
                 showLoaderTs = millis();
+
                 switch (selectedButton) {
                     case CONTROL_BUTTON_ADD: {
                         if (currentLevel == 100) break;
                         currentLevel += isSwitchedOn ? 10 : 0;
                         if (currentLevel > 100) currentLevel = 100;
-                        auto l = String(currentLevel);
-                        module.setProperty("Sensor.Level", l);
-                        auto m = QueuedMessage(&module, "Sensor.Level", l, &currentLevel, IO::IOEventDataType::Number);
-                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        signalLevel();
                         isSwitchedOn = true;
                     }
-                        break;
+                    break;
                     case CONTROL_BUTTON_SUB: {
                         if (currentLevel == 10) break;
                         currentLevel -= isSwitchedOn ? 10 : 0;
                         if (currentLevel < 10) currentLevel = 10;
-                        auto l = String(currentLevel);
-                        module.setProperty("Sensor.Level", l);
-                        auto m = QueuedMessage(&module, "Sensor.Level", l, &currentLevel, IO::IOEventDataType::Number);
-                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        signalLevel();
                         isSwitchedOn = true;
                     }
-                        break;
+                    break;
                     case CONTROL_BUTTON_ON: {
-                        module.setProperty("Sensor.Button", "on");
-                        auto l = String(currentLevel);
-                        auto m = QueuedMessage(&module, "Sensor.Button", "on", nullptr, IO::IOEventDataType::Text);
-                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        signalButton("on");
                         isSwitchedOn = true;
                     }
-                        break;
+                    break;
                     case CONTROL_BUTTON_OFF: {
-                        module.setProperty("Sensor.Button", "off");
-                        auto l = String(currentLevel);
-                        auto m = QueuedMessage(&module, "Sensor.Button", "off", nullptr, IO::IOEventDataType::Text);
-                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        signalButton("off");
                         isSwitchedOn = false;
-                        break;
                     }
+                    break;
                     case CONTROL_BUTTON_TOGGLE: {
-                        module.setProperty("Sensor.Button", "toggle");
-                        auto l = String(currentLevel);
-                        auto m = QueuedMessage(&module, "Sensor.Button", "toggle", nullptr, IO::IOEventDataType::Text);
-                        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+                        signalButton("toggle");
                         isSwitchedOn = !isSwitchedOn;
-                        break;
                     }
+                    break;
                 }
 
                 selectedButton = -1;
@@ -262,6 +247,20 @@ namespace UI { namespace Activities { namespace Control {
                     break;
                 }
             }
+        }
+
+        void signalLevel() {
+            auto l = (float)currentLevel / 100.0f;
+            auto level = String(l, 3);
+            module.setProperty(EVENT_SENSOR_LEVEL, level);
+            auto m = QueuedMessage(&module, EVENT_SENSOR_LEVEL, level, &l, IO::IOEventDataType::Number);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+        }
+        void signalButton(const char* button) {
+            module.setProperty(EVENT_SENSOR_BUTTON, button);
+            auto l = String(currentLevel);
+            auto m = QueuedMessage(&module, EVENT_SENSOR_BUTTON, button, nullptr, IO::IOEventDataType::Text);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(m);
         }
 
         void refresh() {

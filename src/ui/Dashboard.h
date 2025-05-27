@@ -66,7 +66,7 @@ public:
         display->setRotation(displayRotation);
 
         display->setBrightness(64);
-        display->drawString("Hello World! =)", 72, 96);
+        display->drawCenterString("Hello World! =)", display->width() / 2, display->height() / 2);
     }
 
     void loop() override;

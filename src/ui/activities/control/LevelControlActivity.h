@@ -26,7 +26,7 @@
 #ifndef HOMEGENIE_MINI_LEVELCONTROLACTIVITY_H
 #define HOMEGENIE_MINI_LEVELCONTROLACTIVITY_H
 
-#include "ui/Activity.h"
+#include "Common.h"
 
 #ifdef ENABLE_UI
 
@@ -49,8 +49,6 @@ namespace UI { namespace Activities { namespace Control {
     public:
         int level = 50;
     };
-    static const char* EVENT_SENSOR_LEVEL PROGMEM = "Sensor.Level";
-    static const char* EVENT_SENSOR_BUTTON PROGMEM = "Sensor.Button";
 
     class LevelControlActivity : public Activity, public APIHandler {
     public:
