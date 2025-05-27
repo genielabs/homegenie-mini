@@ -5,12 +5,12 @@
 #ifndef HOMEGENIE_MINI_CONTROL_COMMON_H
 #define HOMEGENIE_MINI_CONTROL_COMMON_H
 
-#include "ui/Activity.h"
+#include "Config.h"
 
 namespace UI { namespace Activities { namespace Control {
 
-    static const char *EVENT_SENSOR_LEVEL PROGMEM = "Sensor.Level";
-    static const char *EVENT_SENSOR_BUTTON PROGMEM = "Sensor.Button";
+    static const char* EVENT_SENSOR_LEVEL PROGMEM = "Sensor.Level";
+    static const char* EVENT_SENSOR_BUTTON PROGMEM = "Sensor.Button";
 
 }}}
 

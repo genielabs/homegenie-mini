@@ -26,16 +26,17 @@
 #ifndef HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
 #define HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
 
-#include "Common.h"
-
 #ifdef ENABLE_UI
 
 #include "service/api/APIRequest.h"
 #include "service/api/devices/Dimmer.h"
 
-#include "ui/components/RoundButton.h"
+#include "ui/Activity.h"
 #include "ui/AnimationHelper.h"
 #include "ui/Utility.h"
+#include "ui/components/RoundButton.h"
+
+#include "Common.h"
 
 namespace UI { namespace Activities { namespace Control {
 

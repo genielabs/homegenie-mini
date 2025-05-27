@@ -26,13 +26,15 @@
 #ifndef HOMEGENIE_MINI_LEVELCONTROLACTIVITY_H
 #define HOMEGENIE_MINI_LEVELCONTROLACTIVITY_H
 
-#include "Common.h"
-
 #ifdef ENABLE_UI
 
 #include "service/api/APIRequest.h"
 #include "service/api/devices/Dimmer.h"
+
+#include "ui/Activity.h"
 #include "ui/fonts/material_symbols_common.h"
+
+#include "Common.h"
 
 #ifndef DISABLE_LVGL
 
