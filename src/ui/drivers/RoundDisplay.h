@@ -29,6 +29,8 @@
 #ifdef ENABLE_UI
 
 #include "Config.h"
+#include "ui/DisplayDriver.h"
+
 #include "input/Touch_CST816S_fix.hpp"
 
 // default config
@@ -79,11 +81,14 @@ namespace UI { namespace Drivers {
 
     using namespace Input;
 
-    class RoundDisplay {
+    class RoundDisplay : public DisplayDriver {
 
     public:
         RoundDisplay();
-        LGFX_Device* getDisplay();
+        bool isRoundDisplay() override {
+            return true;
+        }
+        LGFX_Device* getDisplay() override;
 
     private:
         lgfx::Panel_GC9A01              _panel_instance;

@@ -147,7 +147,8 @@ namespace Automation {
                 qm->sender = m->sender;
                 qm->event = m->event;
                 qm->value = m->value;
-                qm->data = m->data;
+                // TODO: create a deep-copy mechanism to handle data
+                qm->data = nullptr; //m->data; can't be just assigned because "dispose" might not be directly handled here
                 lastEvent = qm;
             }
         }
@@ -167,8 +168,8 @@ namespace Automation {
         static const long RTC_SYNC_THRESHOLD = 645120000;
 
     private:
-        time_t lastOccurrence;
-        QueuedMessage* lastEvent = nullptr;
+        time_t lastOccurrence{};
+        QueuedMessage* lastEvent{};
 
     };
 }

@@ -38,6 +38,7 @@
 #include <ui/activities/control/SwitchControlActivity.h>
 #ifndef DISABLE_LVGL
 #include <ui/activities/control/LevelControlActivity.h>
+#include <ui/activities/control/ColorControlActivity.h>
 #endif
 #ifdef LGFX_EXAMPLES
 #include <ui/activities/examples/GaugeExampleActivity.h>
@@ -79,19 +80,15 @@ void setup() {
     miniModule->setProperty(Implements::Scheduling, "true");
     miniModule->setProperty(Implements::Scheduling_ModuleEvents, "true");
 
-    LGFX_Device* display;
+    DisplayDriver* displayDriver;
     auto displayType = Config::getSetting("disp-typ");
     if (displayType.equals("ST7789")) {
-        display = (new UI::Drivers::StandardDisplay())->getDisplay();
+        displayDriver = new UI::Drivers::StandardDisplay();
     } else {
         // fallback to "GC9A01"
-        display = (new UI::Drivers::RoundDisplay())->getDisplay();
+        displayDriver = new UI::Drivers::RoundDisplay();
     }
-    dashboard = new Dashboard(display);
-
-#ifndef DISABLE_LVGL
-    LvglDriver::setDisplay(display);
-#endif
+    dashboard = new Dashboard(displayDriver);
 
     if (Config::isDeviceConfigured()) {
 
@@ -114,7 +111,7 @@ void setup() {
                     preferences.begin(CONFIG_SYSTEM_NAME, false);
                     preferences.putUInt(CONFIG_KEY_screen_rotation, orientation);
                     preferences.end();
-                    dashboard->getDisplay()->setRotation(orientation);
+                    dashboard->setRotation(orientation);
                     dashboard->invalidate();
                 }
             });
@@ -134,6 +131,12 @@ void setup() {
 #endif
 
         // Add activities to UI
+
+        // ----------------------------------------------------------------
+        // NOTE: Activities can be added if free RAM remains above ~110KB.
+        //       This threshold accounts for scheduler and system task
+        //       memory requirements.
+        // ----------------------------------------------------------------
 
         // This Activity shows basic system info
         // and buttons to rotate the display
@@ -156,6 +159,7 @@ void setup() {
 #ifndef DISABLE_LVGL
         // Similar to the SwitchControl above but using LVGL
         auto levelControl = new LevelControlActivity("M1");
+        auto colorControl = new ColorControlActivity("H1");
 #endif
         // Displays a remote camera via HTTP images feed,
         // or local camera directly connected to the ESP32.
@@ -177,9 +181,11 @@ void setup() {
 #endif
 #ifndef DISABLE_LVGL
         dashboard->addActivity(levelControl);
+        dashboard->addActivity(colorControl);
 #ifndef DISABLE_AUTOMATION
         // Adds scheduler programs to handle on, off and level events
         setupLevelControlActivitySchedule(&levelControl->module);
+        setupColorControlActivitySchedule(&colorControl->module);
 #endif
 #endif
         dashboard->addActivity(cameraDisplay);

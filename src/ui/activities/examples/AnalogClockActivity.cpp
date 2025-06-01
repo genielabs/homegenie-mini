@@ -29,12 +29,26 @@
 
 namespace UI { namespace Activities { namespace Examples {
 
-    void AnalogClockActivity::onResume() {
+    AnalogClockActivity::AnalogClockActivity() {
+        setDrawInterval(100);  // Task.h - 100ms loop frequency
 #ifdef BOARD_HAS_PSRAM
-        canvas->setColorDepth(lgfx::rgb565_2Byte);
+        setColorDepth(lgfx::rgb565_2Byte);
 #else
-        canvas->setColorDepth(lgfx::rgb332_1Byte);
+        setColorDepth(lgfx::rgb332_1Byte);
 #endif
+    }
+
+    void AnalogClockActivity::onStart() {
+        if (canvas->width() < canvas->height()) {
+            diameter = (float)canvas->width();
+        } else {
+            diameter = (float)canvas->height();
+        }
+        radius = (diameter / 2.0f);
+        zoom = (float)(std::min(canvas->width(), canvas->height())) / diameter;
+    }
+
+    void AnalogClockActivity::onResume() {
         if (clockBaseSprite == nullptr) {
             clockBaseSprite = new LGFX_Sprite(canvas);
 #ifdef BOARD_HAS_PSRAM
@@ -100,8 +114,8 @@ namespace UI { namespace Activities { namespace Examples {
         secondsNeedle->fillScreen(9);
         secondsNeedle->fillRect(0, 99, 3, 3, 8);
         secondsNeedle->drawFastVLine(1, 0, 119 - 8, 8);
-
     }
+
     void AnalogClockActivity::onPause() {
         clockBaseSprite->deleteSprite();
         hoursMinutesNeedle->deleteSprite();

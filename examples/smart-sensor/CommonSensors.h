@@ -122,82 +122,8 @@ void setupCameraSensorSchedules(Module* cameraModule) {
 
 void setupLevelControlActivitySchedule(Module* controlModule) {
 
-    // Create "Control.On" schedule
-    String scheduleName = controlModule->address + String(".Control.On");
-    if (Scheduler::get(scheduleName.c_str()) == nullptr) {
-
-        String scheduleDataString = F(R"({"action":{"template":{"forEach":{"commands":[{"config":{},"id":"command_turn_on","useEventValue":false}],"enabled":true,"id":null,"script":null},"forEnd":{"commands":[],"enabled":false,"id":null,"script":null},"forStart":{"commands":[],"enabled":false,"id":null,"script":null}},"type":"template"},"event":[{"condition":"=","module":")");
-        scheduleDataString += controlModule->domain;
-        scheduleDataString += F("/");
-        scheduleDataString += controlModule->address;
-        scheduleDataString += F(R"(","property":"Sensor.Button","value":"on"}],"from":"","itemType":1,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})");
-
-        auto s = new Schedule(
-                // Name (n)
-                scheduleName.c_str(),
-                // Description (d)
-                "Triggers when the 'On' button is pressed.",
-                // Data (dt) - The dynamically generated JSON string
-                scheduleDataString.c_str(),
-                // CronExpression (cs)
-                "",
-                // Script (jscript)
-                "$$.boundModules.on();"
-        );
-
-        s->onModuleEvent = true;
-
-        // EventModules: Add a reference to the controlModule itself, omitting ServiceId for local reference.
-        s->eventModules.add(new ModuleReference(controlModule->domain, controlModule->address));
-
-        // Device types allowed for this schedule's boundModules
-        s->boundDevices.add(new String(ModuleType::Switch));
-        s->boundDevices.add(new String(ModuleType::Light));
-        s->boundDevices.add(new String(ModuleType::Dimmer));
-        s->boundDevices.add(new String(ModuleType::Color));
-
-        Scheduler::addSchedule(s);
-    }
-
-    // Create "Control.Off" schedule
-    scheduleName = controlModule->address + String(".Control.Off");
-    if (Scheduler::get(scheduleName.c_str()) == nullptr) {
-
-        String scheduleDataString = F(R"({"action":{"template":{"forEach":{"commands":[{"config":{},"id":"command_turn_off","useEventValue":false}],"enabled":true,"id":null,"script":null},"forEnd":{"commands":[],"enabled":false,"id":null,"script":null},"forStart":{"commands":[],"enabled":false,"id":null,"script":null}},"type":"template"},"event":[{"condition":"=","module":")");
-        scheduleDataString += controlModule->domain;
-        scheduleDataString += F("/");
-        scheduleDataString += controlModule->address;
-        scheduleDataString += F(R"(","property":"Sensor.Button","value":"off"}],"from":"","itemType":1,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})");
-
-        auto s = new Schedule(
-                // Name (n)
-                scheduleName.c_str(),
-                // Description (d)
-                "Triggers when the 'Off' button is pressed.",
-                // Data (dt) - The dynamically generated JSON string
-                scheduleDataString.c_str(),
-                // CronExpression (cs)
-                "",
-                // Script (jscript)
-                "$$.boundModules.off();"
-        );
-
-        s->onModuleEvent = true;
-
-        // EventModules: Add a reference to the controlModule itself, omitting ServiceId for local reference.
-        s->eventModules.add(new ModuleReference(controlModule->domain, controlModule->address));
-
-        // Device types allowed for this schedule's boundModules
-        s->boundDevices.add(new String(ModuleType::Switch));
-        s->boundDevices.add(new String(ModuleType::Light));
-        s->boundDevices.add(new String(ModuleType::Dimmer));
-        s->boundDevices.add(new String(ModuleType::Color));
-
-        Scheduler::addSchedule(s);
-    }
-
     // Create "Control.Level" schedule
-    scheduleName = controlModule->address + String(".Control.Level");
+    auto scheduleName = controlModule->address + String(".Control.Level");
     if (Scheduler::get(scheduleName.c_str()) == nullptr) {
 
         String scheduleDataString = F(R"({"action":{"template":{"forEach":{"commands":[{"config":{},"id":"command_set_level","useEventValue":true}],"enabled":true,"id":null,"script":null},"forEnd":{"commands":[],"enabled":false,"id":null,"script":null},"forStart":{"commands":[],"enabled":false,"id":null,"script":null}},"type":"template"},"event":[{"condition":">=","module":")");
@@ -231,6 +157,46 @@ void setupLevelControlActivitySchedule(Module* controlModule) {
         Scheduler::addSchedule(s);
     }
 
+}
+
+void setupColorControlActivitySchedule(Module* controlModule) {
+    setupLevelControlActivitySchedule(controlModule);
+
+    // Create "Control.Color" schedule
+    String scheduleName = controlModule->address + String(".Control.Color");
+    if (Scheduler::get(scheduleName.c_str()) == nullptr) {
+
+        String scheduleDataString = F(
+                R"({"action":{"template":{"forEach":{"commands":[{"config":{},"id":"command_set_color","useEventValue":true}],"enabled":true,"id":null,"script":null},"forEnd":{"commands":[],"enabled":false,"id":null,"script":null},"forStart":{"commands":[],"enabled":false,"id":null,"script":null}},"type":"template"},"event":[{"condition":"!=","module":")");
+        scheduleDataString += controlModule->domain;
+        scheduleDataString += F("/");
+        scheduleDataString += controlModule->address;
+        scheduleDataString += F(
+                R"(","property":"Sensor.ColorHsv","value":""}],"from":"","itemType":1,"occur_dayom_sel":[],"occur_dayom_type":1,"occur_dayow_sel":[],"occur_hour_sel":[],"occur_hour_step":12,"occur_hour_type":1,"occur_min_sel":[],"occur_min_step":30,"occur_min_type":1,"occur_month_sel":[],"occur_month_type":1,"time":[],"to":""})");
+
+        auto s = new Schedule(
+                // Name (n)
+                scheduleName.c_str(),
+                // Description (d)
+                "Triggers when the 'color' has been changed.",
+                // Data (dt) - The dynamically generated JSON string
+                scheduleDataString.c_str(),
+                // CronExpression (cs)
+                "",
+                // Script (jscript)
+                "$$.boundModules.colorHsb = event.value;"
+        );
+
+        s->onModuleEvent = true;
+
+        // EventModules: Add a reference to the controlModule itself, omitting ServiceId for local reference.
+        s->eventModules.add(new ModuleReference(controlModule->domain, controlModule->address));
+
+        // Device types allowed for this schedule's boundModules
+        s->boundDevices.add(new String(ModuleType::Color));
+
+        Scheduler::addSchedule(s);
+    }
 }
 #endif
 

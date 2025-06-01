@@ -241,9 +241,8 @@ void setupControlButtons(Module* miniModule) {
             switch (gesture) {
                 case ButtonGesture::BUTTON_GESTURE_CLICK: {
                         currentStyleIndex = (currentStyleIndex + 1) % LightStyles::STYLES_COUNT;
-                        auto msg = QueuedMessage(miniModule, "FX.Style", lightStyleNames[currentStyleIndex], nullptr,
-                                                 IOEventDataType::Undefined);
-                        miniModule->setProperty("FX.Style", lightStyleNames[currentStyleIndex], nullptr, IOEventDataType::Undefined);
+                        auto msg = QueuedMessage(miniModule, "FX.Style", lightStyleNames[currentStyleIndex]);
+                        miniModule->setProperty("FX.Style", lightStyleNames[currentStyleIndex]);
                         HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
                     }
                     break;

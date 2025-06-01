@@ -29,22 +29,89 @@
 
 namespace UI { namespace Activities { namespace Monitor {
 
-    void CameraDisplayActivity::attach(LGFX_Device* displayDevice) {
-        Activity::attach(displayDevice);
+    CameraDisplayActivity::CameraDisplayActivity(const char *moduleAddress) {
+        //setDrawInterval(50); // Task.h
+        setColorDepth(lgfx::rgb565_2Byte);
+        module.domain  = IO::IOEventDomains::HomeAutomation_HomeGenie;
+        module.address = moduleAddress;
+        module.type    = ModuleType::Sensor;
+        // load stored name for this module
+        auto key = String(CONFIG_KEY_ACTIVITY_TITLE); key.concat(moduleAddress);
+        module.name = Config::getSetting(key.c_str(), moduleAddress);
+        module.setProperty(Implements::Scheduling, "true");
+        module.setProperty(Implements::Scheduling_ModuleEvents, "true");
+        module.onNameUpdated = [this](const char* oldName, const char* newName) {
+            auto key = String(CONFIG_KEY_ACTIVITY_TITLE);
+            key.concat(module.address);
+            Config::saveSetting(key.c_str(), newName);
+        };
+        moduleList.add(&module);
+        HomeGenie::getInstance()->addAPIHandler(this);
+        // Add UI control to set the camera module associated
+        // to this CameraDisplayActivity
+        optionUpdateListener = new RemoteCameraUrlUpdateListener(this);
+        feedUrlConfigKey = String("rcam-"); feedUrlConfigKey.concat(moduleAddress);
+        module.addWidgetOption(
+                // name, value
+                CameraApi::Property::RemoteCamera_EndPoint, "",
+                // type
+                UI_WIDGETS_FIELD_TYPE_MODULE_TEXT
+                // options
+                ":any"
+                ":sensor"
+                ":Widget.DisplayModule=homegenie/generic/camerainput"
+                ":uri"
+        )->withConfigKey(feedUrlConfigKey.c_str())->addUpdateListener(optionUpdateListener);
+        jpegFeedUrl = module.getProperty(CameraApi::Property::RemoteCamera_EndPoint)->value;
+    }
+
+    bool CameraDisplayActivity::canHandleDomain(String *domain) {
+        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+    }
+
+    bool CameraDisplayActivity::handleRequest(APIRequest *request, ResponseCallback *callback) {
+        return false;
+    }
+
+    bool CameraDisplayActivity::handleEvent(IIOEventSender *, const char *domain, const char *address,
+                                            const char *eventPath, void *eventData, IOEventDataType) {
+        return false;
+    }
+
+    LinkedList<Module *> *CameraDisplayActivity::getModuleList() {
+        return &moduleList;
+    }
+
+    Module *CameraDisplayActivity::getModule(const char *domain, const char *address) {
+        if (module.domain.equals(domain) && module.address.equals(address))
+            return &module;
+        return nullptr;
+    }
+
+    void CameraDisplayActivity::onTap(PointerEvent e) {
+        showOnScreenDisplay = !showOnScreenDisplay;
+    }
+
+    void CameraDisplayActivity::onStart() {
         // Start JPEG feeder task
         xTaskCreate(
             reinterpret_cast<TaskFunction_t>(CameraDisplayActivity::worker),
             "RenderRemoteImageTask",
             10240, // this might require some adjustments
             this,
-            tskIDLE_PRIORITY + 15,
+            tskIDLE_PRIORITY + 5,
             nullptr
         );
     }
 
-    void CameraDisplayActivity::onResume() {
-        canvas->setColorDepth(lgfx::rgb565_2Byte);
+    void CameraDisplayActivity::onPause() {
+        isActivityReady = false;
+        http.end(); // terminate keep-alive connection
+        frameSize.reset();
+        // avoid disposing object used by the download thread here
+    }
 
+    void CameraDisplayActivity::onResume() {
         if (view != nullptr) {
             view->deleteSprite();
             delete view;
@@ -64,16 +131,9 @@ namespace UI { namespace Activities { namespace Monitor {
         key.concat(module.address);
         imageQuality = Config::getSetting(key.c_str(), "10");
 
-        isActivityReady = true;
         readyTimestamp = millis();
         feedError = OVERLAY_MESSAGE_CONNECTING;
-    }
-
-    void CameraDisplayActivity::onPause() {
-        isActivityReady = false;
-        http.end(); // terminate keep-alive connection
-        frameSize.reset();
-        // avoid disposing object used by the download thread here
+        isActivityReady = true;
     }
 
     void CameraDisplayActivity::onDraw() {
@@ -81,9 +141,52 @@ namespace UI { namespace Activities { namespace Monitor {
         // Keep screen always on
         Service::PowerManager::setActive();
 #endif
+        if (imageData && imageLen > 0) {
+            if (frameSize.width > 0 && (frameSize.width != view->width() || frameSize.height != view->height())) {
+                // frame resolution changed
+                view->deleteSprite();
+                view->createSprite(frameSize.width, frameSize.height);
+            }
+            auto w = (float)canvas->width();
+            auto hw = (w / 2);
+            float zf = w / frameSize.width;
+            view->drawJpg(imageData, imageLen);
+            view->setPivot((frameSize.width / 2) - (drawOffset.x / zf), view->getPivotY());
+            view->pushRotateZoom(0, zf, zf);
+            if (showOnScreenDisplay) {
+                auto frameInfoText = String(frameSize.width, 0);
+                frameInfoText.concat("x");
+                frameInfoText.concat(String(frameSize.height, 0));
+                frameInfoText.concat(" @");
+                frameInfoText.concat(String(averageFps, 1));
+                canvas->setFont(&fonts::Font0);
+                auto tw = canvas->textWidth(frameInfoText);
+                canvas->setTextColor(TFT_WHITE, TFT_DARKGREEN);
+                // Display Resolution and FPS
+                canvas->fillRoundRect(hw - ((tw / 2) + 16), 4, tw + 32, 16, 4, TFT_DARKGREEN);
+                canvas->setCursor(hw - (tw / 2), 8);
+                canvas->print(frameInfoText);
+                // Display name
+                canvas->setTextColor(TFT_WHITE, TFT_BLACK);
+                canvas->setFont(&fonts::Font0);
+                canvas->drawCenterString(module.name, hw, canvas->height() - 24);
+            }
+#ifdef ESP_CAMERA_SUPPORTED
+            if (isEsp32Camera) {
+                Sensors::Esp32Camera::cameraReleaseFrame();
+            } else {
+#endif
+                free(imageData);
+#ifdef ESP_CAMERA_SUPPORTED
+            }
+#endif
+            imageLen = 0;
+            imageData = nullptr;
+        }
+
+        // Display info / errors
         int cx = canvas->width() / 2;
         int cy = canvas->height() / 2;
-        // Display errors
         canvas->setCursor(0, cy);
         if (jpegFeedUrl.isEmpty()) {
             canvas->setTextColor(TFT_WHITE, TFT_BLUE);
@@ -102,6 +205,12 @@ namespace UI { namespace Activities { namespace Monitor {
         }
     }
 
+    void CameraDisplayActivity::setJpegFeedUrl(const String &feedUrl) {
+        jpegFeedUrl = feedUrl;
+        // override config setting with transformed value (with 'GetPicture' API call appended)
+        Config::saveSetting(feedUrlConfigKey.c_str(), jpegFeedUrl);
+        IO::Logger::info("Remote camera module set to: %s", jpegFeedUrl.c_str());
+    }
 
     JpegDimensions CameraDisplayActivity::getJpegDimensions(const uint8_t* jpg_data, size_t data_size) {
       JpegDimensions dims;
@@ -131,102 +240,7 @@ namespace UI { namespace Activities { namespace Monitor {
       return dims; // Not found
     }
 
-    [[noreturn]] void* CameraDisplayActivity::worker(void* cd) {
-        auto cameraDisplay = (CameraDisplayActivity*)cd;
-        unsigned long fpsStart = millis();
-        unsigned int fps = 0;
-        float averageFps = 0;
-        unsigned long lastFrameTs = 0;
-        for(;;) {
-            long dts = 0;
-            if (cameraDisplay != nullptr && !cameraDisplay->jpegFeedUrl.isEmpty() && cameraDisplay->isActivityReady && WiFi.isConnected() && !cameraDisplay->canvas->dmaBusy()) {
-                auto canvas = cameraDisplay->canvas;
-                auto view = cameraDisplay->view;
-                auto w = (float)canvas->width();
-                auto hw = (w / 2);
-                lastFrameTs = millis();
-                uint8_t* imageData = nullptr;
-#ifdef ESP_CAMERA_SUPPORTED
-                if (cameraDisplay->isEsp32Camera) {
-                    auto fb = Sensors::Esp32Camera::cameraGetFrame(cameraDisplay->imageResolution.toInt(), cameraDisplay->imageQuality.toInt()); // (resolution 5 = 320x240, quality 10)
-                    if (fb != nullptr) {
-                        imageData = fb->buffer;
-                        cameraDisplay->imageLen = fb->length;
-                        cameraDisplay->feedError = "";
-                    } else {
-                        cameraDisplay->feedError = "CAM Error: No Frame";
-                    }
-                } else {
-#endif
-                    auto url = cameraDisplay->jpegFeedUrl;
-                    url.concat("/");
-                    url.concat(cameraDisplay->imageResolution);  // ESP32-CAM resolution (e.g. 3 = 240x176)
-                    url.concat("/");
-                    url.concat(cameraDisplay->imageQuality);     // ESP32-CAM quality, 10 (best) to 70 (lowest)
-                    imageData = cameraDisplay->feedJpegImage(url.c_str());
-#ifdef ESP_CAMERA_SUPPORTED
-                }
-#endif
-                if (imageData != nullptr && cameraDisplay->imageLen > 0 && cameraDisplay->isActivityReady) {
-                    dts = millis() - lastFrameTs;
-                    if (cameraDisplay->frameSize.width == 0) {
-                        cameraDisplay->frameSize = getJpegDimensions(imageData, cameraDisplay->imageLen);
-                        if (cameraDisplay->frameSize.width > 0) {
-                            view->deleteSprite();
-                            view->createSprite(cameraDisplay->frameSize.width, cameraDisplay->frameSize.height);
-                        }
-                    }
-                    float zf = w / cameraDisplay->frameSize.width;
-                    canvas->startWrite(false);
-                    view->drawJpg(imageData, cameraDisplay->imageLen);
-                    view->setPivot((cameraDisplay->frameSize.width / 2) - (cameraDisplay->drawOffset.x / zf), cameraDisplay->view->getPivotY());
-                    view->pushRotateZoom(0, zf, zf);
-                    if (cameraDisplay->showOnScreenDisplay) {
-                        auto fpsText = String(averageFps, 1);
-                        canvas->setFont(&fonts::Font0);
-                        auto tw = canvas->textWidth(fpsText);
-                        canvas->setTextColor(TFT_WHITE, TFT_DARKGREEN);
-                        // Display FPS
-                        canvas->fillRoundRect(hw - 16, 4, 32, 16, 4, TFT_DARKGREEN);
-                        canvas->setCursor(hw - (tw / 2), 8);
-                        canvas->print(fpsText);
-                        // Display name
-                        canvas->setTextColor(TFT_WHITE, TFT_TRANSPARENT);
-                        canvas->setFont(&fonts::Font0);
-                        canvas->drawCenterString(cameraDisplay->module.name, hw, canvas->height() - 28);
-                    }
-                    canvas->endWrite();
-                    fps++;
-                    if (millis() - fpsStart > 5000) {
-                        averageFps = ((float)fps / 5.0f);
-                        fpsStart = millis();
-                        if (averageFps < 1 && fps > 0) {
-                            cameraDisplay->feedError = "Bad link quality.";
-                        } else {
-                            cameraDisplay->feedError = "";
-                        }
-                        fps = 0;
-                    }
-                }
-#ifdef ESP_CAMERA_SUPPORTED
-                if (cameraDisplay->isEsp32Camera) {
-                    Sensors::Esp32Camera::cameraReleaseFrame();
-                } else {
-#endif
-                    free(imageData);
-#ifdef ESP_CAMERA_SUPPORTED
-                }
-#endif
-            }
-            long delay = (50 - dts);
-            if (delay < 1) {
-                delay = 1;
-            }
-            vTaskDelay((cameraDisplay != nullptr && cameraDisplay->isActivityReady ? delay : 100) * portTICK_PERIOD_MS);
-        }
-    }
-
-    uint8_t* CameraDisplayActivity::feedJpegImage(const char* url) {
+    uint8_t* CameraDisplayActivity::getJpegImage(const char* url) {
         imageLen = 0;
         //HTTPClient http; // moved to global object to implement keep-alive
         http.setReuse(true);
@@ -274,6 +288,65 @@ namespace UI { namespace Activities { namespace Monitor {
             feedError = "Connection error...";
             //http.end(); // prefer kee-alive
             return nullptr;
+        }
+    }
+
+    [[noreturn]] void* CameraDisplayActivity::worker(void* cd) {
+        auto c = (CameraDisplayActivity*)cd;
+        unsigned long fpsStart = millis();
+        unsigned long lastFrameTs = 0;
+        for(;;) {
+            long dts = 0;
+            if (!c->jpegFeedUrl.isEmpty() && c->isActivityReady && WiFi.isConnected() && !c->canvas->dmaBusy() && !c->imageData) {
+                uint8_t* imageData = nullptr;
+                lastFrameTs = millis();
+#ifdef ESP_CAMERA_SUPPORTED
+                if (c->isEsp32Camera) {
+                    auto fb = Sensors::Esp32Camera::cameraGetFrame(c->imageResolution.toInt(), c->imageQuality.toInt()); // (resolution 5 = 320x240, quality 10)
+                    if (fb != nullptr) {
+                        imageData = fb->buffer;
+                        c->imageLen = fb->length;
+                        c->feedError = "";
+                    } else {
+                        c->feedError = "CAM Error: No Frame";
+                    }
+                } else {
+#endif
+                    auto url = c->jpegFeedUrl;
+                    url.concat("/");
+                    url.concat(c->imageResolution);  // ESP32-CAM resolution (e.g. 3 = 240x176)
+                    url.concat("/");
+                    url.concat(c->imageQuality);     // ESP32-CAM quality, 10 (best) to 70 (lowest)
+                    imageData = c->getJpegImage(url.c_str());
+#ifdef ESP_CAMERA_SUPPORTED
+                }
+#endif
+                if (imageData && c->imageLen > 0) {
+                    dts = millis() - lastFrameTs;
+                    if (c->frameSize.width == 0) {
+                        c->frameSize = getJpegDimensions(imageData, c->imageLen);
+                    }
+                    if (c->frameSize.width > 0) {
+                        c->fps++;
+                        if (millis() - fpsStart > 5000) {
+                            c->averageFps = ((float) c->fps / 5.0f);
+                            fpsStart = millis();
+                            if (c->averageFps < 1 && c->fps > 0) {
+                                c->feedError = "Bad link quality.";
+                            } else {
+                                c->feedError = "";
+                            }
+                            c->fps = 0;
+                        }
+                        c->imageData = imageData;
+                    }
+                }
+            }
+            long delay = (50 - dts);
+            if (delay < 1) {
+                delay = 1;
+            }
+            vTaskDelay((c->isActivityReady ? delay : 100) * portTICK_PERIOD_MS);
         }
     }
 

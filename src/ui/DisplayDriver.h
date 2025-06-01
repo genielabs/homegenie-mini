@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2024 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -23,30 +23,25 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_SENSORVALUESACTIVITY_H
-#define HOMEGENIE_MINI_SENSORVALUESACTIVITY_H
+#ifndef HOMEGENIE_MINI_DISPLAYDRIVER_H
+#define HOMEGENIE_MINI_DISPLAYDRIVER_H
 
-#include <HomeGenie.h>
-#include <LovyanGFX.hpp>
-#include <ui/Activity.h>
+#ifdef ENABLE_UI
 
-#include "../bitmaps/Background_1.h"
+#include <LovyanGFX.h>
 
-using namespace Service;
-using namespace UI;
+namespace UI {
 
-class SensorValuesActivity: public Activity {
+    class DisplayDriver {
+    public:
+        virtual bool isRoundDisplay() {
+            return false;
+        };
+        virtual LGFX_Device* getDisplay() = 0;
+    };
 
-public:
-    explicit SensorValuesActivity(Module* module);
+}
 
-    void onResume() override;
-    void onPause() override;
-    void onDraw() override;
+#endif // ENABLE_UI
 
-private:
-    Module* sensorModule;
-
-};
-
-#endif //HOMEGENIE_MINI_SENSORVALUESACTIVITY_H
+#endif //HOMEGENIE_MINI_DISPLAYDRIVER_H

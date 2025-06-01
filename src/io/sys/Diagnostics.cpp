@@ -50,6 +50,13 @@ namespace IO { namespace System {
             Logger::trace("@%s [%s %lu]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_BytesFree, freeMem);
             sendEvent(IOEventPaths::System_BytesFree, &freeMem, UnsignedNumber);
             currentFreeMemory = freeMem;
+#ifdef ESP32
+            // Output DRAM info only to terminal
+            String dramPath = IOEventPaths::System_BytesFree; dramPath.concat(".DRAM");
+            multi_heap_info_t dram_info;
+            heap_caps_get_info(&dram_info, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+            Logger::trace("@%s [%s %lu]", DIAGNOSTICS_NS_PREFIX, dramPath.c_str(), dram_info.total_free_bytes);
+#endif
         }
 
         // Report Wi-FI connection status

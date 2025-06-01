@@ -197,8 +197,7 @@ namespace Service { namespace API {
         if (module) {
             auto event = String((char *) eventPath);
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto m = QueuedMessage(domain, address, event.c_str(), "",
-                                   nullptr, IOEventDataType::Undefined);
+            auto m = QueuedMessage(domain, address, event.c_str(), "");
             // Data type handling
             switch (dataType) {
                 case Number:

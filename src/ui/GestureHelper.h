@@ -63,6 +63,13 @@ public:
         }
     }
 
+    unsigned long elapsed() const {
+        return millis() - touchPointer.startTime;
+    }
+    Gesture gesture() {
+        return currentGesture;
+    }
+
 private:
     static const unsigned int GESTURES_GUESS_SENSITIVITY = 4; // between 2-4 for best perf.
     static const unsigned int GESTURE_TAP_TIMEOUT = 750;
@@ -80,7 +87,7 @@ private:
     SpeedData startData;
     SpeedData stopData;
     // gesture events listener
-    GestureListener* listener = nullptr;
+    GestureListener* listener{};
 
     void TouchStart(float x, float y) {
         const unsigned long timestamp = millis();
@@ -154,7 +161,7 @@ private:
         // update tap gesture and swipe direction
         const unsigned int minStepDistance = GESTURES_GUESS_SENSITIVITY; // <--- !!! this should not be greater than 2 for best performance
         const float angle = atan2(touchPointer.shiftY-touchPointer.stepY, touchPointer.shiftX-touchPointer.stepX) * 180.0f / PI;
-        if ((touchPointer.shiftX) == 0 && (touchPointer.shiftY) == 0 && touchPointer.startTime > lastTapTime+100 && touchPointer.stepTime < GESTURE_TAP_TIMEOUT) {
+        if ((touchPointer.shiftX) == 0 && (touchPointer.shiftY) == 0 && touchPointer.startTime > lastTapTime + 100 && touchPointer.stepTime < GESTURE_TAP_TIMEOUT) {
             // gesture TAP
             lastTapTime = millis();
             gesture = GESTURE_TAP;

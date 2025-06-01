@@ -25,16 +25,17 @@
 
 #include "SensorValuesActivity.h"
 
-void SensorValuesActivity::attach(LGFX_Device* display) {
-    this->Activity::attach(display);
+SensorValuesActivity::SensorValuesActivity(Module *module) {
+    setDrawInterval(1000);  // Task.h - 1000ms loop frequency
+#ifdef BOARD_HAS_PSRAM
+    setColorDepth(lgfx::rgb565_2Byte);
+#else
+    setColorDepth(lgfx::rgb332_1Byte);
+#endif
+    sensorModule = module;
 }
 
 void SensorValuesActivity::onResume() {
-#ifdef BOARD_HAS_PSRAM
-    canvas->setColorDepth(lgfx::rgb565_2Byte);
-#else
-    canvas->setColorDepth(lgfx::rgb332_1Byte);
-#endif
 }
 
 void SensorValuesActivity::onPause() {

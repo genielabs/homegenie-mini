@@ -29,34 +29,28 @@
 
 namespace UI { namespace Activities { namespace Examples {
 
-    void GaugeExampleActivity::attach(LGFX_Device* displayDevice) {
-        Activity::attach(displayDevice);
+    GaugeExampleActivity::GaugeExampleActivity() {
+        setDrawInterval(33); // Task.h
+        setColorDepth(lgfx::palette_2bit);
     }
 
     void GaugeExampleActivity::onResume() {
 
-        canvas->setColorDepth(lgfx::palette_2bit);
-
         if (base == nullptr) {
-
             base = new LGFX_Sprite(canvas);
             needle = new LGFX_Sprite(canvas);
 #ifdef BOARD_HAS_PSRAM
             base->setPsram(true);
             needle->setPsram(true);
 #endif
-
-            canvas->setColorDepth(lgfx::palette_2bit);
             base->setColorDepth(lgfx::palette_2bit);
             needle->setColorDepth(lgfx::palette_2bit);
-
         }
 
         base->createSprite(width, width);
         needle->createSprite(3, 11);
 
         int lw = std::min(canvas->width(), canvas->height());
-
         zoom = (float) lw / width;
 
 //        int px = display->width() >> 1;
@@ -113,21 +107,13 @@ namespace UI { namespace Activities { namespace Examples {
         canvas->setPaletteColor(1, 0, 0, 120);
         canvas->setPaletteColor(2, 255, 81, 21);
         canvas->setPaletteColor(3, 255, 255, 191);
-
-
     }
 
     void GaugeExampleActivity::onPause() {
-
-        // TODO: free resources
-
         base->deleteSprite();
         needle->deleteSprite();
-
-
     }
 
-    bool invert = false;
     void GaugeExampleActivity::onDraw() {
         if (invert && value > 0) {
             value -= 0.25;
@@ -144,6 +130,17 @@ namespace UI { namespace Activities { namespace Examples {
         } else if ((0.0 > (value += 0.05))) {
             draw();
         }
+    }
+
+    void GaugeExampleActivity::draw() {
+        base->pushSprite((canvas->width() - width) / 2.0f, (canvas->height() - width) / 2.0f);
+        canvas->fillCircle((display->width() >> 1), (display->height() >> 1), 7, 3);
+        if (value >= 1.5f) {
+            canvas->fillCircle(display->width() >> 1, (display->height() >> 1) + width * 4 / 10, 5, 2);
+        }
+
+        float angle = 270 + value * 90.0f;
+        needle->pushRotateZoom(canvas->getPivotX() + drawOffset.x, canvas->getPivotY(), angle, 3.0f, 10.0f, transpalette); // 針をバッファに描画する
     }
 
 }}}

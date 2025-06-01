@@ -33,6 +33,8 @@
 #include <LovyanGFX.hpp>
 #include <LinkedList.h>
 
+#include "DisplayDriver.h"
+
 #include "Task.h"
 #include "InputControl.h"
 #include "GestureHelper.h"
@@ -45,8 +47,19 @@ namespace UI {
 
     public:
 
-        virtual void attach(LGFX_Device* displayDevice) {
-            display = displayDevice;
+        Activity() = default;
+        explicit Activity(lgfx::color_depth_t depth) {
+            colorDepth = depth;
+        }
+
+        void attach(DisplayDriver* displayDriver) {
+            driver = displayDriver;
+            display = (LGFX_Device*)(displayDriver->getDisplay());
+            onStart();
+        }
+
+        void setColorDepth(lgfx::color_depth_t depth) {
+            colorDepth = depth;
         }
 
         void setDrawInterval(uint64_t ms) {
@@ -72,7 +85,6 @@ namespace UI {
             if (isPaused) {
                 isPaused = false;
                 initCanvas();
-//                canvas->clear();
                 float h_center = (float)display->width() / 2.0f;
                 float v_center = (float)display->height() / 2.0f;
                 display->setPivot(h_center, v_center);
@@ -80,17 +92,23 @@ namespace UI {
             }
         }
         /**
-         * Event fired when the task is resumed.
+         * Event fired when the activity starts.
+         */
+        virtual void onStart() {};
+        /**
+         * Event fired when the activity is resumed.
          */
         virtual void onResume() {}
         /**
-         * Event fired when the task is paused.
+         * Event fired when the activity is paused.
          */
         virtual void onPause() {}
         /**
          * Event fired to draw/refresh activity UI content.
          */
         virtual void onDraw() {}
+
+        virtual bool isLvgl() { return false; }
 
         void setDrawOffset(float x, float y) {
             bool forceRedraw = false;
@@ -204,15 +222,19 @@ namespace UI {
         bool isLocked() const {
             return locked;
         }
+        bool isRoundDisplay() {
+            return driver->isRoundDisplay();
+        }
 
     protected:
-        LGFX_Device* display = nullptr;
-        LGFX_Sprite* canvas = nullptr;
+        DisplayDriver* driver{};
+        LGFX_Device* display{};
+        LGFX_Sprite* canvas{};
         struct Offset {
         public:
             float x;
             float y;
-        } drawOffset;
+        } drawOffset{};
 
         void invalidate() {
             draw();
@@ -224,13 +246,16 @@ namespace UI {
 #ifdef BOARD_HAS_PSRAM
                 canvas->setPsram(true);
 #endif
-                canvas->initDMA();
             }
-            canvas->setColorDepth(lgfx::color_depth_t::grayscale_1bit);
             canvas->createSprite(display->width(), display->height());
+            if (canvas->setColorDepth(colorDepth) == nullptr && colorDepth != lgfx::color_depth_t::grayscale_1bit) {
+                // try lower resolution
+                canvas->setColorDepth(lgfx::color_depth_t::grayscale_1bit);
+            }
         }
 
     private:
+        lgfx::color_depth_t colorDepth = lgfx::color_depth_t::grayscale_1bit;
         LinkedList<InputControl*> inputControls;
         bool isPaused = true;
         bool locked = false;

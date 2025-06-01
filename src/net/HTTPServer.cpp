@@ -186,7 +186,7 @@ namespace Net {
     // END RequestHandler interface methods
 
     void HTTPServer::sendSSEvent(String domain, String address, String event, String value) {
-        auto m = QueuedMessage(domain, address, event, value, nullptr, IOEventDataType::Undefined);
+        auto m = QueuedMessage(domain, address, event, value);
         events.add(m);
     }
 

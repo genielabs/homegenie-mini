@@ -133,9 +133,7 @@ namespace Service { namespace API {
 
                 rawDataParameter->setValue(rawDataString.c_str());
                 HomeGenie::getInstance()->getEventRouter().signalEvent(
-                        QueuedMessage(domain, CONFIG_RCSwitchRF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData,
-                                      rawDataString,
-                                      nullptr, IOEventDataType::Undefined));
+                        QueuedMessage(domain, CONFIG_RCSwitchRF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString));
 
 
                 if (ledBlinkHandler) {

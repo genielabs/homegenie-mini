@@ -43,9 +43,9 @@ namespace Service { namespace API {
 
     class HomeGenieHandler : public APIHandler {
     private:
-        GPIOPort* gpioPort;
+        GPIOPort* gpioPort{};
         LinkedList<Module*> moduleList;
-        Module* miniModule;
+        Module* miniModule{};
         const char* updateSystemModule();
         static void getSystemInfoJson(String& info);
     public:

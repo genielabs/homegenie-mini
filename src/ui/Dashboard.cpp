@@ -30,6 +30,29 @@
 #include "GestureHelper.h"
 #include "AnimationHelper.h"
 
+Dashboard::Dashboard(DisplayDriver *displayDriver, lgfx::color_depth_t colorDepth) {
+    //setLoopInterval(10); // Task.h
+
+    driver = displayDriver;
+    display = driver->getDisplay();
+    display->setColorDepth(colorDepth);
+    display->initDMA();
+    gestureHelper = new GestureHelper(this);
+
+    // apply display preferences
+    Preferences preferences;
+    preferences.begin(CONFIG_SYSTEM_NAME, true);
+    uint32_t displayRotation = preferences.getUInt(CONFIG_KEY_screen_rotation);
+    preferences.end();
+    setRotation(displayRotation);
+
+    display->setBrightness(64);
+    display->drawCenterString("Hello World! =)", display->width() / 2, display->height() / 2);
+#ifndef DISABLE_LVGL
+    LvglDriver::begin(display);
+#endif
+}
+
 void Dashboard::loop() {
     auto activity = getForegroundActivity();
 
@@ -63,6 +86,12 @@ void Dashboard::loop() {
             nextActivity->pause();
             if (activity != nullptr) {
                 activity->setDrawOffset(0, 0);
+#ifndef DISABLE_LVGL
+                if (activity->isLvgl()) {
+                    activity->pause();
+                    activity->resume();
+                }
+#endif
             }
         }
         nextActivity = nullptr;
@@ -99,8 +128,7 @@ void Dashboard::loop() {
 }
 
 void Dashboard::addActivity(Activity* activity) {
-    activity->attach(display);
-    //activity->pause();
+    activity->attach(driver);
     bool exists = false;
     for (const auto &item: activityList) {
         if (item == activity) {
@@ -175,7 +203,6 @@ void Dashboard::onPan(PanEvent e) {
     }
 }
 void Dashboard::onTouch(PointerEvent e) {
-
 }
 void Dashboard::onRelease(PointerEvent e) {
 #ifndef DISABLE_LVGL
@@ -184,6 +211,7 @@ void Dashboard::onRelease(PointerEvent e) {
     }
 #endif
 }
+
 Activity* Dashboard::getNextActivity() {
     int nextActivityIndex = 0;
     if (currentActivityIndex + 1 < activityList.size()) {
@@ -209,6 +237,21 @@ void Dashboard::invalidate() {
     if (current != nullptr) {
         current->resume();
     }
+}
+
+LGFX_Device *Dashboard::getDisplay() {
+    return display;
+}
+
+void Dashboard::setRotation(uint_fast8_t rotation) {
+    display->setRotation(rotation);
+#ifndef DISABLE_LVGL
+    if (rotation == 1) rotation = 2;
+    else if (rotation == 0) rotation = 3;
+    else if (rotation == 2) rotation = 1;
+    else if (rotation == 3) rotation = 4;
+    LvglDriver::setRotation((lv_disp_rot_t)rotation);
+#endif
 }
 
 #endif // ENABLE_UI

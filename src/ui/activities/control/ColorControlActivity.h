@@ -23,18 +23,20 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
-#define HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
+#ifndef HOMEGENIE_MINI_COLORCONTROLACTIVITY_H
+#define HOMEGENIE_MINI_COLORCONTROLACTIVITY_H
 
 #ifdef ENABLE_UI
 
 #include "service/api/APIRequest.h"
 #include "service/api/devices/Dimmer.h"
 
-#include "ui/Activity.h"
-#include "ui/AnimationHelper.h"
-#include "ui/Utility.h"
-#include "ui/components/RoundButton.h"
+#include "ui/LvglActivity.h"
+#include "ui/fonts/material_symbols_common.h"
+
+#ifndef DISABLE_LVGL
+
+#include "ui/LvglDriver.h"
 
 namespace UI { namespace Activities { namespace Control {
 
@@ -42,22 +44,24 @@ namespace UI { namespace Activities { namespace Control {
     using namespace Service::API::devices;
     using namespace Service::ModuleApi;
     using namespace Service::WidgetApi;
-    using namespace UI::Components;
 
-    enum SwitchControlButtons {
-        CONTROL_BUTTON_ADD = 2,
-        CONTROL_BUTTON_SUB = 0,
-        CONTROL_BUTTON_ON = 3,
-        CONTROL_BUTTON_OFF = 1,
-        CONTROL_BUTTON_TOGGLE = 4
+    class ColorControlData {
+    public:
+        int16_t hue = 0;
+        int16_t saturation = 100;
+        int16_t value = 100;
+
+        bool isOn = false;
+
+        uint8_t controlMode = 0;
     };
 
-    class SwitchControlActivity : public Activity, public APIHandler {
+    class ColorControlActivity : public LvglActivity, public APIHandler {
     public:
         LinkedList<Module*> moduleList;
         Module module;
 
-        explicit SwitchControlActivity(const char* moduleAddress);
+        explicit ColorControlActivity(const char* moduleAddress);
 
         void init() override;
         bool canHandleDomain(String* domain) override;
@@ -70,35 +74,50 @@ namespace UI { namespace Activities { namespace Control {
 
         void onResume() override;
         void onPause() override;
-        void onDraw() override;
-
-        void onPointerDown(PointerEvent e) override;
-        void onPointerUp(PointerEvent e) override;
-        void onPan(PanEvent e) override;
 
     private:
-        LinkedList<Point> buttonOffBounds = LinkedList<Point>();
-        LinkedList<Point> buttonOnBounds = LinkedList<Point>();
-        LinkedList<Point> buttonIncBounds = LinkedList<Point>();
-        LinkedList<Point> buttonDecBounds = LinkedList<Point>();
-        RoundButton* toggleButton{};
-        unsigned int selectedButton = -1;
-        unsigned long showLoaderTs{};
-        unsigned int currentLevel = 50; // 0-100
-        bool isSwitchedOn = false;
-        unsigned long errorReportTs{};
-        int32_t diameter = 240;
+        lv_style_t* backgroundGradient{};
+        lv_obj_t* labelTitle{};
+        lv_obj_t* labelLevel{};
+        lv_obj_t* colorWheel{};
+        lv_obj_t* circularSlider{};
+        lv_obj_t* toggleButton{};
+        lv_obj_t* ledStatus{};
+        lv_obj_t* buttonColor{};
+        lv_obj_t* buttonSaturation{};
+        lv_obj_t* buttonValue{};
 
-        void drawNavigationButtons();
+        ColorControlData data;
+        int diameter{};
+        int shiftY{};
 
-        void signalLevel();
-        void signalButton(const char* button);
+        enum EditMode {
+            EDIT_HUE,
+            EDIT_SATURATION,
+            EDIT_VALUE
+        };
 
-        void refresh();
+        void refreshData();
+        void emitHsvEvent();
+        void emitLevelEvent();
+        void initRoundButton(lv_obj_t* button);
+
+        static void activityEventsLock(lv_obj_t* obj, void* instance);
+        static void uiLockEventHandler(lv_event_t* e);
+
+        static void modeButtonEventHandler(lv_event_t* e);
+        static void toggleButtonEventHandler(lv_event_t* e);
+        static void colorWheelEventHandler(lv_event_t* e);
+        static void circularSliderEventHandler(lv_event_t* e);
+
+        static String hsvToNormalizedString(const lv_color_hsv_t& hsv_color);
+        static void addButtonIcon(lv_obj_t* button, const char* symbol);
     };
 
 }}}
 
+#endif // DISABLE_LVGL
+
 #endif // ENABLE_UI
 
-#endif //HOMEGENIE_MINI_SWITCHCONTROLACTIVITY_H
+#endif //HOMEGENIE_MINI_COLORCONTROLACTIVITY_H

@@ -396,7 +396,7 @@ namespace Service { namespace API {
                     if (module != nullptr) {
                         for (ModuleParameter p: parameters) {
                             if (p.name.isEmpty()) continue;
-                            module->setProperty(p.name, p.value, nullptr, IOEventDataType::Undefined);
+                            module->setProperty(p.name, p.value);
                             QueuedMessage m;
                             m.domain = domain;
                             m.sender = address;

@@ -29,6 +29,8 @@
 #ifdef ENABLE_UI
 
 #include "Config.h"
+#include "ui/DisplayDriver.h"
+
 #include "input/Touch_CST816S_fix.hpp"
 
 // default config
@@ -79,11 +81,11 @@ namespace UI { namespace Drivers {
 
     using namespace Input;
 
-    class StandardDisplay {
+    class StandardDisplay : public DisplayDriver {
 
     public:
         StandardDisplay();
-        LGFX_Device* getDisplay();
+        LGFX_Device* getDisplay() override;
 
     private:
         lgfx::Panel_ST7789              _panel_instance;

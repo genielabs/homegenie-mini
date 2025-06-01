@@ -37,10 +37,14 @@
 #include "PowerManager.h"
 #include "io/Logger.h"
 
-#include "drivers/RoundDisplay.h"
+#include "DisplayDriver.h"
 #include "LvglDriver.h"
 
+#ifndef DISABLE_LVGL
+#include "LvglActivity.h"
+#else
 #include "Activity.h"
+#endif
 
 #define DASHBOARD_NS_PREFIX "UI::Dashboard"
 
@@ -50,30 +54,12 @@ using namespace UI;
 class Dashboard: public Task, public GestureListener {
 
 public:
-    explicit Dashboard(LGFX_Device* display) {
-        //setLoopInterval(10); // Task.h
-
-        this->display = display;
-        display->setColorDepth(lgfx::rgb565_2Byte);
-        display->initDMA();
-        gestureHelper = new GestureHelper(this);
-
-        // apply display preferences
-        Preferences preferences;
-        preferences.begin(CONFIG_SYSTEM_NAME, true);
-        uint32_t displayRotation = preferences.getUInt(CONFIG_KEY_screen_rotation);
-        preferences.end();
-        display->setRotation(displayRotation);
-
-        display->setBrightness(64);
-        display->drawCenterString("Hello World! =)", display->width() / 2, display->height() / 2);
-    }
+    explicit Dashboard(DisplayDriver* displayDriver, lgfx::color_depth_t colorDepth = lgfx::rgb565_2Byte);
+    // TODO: implement ~Dashboard destructor and call LvglDriver::end() also
 
     void loop() override;
 
-    LGFX_Device* getDisplay() {
-        return display;
-    }
+    LGFX_Device* getDisplay();
     void invalidate();
 
     Activity* getForegroundActivity();
@@ -88,17 +74,20 @@ public:
     void onTouch(PointerEvent e) override;
     void onRelease(PointerEvent e) override;
 
+    void setRotation(uint_fast8_t rotation);
+
 private:
-    LGFX_Device* display;
+    DisplayDriver* driver{};
+    LGFX_Device* display{};
     LinkedList<Activity*> activityList;
     int currentActivityIndex = -1;
-    Activity* nextActivity = nullptr;
+    Activity* nextActivity{};
 
-    GestureHelper* gestureHelper;
+    GestureHelper* gestureHelper{};
     bool pointerDown = false;
     lgfx::touch_point_t lastTp;
     TouchPoint lastTouchPoint;
-    TouchDirection swipeDirection;
+    TouchDirection swipeDirection = TOUCH_DIRECTION_NONE;
 };
 
 #endif // ENABLE_UI

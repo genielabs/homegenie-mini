@@ -44,7 +44,7 @@ namespace Service {
     class QueuedMessage {
     public:
         QueuedMessage() = default;
-        explicit QueuedMessage(const String& domain, const String& sender, const String& event, const String& value, void* data, IO::IOEventDataType type) {
+        explicit QueuedMessage(const String& domain, const String& sender, const String& event, const String& value, void* data = nullptr, IO::IOEventDataType type = IO::Undefined) {
             this->domain = domain;
             this->sender = sender;
             this->event = event;
@@ -52,7 +52,7 @@ namespace Service {
             this->data = data;
             this->type = type;
         }
-        explicit QueuedMessage(Data::Module* sender, const String& event, const String& value, void* data, IO::IOEventDataType type) {
+        explicit QueuedMessage(Data::Module* sender, const String& event, const String& value, void* data = nullptr, IO::IOEventDataType type = IO::Undefined) {
             this->domain = sender->domain;
             this->sender = sender->address;
             this->event = event;
@@ -65,8 +65,8 @@ namespace Service {
         String sender;
         String event;
         String value;
-        void* data;
-        IO::IOEventDataType type;
+        void* data{};
+        IO::IOEventDataType type = IO::Undefined;
     };
 
     using namespace Net;
@@ -79,7 +79,7 @@ namespace Service {
         void withNetManager(NetManager &manager);
 
     private:
-        NetManager* netManager;
+        NetManager* netManager{};
         LinkedList<QueuedMessage> eventsQueue;
         template <class T>
         bool valueMatchesCondition(String& condition, T leftValue, T rightValue);

@@ -32,23 +32,25 @@
 
 namespace IO {
     namespace IOEventPaths {
-        const char Program_Status[]  = "Program.Status";
-        const char Receiver_RawData[]  = "Receiver.RawData";
-        const char Receiver_Command[]  = "Receiver.Command";
-        const char Sensor_Luminance[]  = "Sensor.Luminance";
-        const char Sensor_ColorHsv[]  = "Sensor.ColorHsv";
-        const char Sensor_Temperature[]  = "Sensor.Temperature";
-        const char Sensor_Humidity[]  = "Sensor.Humidity";
-        const char Sensor_MotionDetect[]  = "Sensor.MotionDetect";
-        const char Sensor_Orientation[]  = "Sensor.Orientation";
-        const char Status_Level[]  = "Status.Level";
-        const char Status_ColorHsb[]  = "Status.ColorHsb";
-        const char Status_IdleTime[]  = "Status.IdleTime";
-        const char Status_Battery[]  = "Status.Battery";
-        const char Status_Error[]  = "Status.Error";
-        const char System_Status[]  = "System.Status";
-        const char System_BytesFree[]  = "System.BytesFree";
-        const char Events_Disabled[]  = "Events.Disable";
+        const char Events_Disabled[]     PROGMEM = "Events.Disable";
+        const char Program_Status[]      PROGMEM = "Program.Status";
+        const char Receiver_Command[]    PROGMEM = "Receiver.Command";
+        const char Receiver_RawData[]    PROGMEM = "Receiver.RawData";
+        const char Sensor_Button[]       PROGMEM = "Sensor.Button";
+        const char Sensor_ColorHsv[]     PROGMEM = "Sensor.ColorHsv";
+        const char Sensor_Humidity[]     PROGMEM = "Sensor.Humidity";
+        const char Sensor_Level[]        PROGMEM = "Sensor.Level";
+        const char Sensor_Luminance[]    PROGMEM = "Sensor.Luminance";
+        const char Sensor_MotionDetect[] PROGMEM = "Sensor.MotionDetect";
+        const char Sensor_Orientation[]  PROGMEM = "Sensor.Orientation";
+        const char Sensor_Temperature[]  PROGMEM = "Sensor.Temperature";
+        const char Status_Battery[]      PROGMEM = "Status.Battery";
+        const char Status_ColorHsb[]     PROGMEM = "Status.ColorHsb";
+        const char Status_Error[]        PROGMEM = "Status.Error";
+        const char Status_IdleTime[]     PROGMEM = "Status.IdleTime";
+        const char Status_Level[]        PROGMEM = "Status.Level";
+        const char System_BytesFree[]    PROGMEM = "System.BytesFree";
+        const char System_Status[]       PROGMEM = "System.Status";
     }
 }
 

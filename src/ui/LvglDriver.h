@@ -39,69 +39,16 @@ public:
     LvglDriver(const LvglDriver&) = delete;
     LvglDriver& operator=(const LvglDriver&) = delete;
 
-    static void setDisplay(LGFX_Device* display) {
-        display_device = display;
-    }
-
-    static void begin(LGFX_Sprite* canvas) {
-        if (initialized) {
-            return;
-        }
-
-        gfx_canvas = canvas;
-        uint16_t width = gfx_canvas->width();
-        uint16_t height = gfx_canvas->height();
-
-        uint32_t buffer_size_pixels = width * buffer_rows;
-        buffer0 = new (std::nothrow) lv_color_t[buffer_size_pixels];
-        buffer1 = new (std::nothrow) lv_color_t[buffer_size_pixels];
-
-        lv_init();
-        lv_disp_draw_buf_init(&draw_buf, buffer0, buffer1, buffer_size_pixels);
-
-        lv_disp_drv_init(&display_driver);
-        display_driver.hor_res = width;
-        display_driver.ver_res = height;
-        display_driver.flush_cb = disp_flush_cb;
-        display_driver.draw_buf = &draw_buf;
-        lv_disp_drv_register(&display_driver);
-
-        lv_indev_drv_init(&indev_drv);
-        indev_drv.type = LV_INDEV_TYPE_POINTER;
-        indev_drv.read_cb = touchpad_read_cb;
-        lv_indev_drv_register(&indev_drv);
-
-        initialized = true;
-    }
-
-    static void stop() {
-        if (buffer0) {
-            delete[] buffer0;
-            buffer0 = nullptr;
-        }
-        if (buffer1) {
-            delete[] buffer1;
-            buffer1 = nullptr;
-        }
-        gfx_canvas = nullptr;
-        initialized = false;
-        lv_deinit();
-    }
-
-
-    static void access_sd_card_start() {
-        if (gfx_canvas == nullptr || !initialized) return;
-
-        // Free the bus before accessing the SD card
-        if (gfx_canvas->getStartCount() > 0) {
-            gfx_canvas->endWrite();
-        }
-    }
-    static void access_sd_card_end() {
-        // not used
-    }
-
     static bool disableInput;
+
+    static void begin(LGFX_Device* display);
+    static void end();
+
+    static void access_sd_card_start();
+    static void access_sd_card_end();
+
+    static void setCurrentCanvas(LGFX_Sprite* canvas);
+    static void setRotation(lv_disp_rot_t rotation);
 
 private:
     static const uint16_t buffer_rows = 60;
@@ -119,37 +66,8 @@ private:
 
     static bool initialized;
 
-    static void disp_flush_cb(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p) {
-        if (gfx_canvas == nullptr || !initialized) return;
-
-        if (gfx_canvas->getStartCount() == 0) {
-            gfx_canvas->startWrite();
-        }
-        gfx_canvas->pushImageDMA(area->x1,
-                                 area->y1,
-                                  area->x2 - area->x1 + 1,
-                                  area->y2 - area->y1 + 1,
-                                 (lgfx::swap565_t*)&color_p->full);
-        lv_disp_flush_ready(disp);
-    }
-
-    static void touchpad_read_cb(lv_indev_drv_t* indev_driver, lv_indev_data_t* data) {
-        if (display_device == nullptr || !initialized || disableInput) {
-            data->state = LV_INDEV_STATE_REL;
-            return;
-        }
-
-        uint16_t touchX, touchY;
-        bool touched = display_device->getTouch(&touchX, &touchY);
-
-        if (touched) {
-            data->state = LV_INDEV_STATE_PR;
-            data->point.x = touchX;
-            data->point.y = touchY;
-        } else {
-            data->state = LV_INDEV_STATE_REL;
-        }
-    }
+    static void disp_flush_cb(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p);
+    static void touchpad_read_cb(lv_indev_drv_t* indev_driver, lv_indev_data_t* data);
 };
 
 #endif // DISABLE_LVGL

@@ -37,36 +37,24 @@
 
 namespace UI { namespace Activities { namespace Examples {
 
-    class AnalogClockActivity: public Activity, LGFX_Sprite {
+    class AnalogClockActivity: public Activity {
     public:
-        AnalogClockActivity() {
-            setDrawInterval(100);  // Task.h - 100ms loop frequency
-        }
-        void attach(LGFX_Device* display) override {
-            Activity::attach(display);
+        AnalogClockActivity();
 
-            if (display->width() < display->height()) {
-                diameter = (float)display->width();
-            } else {
-                diameter = (float)display->height();
-            }
-            radius = (diameter / 2.0f);
-            zoom = (float)(std::min(display->width(), display->height())) / diameter;
-        }
-
+        void onStart() override;
         void onResume() override;
         void onPause() override;
         void onDraw() override;
 
     private:
-        LGFX_Sprite* clockBaseSprite = nullptr;
-        LGFX_Sprite* hoursMinutesNeedle = nullptr;
-        LGFX_Sprite* secondsNeedle = nullptr;
+        LGFX_Sprite* clockBaseSprite{};
+        LGFX_Sprite* hoursMinutesNeedle{};
+        LGFX_Sprite* secondsNeedle{};
 
-        float diameter;
-        float radius;
+        float diameter{};
+        float radius{};
         int maskColor = TFT_TRANSPARENT;
-        float zoom;
+        float zoom{};
 
         void drawDot(int pos, int palette);
     };

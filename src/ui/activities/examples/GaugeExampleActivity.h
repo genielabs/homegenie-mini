@@ -38,37 +38,23 @@ namespace UI { namespace Activities { namespace Examples {
     class GaugeExampleActivity : public Activity {
 
     public:
-        GaugeExampleActivity() {
-            setDrawInterval(33); // Task.h
-        }
-        void attach(LGFX_Device* displayDevice) override;
+        GaugeExampleActivity();
         void onResume() override;
         void onPause() override;
         void onDraw() override;
 
     private:
-        LGFX_Sprite* base = nullptr;
+        LGFX_Sprite* base{};
         LGFX_Sprite* needle{};
 
         int32_t width = 239; // TODO: refactor as 'diameter'
         int32_t halfwidth = width >> 1; // TODO: refactor as 'radius'
-        uint16_t transpalette = 0;
+        uint16_t transpalette{};
         float zoom{};
 
-        float value = 0;
-        void draw()
-        {
-            base->pushSprite((canvas->width() - width) / 2.0f, (canvas->height() - width) / 2.0f);
-            canvas->fillCircle((display->width() >> 1), (display->height() >> 1), 7, 3);
-            if (value >= 1.5f) {
-                canvas->fillCircle(display->width() >> 1, (display->height() >> 1) + width * 4 / 10, 5, 2);
-            }
-
-            float angle = 270 + value * 90.0f;
-            needle->pushRotateZoom(canvas->getPivotX() + drawOffset.x, canvas->getPivotY(), angle, 3.0f, 10.0f, transpalette); // 針をバッファに描画する
-
-//            canvas->pushRotateZoom(0, zoom, zoom);
-        }
+        float value{};
+        bool invert = false;
+        void draw();
 
     };
 

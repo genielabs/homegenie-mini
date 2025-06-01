@@ -45,36 +45,23 @@ namespace UI { namespace Activities { namespace Utilities {
     class DigitalClockActivity : public Activity {
 
     public:
-        DigitalClockActivity() {
-            setDrawInterval(10);  // Task.h - 100ms loop frequency
-        }
+        DigitalClockActivity();
 
-        void attach(LGFX_Device* displayDevice) override {
-            this->Activity::attach(displayDevice);
-
-            if (display->width() < display->height()) {
-                diameter = (float)display->width();
-            } else {
-                diameter = (float)display->height();
-            }
-            center = diameter / 2.0f;
-            zoom = (float) (std::min(display->width(), display->height())) / diameter;
-        }
-
+        void onStart() override;
         void onResume() override;
-
         void onPause() override;
-
         void onDraw() override;
 
     private:
-        LGFX_Sprite *clockSprite = nullptr;
-//        LGFX_Sprite *genieSprite = nullptr;
+        LGFX_Sprite *clockSprite{};
+//        LGFX_Sprite *genieSprite{};
 
-        float diameter;
-        float center;
+        float diameter{};
+        float center{};
 //        int maskColor = TFT_TRANSPARENT; //lgfx::color888(0, 200, 0); // green screen =))
-        float zoom;
+        float zoom{};
+        float pacAngle = 5;
+        int pacAngleInc = -1;
 
         void drawDot(float pos, int size, uint32_t palette);
     };

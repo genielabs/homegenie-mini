@@ -50,8 +50,8 @@ namespace UI { namespace Activities { namespace Monitor {
     using namespace Service::WidgetApi;
 
     struct JpegDimensions {
-        float width = 0;
-        float height = 0;
+        float width{};
+        float height{};
         void reset() {
             width = 0;
             height = 0;
@@ -64,105 +64,48 @@ namespace UI { namespace Activities { namespace Monitor {
         Module module;
         bool isEsp32Camera = false;
 
-        explicit CameraDisplayActivity(const char* moduleAddress) {
-            setDrawInterval(50); // Task.h
-            module.domain  = IO::IOEventDomains::HomeAutomation_HomeGenie;
-            module.address = moduleAddress;
-            module.type    = ModuleType::Sensor;
-            // load stored name for this module
-            auto key = String(CONFIG_KEY_ACTIVITY_TITLE); key.concat(moduleAddress);
-            module.name = Config::getSetting(key.c_str(), moduleAddress);
-            module.setProperty(Implements::Scheduling, "true");
-            module.setProperty(Implements::Scheduling_ModuleEvents, "true");
-            module.onNameUpdated = [this](const char* oldName, const char* newName) {
-                // TODO: show name on the UI
-                //if (labelTitle) {
-                //    lv_label_set_text(labelTitle, newName);
-                //}
-                auto key = String(CONFIG_KEY_ACTIVITY_TITLE);
-                key.concat(module.address);
-                Config::saveSetting(key.c_str(), newName);
-            };
-            moduleList.add(&module);
-            HomeGenie::getInstance()->addAPIHandler(this);
-            // Add UI control to set the camera module associated
-            // to this CameraDisplayActivity
-            optionUpdateListener = new RemoteCameraUrlUpdateListener(this);
-            feedUrlConfigKey = String("rcam-"); feedUrlConfigKey.concat(moduleAddress);
-            module.addWidgetOption(
-                    // name, value
-                    CameraApi::Property::RemoteCamera_EndPoint, "",
-                    // type
-                    UI_WIDGETS_FIELD_TYPE_MODULE_TEXT
-                    // options
-                    ":any"
-                    ":sensor"
-                    ":Widget.DisplayModule=homegenie/generic/camerainput"
-                    ":uri"
-            )->withConfigKey(feedUrlConfigKey.c_str())->addUpdateListener(optionUpdateListener);
-            jpegFeedUrl = module.getProperty(CameraApi::Property::RemoteCamera_EndPoint)->value;
-        }
+        explicit CameraDisplayActivity(const char* moduleAddress);
         ~CameraDisplayActivity() {
             module.getProperty(CameraApi::Property::RemoteCamera_EndPoint)->removeUpdateListener(optionUpdateListener);
             delete optionUpdateListener;
             // TODO: IMPLEMENT FreeRTOS Task shutdown/delete
         }
 
-        void attach(LGFX_Device* displayDevice) override;
+        void onStart() override;
         void onResume() override;
         void onPause() override;
         void onDraw() override;
 
-        void init() override {
-        }
-        bool canHandleDomain(String* domain) override {
-            return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
-        }
-        bool handleRequest(APIRequest* request, ResponseCallback* callback) override {
-            return false;
-        }
+        void init() override {}
+        bool canHandleDomain(String* domain) override;
+        bool handleRequest(APIRequest* request, ResponseCallback* callback) override;
         bool handleEvent(IIOEventSender*,
                          const char* domain, const char* address,
-                         const char *eventPath, void* eventData, IOEventDataType) override {
-            return false;
-        }
-        Module* getModule(const char* domain, const char* address) override {
-            if (module.domain.equals(domain) && module.address.equals(address))
-                return &module;
-            return nullptr;
-        }
-        LinkedList<Module*>* getModuleList() override {
-            return &moduleList;
-        }
+                         const char *eventPath, void* eventData, IOEventDataType) override;
+        Module* getModule(const char* domain, const char* address) override;
+        LinkedList<Module*>* getModuleList() override;
 
-        void onTap(PointerEvent e) override {
-            showOnScreenDisplay = !showOnScreenDisplay;
-            if (isActivityReady) {
-                canvas->clear();
-            }
-        }
+        void onTap(PointerEvent e) override;
 
-        void setJpegFeedUrl(const String& feedUrl) {
-            jpegFeedUrl = feedUrl;
-            // override config setting with transformed value (with 'GetPicture' API call appended)
-            Config::saveSetting(feedUrlConfigKey.c_str(), jpegFeedUrl);
-            IO::Logger::info("Remote camera module set to: %s", jpegFeedUrl.c_str());
-        }
-
-        uint8_t* feedJpegImage(const char* imageUrl);
+        void setJpegFeedUrl(const String& feedUrl);
+        uint8_t* getJpegImage(const char* imageUrl);
         static JpegDimensions getJpegDimensions(const uint8_t* jpg_data, size_t data_size);
 
     private:
         bool isActivityReady = false;
-        unsigned long readyTimestamp;
         String jpegFeedUrl;
         String feedUrlConfigKey;
         String feedError;
         bool showOnScreenDisplay = true;
-        LGFX_Sprite* view = nullptr;
+        LGFX_Sprite* view{};
         [[noreturn]] static void * worker(void* activity);
 
-        String imageResolution = "1";
+        uint8_t* imageData{};
+        unsigned long readyTimestamp{};
+        unsigned int fps{};
+        float averageFps{};
+
+        String imageResolution = "5";
         String imageQuality = "10";
 
         // UI options update listener

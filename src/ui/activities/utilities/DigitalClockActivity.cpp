@@ -29,9 +29,28 @@
 
 namespace UI { namespace Activities { namespace Utilities {
 
+    DigitalClockActivity::DigitalClockActivity() {
+        setDrawInterval(10);  // Task.h - 100ms loop frequency
+        setColorDepth(lgfx::palette_4bit);
+    }
+
+    void DigitalClockActivity::onStart() {
+        if (display->width() < display->height()) {
+            diameter = (float)display->width();
+        } else {
+            diameter = (float)display->height();
+        }
+        center = diameter / 2.0f;
+        zoom = (float) (std::min(display->width(), display->height())) / diameter;
+    }
+
+    void DigitalClockActivity::onPause() {
+        clockSprite->deleteSprite();
+//        genieSprite->deleteSprite();
+    }
+
     void DigitalClockActivity::onResume() {
 
-        canvas->setColorDepth(3);
         canvas->setPaletteColor(0, TFT_BLACK);
         canvas->setPaletteColor(1, TFT_WHITE);
         canvas->setPaletteColor(2, 30, 30, 30);
@@ -56,15 +75,8 @@ namespace UI { namespace Activities { namespace Utilities {
 
 //        genieSprite->createSprite(64, 64);
 //        genieSprite->pushImageRotateZoom(0, 0, 0, 0, 0, 0.5, 0.5, 128, 128, genie_map, lgfx::color_depth_t::rgb565_2Byte, canvas->getPalette());
-
-    }
-    void DigitalClockActivity::onPause() {
-        clockSprite->deleteSprite();
-//        genieSprite->deleteSprite();
     }
 
-
-    float pacAngle = 5; int pacAngleInc = -1;
     void DigitalClockActivity::onDraw()
     {
         auto rtc = Config::getRTC();

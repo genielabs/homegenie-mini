@@ -123,8 +123,7 @@ namespace Service { namespace API {
 
             Module* module = getModule(command->Domain.c_str(), command->Address.c_str());
             if (module) {
-                QueuedMessage m = QueuedMessage(command->Domain, command->Address, (IOEventPaths::Status_Level), "",
-                                                nullptr, IOEventDataType::Undefined);
+                QueuedMessage m = QueuedMessage(command->Domain, command->Address, (IOEventPaths::Status_Level), "");
                 auto levelProperty = module->getProperty(IOEventPaths::Status_Level);
 
                 if (command->Command == ControlApi::Control_On) {
@@ -233,8 +232,7 @@ namespace Service { namespace API {
 
 
                 receiverRawData->setValue(rawDataString.c_str());
-                HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString,
-                                                                                     nullptr, IOEventDataType::Undefined));
+                HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString));
 
                 if (ledBlinkHandler) {
                     ledBlinkHandler(rawDataString.c_str());
@@ -257,9 +255,7 @@ namespace Service { namespace API {
 
                         receiverCommand->setValue(commandString.c_str());
                         HomeGenie::getInstance()->getEventRouter().signalEvent(
-                                QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command,
-                                              commandString,
-                                              nullptr, IOEventDataType::Undefined));
+                                QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString));
 
                     } break;
 
@@ -275,9 +271,7 @@ namespace Service { namespace API {
 
                         receiverCommand->setValue(commandString.c_str());
                         HomeGenie::getInstance()->getEventRouter().signalEvent(
-                                QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command,
-                                              commandString,
-                                              nullptr, IOEventDataType::Undefined));
+                                QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString));
 
                     } break;
 
