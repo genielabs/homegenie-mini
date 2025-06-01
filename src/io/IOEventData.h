@@ -33,6 +33,7 @@ namespace IO {
     enum IOEventDataType {
         Undefined = 0,
         Text,
+        CString,
         Binary,
         Number,
         Float,

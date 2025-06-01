@@ -57,7 +57,8 @@ namespace Service { namespace API { namespace devices {
 
             auto hsvString = command->getOption(0);
 
-            float o[4]; int oi = 0;
+            float o[4]{1.0f, 0.0f, 1.0f, 0.4f}; // h,s,v,t (0.4 is the default transition in seconds)
+            int oi = 0;
             int ci;
             do {
                 ci = hsvString.indexOf(",");

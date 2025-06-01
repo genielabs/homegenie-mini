@@ -106,8 +106,7 @@ namespace Service { namespace API { namespace devices {
                 default:
                     m.value = String(*(int32_t *) eventData);
             }
-            module->setProperty(event, m.value,
-                                nullptr, IOEventDataType::Undefined);
+            module->setProperty(event, m.value);
             HomeGenie::getInstance()->getEventRouter().signalEvent(m);
         }
         return false;

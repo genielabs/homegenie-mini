@@ -91,8 +91,7 @@ namespace UI { namespace Activities { namespace Control {
 
         void drawNavigationButtons();
 
-        void signalLevel();
-        void signalButton(const char* button);
+        void emitLevelEvent();
 
         void refresh();
     };

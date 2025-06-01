@@ -50,12 +50,12 @@ extern "C" {
 namespace IO { namespace System {
 
     namespace SystemStatus {
-        const char BOOT[] = "boot";
-        const char DEEP_SLEEP[] = "deep_sleep";
-        const char SLEEP[] = "sleep";
-        const char AWAKE[] = "awake";
-        const char WIFI_CONNECTED[] = "wifi_connected";
-        const char WIFI_DISCONNECTED[] = "wifi_disconnected";
+        const char BOOT[]              PROGMEM = "boot";
+        const char DEEP_SLEEP[]        PROGMEM = "deep_sleep";
+        const char SLEEP[]             PROGMEM = "sleep";
+        const char AWAKE[]             PROGMEM = "awake";
+        const char WIFI_CONNECTED[]    PROGMEM = "wifi_connected";
+        const char WIFI_DISCONNECTED[] PROGMEM = "wifi_disconnected";
     };
 
     class Diagnostics : Task, public IIOEventSender {

@@ -65,11 +65,7 @@ namespace UI { namespace Activities { namespace Monitor {
         bool isEsp32Camera = false;
 
         explicit CameraDisplayActivity(const char* moduleAddress);
-        ~CameraDisplayActivity() {
-            module.getProperty(CameraApi::Property::RemoteCamera_EndPoint)->removeUpdateListener(optionUpdateListener);
-            delete optionUpdateListener;
-            // TODO: IMPLEMENT FreeRTOS Task shutdown/delete
-        }
+        ~CameraDisplayActivity();
 
         void onStart() override;
         void onResume() override;
@@ -87,10 +83,6 @@ namespace UI { namespace Activities { namespace Monitor {
 
         void onTap(PointerEvent e) override;
 
-        void setJpegFeedUrl(const String& feedUrl);
-        uint8_t* getJpegImage(const char* imageUrl);
-        static JpegDimensions getJpegDimensions(const uint8_t* jpg_data, size_t data_size);
-
     private:
         bool isActivityReady = false;
         String jpegFeedUrl;
@@ -107,6 +99,10 @@ namespace UI { namespace Activities { namespace Monitor {
 
         String imageResolution = "5";
         String imageQuality = "10";
+
+        void setJpegFeedUrl(const String& feedUrl);
+        uint8_t* getJpegImage(const String& imageUrl);
+        static JpegDimensions getJpegDimensions(const uint8_t* jpg_data, size_t data_size);
 
         // UI options update listener
         class RemoteCameraUrlUpdateListener : public ModuleParameter::UpdateListener {

@@ -609,32 +609,38 @@ namespace Service { namespace API {
             String event = eventPath;
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
             auto m = QueuedMessage(domain, address, eventPath, "", eventData, dataType);
-            // Data type handling
-            switch (dataType) {
-                case Text: {
-                    auto eventStringPtr = static_cast<String*>(eventData);
-                    m.value = *eventStringPtr;
-                } break;
-                case SensorColorHsv: {
-                    auto color = (ColorHSV *) eventData;
-                    m.value = String(color->h, 4)
-                              + String(",") + String(color->s, 4)
-                              + String(",") + String(color->v, 4);
-                } break;
-                case SensorLight: {
-                    m.value = String(*(uint16_t *) eventData);
-                } break;
-                case SensorTemperature:
-                case SensorHumidity:
-                case Float: {
-                    m.value = String(*(float_t *) eventData);
-                } break;
-                case UnsignedNumber: {
-                    m.value = String(*(uint32_t *) eventData);
-                } break;
-                case Number:
-                default: {
-                    m.value = String(*(int32_t *) eventData);
+            if (eventData) {
+                // Data type handling
+                switch (dataType) {
+                    case CString: {
+                        const char *c_str_payload = static_cast<const char *>(eventData);
+                        m.value = String(c_str_payload);
+                    } break;
+                    case Text: {
+                        auto eventStringPtr = static_cast<String *>(eventData);
+                        m.value = *eventStringPtr;
+                    } break;
+                    case SensorColorHsv: {
+                        auto color = (ColorHSV *) eventData;
+                        m.value = String(color->h, 4)
+                                  + String(",") + String(color->s, 4)
+                                  + String(",") + String(color->v, 4);
+                    } break;
+                    case SensorLight: {
+                        m.value = String(*(uint16_t *) eventData);
+                    } break;
+                    case SensorTemperature:
+                    case SensorHumidity:
+                    case Float: {
+                        m.value = String(*(float_t *) eventData);
+                    } break;
+                    case UnsignedNumber: {
+                        m.value = String(*(uint32_t *) eventData);
+                    } break;
+                    case Number:
+                    default: {
+                        m.value = String(*(int32_t *) eventData);
+                    }
                 }
             }
             module->setProperty(event, m.value, eventData, dataType);

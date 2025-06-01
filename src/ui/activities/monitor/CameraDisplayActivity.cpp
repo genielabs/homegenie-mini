@@ -65,6 +65,12 @@ namespace UI { namespace Activities { namespace Monitor {
         jpegFeedUrl = module.getProperty(CameraApi::Property::RemoteCamera_EndPoint)->value;
     }
 
+    CameraDisplayActivity::~CameraDisplayActivity() {
+        module.getProperty(CameraApi::Property::RemoteCamera_EndPoint)->removeUpdateListener(optionUpdateListener);
+        delete optionUpdateListener;
+        // TODO: IMPLEMENT FreeRTOS Task shutdown/delete
+    }
+
     bool CameraDisplayActivity::canHandleDomain(String *domain) {
         return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
     }
@@ -106,7 +112,6 @@ namespace UI { namespace Activities { namespace Monitor {
 
     void CameraDisplayActivity::onPause() {
         isActivityReady = false;
-        http.end(); // terminate keep-alive connection
         frameSize.reset();
         // avoid disposing object used by the download thread here
     }
@@ -169,7 +174,7 @@ namespace UI { namespace Activities { namespace Monitor {
                 // Display name
                 canvas->setTextColor(TFT_WHITE, TFT_BLACK);
                 canvas->setFont(&fonts::Font0);
-                canvas->drawCenterString(module.name, hw, canvas->height() - 24);
+                canvas->drawCenterString(module.name, hw, canvas->height() - 20);
             }
 #ifdef ESP_CAMERA_SUPPORTED
             if (isEsp32Camera) {
@@ -240,14 +245,17 @@ namespace UI { namespace Activities { namespace Monitor {
       return dims; // Not found
     }
 
-    uint8_t* CameraDisplayActivity::getJpegImage(const char* url) {
+    uint8_t* CameraDisplayActivity::getJpegImage(const String& url) {
         imageLen = 0;
-        //HTTPClient http; // moved to global object to implement keep-alive
-        http.setReuse(true);
-        http.setConnectTimeout(3000);
-        http.setTimeout(1500);
-        http.begin(url);
-        http.addHeader("Connection", "keep-alive");
+        //HTTPClient http; // moved to global object
+        WiFiClient* client;
+        if (url.startsWith("https://")) {
+            client = new WiFiClientSecure();
+            ((WiFiClientSecure*)client)->setInsecure();
+        } else {
+            client = new WiFiClient();
+        }
+        http.begin(*client, url);
         int httpCode = http.GET();
         if (httpCode == HTTP_CODE_OK) {
             int len = http.getSize();
@@ -259,7 +267,8 @@ namespace UI { namespace Activities { namespace Monitor {
 #endif
             if (!imageBuffer) {
                 feedError = "Could not allocate image buffer.";
-                //http.end(); // prefer kee-alive
+                http.end();
+                delete client;
                 return nullptr;
             }
             WiFiClient* stream = http.getStreamPtr();
@@ -274,19 +283,22 @@ namespace UI { namespace Activities { namespace Monitor {
             if (bytesRead != len) {
                 feedError = "Unexpected end of input";
                 Serial.printf("CameraDisplayActivity: %s (%d out of %d bytes read).\n", feedError.c_str(), bytesRead, len);
-                //http.end(); // prefer kee-alive
+                http.end();
                 free(imageBuffer);
+                delete client;
                 return nullptr;
             }
 
-            //http.end(); // prefer kee-alive
+            http.end();
 
             imageLen = bytesRead;
             feedError = "";
+            delete client;
             return imageBuffer;
         } else {
             feedError = "Connection error...";
-            //http.end(); // prefer kee-alive
+            http.end();
+            delete client;
             return nullptr;
         }
     }

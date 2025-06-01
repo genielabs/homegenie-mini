@@ -407,6 +407,7 @@ namespace UI { namespace Activities { namespace Control {
         result += String(s_norm, 3);
         result += ",";
         result += String(v_norm, 3);
+        result += ",0.4"; // default transition 0.4s
         return result;
     }
 

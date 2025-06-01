@@ -39,7 +39,7 @@ namespace IO { namespace System {
     void Diagnostics::begin() {
         // Report system booting
         Logger::trace("@%s [%s %s]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_Status, SystemStatus::BOOT);
-        sendEvent(IOEventPaths::System_Status, (void*)&SystemStatus::BOOT, Text);
+        sendEvent(IOEventPaths::System_Status, (void*)&SystemStatus::BOOT, CString);
     }
 
     void Diagnostics::loop() {
@@ -64,7 +64,7 @@ namespace IO { namespace System {
         if (connected != isWifiConnected) {
             isWifiConnected = connected;
             Logger::trace("@%s [%s %s]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_Status, isWifiConnected ? SystemStatus::WIFI_CONNECTED : SystemStatus::WIFI_DISCONNECTED);
-            sendEvent(IOEventPaths::System_Status, isWifiConnected ? (void*)&SystemStatus::WIFI_CONNECTED : (void*)&SystemStatus::WIFI_DISCONNECTED, Text);
+            sendEvent(IOEventPaths::System_Status, isWifiConnected ? (void*)&SystemStatus::WIFI_CONNECTED : (void*)&SystemStatus::WIFI_DISCONNECTED, CString);
         }
 
         // TODO: implement "WiFi.SignalStrength" --> WiFi.RSSI()

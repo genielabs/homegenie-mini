@@ -135,33 +135,28 @@ namespace UI { namespace Activities { namespace Control {
                     if (currentLevel == 100) break;
                     currentLevel += isSwitchedOn ? 10 : 0;
                     if (currentLevel > 100) currentLevel = 100;
-                    signalLevel();
                     isSwitchedOn = true;
-                }
-                    break;
+                    emitLevelEvent();
+                } break;
                 case CONTROL_BUTTON_SUB: {
                     if (currentLevel == 10) break;
                     currentLevel -= isSwitchedOn ? 10 : 0;
                     if (currentLevel < 10) currentLevel = 10;
-                    signalLevel();
                     isSwitchedOn = true;
-                }
-                    break;
+                    emitLevelEvent();
+                } break;
                 case CONTROL_BUTTON_ON: {
-                    signalButton("on");
                     isSwitchedOn = true;
-                }
-                    break;
+                    emitLevelEvent();
+                } break;
                 case CONTROL_BUTTON_OFF: {
-                    signalButton("off");
                     isSwitchedOn = false;
-                }
-                    break;
+                    emitLevelEvent();
+                } break;
                 case CONTROL_BUTTON_TOGGLE: {
-                    signalButton("toggle");
                     isSwitchedOn = !isSwitchedOn;
-                }
-                    break;
+                    emitLevelEvent();
+                } break;
             }
 
             selectedButton = -1;
@@ -275,19 +270,13 @@ namespace UI { namespace Activities { namespace Control {
         }
     }
 
-    void SwitchControlActivity::signalLevel() {
+    void SwitchControlActivity::emitLevelEvent() {
+        // Emit event
         auto l = (float)currentLevel / 100.0f;
-        auto level = String(l, 3);
+        auto level = isSwitchedOn ? String(l, 3) : String("0");
         module.setProperty(IOEventPaths::Sensor_Level, level);
-        auto m = QueuedMessage(&module, IOEventPaths::Sensor_Level, level);
-        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
-    }
-
-    void SwitchControlActivity::signalButton(const char *button) {
-        module.setProperty(IOEventPaths::Sensor_Button, button);
-        auto l = String(currentLevel);
-        auto m = QueuedMessage(&module, IOEventPaths::Sensor_Button, button);
-        HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+        auto me = QueuedMessage(&module, IOEventPaths::Sensor_Level, level);
+        HomeGenie::getInstance()->getEventRouter().signalEvent(me);
     }
 
     void SwitchControlActivity::refresh() {
