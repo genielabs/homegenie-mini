@@ -5,7 +5,7 @@ also using continuous rotation servos by using a GPIO switch as encoder pulse.
 The default version of this firmware can control up to 8 motors simultaneously.
 
 
-- [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/smart-motor/)
+- [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/fpv-rc-car/)
 
 
 ## Firmware configuration
@@ -43,7 +43,7 @@ where `<n>` is the number of the motor (from 1 to 8):
 ### Manual build and install
 
 You can also manually build and install the firmware from source code
-as explained in the [Getting started](../../getting-started#custom-firmware) page
+as explained in the [Getting started](https://homegenie.it/mini/1.2/getting-started#custom-firmware) page
 and using the following commands for flashing the firmware:
 
 ```bash

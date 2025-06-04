@@ -24,7 +24,7 @@ In addition to default system options the following configuration options are av
 ## Manual build and install
 
 You can manually build and install the firmware from source code
-as explained in the [Getting started](../../getting-started#custom-firmware) page
+as explained in the [Getting started](https://homegenie.it/mini/1.2/getting-started#custom-firmware) page
 and using the following command for flashing the firmware:
 
 ```bash
