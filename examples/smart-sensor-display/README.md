@@ -35,8 +35,37 @@ For default GPIO# values used by the display driver see `ui/drivers/RoundDisplay
 `ui/drivers/StandardDisplay.h` files.
 
 
-## UI Activities configuration
+### Display configuration
 
+
+| Key          | Description                    | Default             |
+|--------------|--------------------------------|---------------------|
+| `disp-bri`   | Set the display brightness     | 64 (range 1 - 127)  |
+| `dsbrd-ssts` | Screen saver timeout (seconds) | 15 (0 = disabled)   |
+
+
+### Configuring activities
+
+To set the activities that will be available on the smart display UI use the `dashboard` option:
+
+```
+#SET:dashboard SensorValues,CameraDisplay:V1,CameraDisplay:V2,LevelControl:M1,ColorControl:H1,ColorControl:H2,DigitalClock
+```
+
+which is basically the comma-separated list of activity names followed eventually by a `:` to specify the module address
+or other options where applicable.
+
+To configure the title of an activity:
+
+| Key                  | Description                        | Default               |
+|----------------------|------------------------------------|-----------------------|
+| `title-<address>`    | Displayed title/name               |                       |
+
+Where `<address>` is the address assigned to the associated Activity module
+(e.g. `D1`, `M1`, `V1`...).  
+These values can also be easily configured using the *HomeGenie Panel* app.
+
+Options available for `CameraDisplayActivity` configuration:
 
 | Key                  | Description                        | Default               |
 |----------------------|------------------------------------|-----------------------|
@@ -45,13 +74,8 @@ For default GPIO# values used by the display driver see `ui/drivers/RoundDisplay
 | `rcam-res-<address>` | Camera resolution (1 to 17)        | "3" remote, "5" local |
 | `rcam-qlt-<address>` | Camera resolution (10 to 63)       | "10"                  |
 
-Where `<address>` is the address assigned to the associated Activity module
-(e.g. `D1`, `M1`, `V1`...).  
-These values can also be easily configured using the *HomeGenie Panel* app.
 
-
-
-### Manual build and install
+## Manual build and install
 
 You can also manually build and install the firmware from source code
 as explained in the [Getting started](../../getting-started#custom-firmware) page

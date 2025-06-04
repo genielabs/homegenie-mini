@@ -118,6 +118,21 @@ namespace Service { namespace API {
             static const char RemoteCamera_EndPoint[] = "RemoteCamera.EndPoint";
         }
     }
+
+    namespace DisplayApi {
+        namespace Configuration {
+            namespace Display {
+                static const char Brightness[] = "disp-bri";
+            }
+            namespace ScreenSaver {
+                static const char TimeoutSeconds[] = "dsbrd-ssts";
+            }
+        }
+        namespace Options {
+            static const char Display_ScreenSaverTimeout[] = "Display.ScreenSaverTimeout";
+            static const char Display_Brightness[] = "Display.Brightness";
+        }
+    }
 }}
 
 #endif //HOMEGENIE_MINI_COMMONAPI_H

@@ -225,6 +225,12 @@ namespace UI {
         bool isRoundDisplay() {
             return driver->isRoundDisplay();
         }
+        bool isAlwaysOn() const {
+            return alwaysOn;
+        }
+        void setAlwaysOn(bool keepAlwaysOn) {
+            alwaysOn = keepAlwaysOn;
+        }
 
     protected:
         DisplayDriver* driver{};
@@ -259,6 +265,7 @@ namespace UI {
         LinkedList<InputControl*> inputControls;
         bool isPaused = true;
         bool locked = false;
+        bool alwaysOn = false;
 
         bool willLoop() override {
             bool canLoop = !isPaused && this->Task::willLoop();

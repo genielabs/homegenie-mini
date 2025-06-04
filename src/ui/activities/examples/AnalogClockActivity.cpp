@@ -38,7 +38,7 @@ namespace UI { namespace Activities { namespace Examples {
 #endif
     }
 
-    void AnalogClockActivity::onStart() {
+    void AnalogClockActivity::onResume() {
         if (canvas->width() < canvas->height()) {
             diameter = (float)canvas->width();
         } else {
@@ -46,9 +46,7 @@ namespace UI { namespace Activities { namespace Examples {
         }
         radius = (diameter / 2.0f);
         zoom = (float)(std::min(canvas->width(), canvas->height())) / diameter;
-    }
 
-    void AnalogClockActivity::onResume() {
         if (clockBaseSprite == nullptr) {
             clockBaseSprite = new LGFX_Sprite(canvas);
 #ifdef BOARD_HAS_PSRAM

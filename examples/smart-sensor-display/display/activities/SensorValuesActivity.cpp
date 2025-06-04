@@ -35,12 +35,6 @@ SensorValuesActivity::SensorValuesActivity(Module *module) {
     sensorModule = module;
 }
 
-void SensorValuesActivity::onResume() {
-}
-
-void SensorValuesActivity::onPause() {
-}
-
 void SensorValuesActivity::onDraw()
 {
     // Activity width and height

@@ -27,9 +27,6 @@
 
 #ifdef ENABLE_UI
 
-#include "GestureHelper.h"
-#include "AnimationHelper.h"
-
 Dashboard::Dashboard(DisplayDriver *displayDriver, lgfx::color_depth_t colorDepth) {
     //setLoopInterval(10); // Task.h
 
@@ -46,7 +43,7 @@ Dashboard::Dashboard(DisplayDriver *displayDriver, lgfx::color_depth_t colorDept
     preferences.end();
     setRotation(displayRotation);
 
-    display->setBrightness(64);
+    display->setBrightness(displayBrightness);
     display->drawCenterString("Hello World! =)", display->width() / 2, display->height() / 2);
 #ifndef DISABLE_LVGL
     LvglDriver::begin(display);
@@ -55,6 +52,30 @@ Dashboard::Dashboard(DisplayDriver *displayDriver, lgfx::color_depth_t colorDept
 
 void Dashboard::loop() {
     auto activity = getForegroundActivity();
+    lgfx::touch_point_t tp;
+    display->getTouch(&tp);
+
+#ifdef ENABLE_SCREEN_SAVER
+    // screen saver
+    if (tp.size > 0) {
+        if (isScreenSaverActive) {
+            disableScreenSaver();
+            return;
+        } else if (isScreenDimmed) {
+            isScreenDimmed = false;
+            display->setBrightness(displayBrightness);
+        }
+    }
+    if (screenSaverTimeoutMs > 0 && (activity == nullptr || !activity->isAlwaysOn())) {
+        if ((millis() - lastTouchTs) > screenSaverTimeoutMs) {
+            enableScreenSaver();
+        } else if ((millis() - lastTouchTs) > screenSaverTimeoutMs / 2) {
+            // dim screen
+            isScreenDimmed = true;
+            display->setBrightness(displayBrightness / 4);
+        }
+    }
+#endif
 
     // flying
     if (!pointerDown && lastTouchPoint.shiftX != 0 && nextActivity != nullptr) {
@@ -99,9 +120,13 @@ void Dashboard::loop() {
 
 
     // check touch input
-    lgfx::touch_point_t tp;
-    display->getTouch(&tp);
     if (tp.size > 0) {
+#ifdef ENABLE_SCREEN_SAVER
+        lastTouchTs = millis();
+#endif
+#ifdef CONFIG_ENABLE_POWER_MANAGER
+        Service::PowerManager::setActive();
+#endif
         if (!pointerDown) {
             pointerDown = true;
             swipeDirection = TOUCH_DIRECTION_NONE;
@@ -117,7 +142,6 @@ void Dashboard::loop() {
                 activity->pointerMove(tp.x, tp.y);
             }
         }
-        Service::PowerManager::setActive();
     } else if (pointerDown) {
         pointerDown = false;
         gestureHelper->pointerUp(tp.x, tp.y);
@@ -138,6 +162,10 @@ void Dashboard::addActivity(Activity* activity) {
     }
     if (!exists) {
         activityList.add(activity);
+        // set first activity as foreground
+        if (activityList.size() == 1) {
+            setForegroundActivity(activity);
+        }
     }
 }
 void Dashboard::setForegroundActivity(Activity* activity) {
@@ -162,17 +190,6 @@ void Dashboard::onTap(PointerEvent e) {
     if (activity != nullptr) {
         activity->tap(e);
     }
-    /*
-    if (!e.handled) {
-        if (currentActivityIndex > -1 && currentActivityIndex < activityList.size() - 1) {
-            auto nextActivity = activityList.get(currentActivityIndex + 1);
-            setForegroundActivity(nextActivity);
-        } else if (activityList.size() > 0) {
-            currentActivityIndex = 0;
-            setForegroundActivity(activityList.get(currentActivityIndex));
-        }
-    }
-    */
 }
 void Dashboard::onSwipe(SwipeEvent e) {
     if (e.direction == TOUCH_DIRECTION_LEFT || e.direction == TOUCH_DIRECTION_RIGHT) {
@@ -188,7 +205,7 @@ void Dashboard::onPan(PanEvent e) {
         activity->pan(e);
 
         if (activityList.size() > 1 && (e.touchPoint.direction == TOUCH_DIRECTION_LEFT || e.touchPoint.direction == TOUCH_DIRECTION_RIGHT)) {
-            auto next = (e.touchPoint.shiftX > 0) ? getNextActivity() : getPreviousActivity();
+            auto next = (e.touchPoint.shiftX > 0) ?  getPreviousActivity() : getNextActivity();
             if (next != nextActivity && nextActivity != nullptr) {
                 nextActivity->pause();
             }
@@ -253,5 +270,46 @@ void Dashboard::setRotation(uint_fast8_t rotation) {
     LvglDriver::setRotation((lv_disp_rot_t)rotation);
 #endif
 }
+
+void Dashboard::setBrightness(uint8_t brightness) {
+    displayBrightness = brightness;
+    display->setBrightness(brightness);
+#ifdef ENABLE_SCREEN_SAVER
+    disableScreenSaver();
+#endif
+}
+
+#ifdef ENABLE_SCREEN_SAVER
+void Dashboard::setScreenSaverTimeout(int timeoutMs) {
+    screenSaverTimeoutMs = timeoutMs;
+    disableScreenSaver();
+}
+void Dashboard::enableScreenSaver() {
+    if (!isScreenSaverActive) {
+        isScreenSaverActive = true;
+        display->sleep();
+        auto activity = getForegroundActivity();
+        if (activity != nullptr) {
+            activity->pause();
+        }
+#ifndef DISABLE_LVGL
+        LvglDriver::disableInput = true;
+#endif
+    }
+}
+void Dashboard::disableScreenSaver() {
+    if (isScreenSaverActive) {
+        isScreenSaverActive = false;
+        display->wakeup();
+        auto activity = getForegroundActivity();
+        if (activity != nullptr) {
+            activity->resume();
+        }
+        // restore brightness
+        display->setBrightness(displayBrightness);
+    }
+    lastTouchTs = millis();
+}
+#endif // ENABLE_SCREEN_SAVER
 
 #endif // ENABLE_UI

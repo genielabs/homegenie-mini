@@ -37,7 +37,7 @@ namespace UI {
 
         // Checks if a point is inside the bounds of a polygon
         // source: https://www.geeksforgeeks.org/how-to-check-if-a-given-point-lies-inside-a-polygon/
-        static bool isInside(Point point, LinkedList<Point>& polygon) {
+        static bool isInside(Point& point, const LinkedList<Point>& polygon) {
             int num_vertices = polygon.size();
             if (num_vertices < 3) return false;
             float x = point.x, y = point.y;

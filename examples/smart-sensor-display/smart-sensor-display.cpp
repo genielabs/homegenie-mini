@@ -29,47 +29,10 @@
 
 #include <HomeGenie.h>
 
-#include <ui/Dashboard.h>
-#include <ui/drivers/RoundDisplay.h>
-#include <ui/drivers/StandardDisplay.h>
-#include <ui/activities/utilities/SystemInfoActivity.h>
-
-#ifdef BOARD_HAS_PSRAM
-#include <ui/activities/control/SwitchControlActivity.h>
-#ifndef DISABLE_LVGL
-#include <ui/activities/control/LevelControlActivity.h>
-#include <ui/activities/control/ColorControlActivity.h>
-#endif
-#ifdef LGFX_EXAMPLES
-#include <ui/activities/examples/GaugeExampleActivity.h>
-#include <ui/activities/examples/AnalogClockActivity.h>
-#endif
-#include <ui/activities/monitor/CameraDisplayActivity.h>
-#include <ui/activities/utilities/DigitalClockActivity.h>
-#endif
-
-#include "smart-sensor/CommonSensors.h"
-
-#include "display/activities/SensorValuesActivity.h"
-
-//#include "io/BatterySensor.h"
-#include "io/InertialSensor.h"
-
-using namespace Service;
-
-#ifdef BOARD_HAS_PSRAM
-using namespace UI::Activities::Control;
-#ifdef LGFX_EXAMPLES
-using namespace UI::Activities::Examples;
-#endif
-using namespace UI::Activities::Monitor;
-#endif
-using namespace UI::Activities::Utilities;
+#include "configuration.h"
 
 HomeGenie* homeGenie;
 Module* miniModule;
-
-Dashboard* dashboard;
 
 void setup() {
     // Default name shown in SNMP/UPnP advertising
@@ -88,7 +51,8 @@ void setup() {
         // fallback to "GC9A01"
         displayDriver = new UI::Drivers::RoundDisplay();
     }
-    dashboard = new Dashboard(displayDriver);
+
+    initDashboard(displayDriver, miniModule);
 
     if (Config::isDeviceConfigured()) {
 
@@ -130,7 +94,18 @@ void setup() {
         }
 #endif
 
-        // Add activities to UI
+        auto dashboardConfig = Config::getSetting(
+                "dashboard",
+#ifdef BOARD_HAS_PSRAM
+                "SensorValues,CameraDisplay:V1,LevelControl:M1,ColorControl:H1,SwitchControl:D1,DigitalClock,"
+#ifdef LGFX_EXAMPLES
+                "AnalogClock,GaugeExample,"
+#endif
+                "SystemInfo"
+#else
+                "SensorValues,SystemInfo"
+#endif
+        );
 
         // ----------------------------------------------------------------
         // NOTE: Activities can be added if free RAM remains above ~110KB.
@@ -138,67 +113,8 @@ void setup() {
         //       memory requirements.
         // ----------------------------------------------------------------
 
-        // This Activity shows basic system info
-        // and buttons to rotate the display
-        // or reconfigure the device connection
-        auto systemInfo = new SystemInfoActivity();
-        dashboard->addActivity(systemInfo);
-
-        // This Activity shows device name, date/time and
-        // temperature + humidity if DHT sensor is enabled
-        auto sensorValues = new SensorValuesActivity(miniModule);
-
-#ifdef BOARD_HAS_PSRAM
-        // A cute "pac-man" clock
-        auto digitalClock = new DigitalClockActivity();
-        // UI control to switch on/off or set level of
-        // user-definable devices. Each button emits events
-        // that can be automated using the device Scheduler.
-        // It can be configured using HomeGenie Panel app.
-        auto switchControl = new SwitchControlActivity("D1");
-#ifndef DISABLE_LVGL
-        // Similar to the SwitchControl above but using LVGL
-        auto levelControl = new LevelControlActivity("M1");
-        auto colorControl = new ColorControlActivity("H1");
-#endif
-        // Displays a remote camera via HTTP images feed,
-        // or local camera directly connected to the ESP32.
-        auto cameraDisplay = new CameraDisplayActivity("V1");
-        if (Config::getSetting(Camera_Sensor::SensorType).equals("esp32-cam")) {
-            cameraDisplay->isEsp32Camera = true;
-        }
-#ifdef LGFX_EXAMPLES
-        // UI examples adapted from LoyanGFX library
-        auto analogClock = new AnalogClockActivity();
-        auto gaugeExample = new GaugeExampleActivity();
-#endif
-
-        dashboard->addActivity(digitalClock);
-        dashboard->addActivity(switchControl);
-#ifndef DISABLE_AUTOMATION
-        // Adds scheduler programs to handle on, off and level events
-        setupLevelControlActivitySchedule(&switchControl->module);
-#endif
-#ifndef DISABLE_LVGL
-        dashboard->addActivity(levelControl);
-        dashboard->addActivity(colorControl);
-#ifndef DISABLE_AUTOMATION
-        // Adds scheduler programs to handle on, off and level events
-        setupLevelControlActivitySchedule(&levelControl->module);
-        setupColorControlActivitySchedule(&colorControl->module);
-#endif
-#endif
-        dashboard->addActivity(cameraDisplay);
-#ifdef LGFX_EXAMPLES
-        dashboard->addActivity(analogClock);
-        dashboard->addActivity(gaugeExample);
-#endif
-#endif
-
-        dashboard->addActivity(sensorValues);
-
-        // Show the SensorValues Activity on start
-        dashboard->setForegroundActivity(sensorValues);
+        // Add activities to UI
+        addDashboardActivities(dashboardConfig);
 
     } else {
 
@@ -207,7 +123,6 @@ void setup() {
         // so we just start the configuration activity
         auto systemInfo = new SystemInfoActivity();
         dashboard->addActivity(systemInfo);
-        dashboard->setForegroundActivity(systemInfo);
 
     }
 

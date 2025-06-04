@@ -80,7 +80,7 @@ namespace UI { namespace Components {
         void setProgress(float p) {
             progress = p;
         }
-        float getProgress() {
+        float getProgress() const {
             return progress;
         }
 

@@ -41,7 +41,6 @@ namespace UI { namespace Activities { namespace Examples {
     public:
         AnalogClockActivity();
 
-        void onStart() override;
         void onResume() override;
         void onPause() override;
         void onDraw() override;

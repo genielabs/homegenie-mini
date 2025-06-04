@@ -30,8 +30,9 @@
 namespace UI { namespace Activities { namespace Monitor {
 
     CameraDisplayActivity::CameraDisplayActivity(const char *moduleAddress) {
-        //setDrawInterval(50); // Task.h
+        //setDrawInterval(33); // Task.h
         setColorDepth(lgfx::rgb565_2Byte);
+        setAlwaysOn(true);
         module.domain  = IO::IOEventDomains::HomeAutomation_HomeGenie;
         module.address = moduleAddress;
         module.type    = ModuleType::Sensor;
@@ -62,7 +63,6 @@ namespace UI { namespace Activities { namespace Monitor {
                 ":Widget.DisplayModule=homegenie/generic/camerainput"
                 ":uri"
         )->withConfigKey(feedUrlConfigKey.c_str())->addUpdateListener(optionUpdateListener);
-        jpegFeedUrl = module.getProperty(CameraApi::Property::RemoteCamera_EndPoint)->value;
     }
 
     CameraDisplayActivity::~CameraDisplayActivity() {
@@ -129,6 +129,9 @@ namespace UI { namespace Activities { namespace Monitor {
         view->setColorDepth(lgfx::rgb565_2Byte);
         view->createSprite(160, 120);
 
+        String urlKey = "rcam-";
+        urlKey.concat(module.address);
+        jpegFeedUrl = Config::getSetting(urlKey.c_str());
         String key = "rcam-res-";
         key.concat(module.address);
         imageResolution = Config::getSetting(key.c_str(), isEsp32Camera ? "5" : "1");
@@ -306,9 +309,10 @@ namespace UI { namespace Activities { namespace Monitor {
     [[noreturn]] void* CameraDisplayActivity::worker(void* cd) {
         auto c = (CameraDisplayActivity*)cd;
         unsigned long fpsStart = millis();
-        unsigned long lastFrameTs = 0;
+        unsigned long lastFrameTs{};
+        unsigned int fps{};
         for(;;) {
-            long dts = 0;
+            long dts{};
             if (!c->jpegFeedUrl.isEmpty() && c->isActivityReady && WiFi.isConnected() && !c->canvas->dmaBusy() && !c->imageData) {
                 uint8_t* imageData = nullptr;
                 lastFrameTs = millis();
@@ -325,10 +329,15 @@ namespace UI { namespace Activities { namespace Monitor {
                 } else {
 #endif
                     auto url = c->jpegFeedUrl;
-                    url.concat("/");
-                    url.concat(c->imageResolution);  // ESP32-CAM resolution (e.g. 3 = 240x176)
-                    url.concat("/");
-                    url.concat(c->imageQuality);     // ESP32-CAM quality, 10 (best) to 70 (lowest)
+                    if (url.endsWith("/Camera.GetPicture") || url.endsWith("/Camera.GetPicture/")) {
+                        // detected HomeGenie Camera API, set configured resolution
+                        if (!url.endsWith("/")) {
+                            url.concat("/");
+                        }
+                        url.concat(c->imageResolution);  // ESP32-CAM resolution (e.g. 3 = 240x176)
+                        url.concat("/");
+                        url.concat(c->imageQuality);     // ESP32-CAM quality, 10 (best) to 70 (lowest)
+                    }
                     imageData = c->getJpegImage(url.c_str());
 #ifdef ESP_CAMERA_SUPPORTED
                 }
@@ -339,22 +348,22 @@ namespace UI { namespace Activities { namespace Monitor {
                         c->frameSize = getJpegDimensions(imageData, c->imageLen);
                     }
                     if (c->frameSize.width > 0) {
-                        c->fps++;
+                        fps++;
                         if (millis() - fpsStart > 5000) {
-                            c->averageFps = ((float) c->fps / 5.0f);
+                            c->averageFps = ((float) fps / 5.0f);
                             fpsStart = millis();
-                            if (c->averageFps < 1 && c->fps > 0) {
+                            if (c->averageFps < 1 && fps > 0) {
                                 c->feedError = "Bad link quality.";
                             } else {
                                 c->feedError = "";
                             }
-                            c->fps = 0;
+                            fps = 0;
                         }
                         c->imageData = imageData;
                     }
                 }
             }
-            long delay = (50 - dts);
+            long delay = (33 - dts);
             if (delay < 1) {
                 delay = 1;
             }

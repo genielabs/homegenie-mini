@@ -40,8 +40,6 @@ class SensorValuesActivity: public Activity {
 public:
     explicit SensorValuesActivity(Module* module);
 
-    void onResume() override;
-    void onPause() override;
     void onDraw() override;
 
 private:

@@ -33,9 +33,7 @@ namespace Net {
 
     using namespace IO;
 
-    NetManager::NetManager() {
-        // TODO: ...
-    }
+    NetManager::NetManager() = default;
     NetManager::~NetManager() {
         // TODO: !!!! IMPLEMENT DESTRUCTOR AS WELL FOR HttpServer and MQTTServer classes
         delete httpServer;

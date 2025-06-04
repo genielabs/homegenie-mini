@@ -34,7 +34,9 @@
 #include <LinkedList.h>
 
 #include "Task.h"
+#ifdef CONFIG_ENABLE_POWER_MANAGER
 #include "PowerManager.h"
+#endif
 #include "io/Logger.h"
 
 #include "DisplayDriver.h"
@@ -45,6 +47,10 @@
 #else
 #include "Activity.h"
 #endif
+
+#include "service/api/CommonApi.h"
+#include "GestureHelper.h"
+#include "AnimationHelper.h"
 
 #define DASHBOARD_NS_PREFIX "UI::Dashboard"
 
@@ -75,6 +81,13 @@ public:
     void onRelease(PointerEvent e) override;
 
     void setRotation(uint_fast8_t rotation);
+    void setBrightness(uint8_t i);
+
+#ifdef ENABLE_SCREEN_SAVER
+    void setScreenSaverTimeout(int i);
+    void enableScreenSaver();
+    void disableScreenSaver();
+#endif
 
 private:
     DisplayDriver* driver{};
@@ -88,6 +101,14 @@ private:
     lgfx::touch_point_t lastTp;
     TouchPoint lastTouchPoint;
     TouchDirection swipeDirection = TOUCH_DIRECTION_NONE;
+
+#ifdef ENABLE_SCREEN_SAVER
+    unsigned long lastTouchTs = millis();
+    uint16_t screenSaverTimeoutMs = 15000;
+    bool isScreenSaverActive = false;
+    bool isScreenDimmed = false;
+#endif
+    uint8_t displayBrightness = 64;
 };
 
 #endif // ENABLE_UI

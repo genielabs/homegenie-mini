@@ -344,20 +344,20 @@ namespace Net {
 
     private:
 #ifndef DISABLE_BLUETOOTH
-        BluetoothManager *bluetoothManager;
+        BluetoothManager* bluetoothManager{};
 #endif
-        WiFiManager *wiFiManager;
-        HTTPServer *httpServer;
+        WiFiManager* wiFiManager{};
+        HTTPServer* httpServer{};
 #ifndef DISABLE_MQTT_BROKER
-        MQTTServer *mqttServer;
+        MQTTServer* mqttServer{};
 #endif
 #ifndef DISABLE_MQTT_CLIENT
-        MQTTClient *mqttClient;
+        MQTTClient* mqttClient{};
 #endif
-        WebSocketsServer *webSocket;
-        NetRequestHandler* netRequestHandler;
+        WebSocketsServer* webSocket{};
+        NetRequestHandler* netRequestHandler{};
 
-        TimeClient* timeClient;
+        TimeClient* timeClient{};
 
     };
 

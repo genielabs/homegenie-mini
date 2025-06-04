@@ -94,7 +94,6 @@ namespace UI { namespace Activities { namespace Monitor {
 
         uint8_t* imageData{};
         unsigned long readyTimestamp{};
-        unsigned int fps{};
         float averageFps{};
 
         String imageResolution = "5";
