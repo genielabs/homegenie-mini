@@ -29,8 +29,10 @@
 #include "defs.h"
 
 #include <ui/Dashboard.h>
-#include <ui/drivers/RoundDisplay.h>
-#include <ui/drivers/StandardDisplay.h>
+#include <ui/drivers/GC9A01.h>
+#include <ui/drivers/ST7789.h>
+#include <ui/drivers/ST7796.h>
+#include <ui/drivers/AutodetectDisplay.h>
 #include <ui/activities/utilities/SystemInfoActivity.h>
 
 #ifdef BOARD_HAS_PSRAM
@@ -64,7 +66,7 @@ namespace DisplayConfig = DisplayApi::Configuration;
 namespace DisplayOption = DisplayApi::Options;
 
 
-Dashboard* dashboard;
+Dashboard* dashboard = nullptr;
 
 
 // UI options update listener
@@ -148,7 +150,7 @@ void addDashboardActivities(String &list) {
             static int systemInfoCount = 0;
             if (elementName == "SystemInfo") {
                 // single instance activity
-                if (systemInfoCount++ == 0) {
+                if (++systemInfoCount == 1) {
                     auto systemInfo = new SystemInfoActivity();
                     dashboard->addActivity(systemInfo);
                 }
@@ -159,7 +161,7 @@ void addDashboardActivities(String &list) {
             static int sensorValuesCount = 0;
             if (elementName == "SensorValues") {
                 // single instance activity
-                if (sensorValuesCount++ == 0) {
+                if (++sensorValuesCount == 1) {
                     auto miniModule = HomeGenie::getInstance()->getDefaultModule();
                     auto sensorValues = new SensorValuesActivity(miniModule);
                     dashboard->addActivity(sensorValues);
@@ -171,7 +173,7 @@ void addDashboardActivities(String &list) {
             static int digitalClockCount = 0;
             if (elementName == "DigitalClock") {
                 // single instance activity
-                if (digitalClockCount++ == 0) {
+                if (++digitalClockCount == 1) {
                     auto digitalClock = new DigitalClockActivity();
                     dashboard->addActivity(digitalClock);
                 }
@@ -181,8 +183,9 @@ void addDashboardActivities(String &list) {
             // user-definable devices. Each button emits events
             // that can be automated using the device Scheduler.
             // It can be configured using HomeGenie Panel app.
+            static int switchControlCount = 0;
             if (elementName == "SwitchControl") {
-                String address = "D1";
+                String address = "D" + String(++switchControlCount);
                 if (elementOptions.length() > 0) {
                     address = elementOptions;
                 }
@@ -196,8 +199,9 @@ void addDashboardActivities(String &list) {
 
 #ifndef DISABLE_LVGL
             // Similar to the SwitchControl but using LVGL
+            static int levelControlCount = 0;
             if (elementName == "LevelControl") {
-                String address = "M1";
+                String address = "M" + String(++levelControlCount);
                 if (elementOptions.length() > 0) {
                     address = elementOptions;
                 }
@@ -209,8 +213,9 @@ void addDashboardActivities(String &list) {
 #endif
             }
             // Color control
+            static int colorControlCount = 0;
             if (elementName == "ColorControl") {
-                String address = "H1";
+                String address = "H" + String(++colorControlCount);
                 if (elementOptions.length() > 0) {
                     address = elementOptions;
                 }
@@ -226,12 +231,12 @@ void addDashboardActivities(String &list) {
             // or local camera directly connected to the ESP32.
             static int cameraDisplayCount = 0;
             if (elementName == "CameraDisplay") {
-                String address = "V1";
+                String address = "V" + String(++cameraDisplayCount);
                 if (elementOptions.length() > 0) {
                     address = elementOptions;
                 }
                 auto cameraDisplay = new CameraDisplayActivity(address.c_str());
-                if (cameraDisplayCount++ == 0) {
+                if (cameraDisplayCount == 1) {
                     // The first instance is reserved for
                     // onboard ESP32 camera module if enabled
                     if (Config::getSetting(Camera_Sensor::SensorType).equals("esp32-cam")) {
@@ -245,7 +250,7 @@ void addDashboardActivities(String &list) {
             static int analogClockCount = 0;
             if (elementName == "AnalogClock") {
                 // single instance activity
-                if (analogClockCount++ == 0) {
+                if (++analogClockCount == 1) {
                     auto analogClock = new AnalogClockActivity();
                     dashboard->addActivity(analogClock);
                 }
@@ -253,7 +258,7 @@ void addDashboardActivities(String &list) {
             static int gaugeExampleCount = 0;
             if (elementName == "GaugeExample") {
                 // single instance activity
-                if (gaugeExampleCount++ == 0) {
+                if (++gaugeExampleCount == 1) {
                     auto gaugeExample = new GaugeExampleActivity();
                     dashboard->addActivity(gaugeExample);
                 }

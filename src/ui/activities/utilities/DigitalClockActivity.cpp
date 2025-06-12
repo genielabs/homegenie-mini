@@ -108,9 +108,13 @@ namespace UI { namespace Activities { namespace Utilities {
         auto oy = (int32_t)round(((float)canvas->height() - diameter) / 2.0f);
 
         // HomeGenie logos
+        int32_t logoW = 151;
+        int32_t logoH = 38;
+        auto px = (int32_t)round(((float)canvas->width() - logoW) / 2.0f);
+        auto py = (int32_t)round(((float)canvas->height() - logoH) / 2.0f);
 //        canvas->drawBitmap(49, 133, logoHomeGenie, 151, 38, PALETTE_COLOR_DIGIT_OFF);
-        canvas->drawBitmap(ox + 47, oy + 136, logoHomeGenie, 151, 38, PALETTE_COLOR_TICK_CLEAR);
-        canvas->drawBitmap(ox + 48, oy + 134, logoHomeGenie, 151, 38, PALETTE_COLOR_HOMEGENIE);
+        canvas->drawBitmap(px, py + 40, logoHomeGenie, logoW, logoH, PALETTE_COLOR_TICK_CLEAR);
+        canvas->drawBitmap(px, py + 38, logoHomeGenie, logoW, logoH, PALETTE_COLOR_HOMEGENIE);
 //        genieSprite->pushSprite(96, 26);
 
         // Clock ticks

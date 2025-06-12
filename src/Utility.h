@@ -48,6 +48,16 @@ typedef struct ColorHSV {
 
 class Utility {
 public:
+    class UrlParts {
+    public:
+        String url;
+        String protocol;
+        String username;
+        String password;
+        bool hasCredentials() const {
+            return !username.isEmpty();
+        }
+    };
     static void getBytes(const String &rawBytes, uint8_t *data);
     static void getBytes(const String &rawBytes, uint16_t *data);
     static String getByteString(uint8_t *data, uint16_t length);
@@ -65,19 +75,29 @@ public:
     static uint32_t getFreeMem();
     static time_t relativeUtcHoursToLocalTime(double relativeHours, time_t time);
     static void simpleJsonStringEscape(String& s);
-    static bool isNumeric(const char* s) {
-        return strlen(s) > 0 && strspn(s, "0123456789.") == strlen(s);
-    }
-    static float roundDecimals(float value, unsigned int n_decimals = 1) {
-        float multiplier = std::pow(10.0f, static_cast<float>(n_decimals));
-        return std::round(value * multiplier) / multiplier;
-    }
+    static bool isNumeric(const char* s);
+    static float roundDecimals(float value, unsigned int n_decimals = 1);
+    static UrlParts parseURL(const String& url);
+    static String urlDecode(const String& str);
 private:
     static float max(float a, float b, float c) {
         return ((a > b)? (a > c ? a : c) : (b > c ? b : c));
     }
     static float min(float a, float b, float c) {
         return ((a < b)? (a < c ? a : c) : (b < c ? b : c));
+    }
+    static unsigned char hexToInt(char c)
+    {
+        if (c >= '0' && c <='9'){
+            return((unsigned char)c - '0');
+        }
+        if (c >= 'a' && c <='f'){
+            return((unsigned char)c - 'a' + 10);
+        }
+        if (c >= 'A' && c <='F'){
+            return((unsigned char)c - 'A' + 10);
+        }
+        return(0);
     }
 };
 

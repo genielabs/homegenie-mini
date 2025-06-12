@@ -86,6 +86,24 @@ namespace Net {
         void error(const char* s) override {};
     };
 
+    class TerminalResponseCallback : public ResponseCallback {
+    public:
+        void beginGetLength() override {};
+        void endGetLength() override {};
+        void write(const char* s) override {
+            Serial.print(s);
+        };
+        void writeAll(const char* s) override {
+            Serial.print(s);
+        };
+        void writeBinary(const char* contentType, uint8_t* data, size_t length) override {
+            // NOT IMPLEMENTED
+        };
+        void error(const char* s) override {
+            Serial.print(s);
+        };
+    };
+
 #if !(defined DISABLE_MQTT_BROKER && defined DISABLE_MQTT_CLIENT)
     class MQTTResponseCallback : public ResponseCallback {
     public:

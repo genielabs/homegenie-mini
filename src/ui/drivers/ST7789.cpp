@@ -25,11 +25,11 @@
 
 #ifdef ENABLE_UI
 
-#include "StandardDisplay.h"
+#include "ST7789.h"
 
 namespace UI { namespace Drivers {
 
-    StandardDisplay::StandardDisplay() {
+    ST7789::ST7789() {
 
         // SPI config
         {
@@ -117,7 +117,7 @@ namespace UI { namespace Drivers {
         display.init();
     }
 
-    LGFX_Device* StandardDisplay::getDisplay() {
+    LGFX_Device* ST7789::getDisplay() {
         return &display;
     };
 

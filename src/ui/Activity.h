@@ -83,11 +83,11 @@ namespace UI {
          */
         void resume() {
             if (isPaused) {
-                isPaused = false;
                 initCanvas();
                 float h_center = (float)display->width() / 2.0f;
                 float v_center = (float)display->height() / 2.0f;
                 display->setPivot(h_center, v_center);
+                isPaused = false;
                 onResume();
             }
         }

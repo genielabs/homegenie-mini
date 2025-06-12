@@ -43,16 +43,27 @@ void setup() {
     miniModule->setProperty(Implements::Scheduling, "true");
     miniModule->setProperty(Implements::Scheduling_ModuleEvents, "true");
 
-    DisplayDriver* displayDriver;
+    DisplayDriver* displayDriver = nullptr;
     auto displayType = Config::getSetting("disp-typ");
     if (displayType.equals("ST7789")) {
-        displayDriver = new UI::Drivers::StandardDisplay();
-    } else {
-        // fallback to "GC9A01"
-        displayDriver = new UI::Drivers::RoundDisplay();
+        // ST7789 320x240 display
+        displayDriver = new UI::Drivers::ST7789();
+    } else if (displayType.equals("ST7796")) {
+        // ST7789 480x320 display
+        displayDriver = new UI::Drivers::ST7796();
+    } else if (displayType.equals("GC9A01")) {
+        // GC9A01 240x240 round display
+        displayDriver = new UI::Drivers::GC9A01();
+    } else if (displayType.equals("AUTO")) {
+        // fallback to autodetect
+        displayDriver = new UI::Drivers::AutodetectDisplay();
     }
 
-    initDashboard(displayDriver, miniModule);
+    if (displayDriver) {
+        initDashboard(displayDriver, miniModule);
+    } else {
+        Serial.println("ERROR: display driver not set, could not initialize Dashboard.");
+    }
 
     if (Config::isDeviceConfigured()) {
 
@@ -94,29 +105,38 @@ void setup() {
         }
 #endif
 
-        auto dashboardConfig = Config::getSetting(
-                "dashboard",
+        if (dashboard) {
+
+            auto dashboardConfig = Config::getSetting(
+                    "dashboard",
 #ifdef BOARD_HAS_PSRAM
-                "SensorValues,CameraDisplay:V1,LevelControl:M1,ColorControl:H1,SwitchControl:D1,DigitalClock,"
-#ifdef LGFX_EXAMPLES
-                "AnalogClock,GaugeExample,"
-#endif
-                "SystemInfo"
+                    "SensorValues,CameraDisplay:V1,LevelControl:M1,ColorControl:H1,SwitchControl:D1,DigitalClock,"
+                    #ifdef LGFX_EXAMPLES
+                    "AnalogClock,GaugeExample,"
+                    #endif
+                    "SystemInfo"
 #else
-                "SensorValues,SystemInfo"
+                    "SensorValues,SystemInfo"
 #endif
-        );
+            );
+            // very basic consistency check
+            dashboardConfig.trim();
+            if (dashboardConfig.isEmpty()) {
+                // ensure there is at least the SystemInfo activity
+                dashboardConfig = "SystemInfo";
+            }
 
-        // ----------------------------------------------------------------
-        // NOTE: Activities can be added if free RAM remains above ~110KB.
-        //       This threshold accounts for scheduler and system task
-        //       memory requirements.
-        // ----------------------------------------------------------------
+            // ----------------------------------------------------------------
+            // NOTE: Activities can be added if free RAM remains above ~110KB.
+            //       This threshold accounts for scheduler and system task
+            //       memory requirements.
+            // ----------------------------------------------------------------
 
-        // Add activities to UI
-        addDashboardActivities(dashboardConfig);
+            // Add activities to UI
+            addDashboardActivities(dashboardConfig);
+        }
 
-    } else {
+    } else if (dashboard) {
 
         // On devices with default RAM, activating
         // Bluetooth will get most of the available RAM,

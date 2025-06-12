@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_ROUNDDISPLAY_H
-#define HOMEGENIE_MINI_ROUNDDISPLAY_H
+#ifndef HOMEGENIE_MINI_GC9A01_H
+#define HOMEGENIE_MINI_GC9A01_H
 
 #ifdef ENABLE_UI
 
@@ -70,7 +70,7 @@
     #define CONFIG_GC9A01_TOUCH_PORT "1"
     #define CONFIG_GC9A01_TOUCH_ADDRESS "21"
 
-    #define CONFIG_GC9A01_TOUCH_INT "-1" /* -1 disabled, or pin 35 */
+    #define CONFIG_GC9A01_TOUCH_INT "-1" /* -1 not used, or pin 35 */
     #define CONFIG_GC9A01_TOUCH_SDA "25"
     #define CONFIG_GC9A01_TOUCH_SCL "26"
     #define CONFIG_GC9A01_TOUCH_RST "34"
@@ -81,10 +81,10 @@ namespace UI { namespace Drivers {
 
     using namespace Input;
 
-    class RoundDisplay : public DisplayDriver {
+    class GC9A01 : public DisplayDriver {
 
     public:
-        RoundDisplay();
+        GC9A01();
         bool isRoundDisplay() override {
             return true;
         }
@@ -115,4 +115,4 @@ namespace UI { namespace Drivers {
 
 #endif // ENABLE_UI
 
-#endif //HOMEGENIE_MINI_ROUNDDISPLAY_H
+#endif //HOMEGENIE_MINI_GC9A01_H

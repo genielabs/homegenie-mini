@@ -195,26 +195,18 @@ command using the `/api/` prefix, or enter system commands prefixed by `#` chara
 
 ##### System configuration parameters list 
 
-| Key        | Description                | Default          |
-|------------|----------------------------|------------------|
-| `sys-rb-n` | Factory reset button GPIO# | -1 (-1=not used) |
-| `sys-sl-n` | System status LED GPIO#    | -1 (-1=not used) |
-| `io-typ01` | I/O Ch.1 type              |                  |
-| `io-pin01` | I/O Ch.1 GPIO#             | -1 (-1=not used) |
-| `io-typ02` | I/O Ch.2 type              |                  |
-| `io-pin02` | I/O Ch.2 GPIO#             | -1 (-1=not used) |
-| `io-typ03` | I/O Ch.3 type              |                  |
-| `io-pin03` | I/O Ch.3 GPIO#             | -1 (-1=not used) |
-| `io-typ04` | I/O Ch.4 type              |                  |
-| `io-pin04` | I/O Ch.4 GPIO#             | -1 (-1=not used) |
-| `io-typ05` | I/O Ch.5 type              |                  |
-| `io-pin05` | I/O Ch.5 GPIO#             | -1 (-1=not used) |
-| `io-typ06` | I/O Ch.6 type              |                  |
-| `io-pin06` | I/O Ch.6 GPIO#             | -1 (-1=not used) |
-| `io-typ07` | I/O Ch.7 type              |                  |
-| `io-pin07` | I/O Ch.7 GPIO#             | -1 (-1=not used) |
-| `io-typ08` | I/O Ch.8 type              |                  |
-| `io-pin08` | I/O Ch.8 GPIO#             | -1 (-1=not used) |
+| Key        | Description                                         | Default          |
+|------------|-----------------------------------------------------|------------------|
+| `sys-rb-n` | Factory reset button GPIO#                          | -1 (-1=not used) |
+| `sys-sl-n` | System status LED GPIO#                             | -1 (-1=not used) |
+| `io-typ01` | I/O Ch.1 type                                       |                  |
+| `io-pin01` | I/O Ch.1 GPIO#                                      | -1 (-1=not used) |
+| `io-typ02` | I/O Ch.2 type                                       |                  |
+| `io-pin02` | I/O Ch.2 GPIO#                                      | -1 (-1=not used) |
+| ...        | (channels 3 through 8 follow the same pattern)      | ...              |
+
+
+**IO Channel Type (`io-typ0*`) can be one of the following: 'Switch','Light' or 'Dimmer'.**
 
 *Example **setting** configuration from a terminal connected to the serial port of the device:*
 

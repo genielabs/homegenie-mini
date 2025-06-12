@@ -165,8 +165,7 @@ namespace Service {
             if (cmd.startsWith("#")) {
                 Config::handleConfigCommand(cmd);
             } else if (!cmd.isEmpty()) {
-                // TODO: implement SerialCallback
-                auto callback = DummyResponseCallback();
+                auto callback = TerminalResponseCallback();
                 onNetRequest(this, cmd.c_str(), &callback);
             }
         }

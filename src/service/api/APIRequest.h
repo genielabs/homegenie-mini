@@ -32,7 +32,7 @@
 
 #include <io/Logger.h>
 
-#include "Config.h"
+#include "Utility.h"
 #include "CommonApi.h"
 
 #define APIREQUEST_LOG_PREFIX           "@Service::ApiRequest"
@@ -50,45 +50,6 @@ namespace Service { namespace API {
         String Data;
         String getOption(unsigned int optionIndex);
         static APIRequest parse(String command);
-
-    protected:
-        static String urlDecode(String& str)
-        {
-            String encodedString = "";
-            char c;
-            char code0;
-            char code1;
-            for (int i = 0; i < str.length(); i++){
-                c=str.charAt(i);
-                if (c == '+') {
-                    encodedString += ' ';
-                } else if (c == '%') {
-                    i++;
-                    code0=str.charAt(i);
-                    i++;
-                    code1=str.charAt(i);
-                    c = (hexToInt(code0) << 4) | hexToInt(code1);
-                    encodedString += c;
-                } else {
-                    encodedString += c;
-                }
-                //yield();
-            }
-            return encodedString;
-        }
-        static unsigned char hexToInt(char c)
-        {
-            if (c >= '0' && c <='9'){
-                return((unsigned char)c - '0');
-            }
-            if (c >= 'a' && c <='f'){
-                return((unsigned char)c - 'a' + 10);
-            }
-            if (c >= 'A' && c <='F'){
-                return((unsigned char)c - 'A' + 10);
-            }
-            return(0);
-        }
     };
 
 }}

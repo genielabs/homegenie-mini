@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HOMEGENIE_MINI_STANDARDDISPLAY_H
-#define HOMEGENIE_MINI_STANDARDDISPLAY_H
+#ifndef HOMEGENIE_MINI_ST7789_H
+#define HOMEGENIE_MINI_ST7789_H
 
 #ifdef ENABLE_UI
 
@@ -70,7 +70,7 @@
     #define CONFIG_ST7789_TOUCH_PORT "1"
     #define CONFIG_ST7789_TOUCH_ADDRESS "21"
 
-    #define CONFIG_ST7789_TOUCH_INT "-1" /* -1 disabled, or pin 35 */
+    #define CONFIG_ST7789_TOUCH_INT "-1" /* -1 not used, or pin 35 */
     #define CONFIG_ST7789_TOUCH_SDA "25"
     #define CONFIG_ST7789_TOUCH_SCL "26"
     #define CONFIG_ST7789_TOUCH_RST "34"
@@ -81,10 +81,10 @@ namespace UI { namespace Drivers {
 
     using namespace Input;
 
-    class StandardDisplay : public DisplayDriver {
+    class ST7789 : public DisplayDriver {
 
     public:
-        StandardDisplay();
+        ST7789();
         LGFX_Device* getDisplay() override;
 
     private:
@@ -112,4 +112,4 @@ namespace UI { namespace Drivers {
 
 #endif // ENABLE_UI
 
-#endif //HOMEGENIE_MINI_STANDARDDISPLAY_H
+#endif //HOMEGENIE_MINI_ST7789_H

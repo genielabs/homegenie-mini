@@ -30,12 +30,16 @@
 #include "NetHelper.h"
 
 namespace Automation { namespace Helpers {
-    HTTPClient NetHelper::http;
 
-    String NetHelper::httpGet(String &url) {
+    String NetHelper::httpGet(const String &url) {
         String response;
-        auto client = getClient(url);
-        if (http.begin(*client, url)) {
+        auto parsedUrl = Utility::parseURL(url);
+        auto client = getClient(parsedUrl.protocol.equalsIgnoreCase("https"));
+        HTTPClient http;
+        if (http.begin(*client, parsedUrl.url)) {
+            if (parsedUrl.hasCredentials()) {
+                http.setAuthorization(parsedUrl.username.c_str(), parsedUrl.password.c_str());
+            }
             //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
             int httpCode = http.GET();
             if (httpCode > 0) {
@@ -52,18 +56,20 @@ namespace Automation { namespace Helpers {
         } else {
             // TODO: report error...
         }
+        http.end();
         delete client;
         return response;
     }
 
-
-// TODO: implement "withCredentials(user, pass)"
-
-
-    String NetHelper::httpPost(String& url, String& data) {
+    String NetHelper::httpPost(const String& _url, const String& data) {
         String response;
-        auto client = getClient(url);
-        if (http.begin(*client, url)) {
+        auto parsedUrl = Utility::parseURL(_url);
+        auto client = getClient(parsedUrl.protocol.equalsIgnoreCase("https"));
+        HTTPClient http;
+        if (http.begin(*client, parsedUrl.url)) {
+            if (parsedUrl.hasCredentials()) {
+                http.setAuthorization(parsedUrl.username.c_str(), parsedUrl.password.c_str());
+            }
             //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
             int httpCode = http.POST(data);
             if (httpCode > 0) {
@@ -80,6 +86,7 @@ namespace Automation { namespace Helpers {
         } else {
             // TODO: report error...
         }
+        http.end();
         delete client;
         return response;
     }
@@ -88,9 +95,9 @@ namespace Automation { namespace Helpers {
         return Ping.ping(host.c_str());
     }
 
-    WiFiClient* NetHelper::getClient(String &url) {
+    WiFiClient* NetHelper::getClient(bool secure) {
         WiFiClient* client;
-        if (url.startsWith("https://")) {
+        if (secure) {
             client = new WiFiClientSecure();
             ((WiFiClientSecure*)client)->setInsecure();
         } else {

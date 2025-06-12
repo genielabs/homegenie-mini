@@ -32,6 +32,9 @@ namespace UI { namespace Activities { namespace Utilities {
     SystemInfoActivity::SystemInfoActivity() {
         setDrawInterval(200);  // Task.h - 200ms loop frequency
         setColorDepth(lgfx::palette_2bit);
+        if (!Config::isDeviceConfigured()) {
+            setAlwaysOn(true);
+        }
     }
 
     void SystemInfoActivity::onStart() {
@@ -138,13 +141,16 @@ namespace UI { namespace Activities { namespace Utilities {
         // Offsets (x and y) to center things in the actual canvas
         auto ox = (int32_t)round(((float)canvas->width() - diameter) / 2.0f);
         auto oy = (int32_t)round(((float)canvas->height() - diameter) / 2.0f);
+        auto dx = (int32_t)round((diameter - 240) / 2);
 
         canvas->setTextColor(ActivityColors::TEXT);
 
         if (Config::isDeviceConfigured()) {
 
             canvas->fillCircle(ox + center, oy + center, center, ActivityColors::ACCENT);
-            canvas->fillRect(ox + 0, oy + 48, 240, 144, 0);
+
+            ox += dx; oy += dx;
+            canvas->fillRect(ox, oy + 48, 240, 144, 0);
 
             canvas->setFont(&fonts::Font8x8C64);
 
@@ -203,6 +209,8 @@ namespace UI { namespace Activities { namespace Utilities {
 
             canvas->setFont(&fonts::Font2);
 
+            ox += dx; oy += dx;
+
             canvas->setCursor(ox + 110, oy + 4);
             canvas->print("GET");
             canvas->setCursor(ox + 71, oy + 20);
@@ -234,6 +242,8 @@ namespace UI { namespace Activities { namespace Utilities {
         // Offsets (x and y) to center things in the actual canvas
         auto ox = (int32_t)round(((float)canvas->width() - diameter) / 2.0f);
         auto oy = (int32_t)round(((float)canvas->height() - diameter) / 2.0f);
+        auto dx = (int32_t)round((diameter - 240) / 2);
+        ox += dx; oy += dx;
 
         display->clear();
         display->setFont(&lgfx::fonts::TomThumb);
@@ -256,6 +266,8 @@ namespace UI { namespace Activities { namespace Utilities {
         // Offsets (x and y) to center things in the actual canvas
         auto ox = (int32_t)round(((float)canvas->width() - diameter) / 2.0f);
         auto oy = (int32_t)round(((float)canvas->height() - diameter) / 2.0f);
+        auto dx = (int32_t)round((diameter - 240) / 2);
+        ox += dx; oy += dx;
 
         display->drawRect(ox + 2, oy + 104, 236, 36, color);
         display->drawRect(ox + 3, oy + 105, 234, 34, color);

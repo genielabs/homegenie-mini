@@ -225,3 +225,63 @@ void Utility::simpleJsonStringEscape(String& s) {
     }
     s = result;
 }
+
+bool Utility::isNumeric(const char *s) {
+    return strlen(s) > 0 && strspn(s, "0123456789.") == strlen(s);
+}
+
+float Utility::roundDecimals(float value, unsigned int n_decimals) {
+    float multiplier = std::pow(10.0f, static_cast<float>(n_decimals));
+    return std::round(value * multiplier) / multiplier;
+}
+
+Utility::UrlParts Utility::parseURL(const String &url) {
+    UrlParts parts;
+    parts.url = url;
+    int protocolEndPos = url.indexOf("://");
+    if (protocolEndPos != -1) {
+        parts.protocol = url.substring(0, protocolEndPos);
+    }
+    // credentials lookup
+    int atPos = (protocolEndPos != -1) ? url.indexOf('@', protocolEndPos + 3) : url.indexOf('@');
+    if (atPos == -1) {
+        return parts;
+    }
+    String protocolPart = (protocolEndPos != -1) ? url.substring(0, protocolEndPos + 3) : "";
+    String credentials = url.substring(protocolPart.length(), atPos);
+    String hostAndPath = url.substring(atPos + 1);
+    // build clean URL
+    parts.url = protocolPart + hostAndPath;
+    // parse credentials
+    int colonPos = credentials.indexOf(':');
+    if (colonPos != -1) {
+        parts.username = urlDecode(credentials.substring(0, colonPos));
+        parts.password = urlDecode(credentials.substring(colonPos + 1));
+    } else {
+        parts.username = urlDecode(credentials);
+    }
+    return parts;
+}
+
+String Utility::urlDecode(const String &str) {
+    String encodedString = "";
+    char c;
+    char code0;
+    char code1;
+    for (int i = 0; i < str.length(); i++){
+        c=str.charAt(i);
+        if (c == '+') {
+            encodedString += ' ';
+        } else if (c == '%') {
+            i++;
+            code0=str.charAt(i);
+            i++;
+            code1=str.charAt(i);
+            c = (hexToInt(code0) << 4) | hexToInt(code1);
+            encodedString += c;
+        } else {
+            encodedString += c;
+        }
+    }
+    return encodedString;
+}

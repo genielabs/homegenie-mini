@@ -90,14 +90,25 @@ namespace UI { namespace Activities { namespace Monitor {
         String feedError;
         bool showOnScreenDisplay = true;
         LGFX_Sprite* view{};
+
         [[noreturn]] static void * worker(void* activity);
+        static TaskHandle_t taskHandle;
+        static CameraDisplayActivity* cameraInstance;
+        static CameraDisplayActivity* previousInstance;
 
         uint8_t* imageData{};
+        size_t imageLen{};
         unsigned long readyTimestamp{};
         float averageFps{};
 
         String imageResolution = "5";
         String imageQuality = "10";
+
+        JpegDimensions frameSize;
+
+        static WiFiClientSecure secureClient;
+        static WiFiClient wifiClient;
+        size_t bufferSize{};
 
         void setJpegFeedUrl(const String& feedUrl);
         uint8_t* getJpegImage(const String& imageUrl);
@@ -116,12 +127,7 @@ namespace UI { namespace Activities { namespace Monitor {
         private:
             CameraDisplayActivity* host;
         };
-        RemoteCameraUrlUpdateListener* optionUpdateListener = nullptr;
-
-        JpegDimensions frameSize;
-
-        HTTPClient http;
-        size_t imageLen = 0;
+        RemoteCameraUrlUpdateListener* optionUpdateListener{};
     };
 
 }}}

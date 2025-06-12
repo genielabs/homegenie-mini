@@ -34,19 +34,19 @@ namespace Service { namespace API {
     String APIRequest::getOption(unsigned int optionIndex) {
         unsigned int currentIndex = 0, ci = 0;
         int oi = OptionsString.indexOf('/');
-        if (oi < 0) return urlDecode(OptionsString);
+        if (oi < 0) return Utility::urlDecode(OptionsString);
         String option;
         do {
             option = OptionsString.substring(ci, oi);
             if (currentIndex == optionIndex)
-                return urlDecode(option);
+                return Utility::urlDecode(option);
             ci = oi+1;
             currentIndex++;
             oi = OptionsString.indexOf('/', ci);
         } while (currentIndex < optionIndex);
         if (currentIndex == optionIndex) {
             String s = OptionsString.substring(ci, oi);
-            return urlDecode(s);
+            return Utility::urlDecode(s);
         }
         return "";
     }

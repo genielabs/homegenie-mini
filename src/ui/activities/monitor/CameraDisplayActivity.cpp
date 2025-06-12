@@ -28,6 +28,11 @@
 #ifdef ENABLE_UI
 
 namespace UI { namespace Activities { namespace Monitor {
+    TaskHandle_t CameraDisplayActivity::taskHandle;
+    WiFiClientSecure CameraDisplayActivity::secureClient;
+    WiFiClient CameraDisplayActivity::wifiClient;
+    CameraDisplayActivity* CameraDisplayActivity::cameraInstance{};
+    CameraDisplayActivity* CameraDisplayActivity::previousInstance{};
 
     CameraDisplayActivity::CameraDisplayActivity(const char *moduleAddress) {
         //setDrawInterval(33); // Task.h
@@ -100,20 +105,28 @@ namespace UI { namespace Activities { namespace Monitor {
 
     void CameraDisplayActivity::onStart() {
         // Start JPEG feeder task
-        xTaskCreate(
-            reinterpret_cast<TaskFunction_t>(CameraDisplayActivity::worker),
-            "RenderRemoteImageTask",
-            10240, // this might require some adjustments
-            this,
-            tskIDLE_PRIORITY + 5,
-            nullptr
-        );
+        if (taskHandle == nullptr) {
+            xTaskCreate(
+                    reinterpret_cast<TaskFunction_t>(CameraDisplayActivity::worker),
+                    "FrameGetTask",
+                    10240, // this might require some adjustments
+                    this,
+                    tskIDLE_PRIORITY,
+                    &taskHandle
+            );
+        }
     }
 
     void CameraDisplayActivity::onPause() {
         isActivityReady = false;
         frameSize.reset();
-        // avoid disposing object used by the download thread here
+        // set to idle task priority when paused
+        if (previousInstance == nullptr) {
+            vTaskPrioritySet(taskHandle, tskIDLE_PRIORITY);
+        } else if (previousInstance != this) {
+            cameraInstance = previousInstance;
+            previousInstance = nullptr;
+        }
     }
 
     void CameraDisplayActivity::onResume() {
@@ -134,7 +147,7 @@ namespace UI { namespace Activities { namespace Monitor {
         jpegFeedUrl = Config::getSetting(urlKey.c_str());
         String key = "rcam-res-";
         key.concat(module.address);
-        imageResolution = Config::getSetting(key.c_str(), isEsp32Camera ? "5" : "1");
+        imageResolution = Config::getSetting(key.c_str(), isEsp32Camera ? "5" : "3");
         key = "rcam-qlt-";
         key.concat(module.address);
         imageQuality = Config::getSetting(key.c_str(), "10");
@@ -142,6 +155,10 @@ namespace UI { namespace Activities { namespace Monitor {
         readyTimestamp = millis();
         feedError = OVERLAY_MESSAGE_CONNECTING;
         isActivityReady = true;
+        // set to higher task priority when resumed
+        vTaskPrioritySet(taskHandle, tskIDLE_PRIORITY + 5);
+        previousInstance = cameraInstance;
+        cameraInstance = this;
     }
 
     void CameraDisplayActivity::onDraw() {
@@ -149,6 +166,10 @@ namespace UI { namespace Activities { namespace Monitor {
         // Keep screen always on
         Service::PowerManager::setActive();
 #endif
+        if (display->dmaBusy()) {
+            return;
+        }
+        canvas->startWrite();
         if (imageData && imageLen > 0) {
             if (frameSize.width > 0 && (frameSize.width != view->width() || frameSize.height != view->height())) {
                 // frame resolution changed
@@ -161,6 +182,7 @@ namespace UI { namespace Activities { namespace Monitor {
             view->drawJpg(imageData, imageLen);
             view->setPivot((frameSize.width / 2) - (drawOffset.x / zf), view->getPivotY());
             view->pushRotateZoom(0, zf, zf);
+            imageLen = 0;
             if (showOnScreenDisplay) {
                 auto frameInfoText = String(frameSize.width, 0);
                 frameInfoText.concat("x");
@@ -179,19 +201,7 @@ namespace UI { namespace Activities { namespace Monitor {
                 canvas->setFont(&fonts::Font0);
                 canvas->drawCenterString(module.name, hw, canvas->height() - 20);
             }
-#ifdef ESP_CAMERA_SUPPORTED
-            if (isEsp32Camera) {
-                Sensors::Esp32Camera::cameraReleaseFrame();
-            } else {
-#endif
-                free(imageData);
-#ifdef ESP_CAMERA_SUPPORTED
-            }
-#endif
-            imageLen = 0;
-            imageData = nullptr;
         }
-
         // Display info / errors
         int cx = canvas->width() / 2;
         int cy = canvas->height() / 2;
@@ -211,6 +221,7 @@ namespace UI { namespace Activities { namespace Monitor {
                 canvas->drawCenterString(feedError, cx, cy - 8);
             }
         }
+        canvas->endWrite();
     }
 
     void CameraDisplayActivity::setJpegFeedUrl(const String &feedUrl) {
@@ -249,16 +260,20 @@ namespace UI { namespace Activities { namespace Monitor {
     }
 
     uint8_t* CameraDisplayActivity::getJpegImage(const String& url) {
-        imageLen = 0;
-        //HTTPClient http; // moved to global object
+        bufferSize = 0;
+        auto parsedUrl = Utility::parseURL(url);
         WiFiClient* client;
-        if (url.startsWith("https://")) {
-            client = new WiFiClientSecure();
-            ((WiFiClientSecure*)client)->setInsecure();
+        HTTPClient http;
+        if (parsedUrl.protocol.equalsIgnoreCase("https")) {
+            client = &secureClient;
+            secureClient.setInsecure();
         } else {
-            client = new WiFiClient();
+            client = &wifiClient;
         }
-        http.begin(*client, url);
+        http.begin(*client, parsedUrl.url);
+        if (parsedUrl.hasCredentials()) {
+            http.setAuthorization(parsedUrl.username.c_str(), parsedUrl.password.c_str());
+        }
         int httpCode = http.GET();
         if (httpCode == HTTP_CODE_OK) {
             int len = http.getSize();
@@ -271,7 +286,6 @@ namespace UI { namespace Activities { namespace Monitor {
             if (!imageBuffer) {
                 feedError = "Could not allocate image buffer.";
                 http.end();
-                delete client;
                 return nullptr;
             }
             WiFiClient* stream = http.getStreamPtr();
@@ -288,40 +302,37 @@ namespace UI { namespace Activities { namespace Monitor {
                 Serial.printf("CameraDisplayActivity: %s (%d out of %d bytes read).\n", feedError.c_str(), bytesRead, len);
                 http.end();
                 free(imageBuffer);
-                delete client;
                 return nullptr;
             }
 
             http.end();
 
-            imageLen = bytesRead;
+            bufferSize = bytesRead;
             feedError = "";
-            delete client;
             return imageBuffer;
         } else {
             feedError = "Connection error...";
             http.end();
-            delete client;
             return nullptr;
         }
     }
 
     [[noreturn]] void* CameraDisplayActivity::worker(void* cd) {
-        auto c = (CameraDisplayActivity*)cd;
         unsigned long fpsStart = millis();
         unsigned long lastFrameTs{};
         unsigned int fps{};
         for(;;) {
             long dts{};
-            if (!c->jpegFeedUrl.isEmpty() && c->isActivityReady && WiFi.isConnected() && !c->canvas->dmaBusy() && !c->imageData) {
-                uint8_t* imageData = nullptr;
+            auto c = cameraInstance;
+            if (c && !c->jpegFeedUrl.isEmpty() && c->isActivityReady && WiFi.isConnected()) {
+                uint8_t* bufferData = nullptr;
                 lastFrameTs = millis();
 #ifdef ESP_CAMERA_SUPPORTED
                 if (c->isEsp32Camera) {
-                    auto fb = Sensors::Esp32Camera::cameraGetFrame(c->imageResolution.toInt(), c->imageQuality.toInt()); // (resolution 5 = 320x240, quality 10)
+                    auto fb = Sensors::Esp32Camera::cameraGetFrame(c->imageResolution.toInt(), c->imageQuality.toInt());
                     if (fb != nullptr) {
-                        imageData = fb->buffer;
-                        c->imageLen = fb->length;
+                        bufferData = fb->buffer;
+                        c->bufferSize = fb->length;
                         c->feedError = "";
                     } else {
                         c->feedError = "CAM Error: No Frame";
@@ -338,36 +349,61 @@ namespace UI { namespace Activities { namespace Monitor {
                         url.concat("/");
                         url.concat(c->imageQuality);     // ESP32-CAM quality, 10 (best) to 70 (lowest)
                     }
-                    imageData = c->getJpegImage(url.c_str());
+                    bufferData = c->getJpegImage(url.c_str());
 #ifdef ESP_CAMERA_SUPPORTED
                 }
 #endif
-                if (imageData && c->imageLen > 0) {
+                if (c && bufferData && c->bufferSize > 0) {
                     dts = millis() - lastFrameTs;
                     if (c->frameSize.width == 0) {
-                        c->frameSize = getJpegDimensions(imageData, c->imageLen);
+                        c->frameSize = getJpegDimensions(bufferData, c->bufferSize);
                     }
                     if (c->frameSize.width > 0) {
-                        fps++;
-                        if (millis() - fpsStart > 5000) {
-                            c->averageFps = ((float) fps / 5.0f);
-                            fpsStart = millis();
-                            if (c->averageFps < 1 && fps > 0) {
-                                c->feedError = "Bad link quality.";
-                            } else {
-                                c->feedError = "";
-                            }
-                            fps = 0;
+                        // if imageLen is 0 onDraw() is ready to receive a new fram
+                        if (c->imageData && c->imageLen == 0) {
+                            // release previous onDraw() image
+                            free(c->imageData);
+                            c->imageData = nullptr;
                         }
-                        c->imageData = imageData;
+                        // copy new buffer to imageData for next onDraw() refresh
+                        if (!c->imageData) {
+#ifdef BOARD_HAS_PSRAM
+                            c->imageData = (uint8_t *)ps_malloc(c->bufferSize);
+#else
+                            c->imageData = (uint8_t *)malloc(c->bufferSize);
+#endif
+                            memcpy(c->imageData, bufferData, c->bufferSize);
+                            c->imageLen = c->bufferSize;
+                            // Calculate actual display FPS
+                            fps++;
+                            if (millis() - fpsStart > 5000) {
+                                c->averageFps = ((float) fps / 5.0f);
+                                fpsStart = millis();
+                                if (c->averageFps < 1 && fps > 0) {
+                                    c->feedError = "Bad link quality.";
+                                } else {
+                                    c->feedError = "";
+                                }
+                                fps = 0;
+                            }
+                        }
                     }
+#ifdef ESP_CAMERA_SUPPORTED
+                    if (c->isEsp32Camera) {
+                        Sensors::Esp32Camera::cameraReleaseFrame();
+                    } else {
+#endif
+                        free(bufferData);
+#ifdef ESP_CAMERA_SUPPORTED
+                    }
+#endif
                 }
             }
-            long delay = (33 - dts);
+            long delay = (100 - dts); // 10fps max.
             if (delay < 1) {
                 delay = 1;
             }
-            vTaskDelay((c->isActivityReady ? delay : 100) * portTICK_PERIOD_MS);
+            vTaskDelay((c && c->isActivityReady ? delay : 200) * portTICK_PERIOD_MS);
         }
     }
 

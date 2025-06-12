@@ -47,9 +47,9 @@ namespace IO { namespace System {
         // Report free memory changes
         uint32_t freeMem = Utility::getFreeMem();
         if (currentFreeMemory != freeMem) {
-            Logger::trace("@%s [%s %lu]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_BytesFree, freeMem);
-            sendEvent(IOEventPaths::System_BytesFree, &freeMem, UnsignedNumber);
             currentFreeMemory = freeMem;
+            Logger::trace("@%s [%s %lu]", DIAGNOSTICS_NS_PREFIX, IOEventPaths::System_BytesFree, currentFreeMemory);
+            sendEvent(IOEventPaths::System_BytesFree, &currentFreeMemory, UnsignedNumber);
 #ifdef ESP32
             // Output DRAM info only to terminal
             String dramPath = IOEventPaths::System_BytesFree; dramPath.concat(".DRAM");

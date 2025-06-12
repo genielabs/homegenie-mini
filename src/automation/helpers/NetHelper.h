@@ -32,6 +32,8 @@
 
 #include <WiFiClientSecure.h>
 
+#include <Utility.h>
+
 #ifdef ESP8266
 #include <ESP8266HTTPClient.h>
 #else
@@ -45,15 +47,12 @@ namespace Automation { namespace Helpers {
 
     class NetHelper {
     public:
-        static String httpGet(String& url);
-        static String httpPost(String& url, String& data);
+        static String httpGet(const String& url);
+        static String httpPost(const String& url, const String& data);
         static bool ping(String& host);
 
     private:
-        static WiFiClientSecure* wifiClientSecure;
-        static HTTPClient http;
-
-        static WiFiClient* getClient(String& url);
+        static WiFiClient* getClient(bool secure);
     };
 
 }}

@@ -1,1 +1,1 @@
-UI implemented using LovyanGFX library.
+UI implemented using LovyanGFX and LVGL libraries.

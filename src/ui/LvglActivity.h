@@ -45,7 +45,7 @@ namespace UI {
 #else
             setColorDepth(lgfx::rgb332_1Byte);
 #endif
-            setDrawInterval(10); // Task.h
+            //setDrawInterval(10); // Task.h
         }
 
         void onResume() override {
