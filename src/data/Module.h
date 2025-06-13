@@ -110,7 +110,7 @@ namespace Data {
         }
     private:
         LinkedList<UpdateListener*> updateListeners;
-        String getFormattedDate() {
+        static String getFormattedDate() {
             return Net::TimeClient::getNTPClient().getFormattedDate();
         }
         String configKey = "";

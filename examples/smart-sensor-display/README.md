@@ -11,25 +11,25 @@ Smart multi-sensor device with display. HomeGenie Mini UI example application.
 Besides the default system options and the *smart-sensor* options detailed in the `../smart-sensor/README.md` file,
 the `smart-sensor-display` firmware offers the following additional configuration settings:
 
-| Key         | Description                                              | Default  |
-|-------------|----------------------------------------------------------|----------|
-| `disp-typ`  | Display driver ("GC9A01", "ST7789", "ST7796" or "AUTO")  | "GC9A01" |
-| `disp-sclk` | DISPLAY_SCLK                                             |          |
-| `disp-mosi` | DISPLAY_MOSI                                             |          |
-| `disp-miso` | DISPLAY_MISO                                             |          |
-| `disp-dc`   | DISPLAY_DC                                               |          |
-| `disp-cs`   | DISPLAY_CS                                               |          |
-| `disp-rst`  | DISPLAY_RST                                              |          |
-| `disp-bl`   | DISPLAY_BL (backlight)                                   |          |
-| `dstch-prt` | TOUCH_PORT                                               |          |
-| `dstch-adr` | TOUCH_ADDRESS                                            |          |
-| `dstch-sda` | TOUCH_SDA                                                |          |
-| `dstch-scl` | TOUCH_SCL                                                |          |
-| `dstch-rst` | TOUCH_RST                                                |          |
-| `dstch-int` | TOUCH_INTERRUPT                                          |          |
-| `imus-typ`  | Inertial Measurement Unit type ("QMI8658")               |          |
-| `imus-sda`  | IMU SDA                                                  |          |
-| `imus-scl`  | IMU SCL                                                  |          |
+| Key         | Description                                     | Default |
+|-------------|-------------------------------------------------|---------|
+| `disp-typ`  | Display driver (GC9A01, ST7789, ST7796 or AUTO) |         |
+| `disp-sclk` | DISPLAY_SCLK                                    |         |
+| `disp-mosi` | DISPLAY_MOSI                                    |         |
+| `disp-miso` | DISPLAY_MISO                                    |         |
+| `disp-dc`   | DISPLAY_DC                                      |         |
+| `disp-cs`   | DISPLAY_CS                                      |         |
+| `disp-rst`  | DISPLAY_RST                                     |         |
+| `disp-bl`   | DISPLAY_BL (backlight)                          |         |
+| `dstch-prt` | TOUCH_PORT                                      |         |
+| `dstch-adr` | TOUCH_ADDRESS                                   |         |
+| `dstch-sda` | TOUCH_SDA                                       |         |
+| `dstch-scl` | TOUCH_SCL                                       |         |
+| `dstch-rst` | TOUCH_RST                                       |         |
+| `dstch-int` | TOUCH_INTERRUPT                                 |         |
+| `imus-typ`  | Inertial Measurement Unit type (QMI8658)        |         |
+| `imus-sda`  | IMU SDA                                         |         |
+| `imus-scl`  | IMU SCL                                         |         |
 
 For default GPIO# values used by the display driver see `ui/drivers/RoundDisplay.h` and
 `ui/drivers/StandardDisplay.h` files.
@@ -57,9 +57,9 @@ or other options where applicable.
 
 To configure the title of an activity:
 
-| Key                  | Description                        | Default           |
-|----------------------|------------------------------------|-------------------|
-| `title-<address>`    | Displayed title/name               | "&lt;address&gt;" |
+| Key                  | Description                        | Default         |
+|----------------------|------------------------------------|-----------------|
+| `title-<address>`    | Displayed title/name               | &lt;address&gt; |
 
 Where `<address>` is the address assigned to the associated Activity module
 (e.g. `D1`, `M1`, `V1`...).  
@@ -67,12 +67,12 @@ These values can also be easily configured using the *HomeGenie Panel* app.
 
 Options available for `CameraDisplayActivity` configuration:
 
-| Key                  | Description                        | Default               |
-|----------------------|------------------------------------|-----------------------|
-| `title-<address>`    | Displayed title/name               | "&lt;address&gt;"     |
-| `rcam-<address>`     | Remote camera JPEG images feed URL |                       |
-| `rcam-res-<address>` | Camera resolution (1 to 17)        | "3" remote, "5" local |
-| `rcam-qlt-<address>` | Camera resolution (10 to 63)       | "10"                  |
+| Key                  | Description                        | Default           |
+|----------------------|------------------------------------|-------------------|
+| `title-<address>`    | Displayed title/name               | &lt;address&gt;   |
+| `rcam-<address>`     | Remote camera JPEG images feed URL |                   |
+| `rcam-res-<address>` | Camera resolution (1 to 17)        | 3 remote, 5 local |
+| `rcam-qlt-<address>` | Camera resolution (10 to 63)       | 10                |
 
 
 ## Manual build and install
