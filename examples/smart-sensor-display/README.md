@@ -57,9 +57,9 @@ or other options where applicable.
 
 To configure the title of an activity:
 
-| Key                  | Description                        | Default         |
-|----------------------|------------------------------------|-----------------|
-| `title-<address>`    | Displayed title/name               | &lt;address&gt; |
+| Key                  | Description                        | Default      |
+|----------------------|------------------------------------|--------------|
+| `title-<address>`    | Displayed title/name               | `<address>`  |
 
 Where `<address>` is the address assigned to the associated Activity module
 (e.g. `D1`, `M1`, `V1`...).  
@@ -69,7 +69,7 @@ Options available for `CameraDisplayActivity` configuration:
 
 | Key                  | Description                        | Default           |
 |----------------------|------------------------------------|-------------------|
-| `title-<address>`    | Displayed title/name               | &lt;address&gt;   |
+| `title-<address>`    | Displayed title/name               | `<address>`       |
 | `rcam-<address>`     | Remote camera JPEG images feed URL |                   |
 | `rcam-res-<address>` | Camera resolution (1 to 17)        | 3 remote, 5 local |
 | `rcam-qlt-<address>` | Camera resolution (10 to 63)       | 10                |
