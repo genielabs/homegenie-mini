@@ -101,12 +101,12 @@ namespace Service { namespace API {
             Logger::info(":%s [RemoteControl::IR] >> [%s]", HOMEGENIEMINI_NS_PREFIX, stringData.c_str());
 
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto m = QueuedMessage(domain, address, event.c_str(), stringData, eventData, dataType);
+            auto m = std::make_shared<QueuedMessage>(domain, address, event.c_str(), stringData, eventData, dataType);
             HomeGenie::getInstance()->getEventRouter().signalEvent(m);
 
             // Update module parameter as well
             rawDataParameter->setData(eventData, dataType);
-            rawDataParameter->setValue(m.value.c_str());
+            rawDataParameter->setValue(m->value.c_str());
 
             return true;
         }

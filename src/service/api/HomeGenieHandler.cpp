@@ -397,11 +397,11 @@ namespace Service { namespace API {
                         for (ModuleParameter p: parameters) {
                             if (p.name.isEmpty()) continue;
                             module->setProperty(p.name, p.value);
-                            QueuedMessage m;
-                            m.domain = domain;
-                            m.sender = address;
-                            m.event = p.name;
-                            m.value = p.value;
+                            auto m = std::make_shared<QueuedMessage>();
+                            m->domain = domain;
+                            m->sender = address;
+                            m->event = p.name;
+                            m->value = p.value;
                             homeGenie->getEventRouter().signalEvent(m);
                         }
                         if (!isProgramConfiguration) {
@@ -608,42 +608,42 @@ namespace Service { namespace API {
         if (module) {
             String event = eventPath;
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto m = QueuedMessage(domain, address, eventPath, "", eventData, dataType);
+            auto m =  std::make_shared<QueuedMessage>(domain, address, eventPath, "", eventData, dataType);
             if (eventData) {
                 // Data type handling
                 switch (dataType) {
                     case CString: {
                         const char *c_str_payload = static_cast<const char *>(eventData);
-                        m.value = String(c_str_payload);
+                        m->value = String(c_str_payload);
                     } break;
                     case Text: {
                         auto eventStringPtr = static_cast<String *>(eventData);
-                        m.value = *eventStringPtr;
+                        m->value = *eventStringPtr;
                     } break;
                     case SensorColorHsv: {
                         auto color = (ColorHSV *) eventData;
-                        m.value = String(color->h, 4)
+                        m->value = String(color->h, 4)
                                   + String(",") + String(color->s, 4)
                                   + String(",") + String(color->v, 4);
                     } break;
                     case SensorLight: {
-                        m.value = String(*(uint16_t *) eventData);
+                        m->value = String(*(uint16_t *) eventData);
                     } break;
                     case SensorTemperature:
                     case SensorHumidity:
                     case Float: {
-                        m.value = String(*(float_t *) eventData);
+                        m->value = String(*(float_t *) eventData);
                     } break;
                     case UnsignedNumber: {
-                        m.value = String(*(uint32_t *) eventData);
+                        m->value = String(*(uint32_t *) eventData);
                     } break;
                     case Number:
                     default: {
-                        m.value = String(*(int32_t *) eventData);
+                        m->value = String(*(int32_t *) eventData);
                     }
                 }
             }
-            module->setProperty(event, m.value, eventData, dataType);
+            module->setProperty(event, m->value, eventData, dataType);
             HomeGenie::getInstance()->getEventRouter().signalEvent(m);
         }
         return false;

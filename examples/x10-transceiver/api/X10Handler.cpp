@@ -123,7 +123,7 @@ namespace Service { namespace API {
 
             Module* module = getModule(command->Domain.c_str(), command->Address.c_str());
             if (module) {
-                QueuedMessage m = QueuedMessage(command->Domain, command->Address, (IOEventPaths::Status_Level), "");
+                auto m = std::make_shared<QueuedMessage>(command->Domain, command->Address, (IOEventPaths::Status_Level), "");
                 auto levelProperty = module->getProperty(IOEventPaths::Status_Level);
 
                 if (command->Command == ControlApi::Control_On) {
@@ -160,7 +160,7 @@ namespace Service { namespace API {
                     }
                 } else return false;
 
-                m.value = levelProperty->value;
+                m->value = levelProperty->value;
                 HomeGenie::getInstance()->getEventRouter().signalEvent(m);
             }
 
@@ -232,7 +232,9 @@ namespace Service { namespace API {
 
 
                 receiverRawData->setValue(rawDataString.c_str());
-                HomeGenie::getInstance()->getEventRouter().signalEvent(QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString));
+
+                auto m = std::make_shared<QueuedMessage>(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString);
+                HomeGenie::getInstance()->getEventRouter().signalEvent(m);
 
                 if (ledBlinkHandler) {
                     ledBlinkHandler(rawDataString.c_str());
@@ -254,8 +256,9 @@ namespace Service { namespace API {
                         Logger::trace(":%s %s", HOMEGENIEMINI_NS_PREFIX, commandString.c_str());
 
                         receiverCommand->setValue(commandString.c_str());
-                        HomeGenie::getInstance()->getEventRouter().signalEvent(
-                                QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString));
+
+                        auto msg = std::make_shared<QueuedMessage>(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString);
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
 
                     } break;
 
@@ -270,8 +273,9 @@ namespace Service { namespace API {
                         Logger::trace(":%s S-%s %s", HOMEGENIEMINI_NS_PREFIX, subtype.c_str(), commandString.c_str());
 
                         receiverCommand->setValue(commandString.c_str());
-                        HomeGenie::getInstance()->getEventRouter().signalEvent(
-                                QueuedMessage(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString));
+
+                        auto msg = std::make_shared<QueuedMessage>(domain, CONFIG_X10RF_MODULE_ADDRESS, IOEventPaths::Receiver_Command, commandString);
+                        HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
 
                     } break;
 

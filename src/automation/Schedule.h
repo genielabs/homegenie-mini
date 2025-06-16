@@ -134,14 +134,13 @@ namespace Automation {
             lastOccurrence = ts;
         }
 
-        QueuedMessage* getLastEvent() {
+        std::shared_ptr<QueuedMessage> getLastEvent() {
             return lastEvent;
         }
-        void setLastEvent(QueuedMessage* m) {
-            delete lastEvent;
+        void setLastEvent(const std::shared_ptr<QueuedMessage>& m) {
             lastEvent = nullptr;
-            if (m != nullptr) {
-                auto qm = new QueuedMessage();
+            if (m) {
+                auto qm = std::make_shared<QueuedMessage>();
                 qm->type = m->type;
                 qm->domain = m->domain;
                 qm->sender = m->sender;
@@ -169,7 +168,7 @@ namespace Automation {
 
     private:
         time_t lastOccurrence{};
-        QueuedMessage* lastEvent{};
+        std::shared_ptr<QueuedMessage> lastEvent;
 
     };
 }

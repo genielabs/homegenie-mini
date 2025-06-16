@@ -91,14 +91,14 @@ namespace Service { namespace API { namespace devices {
             int size = snprintf(nullptr, 0, "%f,%f,%f", h, s, v);
             char eventValue[size + 1];
             sprintf(eventValue, "%f,%f,%f", h, s, v);
-            auto msg = QueuedMessage(module, IOEventPaths::Status_ColorHsb, eventValue);
+            auto msg = std::make_shared<QueuedMessage>(module, IOEventPaths::Status_ColorHsb, String(eventValue).c_str());
             module->setProperty(IOEventPaths::Status_ColorHsb, eventValue);
             HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
             // level
             size = snprintf(nullptr, 0, "%f", v);
             char levelValue[size + 1];
             sprintf(levelValue, "%f", v);
-            auto msg2 = QueuedMessage(module, IOEventPaths::Status_Level, levelValue);
+            auto msg2 = std::make_shared<QueuedMessage>(module, IOEventPaths::Status_Level, String(levelValue).c_str());
             module->setProperty(IOEventPaths::Status_Level, levelValue);
             HomeGenie::getInstance()->getEventRouter().signalEvent(msg2);
         }

@@ -28,7 +28,7 @@
 #ifdef ENABLE_UI
 
 Dashboard::Dashboard(DisplayDriver *displayDriver, lgfx::color_depth_t colorDepth) {
-    //setLoopInterval(10); // Task.h
+    //setLoopInterval(1); // Task.h
 
     driver = displayDriver;
     display = driver->getDisplay();
@@ -66,7 +66,7 @@ void Dashboard::loop() {
             display->setBrightness(displayBrightness);
         }
     }
-    if (screenSaverTimeoutMs > 0 && (activity == nullptr || !activity->isAlwaysOn())) {
+    if (screenSaverTimeoutMs > 0 && (!activity || !activity->isAlwaysOn())) {
         if ((millis() - lastTouchTs) > screenSaverTimeoutMs) {
             enableScreenSaver();
         } else if ((millis() - lastTouchTs) > screenSaverTimeoutMs / 2) {
@@ -77,8 +77,11 @@ void Dashboard::loop() {
     }
 #endif
 
+    if (nextActivity) {
+        nextActivity->refresh();
+    }
     // flying
-    if (!pointerDown && lastTouchPoint.shiftX != 0 && nextActivity != nullptr) {
+    if (!pointerDown && lastTouchPoint.shiftX != 0 && nextActivity) {
         unsigned long startTime = millis();
         unsigned long duration = 150;
 
@@ -96,7 +99,7 @@ void Dashboard::loop() {
                 cx = AnimationHelper::animateFloat(currentShiftX, 0, progress, ANIMATION_EASING_LINEAR);
             }
             nextActivity->setDrawOffset(cx - (float) (display->width() * direction * (switchActivity ? 1 : -1)), 0);
-            if (activity != nullptr) {
+            if (activity) {
                 activity->setDrawOffset(cx, 0);
             }
         }
@@ -105,7 +108,7 @@ void Dashboard::loop() {
             setForegroundActivity(nextActivity);
         } else {
             nextActivity->pause();
-            if (activity != nullptr) {
+            if (activity) {
                 activity->setDrawOffset(0, 0);
 #ifndef DISABLE_LVGL
                 if (activity->isLvgl()) {
@@ -131,23 +134,27 @@ void Dashboard::loop() {
             pointerDown = true;
             swipeDirection = TOUCH_DIRECTION_NONE;
             gestureHelper->pointerDown(tp.x, tp.y);
-            if (activity != nullptr) {
+            if (activity) {
                 activity->pointerDown(tp.x, tp.y);
             }
         } else if (tp.x != lastTp.x || tp.y != lastTp.y) {
             lastTp.x = tp.x;
             lastTp.y = tp.y;
             gestureHelper->pointerMove(tp.x, tp.y);
-            if (activity != nullptr) {
+            if (activity) {
                 activity->pointerMove(tp.x, tp.y);
             }
         }
     } else if (pointerDown) {
         pointerDown = false;
         gestureHelper->pointerUp(tp.x, tp.y);
-        if (activity != nullptr) {
+        if (activity) {
             activity->pointerUp(tp.x, tp.y);
         }
+    }
+
+    if (activity) {
+        activity->refresh();
     }
 }
 
@@ -187,7 +194,7 @@ Activity* Dashboard::getForegroundActivity() {
 
 void Dashboard::onTap(PointerEvent e) {
     auto activity = getForegroundActivity();
-    if (activity != nullptr) {
+    if (activity) {
         activity->tap(e);
     }
 }
@@ -198,7 +205,7 @@ void Dashboard::onSwipe(SwipeEvent e) {
 }
 void Dashboard::onPan(PanEvent e) {
     auto activity = getForegroundActivity();
-    if (activity != nullptr && !activity->isLocked()) {
+    if (activity && !activity->isLocked()) {
 #ifndef DISABLE_LVGL
         LvglDriver::disableInput = true;
 #endif
@@ -206,7 +213,7 @@ void Dashboard::onPan(PanEvent e) {
 
         if (activityList.size() > 1 && (e.touchPoint.direction == TOUCH_DIRECTION_LEFT || e.touchPoint.direction == TOUCH_DIRECTION_RIGHT)) {
             auto next = (e.touchPoint.shiftX > 0) ?  getPreviousActivity() : getNextActivity();
-            if (next != nextActivity && nextActivity != nullptr) {
+            if (next != nextActivity && nextActivity) {
                 nextActivity->pause();
             }
             nextActivity = next;
@@ -251,7 +258,7 @@ void Dashboard::invalidate() {
         item->pause();
     }
     auto current = getForegroundActivity();
-    if (current != nullptr) {
+    if (current) {
         current->resume();
     }
 }
@@ -289,7 +296,7 @@ void Dashboard::enableScreenSaver() {
         isScreenSaverActive = true;
         display->sleep();
         auto activity = getForegroundActivity();
-        if (activity != nullptr) {
+        if (activity) {
             activity->pause();
         }
 #ifndef DISABLE_LVGL
@@ -302,7 +309,7 @@ void Dashboard::disableScreenSaver() {
         isScreenSaverActive = false;
         display->wakeup();
         auto activity = getForegroundActivity();
-        if (activity != nullptr) {
+        if (activity) {
             activity->resume();
         }
         // restore brightness

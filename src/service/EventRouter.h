@@ -74,13 +74,13 @@ namespace Service {
     class EventRouter : Task {
     public:
         void loop() override;
-        void signalEvent(QueuedMessage m);
+        void signalEvent(const std::shared_ptr<QueuedMessage>& m);
 
         void withNetManager(NetManager &manager);
 
     private:
         NetManager* netManager{};
-        LinkedList<QueuedMessage> eventsQueue;
+        LinkedList<std::shared_ptr<QueuedMessage>> eventsQueue;
         template <class T>
         bool valueMatchesCondition(String& condition, T leftValue, T rightValue);
     };

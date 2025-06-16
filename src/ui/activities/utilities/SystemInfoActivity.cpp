@@ -30,7 +30,6 @@
 namespace UI { namespace Activities { namespace Utilities {
 
     SystemInfoActivity::SystemInfoActivity() {
-        setDrawInterval(200);  // Task.h - 200ms loop frequency
         setColorDepth(lgfx::palette_2bit);
         if (!Config::isDeviceConfigured()) {
             setAlwaysOn(true);

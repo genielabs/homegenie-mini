@@ -85,7 +85,7 @@ namespace Service { namespace API { namespace devices {
         if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
             auto eventPath = IOEventPaths::Status_Level;
             auto eventValue = String(l);
-            auto msg = QueuedMessage(module, eventPath, eventValue, &l, IOEventDataType::Float);
+            auto msg =  std::make_shared<QueuedMessage>(module, eventPath, eventValue, &l, IOEventDataType::Float);
             module->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
             HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
         }

@@ -30,7 +30,6 @@
 namespace UI { namespace Activities { namespace Utilities {
 
     DigitalClockActivity::DigitalClockActivity() {
-        setDrawInterval(10);  // Task.h - 100ms loop frequency
         setColorDepth(lgfx::palette_4bit);
     }
 

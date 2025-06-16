@@ -30,7 +30,6 @@
 namespace UI { namespace Activities { namespace Examples {
 
     GaugeExampleActivity::GaugeExampleActivity() {
-        setDrawInterval(33); // Task.h
         setColorDepth(lgfx::palette_2bit);
     }
 

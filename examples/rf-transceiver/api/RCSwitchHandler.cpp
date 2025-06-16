@@ -132,9 +132,9 @@ namespace Service { namespace API {
 //Serial.printf("\nBit length = %d, Protocol = %d\n\n", bitLength, bitProtocol);
 
                 rawDataParameter->setValue(rawDataString.c_str());
-                HomeGenie::getInstance()->getEventRouter().signalEvent(
-                        QueuedMessage(domain, CONFIG_RCSwitchRF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString));
 
+                auto m = std::make_shared<QueuedMessage>(domain, CONFIG_RCSwitchRF_MODULE_ADDRESS, IOEventPaths::Receiver_RawData, rawDataString);
+                HomeGenie::getInstance()->getEventRouter().signalEvent(m);
 
                 if (ledBlinkHandler) {
                     ledBlinkHandler(rawDataString.c_str());

@@ -52,7 +52,7 @@ namespace Net {
 
     LinkedList<WiFiClient> wifiClients;
 #ifndef DISABLE_SSE
-    LinkedList<QueuedMessage> events;
+    LinkedList<std::shared_ptr<QueuedMessage>> events;
 #endif
 
     String ipAddress;
@@ -144,7 +144,7 @@ namespace Net {
             for (int c = wifiClients.size() - 1; c >= 0; c--) {
                 auto sseClient = wifiClients.get(c);
                 if (sseClient.connected()) {
-                    serverSentEvent(sseClient, e.domain, e.sender, e.event, e.value);
+                    serverSentEvent(sseClient, e->domain, e->sender, e->event, e->value);
                 } else wifiClients.remove(c);
             }
 
@@ -186,7 +186,7 @@ namespace Net {
     // END RequestHandler interface methods
 
     void HTTPServer::sendSSEvent(String domain, String address, String event, String value) {
-        auto m = QueuedMessage(domain, address, event, value);
+        auto m = std::make_shared<QueuedMessage>(domain, address, event, value);
         events.add(m);
     }
 

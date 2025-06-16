@@ -68,7 +68,7 @@ namespace Service { namespace API { namespace devices {
 
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
             auto eventValue = String(status);
-            auto msg = QueuedMessage(module, IOEventPaths::Status_Level, eventValue, &status, IOEventDataType::Number);
+            auto msg = std::make_shared<QueuedMessage>(module, IOEventPaths::Status_Level, eventValue, &status, IOEventDataType::Number);
             module->setProperty(IOEventPaths::Status_Level, eventValue, &status, IOEventDataType::Number);
             HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
 

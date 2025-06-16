@@ -43,7 +43,7 @@
 
 namespace UI {
 
-    class Activity: private Task, public PointerHandler, public PointerListener, public GestureListener {
+    class Activity: public PointerHandler, public PointerListener, public GestureListener {
 
     public:
 
@@ -60,10 +60,6 @@ namespace UI {
 
         void setColorDepth(lgfx::color_depth_t depth) {
             colorDepth = depth;
-        }
-
-        void setDrawInterval(uint64_t ms) {
-            Task::setLoopInterval(ms);
         }
 
         /**
@@ -232,6 +228,10 @@ namespace UI {
             alwaysOn = keepAlwaysOn;
         }
 
+        void refresh() {
+            draw();
+        }
+
     protected:
         DisplayDriver* driver{};
         LGFX_Device* display{};
@@ -241,10 +241,6 @@ namespace UI {
             float x;
             float y;
         } drawOffset{};
-
-        void invalidate() {
-            draw();
-        }
 
         void initCanvas() {
             if (canvas == nullptr) {
@@ -267,16 +263,6 @@ namespace UI {
         bool locked = false;
         bool alwaysOn = false;
 
-        bool willLoop() override {
-            bool canLoop = !isPaused && this->Task::willLoop();
-            if (canLoop) {
-                resume();
-            }
-            return canLoop;
-        }
-        void loop() override {
-            draw();
-        }
         void draw() {
             onDraw();
             for (const auto &item: inputControls) {
@@ -284,7 +270,6 @@ namespace UI {
             }
             canvas->pushRotateZoom(0, 1, 1);
         }
-
     };
 
 }

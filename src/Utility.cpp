@@ -227,7 +227,34 @@ void Utility::simpleJsonStringEscape(String& s) {
 }
 
 bool Utility::isNumeric(const char *s) {
-    return strlen(s) > 0 && strspn(s, "0123456789.") == strlen(s);
+    if (s == nullptr || *s == '\0') {
+        return false;
+    }
+    int i = 0;
+    if (s[0] == '+' || s[0] == '-') {
+        i = 1;
+    }
+    if (s[i] == '\0') {
+        return false;
+    }
+    bool hasDecimalPoint = false;
+    for (; s[i] != '\0'; i++) {
+        if (s[i] == '.') {
+            if (hasDecimalPoint) {
+                return false;
+            }
+            hasDecimalPoint = true;
+        } else if (!isdigit(s[i])) {
+            return false;
+        }
+    }
+    if ((s[0] == '-' || s[0] == '+') && s[1] == '.' && s[2] == '\0') {
+        return false;
+    }
+    if (s[0] == '.' && s[1] == '\0') {
+        return false;
+    }
+    return true;
 }
 
 float Utility::roundDecimals(float value, unsigned int n_decimals) {

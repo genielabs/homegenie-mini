@@ -90,23 +90,23 @@ namespace Service { namespace API { namespace devices {
         if (module) {
             auto event = String((char *) eventPath);
             // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-            auto m = QueuedMessage(domain, address, event.c_str(), "");
+            auto m = std::make_shared<QueuedMessage>(domain, address, event.c_str(), "");
             // Data type handling
             switch (dataType) {
                 case Number:
-                    m.value = String(*(int32_t *) eventData);
+                    m->value = String(*(int32_t *) eventData);
                     break;
                 case Float:
-                    m.value = String(*(float *) eventData);
+                    m->value = String(*(float *) eventData);
                     break;
                 case Text: {
                     auto eventStringPtr = static_cast<String *>(eventData);
-                    m.value = *eventStringPtr;
+                    m->value = *eventStringPtr;
                 } break;
                 default:
-                    m.value = String(*(int32_t *) eventData);
+                    m->value = String(*(int32_t *) eventData);
             }
-            module->setProperty(event, m.value);
+            module->setProperty(event, m->value);
             HomeGenie::getInstance()->getEventRouter().signalEvent(m);
         }
         return false;

@@ -26,7 +26,6 @@
 #include "SensorValuesActivity.h"
 
 SensorValuesActivity::SensorValuesActivity(Module *module) {
-    setDrawInterval(1000);  // Task.h - 1000ms loop frequency
 #ifdef BOARD_HAS_PSRAM
     setColorDepth(lgfx::rgb565_2Byte);
 #else

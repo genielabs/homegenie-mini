@@ -204,7 +204,7 @@ namespace UI { namespace Activities { namespace Control {
         auto l = data.level / 100.0f;
         auto level = data.isOn ? String(l, 3) : String("0");
         module.setProperty(IOEventPaths::Sensor_Level, level);
-        auto me = QueuedMessage(&module, IOEventPaths::Sensor_Level, level);
+        auto me = std::make_shared<QueuedMessage>(&module, IOEventPaths::Sensor_Level, level);
         HomeGenie::getInstance()->getEventRouter().signalEvent(me);
     }
 

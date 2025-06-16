@@ -92,8 +92,6 @@ namespace UI { namespace Activities { namespace Control {
         void drawNavigationButtons();
 
         void emitLevelEvent();
-
-        void refresh();
     };
 
 }}}

@@ -30,7 +30,6 @@
 namespace UI { namespace Activities { namespace Control {
 
     SwitchControlActivity::SwitchControlActivity(const char *moduleAddress) {
-        setDrawInterval(100); // Task.h
         setColorDepth(lgfx::palette_2bit);
 
         // diameter 240
@@ -206,10 +205,10 @@ namespace UI { namespace Activities { namespace Control {
     }
 
     void SwitchControlActivity::onDraw() {
+        drawNavigationButtons();
         if (toggleButton != nullptr) {
 
             if (showLoaderTs > 0) {
-                setDrawInterval(0); // RT PRIORITY - loop
                 float duration = 350.0f;
                 float elapsed = millis() - showLoaderTs;
                 if (elapsed <= duration) {
@@ -218,7 +217,6 @@ namespace UI { namespace Activities { namespace Control {
                 } else {
                     showLoaderTs = 0;
                     toggleButton->setProgress(-1);
-                    setDrawInterval(100); // 100ms loop interval
                 }
             }
             // button color (red=3 for signaling error, green=2 for success)
@@ -275,13 +273,8 @@ namespace UI { namespace Activities { namespace Control {
         auto l = (float)currentLevel / 100.0f;
         auto level = isSwitchedOn ? String(l, 3) : String("0");
         module.setProperty(IOEventPaths::Sensor_Level, level);
-        auto me = QueuedMessage(&module, IOEventPaths::Sensor_Level, level);
+        auto me = std::make_shared<QueuedMessage>(&module, IOEventPaths::Sensor_Level, level);
         HomeGenie::getInstance()->getEventRouter().signalEvent(me);
-    }
-
-    void SwitchControlActivity::refresh() {
-        drawNavigationButtons();
-        invalidate();
     }
 
 }}}

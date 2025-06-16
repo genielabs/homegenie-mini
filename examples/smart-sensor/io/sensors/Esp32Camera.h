@@ -135,7 +135,7 @@ namespace IO { namespace Sensors {
                 config.frame_size = (framesize_t)frameSize;
                 auto v = String(frameSize);
                 apiHandler->module->setProperty(Options::Image_Resolution, v);
-                QueuedMessage m(apiHandler->module, Options::Image_Resolution, v, &frameSize, Number);
+                auto m = std::make_shared<QueuedMessage>(apiHandler->module, Options::Image_Resolution, v, &frameSize, Number);
                 HomeGenie::getInstance()->getEventRouter().signalEvent(m);
             }
 
@@ -147,7 +147,7 @@ namespace IO { namespace Sensors {
                 config.jpeg_quality = quality;
                 auto v = String(quality);
                 apiHandler->module->setProperty(Options::Image_Quality, v);
-                QueuedMessage m(apiHandler->module, Options::Image_Quality, v, &quality, Number);
+                auto m = std::make_shared<QueuedMessage>(apiHandler->module, Options::Image_Quality, v, &quality, Number);
                 HomeGenie::getInstance()->getEventRouter().signalEvent(m);
             }
 

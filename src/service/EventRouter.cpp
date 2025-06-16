@@ -40,9 +40,9 @@ namespace Service {
         for (int i = 0; i < eventsQueue.size(); i++) {
 
             auto m = eventsQueue.pop();
-            auto domain = m.domain.c_str();
-            auto sender = m.sender.c_str();
-            auto eventPath = m.event.c_str();
+            auto domain = m->domain.c_str();
+            auto sender = m->sender.c_str();
+            auto eventPath = m->event.c_str();
             Logger::info(":%s dequeued event >> [domain '%s' address '%s' event '%s']", EVENTROUTER_NS_PREFIX, domain, sender, eventPath);
 
 #ifndef DISABLE_AUTOMATION
@@ -133,7 +133,7 @@ namespace Service {
                                     } else {
                                         // comparing string values
 
-                                        auto lv = mp->value;
+                                        auto lv = String(mp->value);
                                         auto rv = String(c["value"].as<const char*>());
                                         eventMatchesConditions = valueMatchesCondition(condition, lv, rv);
 
@@ -153,7 +153,7 @@ namespace Service {
                         }
 
                         if (eventMatchesConditions && (s->cronExpression.isEmpty() || s->info.onThisMinute > 0)) {
-                            s->setLastEvent(&m);
+                            s->setLastEvent(m);
                             ProgramEngine::run(s);
                         }
 
@@ -169,7 +169,7 @@ namespace Service {
             // MQTT
             auto date = TimeClient::getNTPClient().getFormattedDate();
             auto topic = String(Config::system.id + "/" + domain + "/" + sender + "/event");
-            auto json = HomeGenie::createModuleParameter(eventPath, m.value.c_str(), date.c_str());
+            auto json = HomeGenie::createModuleParameter(eventPath, m->value.c_str(), date.c_str());
             auto details = String(json);
             free((void*)json);
             netManager->getMQTTServer().broadcast(&topic, &details);
@@ -179,7 +179,7 @@ namespace Service {
 #endif
 #ifndef DISABLE_SSE
             // SSE
-            netManager->getHttpServer().sendSSEvent(domain, sender, eventPath, m.value);
+            netManager->getHttpServer().sendSSEvent(domain, sender, eventPath, m->value);
 #endif
             // WS
             if (netManager->getWebSocketServer().connectedClients() > 0) {
@@ -211,7 +211,7 @@ namespace Service {
                 packer.pack(sender);
                 packer.pack("");
                 packer.pack(eventPath);
-                packer.pack(m.value.c_str());
+                packer.pack(m->value.c_str());
                 netManager->getWebSocketServer().broadcastBIN(packer.data(), packer.size());
                 packer.clear();
             }
@@ -243,14 +243,14 @@ namespace Service {
         return matchesConditions;
     }
 
-    void EventRouter::signalEvent(QueuedMessage m) {
+    void EventRouter::signalEvent(const std::shared_ptr<Service::QueuedMessage>& m) {
         if (ESP_WIFI_STATUS == WL_CONNECTED) {
             bool updated = false;
             for (int i = 0; i < eventsQueue.size(); i++) {
                 auto qm = eventsQueue.get(i);
-                if (qm.domain == m.domain && qm.sender == m.sender && qm.event == m.event && qm.type == m.type) {
-                    qm.data = m.data;
-                    qm.value = m.value;
+                if (qm->domain == m->domain && qm->sender == m->sender && qm->event == m->event && qm->type == m->type) {
+                    qm->data = m->data;
+                    qm->value = m->value;
                     updated = true;
                     break;
                 }

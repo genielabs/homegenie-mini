@@ -30,7 +30,6 @@
 namespace UI { namespace Activities { namespace Examples {
 
     AnalogClockActivity::AnalogClockActivity() {
-        setDrawInterval(100);  // Task.h - 100ms loop frequency
 #ifdef BOARD_HAS_PSRAM
         setColorDepth(lgfx::rgb565_2Byte);
 #else

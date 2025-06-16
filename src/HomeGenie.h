@@ -112,11 +112,11 @@ namespace Service {
             if (program->address == MQTT_NETWORK_CONFIGURATION) {
                 auto mqttNetwork = programs.getItem(MQTT_NETWORK_CONFIGURATION);
                 mqttNetwork->setProperty(IOEventPaths::Program_Status, "Running");
-                QueuedMessage m;
-                m.domain = IOEventDomains::HomeAutomation_HomeGenie_Automation;
-                m.sender = MQTT_NETWORK_CONFIGURATION;
-                m.event = IOEventPaths::Program_Status;
-                m.value = "Running";
+                auto m = std::make_shared<QueuedMessage>();
+                m->domain = IOEventDomains::HomeAutomation_HomeGenie_Automation;
+                m->sender = MQTT_NETWORK_CONFIGURATION;
+                m->event = IOEventPaths::Program_Status;
+                m->value = "Running";
                 eventRouter.signalEvent(m);
                 netManager.getMQTTClient().enable();
             }
@@ -128,11 +128,11 @@ namespace Service {
             if (program->address == MQTT_NETWORK_CONFIGURATION) {
                 auto mqttNetwork = programs.getItem(MQTT_NETWORK_CONFIGURATION);
                 mqttNetwork->setProperty(IOEventPaths::Program_Status, "Stopped");
-                QueuedMessage m;
-                m.domain = IOEventDomains::HomeAutomation_HomeGenie_Automation;
-                m.sender = MQTT_NETWORK_CONFIGURATION;
-                m.event = IOEventPaths::Program_Status;
-                m.value = "Stopped";
+                auto m = std::make_shared<QueuedMessage>();
+                m->domain = IOEventDomains::HomeAutomation_HomeGenie_Automation;
+                m->sender = MQTT_NETWORK_CONFIGURATION;
+                m->event = IOEventPaths::Program_Status;
+                m->value = "Stopped";
                 eventRouter.signalEvent(m);
                 netManager.getMQTTClient().disable();
             }

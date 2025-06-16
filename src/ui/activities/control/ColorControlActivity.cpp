@@ -298,7 +298,7 @@ namespace UI { namespace Activities { namespace Control {
         // Emit event
         auto color = hsvToNormalizedString(hsv);
         module.setProperty(IOEventPaths::Sensor_ColorHsv, color);
-        auto me = QueuedMessage(&module, IOEventPaths::Sensor_ColorHsv, color);
+        auto me = std::make_shared<QueuedMessage>(&module, IOEventPaths::Sensor_ColorHsv, color);
         HomeGenie::getInstance()->getEventRouter().signalEvent(me);
     }
 
@@ -307,7 +307,7 @@ namespace UI { namespace Activities { namespace Control {
         auto l = data.value / 100.0f;
         auto level = data.isOn ? String(l, 3) : String("0");
         module.setProperty(IOEventPaths::Sensor_Level, level);
-        auto me = QueuedMessage(&module, IOEventPaths::Sensor_Level, level);
+        auto me = std::make_shared<QueuedMessage>(&module, IOEventPaths::Sensor_Level, level);
         HomeGenie::getInstance()->getEventRouter().signalEvent(me);
     }
 
