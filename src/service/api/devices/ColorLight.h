@@ -109,7 +109,7 @@ namespace Service { namespace API { namespace devices {
         void loop() override;
         bool handleRequest(APIRequest*, ResponseCallback*) override;
 
-        void setColor(float h, float s, float v, unsigned long transition);
+        void setColor(float h, float s, float v, long transition = -1);
 
         void onSetColor(std::function<void(LightColor)> callback) {
             setColorCallback = std::move(callback);

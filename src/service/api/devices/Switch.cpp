@@ -70,7 +70,7 @@ namespace Service { namespace API { namespace devices {
     }
 
     bool Switch::canHandleDomain(String* domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        return domain->equals(module->domain);
     }
 
     bool Switch::handleEvent(IIOEventSender *sender,

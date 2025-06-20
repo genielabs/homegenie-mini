@@ -93,7 +93,7 @@ namespace Service { namespace API { namespace devices {
     }
 
     bool Button::canHandleDomain(String* domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        return domain->equals(module->domain);
     }
 
     bool Button::handleEvent(IIOEventSender *sender,

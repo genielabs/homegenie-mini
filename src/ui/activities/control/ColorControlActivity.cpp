@@ -56,7 +56,7 @@ namespace UI { namespace Activities { namespace Control {
     }
 
     bool ColorControlActivity::canHandleDomain(String *domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        return domain->equals(module.domain);
     }
 
     bool ColorControlActivity::handleRequest(APIRequest *request, ResponseCallback *callback) {

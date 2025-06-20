@@ -59,7 +59,7 @@ namespace IO { namespace Components {
         int stopUs = 1500;
 
         const int stepSpeedMax = 10;
-        int stepSpeed = 5; // [1 .. <stepSpeedMax>]
+        int stepSpeed = 10; // [1 .. <stepSpeedMax>]
 
         float minAngle = 0;
         float maxAngle = 180;
@@ -94,7 +94,7 @@ namespace IO { namespace Components {
 
             // Read stored config or apply default values.
             auto k = K(AngleSpeed, idx);
-            configure(k, Config::getSetting(k, "5").c_str());
+            configure(k, Config::getSetting(k, "10").c_str());
             k = K(AngleMin, idx);
             configure(k, Config::getSetting(k, "0").c_str());
             k = K(AngleMax, idx);

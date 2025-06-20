@@ -80,7 +80,7 @@ namespace Service { namespace API { namespace devices {
     }
 
     bool Camera::canHandleDomain(String* domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        return domain->equals(module->domain);
     }
 
     bool Camera::handleEvent(IIOEventSender *sender,

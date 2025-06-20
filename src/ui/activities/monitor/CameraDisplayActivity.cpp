@@ -77,7 +77,7 @@ namespace UI { namespace Activities { namespace Monitor {
     }
 
     bool CameraDisplayActivity::canHandleDomain(String *domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        return domain->equals(module.domain);
     }
 
     bool CameraDisplayActivity::handleRequest(APIRequest *request, ResponseCallback *callback) {
@@ -278,11 +278,14 @@ namespace UI { namespace Activities { namespace Monitor {
         if (httpCode == HTTP_CODE_OK) {
             int len = http.getSize();
             uint8_t* imageBuffer = nullptr;
-#ifdef BOARD_HAS_PSRAM
-            imageBuffer = (uint8_t*)ps_malloc(len);
-#else
-            imageBuffer = (uint8_t*)malloc(len);
+#ifdef ESP32
+            if (heap_caps_get_total_size(MALLOC_CAP_SPIRAM) > 0) {
+                imageBuffer = (uint8_t*) heap_caps_malloc(len, MALLOC_CAP_SPIRAM);
+            }
 #endif
+            if (!imageBuffer) {
+                imageBuffer = (uint8_t*)malloc(len);
+            }
             if (!imageBuffer) {
                 feedError = "Could not allocate image buffer.";
                 http.end();
@@ -367,24 +370,29 @@ namespace UI { namespace Activities { namespace Monitor {
                         }
                         // copy new buffer to imageData for next onDraw() refresh
                         if (!c->imageData) {
-#ifdef BOARD_HAS_PSRAM
-                            c->imageData = (uint8_t *)ps_malloc(c->bufferSize);
-#else
-                            c->imageData = (uint8_t *)malloc(c->bufferSize);
+#ifdef ESP32
+                            if (heap_caps_get_total_size(MALLOC_CAP_SPIRAM) > 0) {
+                                c->imageData = (uint8_t*) heap_caps_malloc(c->bufferSize, MALLOC_CAP_SPIRAM);
+                            }
 #endif
-                            memcpy(c->imageData, bufferData, c->bufferSize);
-                            c->imageLen = c->bufferSize;
-                            // Calculate actual display FPS
-                            fps++;
-                            if (millis() - fpsStart > 5000) {
-                                c->averageFps = ((float) fps / 5.0f);
-                                fpsStart = millis();
-                                if (c->averageFps < 1 && fps > 0) {
-                                    c->feedError = "Bad link quality.";
-                                } else {
-                                    c->feedError = "";
+                            if (!c->imageData) {
+                                c->imageData = (uint8_t *)malloc(c->bufferSize);
+                            }
+                            if (c->imageData) {
+                                memcpy(c->imageData, bufferData, c->bufferSize);
+                                c->imageLen = c->bufferSize;
+                                // Calculate actual display FPS
+                                fps++;
+                                if (millis() - fpsStart > 5000) {
+                                    c->averageFps = ((float) fps / 5.0f);
+                                    fpsStart = millis();
+                                    if (c->averageFps < 1 && fps > 0) {
+                                        c->feedError = "Bad link quality.";
+                                    } else {
+                                        c->feedError = "";
+                                    }
+                                    fps = 0;
                                 }
-                                fps = 0;
                             }
                         }
                     }

@@ -211,14 +211,17 @@ namespace Net { namespace MQTT {
         }
 
         const uint32_t buffer_size = remaining_length + rc + MQTTBROKER_VHEADER_MIN_LENGTH;
-
-#ifdef BOARD_HAS_PSRAM
-        auto answer_msg = (uint8_t *) ps_malloc(buffer_size);
-#else
-        auto answer_msg = (uint8_t *) malloc(buffer_size);
+        uint8_t* answer_msg = nullptr;
+#ifdef ESP32
+        if (heap_caps_get_total_size(MALLOC_CAP_SPIRAM) > 0) {
+            answer_msg = (uint8_t*) heap_caps_malloc(buffer_size, MALLOC_CAP_SPIRAM);
+        }
 #endif
+        if (!answer_msg) {
+            answer_msg = (uint8_t*) malloc(buffer_size);
+        }
 
-        if (answer_msg == nullptr) {
+        if (!answer_msg) {
             Serial.println("Error: could not allocate message buffer.");
             return;
         }

@@ -38,8 +38,10 @@ namespace Service { namespace API { namespace devices {
     void Dimmer::loop() {
 
         if (level.isAnimating) {
-            if (setLevelCallback != nullptr) {
-                setLevelCallback(level.getLevel());
+            auto l = level.getLevel();
+            if (setLevelCallback != nullptr && l != lastCallbackLevel) {
+                lastCallbackLevel = l;
+                setLevelCallback(l);
             }
         }
 
@@ -52,7 +54,7 @@ namespace Service { namespace API { namespace devices {
         if (m != nullptr && command->Command == ControlApi::Control_Level) {
 
             auto l = command->getOption(0).toFloat() / 100.0f; // 0.00 - 1.00  0 = OFF, 1.00 = MAX
-            auto transition = command->getOption(1).isEmpty() ? defaultTransitionMs : command->getOption(1).toFloat(); // ms
+            auto transition = command->getOption(1).isEmpty() ? -1 : command->getOption(1).toInt(); // ms
 
             setLevel(l, transition);
 
@@ -64,21 +66,21 @@ namespace Service { namespace API { namespace devices {
         return false;
     }
 
-    void Dimmer::dim(float transition) {
+    void Dimmer::dim(long transition) {
         if (level.getLevel() <= 0.05) return;
         auto l = level.getLevel() - 0.05f;
         if (l < 0.05) l = 0.05;
         setLevel(l, transition);
     }
-    void Dimmer::bright(float transition) {
+    void Dimmer::bright(long transition) {
         if (level.getLevel() == 1) return;
         auto l = level.getLevel() + 0.05f;
         if (l > 1) l = 1;
         setLevel(l, transition);
     }
-    void Dimmer::setLevel(float l, float transition) {
+    void Dimmer::setLevel(float l, long transition) {
 
-        level.setLevel(l, transition);
+        level.setLevel(l, transition >= 0 ? transition : getDefaultTransition());
 
         // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
         auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);

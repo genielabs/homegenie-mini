@@ -481,11 +481,13 @@ namespace Service {
         ssize_t size = snprintf(nullptr, 0, parameterTemplate,
                                 name, v.c_str(), "", "", timestamp
         ) + 1;
-#ifdef BOARD_HAS_PSRAM
-        char *parameterJson = (char *) ps_malloc(size);
-#else
-        char *parameterJson = (char *) malloc(size);
-#endif
+
+        char* parameterJson = HomeGenie::allocateJsonBuffer(size);
+        if (!parameterJson) {
+            Serial.printf("ERROR: Unable to allocate %d bytes of memory for createModuleParameter!\n", size);
+            return nullptr;
+        }
+
         snprintf(parameterJson, size, parameterTemplate,
                  name, v.c_str(), "", "", timestamp
         );
@@ -509,11 +511,13 @@ namespace Service {
                                 domain, address,
                                 parameters
         ) + 1;
-#ifdef BOARD_HAS_PSRAM
-        char *moduleJson = (char *) ps_malloc(size);
-#else
-        char *moduleJson = (char *) malloc(size);
-#endif
+
+        char* moduleJson = HomeGenie::allocateJsonBuffer(size);
+        if (!moduleJson) {
+            Serial.printf("ERROR: Unable to allocate %d bytes of memory for createModule!\n", size);
+            return nullptr;
+        }
+
         snprintf(moduleJson, size, moduleTemplate,
                  name, d.c_str(), deviceType,
                  domain, address,

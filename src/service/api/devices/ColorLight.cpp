@@ -34,7 +34,7 @@ namespace Service { namespace API { namespace devices {
         module->setProperty(IOEventPaths::Status_ColorHsb, "0,0,1,.4");
 
         onSetLevel([this](float l) {
-            color.setColor(color.getHue(), color.getSaturation(), l, defaultTransitionMs);
+            color.setColor(color.getHue(), color.getSaturation(), l, getDefaultTransition());
         });
     }
 
@@ -70,7 +70,7 @@ namespace Service { namespace API { namespace devices {
                 hsvString = hsvString.substring(ci + 1);
             } while (oi < 4);
 
-            setColor(o[0], o[1], o[2], o[3]*1000);
+            setColor(o[0], o[1], o[2], (long)o[3] * 1000);
 
             responseCallback->writeAll(ApiHandlerResponseText::OK);
             return true;
@@ -80,9 +80,9 @@ namespace Service { namespace API { namespace devices {
         return false;
     }
 
-    void ColorLight::setColor(float h, float s, float v, unsigned long transition) {
+    void ColorLight::setColor(float h, float s, float v, long transition) {
 
-        color.setColor(h, s, v, transition);
+        color.setColor(h, s, v, transition >= 0 ? transition : getDefaultTransition());
 
         // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
         auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);

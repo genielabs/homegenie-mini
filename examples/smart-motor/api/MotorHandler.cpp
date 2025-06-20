@@ -66,75 +66,80 @@ namespace Service { namespace API {
 //                "|motor_stepper=Stepper"
             )->withConfigKey(K(MotorType, i))->addUpdateListener(optionUpdateListener);
 
-            // Servo options
+            auto type = Config::getSetting(K(MotorType, i));
+            if (type.equals("ServoEncoder")) { // "ServoEncoder"
 
-            motorModule->addWidgetOption(
-                    // name, value
-                    Options::Motor_Servo_AngleSpeed, "5",
-                    // field type
-                    UI_WIDGETS_FIELD_TYPE_NUMBER
-                    // label
-                    ":speed"
-                    // min:max:default
-                    ":1:10:5"
-            )->withConfigKey(K(AngleSpeed, i))->addUpdateListener(optionUpdateListener);
+                // ServoEncoder options
+                motorModule->addWidgetOption(
+                        // name, value
+                        Options::Motor_ServoEncoder_Speed, "5",
+                        // field type
+                        UI_WIDGETS_FIELD_TYPE_NUMBER
+                        // label
+                        ":speed"
+                        // min:max:default
+                        ":1:10:5"
+                )->withConfigKey(K(MotorSpeed, i))->addUpdateListener(optionUpdateListener);
 
-            motorModule->addWidgetOption(
-                    // name, value
-                    Options::Motor_Servo_AngleMin, "0",
-                    // field type
-                    UI_WIDGETS_FIELD_TYPE_NUMBER
-                    // label
-                    ":angle_min_value"
-                    // min:max:default
-                    ":0:180:0"
-            )->withConfigKey(K(AngleMin, i))->addUpdateListener(optionUpdateListener);
+                motorModule->addWidgetOption(
+                        // name, value
+                        Options::Motor_ServoEncoder_Steps, "15",
+                        // field type
+                        UI_WIDGETS_FIELD_TYPE_NUMBER
+                        // label
+                        ":motor_steps"
+                        // min:max:default
+                        ":1:100:15"
+                )->withConfigKey(K(MotorSteps, i))->addUpdateListener(optionUpdateListener);
 
-            motorModule->addWidgetOption(
-                    // name, value
-                    Options::Motor_Servo_AngleMax, "180",
-                    // field type
-                    UI_WIDGETS_FIELD_TYPE_NUMBER
-                    // label
-                    ":angle_max_value"
-                    // min:max:default
-                    ":0:180:180"
-            )->withConfigKey(K(AngleMax, i))->addUpdateListener(optionUpdateListener);
+                motorModule->addWidgetOption(
+                        // name, value (shown as button text)
+                        Options::Motor_ServoEncoder_Calibrate, Calibration::StartLabel,
+                        // field type
+                        UI_WIDGETS_FIELD_TYPE_BUTTON
+                        // label
+                        ":calibration"
+                        // API command to call on click
+                        ":Motor.Calibrate"
+                )->addUpdateListener(optionUpdateListener);
 
+            } else { // "Servo" or default
 
-            // ServoEncoder options
-            motorModule->addWidgetOption(
-                    // name, value
-                    Options::Motor_ServoEncoder_Speed, "5",
-                    // field type
-                    UI_WIDGETS_FIELD_TYPE_NUMBER
-                    // label
-                    ":speed"
-                    // min:max:default
-                    ":1:10:5"
-            )->withConfigKey(K(MotorSpeed, i))->addUpdateListener(optionUpdateListener);
+                // Servo options
+                motorModule->addWidgetOption(
+                        // name, value
+                        Options::Motor_Servo_AngleSpeed, "10",
+                        // field type
+                        UI_WIDGETS_FIELD_TYPE_NUMBER
+                        // label
+                        ":speed"
+                        // min:max:default
+                        ":1:10:10"
+                )->withConfigKey(K(AngleSpeed, i))->addUpdateListener(optionUpdateListener);
 
-            motorModule->addWidgetOption(
-                    // name, value
-                    Options::Motor_ServoEncoder_Steps, "15",
-                    // field type
-                    UI_WIDGETS_FIELD_TYPE_NUMBER
-                    // label
-                    ":motor_steps"
-                    // min:max:default
-                    ":1:100:15"
-            )->withConfigKey(K(MotorSteps, i))->addUpdateListener(optionUpdateListener);
+                motorModule->addWidgetOption(
+                        // name, value
+                        Options::Motor_Servo_AngleMin, "0",
+                        // field type
+                        UI_WIDGETS_FIELD_TYPE_NUMBER
+                        // label
+                        ":angle_min_value"
+                        // min:max:default
+                        ":0:180:0"
+                )->withConfigKey(K(AngleMin, i))->addUpdateListener(optionUpdateListener);
 
-            motorModule->addWidgetOption(
-                    // name, value (shown as button text)
-                    Options::Motor_ServoEncoder_Calibrate, Calibration::StartLabel,
-                    // field type
-                    UI_WIDGETS_FIELD_TYPE_BUTTON
-                    // label
-                    ":calibration"
-                    // API command to call on click
-                    ":Motor.Calibrate"
-            )->addUpdateListener(optionUpdateListener);
+                motorModule->addWidgetOption(
+                        // name, value
+                        Options::Motor_Servo_AngleMax, "180",
+                        // field type
+                        UI_WIDGETS_FIELD_TYPE_NUMBER
+                        // label
+                        ":angle_max_value"
+                        // min:max:default
+                        ":0:180:180"
+                )->withConfigKey(K(AngleMax, i))->addUpdateListener(optionUpdateListener);
+
+            }
 
         }
 

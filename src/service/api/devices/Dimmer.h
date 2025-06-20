@@ -70,18 +70,26 @@ namespace Service { namespace API { namespace devices {
 
         bool handleRequest(APIRequest*, ResponseCallback*) override;
 
-        void dim(float transition = defaultTransitionMs);
-        void bright(float transition = defaultTransitionMs);
-        void setLevel(float l, float transition);
+        void dim(long transition = -1);
+        void bright(long transition = -1);
+        void setLevel(float l, long transition = -1);
+
+        unsigned long getDefaultTransition() const {
+            return defaultTransitionMs;
+        }
+        void setDefaultTransition(unsigned long transitionMs) {
+            defaultTransitionMs = transitionMs;
+        }
 
         void onSetLevel(std::function<void(float)> callback) {
             setLevelCallback = std::move(callback);
         }
     private:
         std::function<void(float)> setLevelCallback = nullptr;
+        float lastCallbackLevel = 0;
+        unsigned long defaultTransitionMs = 300;
     protected:
         DimmerLevel level;
-        static const unsigned long defaultTransitionMs = 400;
     };
 
 }}}

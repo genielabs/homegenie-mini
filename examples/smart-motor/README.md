@@ -13,13 +13,25 @@ The default version of this firmware can control up to 8 motors simultaneously.
 In addition to default system options the following configuration options are available,
 where `<n>` is the number of the motor (from 1 to 8):
 
-| Key            | Description                            | Default                                 |
-|----------------|----------------------------------------|-----------------------------------------|
-| `stld-pin`     | Status LED (RGB) pin                   | -1 (-1=not used)                        |
-| `stld-typ`     | Status LED type                        | RGB/RGBW order mask (see code for ref.) |
-| `stld-spd`     | Status LED speed                       | 0 (0=800kHz, 256=400kHz)                |
-| `motr-typ#<n>` | Motor type ('Servo' or 'ServoEncoder') | 'Servo'                                 |   
-| `motr-pin#<n>` | Motor signal GPIO#                     | 6                                       |
+| Key            | Description                                    | Default                                 |
+|----------------|------------------------------------------------|-----------------------------------------|
+| `stld-pin`     | Status LED (RGB) pin                           | -1 (-1=not used)                        |
+| `stld-typ`     | Status LED type                                | RGB/RGBW order mask (see code for ref.) |
+| `stld-spd`     | Status LED speed                               | 0 (0=800kHz, 256=400kHz)                |
+| `motr-typ#<n>` | Motor type (Servo or ServoEncoder)             | Servo                                   |   
+| `motr-pin#<n>` | Motor signal GPIO#                             | 6                                       |
+| `rcrcar-4wd`   | Enable configuration for FPV-RC-Car project    |                                         | 
+| `robotc-arm`   | Enable configuration for Robot-Arm project     |                                         |
+
+
+When `rcrcar-4wd` is set to `true` motors `S1`, `S2`, `S3`, `S4` will be configured to
+operate at maximum speed (10). It will also add `Motion Control` and `Steering Control`
+modules for precise control of the *FPV-RC-Car* motion and steering.
+
+When `robotc-arm` is set to `true` and also `rcrcar-4wd` is set to `true`, then
+motors `S5`, `S6`, `S7`, `S8` will be configured to operate at half speed (5) to
+enable smoother *Robotic Arm* movements. Otherwise, if `rcrcar-4wd` is set to `false`
+then the configured motors will be `S1`, `S2`, `S3`, `S4`.
 
 
 ### Parameters for `motr-typ`= '`ServoEncoder`'

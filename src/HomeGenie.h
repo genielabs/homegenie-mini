@@ -257,6 +257,19 @@ namespace Service {
 #endif
         }
 
+        static char* allocateJsonBuffer(size_t size) {
+            char* buffer = nullptr;
+#ifdef ESP32
+            if (heap_caps_get_total_size(MALLOC_CAP_SPIRAM) > 0) {
+                buffer = (char*) heap_caps_malloc(size, MALLOC_CAP_SPIRAM);
+            }
+#endif
+            if (!buffer) {
+                buffer = (char*) malloc(size);
+            }
+            return buffer;
+        }
+
     };
 
 }

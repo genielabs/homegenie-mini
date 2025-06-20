@@ -80,7 +80,7 @@ namespace UI { namespace Activities { namespace Control {
     }
 
     bool SwitchControlActivity::canHandleDomain(String *domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        return domain->equals(module.domain);
     }
 
     bool SwitchControlActivity::handleRequest(APIRequest *request, ResponseCallback *callback) {

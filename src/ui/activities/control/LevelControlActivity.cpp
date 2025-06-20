@@ -53,7 +53,7 @@ namespace UI { namespace Activities { namespace Control {
     }
 
     bool LevelControlActivity::canHandleDomain(String *domain) {
-        return domain->equals(IO::IOEventDomains::HomeAutomation_HomeGenie);
+        return domain->equals(module.domain);
     }
 
     bool LevelControlActivity::handleRequest(APIRequest *request, ResponseCallback *callback) {
