@@ -31,24 +31,26 @@
 
 namespace Service { namespace API {
 
-    String APIRequest::getOption(unsigned int optionIndex) {
-        unsigned int currentIndex = 0, ci = 0;
-        int oi = OptionsString.indexOf('/');
-        if (oi < 0) return Utility::urlDecode(OptionsString);
-        String option;
-        do {
-            option = OptionsString.substring(ci, oi);
-            if (currentIndex == optionIndex)
-                return Utility::urlDecode(option);
-            ci = oi+1;
-            currentIndex++;
-            oi = OptionsString.indexOf('/', ci);
-        } while (currentIndex < optionIndex);
-        if (currentIndex == optionIndex) {
-            String s = OptionsString.substring(ci, oi);
-            return Utility::urlDecode(s);
+    String APIRequest::getOption(unsigned int optionIndex) const {
+        if (OptionsString.isEmpty()) {
+            return "";
         }
-        return "";
+        int startIndex = 0;
+        for (unsigned int i = 0; i < optionIndex; ++i) {
+            int separatorPos = OptionsString.indexOf('/', startIndex);
+            if (separatorPos == -1) {
+                return "";
+            }
+            startIndex = separatorPos + 1;
+        }
+        int endIndex = OptionsString.indexOf('/', startIndex);
+        String result;
+        if (endIndex == -1) {
+            result = OptionsString.substring(startIndex);
+        } else {
+            result = OptionsString.substring(startIndex, endIndex);
+        }
+        return Utility::urlDecode(result);
     }
 
     /// Parse an API command request URL

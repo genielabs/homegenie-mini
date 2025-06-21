@@ -70,7 +70,7 @@ namespace Service { namespace API { namespace devices {
                 hsvString = hsvString.substring(ci + 1);
             } while (oi < 4);
 
-            setColor(o[0], o[1], o[2], (long)o[3] * 1000);
+            setColor(o[0], o[1], o[2], o[3] * 1000);
 
             responseCallback->writeAll(ApiHandlerResponseText::OK);
             return true;

@@ -68,7 +68,7 @@ void setup() {
 
     // Adds custom control modules
 
-    is4wdRcCar = Config::getSetting("rc-car-4wd").equals("true");
+    is4wdRcCar = Config::getSetting("rcrcar-4wd").equals("true");
     if (is4wdRcCar) {
 
         // Add *Motion* and *Steering* control modules if this device is for the
@@ -90,7 +90,7 @@ void setup() {
         if (list->size() >= 4) {
             for (auto i = 0; i < 4; i++) {
                 list->get(i)->setProperty(WidgetApi::Preference::HomeLevel, "50");
-                list->get(i)->setProperty(WidgetApi::Preference::AutoHome, "true");
+                //list->get(i)->setProperty(WidgetApi::Preference::AutoHome, "true");
             }
             // Module S1 to S4 are the 4WD motors
             auto motionControl = new Dimmer(IO::IOEventDomains::Automation_Components, "MT1", "Motion Control");
@@ -121,7 +121,8 @@ void setup() {
                 ((MotorModule*) s3)->motorControl->setLevel(100 - level);
                 ((MotorModule*) s4)->motorControl->setLevel(level);
             });
-            HomeGenie::getInstance()->addAPIHandler(motionControl);
+            HomeGenie::getInstance()->addAPIHandler(3, motionControl);
+
             auto steerControl = new Dimmer(IO::IOEventDomains::Automation_Components, "ST1", "Steering Control");
             steerControl->module->type = ModuleType::Motor;
             steerControl->module->setProperty(WidgetApi::DisplayModule, "homegenie/generic/shutter");
@@ -132,7 +133,6 @@ void setup() {
             steerControl->setLevel(0.5f);
             steerControl->onSetLevel([list](float level) {
                 static float currentLevel = 0;
-                Serial.println(level);
                 if (level == currentLevel) {
                     return;
                 }
@@ -151,7 +151,7 @@ void setup() {
                 ((MotorModule*) s3)->motorControl->setLevel(level);
                 ((MotorModule*) s4)->motorControl->setLevel(level);
             });
-            HomeGenie::getInstance()->addAPIHandler(steerControl);
+            HomeGenie::getInstance()->addAPIHandler(4, steerControl);
 
             // initialize motors
             auto arm = std::vector<String>{"S1", "S2", "S3", "S4"};

@@ -39,17 +39,17 @@ namespace Service { namespace API { namespace devices {
         void setLevel(float l, unsigned long transitionMs) {
             duration = transitionMs;
             if (l < 0) l = 0;
-            else if (l > 1) l = 1;
+            else if (l > 1.0f) l = 1.0f;
             ol = level;
             level = l;
             startTime = millis();
             isAnimating = true;
         }
         float getProgress() {
-            float p = (float)(millis() - startTime) / (float)duration;
-            if (p >= 1) {
+            float p = (duration > 0) ? (float)(millis() - startTime) / (float)duration : 1.0f;
+            if (p >= 1.0f) {
                 isAnimating = false;
-                p = 1;
+                p = 1.0f;
             }
             return p;
         }

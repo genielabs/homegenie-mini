@@ -73,9 +73,9 @@ namespace Service { namespace API { namespace devices {
         setLevel(l, transition);
     }
     void Dimmer::bright(long transition) {
-        if (level.getLevel() == 1) return;
+        if (level.getLevel() == 1.0f) return;
         auto l = level.getLevel() + 0.05f;
-        if (l > 1) l = 1;
+        if (l > 1.0f) l = 1.0f;
         setLevel(l, transition);
     }
     void Dimmer::setLevel(float l, long transition) {

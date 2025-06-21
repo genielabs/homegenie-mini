@@ -48,7 +48,7 @@ namespace Service { namespace API {
         String Command;
         String OptionsString;
         String Data;
-        String getOption(unsigned int optionIndex);
+        String getOption(unsigned int optionIndex) const;
         static APIRequest parse(String command);
     };
 

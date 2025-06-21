@@ -148,6 +148,13 @@ namespace Service {
         bool addAPIHandler(APIHandler* handler);
         /**
          *
+         * @param index
+         * @param handler
+         * @return
+         */
+        bool addAPIHandler(int index, APIHandler* handler);
+        /**
+         *
          * @param handler
          * @return
          */

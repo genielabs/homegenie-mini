@@ -202,6 +202,10 @@ namespace Service {
     }
 #endif
 
+    bool HomeGenie::addAPIHandler(int index, APIHandler* handler) {
+        handlers.add(index, handler);
+        return true;
+    }
     bool HomeGenie::addAPIHandler(APIHandler* handler) {
         handlers.add(handler);
         return true;
