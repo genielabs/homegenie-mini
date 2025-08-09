@@ -66,10 +66,10 @@ namespace Service { namespace API { namespace devices {
     private:
         LinkedList<Module*> moduleList;
         std::function<void(SwitchStatus)> setStatusCallback = nullptr;
-        void setStatus(SwitchStatus s);
     protected:
         SwitchStatus status = SWITCH_STATUS_NOT_SET;
         float onLevel = 1;
+        void setStatus(SwitchStatus s);
     };
 
 }}}

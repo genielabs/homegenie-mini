@@ -108,20 +108,21 @@ namespace Service { namespace API { namespace devices {
 
         status = s;
 
-        if (setStatusCallback != nullptr) {
-            setStatusCallback(status);
-        }
+        float l = status == SWITCH_STATUS_ON ? onLevel : 0;
+
+        auto eventPath = IOEventPaths::Status_Level;
+        auto eventValue = String(l);
+        module->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
 
         // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-        auto eventPath = IOEventPaths::Status_Level;
         auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
         if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
-            float l = status == SWITCH_STATUS_ON ? onLevel : 0;
-            auto eventValue = String(l);
             auto msg = std::make_shared<QueuedMessage>(module, eventPath, eventValue, &l, IOEventDataType::Float);
-            module->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
             HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
         }
 
+        if (setStatusCallback != nullptr) {
+            setStatusCallback(status);
+        }
     }
 }}}

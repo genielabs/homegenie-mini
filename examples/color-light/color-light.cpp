@@ -36,14 +36,15 @@ void setup() {
     auto miniModule = homeGenie->getDefaultModule();
     miniModule->name = "LED Controller";
 
-    // Read stored config
+    // Read stored config (common)
     ledsPin = (int16_t)Config::getSetting(Configuration::LedsPin).toInt();
-    pixelsType = (int16_t)Config::getSetting(Configuration::LedsType).toInt();
-    pixelsSpeed = (int16_t)Config::getSetting(Configuration::LedsSpeed).toInt();
     // the following settings can also be configured from the app
     ledsCount = abs(Config::getSetting(Configuration::LedsCount).toInt());
     maxPower = Config::getSetting(Configuration::LedsPower).toInt();
     if (maxPower <= 0) maxPower = DEFAULT_MAX_POWER;
+    // NeoPixels WS2810B RGB LED config
+    pixelsType = (int16_t)Config::getSetting(Configuration::LedsType).toInt();
+    pixelsSpeed = (int16_t)Config::getSetting(Configuration::LedsSpeed).toInt();
 
     // Add UI options to configure this device using the app
     setupControllerOptions(miniModule);
@@ -70,7 +71,7 @@ void setup() {
         // colorLight is the main control module
         colorLight->onSetColor([](LightColor color) {
             statusLed.setCurrentColor(color);
-            fx_reset(pixels, color);
+            fx_reset(color);
         });
 
         auto module = colorLight->module;
@@ -123,7 +124,7 @@ void loop()
                 // Strobe tick ON: show strobe light for `strobeFxDurationMs` milliseconds (25)
                 auto c = LightColor();
                 c.setColor(0, 0, 1, 0);
-                fx_solid(pixels, c, 0);
+                fx_solid(ledsCount, c, 0);
                 strobeOff = false;
 
             } else {
@@ -131,26 +132,25 @@ void loop()
                 // Apply selected effect (FX.Style)
 
                 auto currentColor = statusLed.getCurrentColor();
-                // apply selected light style
                 switch (currentStyleIndex) {
                     case LightStyles::RAINBOW:
-                        fx_rainbow(pixels, currentColor, 1);
+                        fx_rainbow(ledsCount, currentColor, 1);
                         break;
                     case LightStyles::RAINBOW_2:
-                        fx_rainbow(pixels, currentColor, 2);
+                        fx_rainbow(ledsCount, currentColor, 2);
                         break;
                     case LightStyles::WHITE_STRIPES:
-                        fx_white_stripes(pixels, currentColor);
+                        fx_white_stripes(ledsCount, currentColor);
                         break;
                     case LightStyles::WHITE_STRIPES_2:
-                        fx_white_stripes(pixels, currentColor, true);
+                        fx_white_stripes(ledsCount, currentColor, true);
                         break;
                     case LightStyles::KALEIDOSCOPE:
-                        fx_kaleidoscope(pixels, currentColor);
+                        fx_kaleidoscope(ledsCount, currentColor);
                         break;
                     case LightStyles::SOLID:
                     default:
-                        fx_solid(pixels, currentColor, strobeFxTickMs > 0 ? 0 : 200);
+                        fx_solid(ledsCount, currentColor, strobeFxTickMs > 0 ? 0 : 200);
                         break;
                 }
 

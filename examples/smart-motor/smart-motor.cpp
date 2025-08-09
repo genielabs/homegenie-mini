@@ -70,6 +70,7 @@ void setup() {
 
     is4wdRcCar = Config::getSetting("rcrcar-4wd").equals("true");
     if (is4wdRcCar) {
+        Config::system.friendlyName = "Smart Car";
 
         // Add *Motion* and *Steering* control modules if this device is for the
         // FPV 4WD RC Car https://homegenie.it/mini/1.2/examples/fpv-rc-car/
@@ -169,6 +170,9 @@ void setup() {
 
     isRoboticArm = Config::getSetting("robotc-arm").equals("true");
     if (isRoboticArm) {
+        if (!is4wdRcCar) {
+            Config::system.friendlyName = "Robotic Arm";
+        }
         // If this device is for the Robotic Arm only it will be using modules "S1" to "S4".
         // If this device is for RC-CAR with Robotic Arm, arm modules will be "S5" to "S8".
         // Configure Robotic Arm initial position to 0.5

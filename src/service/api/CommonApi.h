@@ -93,8 +93,6 @@ namespace Service { namespace API {
             static const char Scheduling_ModuleEvents[] = "Widget.Implements.Scheduling.ModuleEvents";
         }
         namespace Preference {
-            // color-light
-            static const char AudioLight[] = "Widget.Preference.AudioLight";
             // smart-motor - FPV RC Car controls
             static const char HomeLevel[]  = "Widget.Preference.HomeLevel";
             static const char AutoHome[]   = "Widget.Preference.AutoHome";

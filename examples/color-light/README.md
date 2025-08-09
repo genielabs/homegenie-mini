@@ -14,6 +14,7 @@ In addition to default system options the following configuration options are av
 | `leds-pin` | LED strip GPIO pin number   | -1 (-1=not used)                        |
 | `leds-cnt` | Number of LEDs              | 1 (1 - 200)                             |
 | `leds-spd` | Data transfer speed         | 0 (0=800kHz, 256=400kHz)                |
+| `leds-mod` | Add a module for each LED   | false                                   |
 | `stld-pin` | Status LED (RGB) pin        | -1 (-1=not used)                        |
 | `stld-typ` | Status LED type             | RGB/RGBW order mask (see code for ref.) |
 | `stld-spd` | Status LED speed            | 0 (0=800kHz, 256=400kHz)                |

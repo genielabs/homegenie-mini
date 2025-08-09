@@ -52,6 +52,7 @@ namespace ColorLightApi {
         static const char LedsSpeed[] = "leds-spd";
         static const char LedsCount[] = "leds-cnt";
         static const char LedsPower[] = "leds-pwr";
+        static const char LedsModules[] = "leds-mod";
     }
 
 }
@@ -69,10 +70,13 @@ bool isConfigured = false;
 ColorLight* colorLight;
 
 // LED strip
-uint16_t ledsCount = 0; int16_t ledsPin = -1;
-int16_t pixelsType, pixelsSpeed;
-Adafruit_NeoPixel* pixels = nullptr;
+uint16_t ledsCount = 0;
+int16_t ledsPin = -1;
 uint8_t maxPower = DEFAULT_MAX_POWER;
+// WS2810B RGB LED
+int16_t pixelsType;
+int16_t pixelsSpeed;
+Adafruit_NeoPixel* pixels = nullptr;
 
 // Preset colors (normalized HSV)
 const int presetColorsCount = 7;
@@ -129,6 +133,8 @@ unsigned int strobeFxIntervalMs = 80;  // limit strobe to 10Hz  (20 + 80 -> 100m
 bool strobeOff = true;
 uint8_t currentStyleIndex = 0;
 
+LinkedList<ColorLight*> colorLightList;
+
 void refresh() {
     if (statusLed.isEnabled()) {
         statusLed.getLed()->show();
@@ -139,20 +145,25 @@ void refresh() {
 }
 
 void renderPixels() {
+    float pwr = ((float)maxPower / 100.0f);
     if (pixels != nullptr) {
-        float pwr = ((float)maxPower / 100.0f);
         for (int i = 0; i < ledsCount; i++) {
-            pixels->setPixelColor(i,
-                                  static_cast<int>(round(animatedColors[i]->getRed() * pwr)),
-                                  static_cast<int>(round(animatedColors[i]->getGreen() * pwr)),
-                                  static_cast<int>(round(animatedColors[i]->getBlue() * pwr)));
+            if (animatedColors[i]->getColor(pwr) != pixels->getPixelColor(i) && (!colorLightList.exist(i) || !colorLightList.get(i)->isOn())) {
+                pixels->setPixelColor(i,
+                                      static_cast<int>(round(animatedColors[i]->getRed() * pwr)),
+                                      static_cast<int>(round(animatedColors[i]->getGreen() * pwr)),
+                                      static_cast<int>(round(animatedColors[i]->getBlue() * pwr)));
+            }
         }
     }
     if (statusLed.isEnabled()) {
-        statusLed.getLed()->setPixelColor(0,
-                             static_cast<int>(round(animatedColors[0]->getRed())),
-                             static_cast<int>(round(animatedColors[0]->getGreen())),
-                             static_cast<int>(round(animatedColors[0]->getBlue())));
+        auto c = animatedColors[0];
+        if (c->getColor() != statusLed.getLed()->getPixelColor(0)) {
+            statusLed.getLed()->setPixelColor(0,
+                                 static_cast<int>(round(c->getRed())),
+                                 static_cast<int>(round(c->getGreen())),
+                                 static_cast<int>(round(c->getBlue())));
+        }
     }
 }
 
@@ -166,8 +177,24 @@ void createPixels()
         for (int i = 0; i < ledsCount; i++) {
             pixels->setPixelColor(i, 0, 0, 0);
         }
-        //*/
-        pixels->begin();
+
+        if (Config::getSetting(Configuration::LedsModules, "false").equals("true")) {
+            for (int i = 0; i < ledsCount; i++) {
+                auto address = String("L") + String(i + 1);
+                auto name = String("LED ") + String(i + 1);
+                colorLightList.add(new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), name.c_str()));
+                colorLightList[i]->onSetColor([i](LightColor color) {
+                    float pwr = ((float)maxPower / 100.0f);
+                    auto r = color.getRed() * pwr;
+                    auto g = color.getGreen() * pwr;
+                    auto b = color.getBlue() * pwr;
+                    pixels->setPixelColor(i, r, g, b);
+                    refresh();
+                });
+                homeGenie->addAPIHandler(colorLightList[i]);
+            }
+        }
+
     }
 }
 void disposePixels() {

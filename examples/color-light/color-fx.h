@@ -46,15 +46,13 @@ void fx_init(int count, LightColor& currentColor) {
     }
 }
 
-void fx_reset(Adafruit_NeoPixel* pixels, LightColor& color) {
+void fx_reset(LightColor& color) {
 //    hueOffset = 0;
     hueZoom = 1;
 }
 
-void fx_solid(Adafruit_NeoPixel* pixels, LightColor& color, int transitionMs = 200) {
-    if (pixels == nullptr) return;
-
-    for (int i = 0; i < pixels->numPixels(); i++) {
+void fx_solid(uint16_t ledsCount, LightColor& color, int transitionMs = 200) {
+    for (int i = 0; i < ledsCount; i++) {
         animatedColors[i]->setColor(color.getHue(), color.getSaturation(), color.getValue(), transitionMs);
     }
 }
@@ -62,18 +60,17 @@ void fx_solid(Adafruit_NeoPixel* pixels, LightColor& color, int transitionMs = 2
 float currentSaturation;
 float cursorDirection = 1;
 unsigned long rainbow_refresh_ts = 0;
-void fx_rainbow(Adafruit_NeoPixel* pixels, LightColor& color, float iterations = 1) {
-    if (pixels == nullptr || millis() - rainbow_refresh_ts <= 100) return;
+void fx_rainbow(uint16_t ledsCount, LightColor& color, float iterations = 1) {
+    if (millis() - rainbow_refresh_ts <= 100) return;
 
-    uint numPixels = pixels->numPixels();
     currentSaturation = color.getSaturation();
-    float length = numPixels * hueZoom;
+    float length = ledsCount * hueZoom;
 
     float hueStep = 1.0f / (float) length * iterations;
 
     float v = color.getValue();
-    for (int i = 0; i < numPixels; i++) {
-        float inc = (i < numPixels / iterations ? (float)i : (float)(numPixels - i)) * hueStep;
+    for (int i = 0; i < ledsCount; i++) {
+        float inc = (i < ledsCount / iterations ? (float)i : (float)(ledsCount - i)) * hueStep;
         float h = FX_DEG_NORM((color.getHue() + hueOffset) + inc);
         animatedColors[i]->setColor(h, currentSaturation, v, currentSaturation * 100);
     }
@@ -99,11 +96,10 @@ int stripe_step = 3;
 float stripe_cycle = 0;
 float stripe_previous_hue;
 
-void fx_white_stripes(Adafruit_NeoPixel* pixels, LightColor& color, bool brightWhite = false) {
-    if (pixels == nullptr || millis() - stripe_refresh_ts <= stripe_delay) return;
+void fx_white_stripes(uint16_t ledsCount, LightColor& color, bool brightWhite = false) {
+    if (millis() - stripe_refresh_ts <= stripe_delay) return;
 
-    uint numPixels = pixels->numPixels();
-    int stripe_length = (int)round((float)numPixels / 5.0f);
+    int stripe_length = (int)round((float)ledsCount / 5.0f);
     float shift;
 
     if (stripe_length <= stripe_step) stripe_length = stripe_step * 2;
@@ -116,13 +112,13 @@ void fx_white_stripes(Adafruit_NeoPixel* pixels, LightColor& color, bool brightW
     cursorDirection = (color.getHue() - stripe_previous_hue > 0) ? 1 : -1;
     stripe_previous_hue = color.getHue();
 
-    for (int i = 0; i < numPixels; i++) {
+    for (int i = 0; i < ledsCount; i++) {
         float v = color.getValue();
         float s = color.getSaturation();
         if ((int)round(i + shift) % stripe_length < stripe_step) {
             // draw stripe
             animatedColors[i]->setColor(0, 0, brightWhite && v > 0 ? 1 : v,
-                                        (float)stripe_transition / numPixels);
+                                        (float)stripe_transition / ledsCount);
         } else {
             // draw solid color
             animatedColors[i]->setColor(color.getHue(), s, v,
@@ -137,10 +133,10 @@ void fx_white_stripes(Adafruit_NeoPixel* pixels, LightColor& color, bool brightW
 unsigned long kaleidoscope_refresh_ts = 0;
 int kaleidoscope_delay = 500;
 
-void fx_kaleidoscope(Adafruit_NeoPixel* pixels, LightColor& color) {
-    if (pixels == nullptr || millis() - kaleidoscope_refresh_ts <= kaleidoscope_delay) return;
+void fx_kaleidoscope(uint16_t ledsCount, LightColor& color) {
+    if (millis() - kaleidoscope_refresh_ts <= kaleidoscope_delay) return;
 
-    for (int i = 0; i < pixels->numPixels(); i++) {
+    for (int i = 0; i < ledsCount; i++) {
         float rnd1 = random(1000);
         float rnd2 = random(1000);
         if ((int)rnd1 % 2 == 0) {

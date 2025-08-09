@@ -79,24 +79,13 @@ namespace Service { namespace API { namespace devices {
         setLevel(l, transition);
     }
     void Dimmer::setLevel(float l, long transition) {
-
         level.setLevel(l, transition >= 0 ? transition : getDefaultTransition());
 
-        // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
-        auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
-        if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
-            auto eventPath = IOEventPaths::Status_Level;
-            auto eventValue = String(l);
-            auto msg =  std::make_shared<QueuedMessage>(module, eventPath, eventValue, &l, IOEventDataType::Float);
-            module->setProperty(eventPath, eventValue, &l, IOEventDataType::Float);
-            HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
-        }
-
-        if (l > 0) {
-            Switch::status = SWITCH_STATUS_ON;
-            Switch::onLevel = l;
+        if (l == 0.0f) {
+            setStatus(SWITCH_STATUS_OFF);
         } else {
-            Switch::status = SWITCH_STATUS_OFF;
+            onLevel = l;
+            setStatus(SWITCH_STATUS_ON);
         }
 
     }

@@ -31,10 +31,10 @@ namespace Service { namespace API { namespace devices {
         module->type = ModuleApi::ModuleType::Color;
 
         // add properties
-        module->setProperty(IOEventPaths::Status_ColorHsb, "0,0,1,.4");
+        module->setProperty(IOEventPaths::Status_ColorHsb, "0,0,0");
 
         onSetLevel([this](float l) {
-            color.setColor(color.getHue(), color.getSaturation(), l, getDefaultTransition());
+            color.setColor(color.getTargetHue(), color.getTargetSaturation(), l, getDefaultTransition());
         });
     }
 
@@ -84,30 +84,24 @@ namespace Service { namespace API { namespace devices {
 
         color.setColor(h, s, v, transition >= 0 ? transition : getDefaultTransition());
 
+        int size = snprintf(nullptr, 0, "%f,%f,%f", h, s, v);
+        char eventValue[size + 1];
+        sprintf(eventValue, "%f,%f,%f", h, s, v);
+        module->setProperty(IOEventPaths::Status_ColorHsb, eventValue);
+
         // Event Stream Message Enqueue (for MQTT/SSE/WebSocket propagation)
         auto eventsDisable = module->getProperty(IOEventPaths::Events_Disabled);
         if (eventsDisable == nullptr || eventsDisable->value == nullptr || eventsDisable->value != "1") {
             // color
-            int size = snprintf(nullptr, 0, "%f,%f,%f", h, s, v);
-            char eventValue[size + 1];
-            sprintf(eventValue, "%f,%f,%f", h, s, v);
-            auto msg = std::make_shared<QueuedMessage>(module, IOEventPaths::Status_ColorHsb, String(eventValue).c_str());
-            module->setProperty(IOEventPaths::Status_ColorHsb, eventValue);
-            HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
-            // level
-            size = snprintf(nullptr, 0, "%f", v);
-            char levelValue[size + 1];
-            sprintf(levelValue, "%f", v);
-            auto msg2 = std::make_shared<QueuedMessage>(module, IOEventPaths::Status_Level, String(levelValue).c_str());
-            module->setProperty(IOEventPaths::Status_Level, levelValue);
-            HomeGenie::getInstance()->getEventRouter().signalEvent(msg2);
+            auto msgColor = std::make_shared<QueuedMessage>(module, IOEventPaths::Status_ColorHsb, String(eventValue).c_str());
+            HomeGenie::getInstance()->getEventRouter().signalEvent(msgColor);
         }
 
-        if (v > 0) {
-            Switch::status = SWITCH_STATUS_ON;
-            Dimmer::onLevel = Switch::onLevel = v;
+        if (v == 0.0f) {
+            setStatus(SWITCH_STATUS_OFF);
         } else {
-            Switch::status = SWITCH_STATUS_OFF;
+            onLevel = v;
+            setStatus(SWITCH_STATUS_ON);
         }
 
     }

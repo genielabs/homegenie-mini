@@ -94,6 +94,21 @@ namespace Service { namespace API { namespace devices {
             float b = (float)orgb.b + ((float)(crgb.b - orgb.b) * getProgress());
             return b;
         }
+        float getTargetHue() const {
+            return h;
+        }
+        float getTargetSaturation() const {
+            return s;
+        }
+        float getTargetValue() const {
+            return v;
+        }
+        uint32_t getColor(float power = 1.0f) const {
+            uint8_t r = static_cast<int>(round(getRed() * power));
+            uint8_t g = static_cast<int>(round(getGreen() * power));
+            uint8_t b = static_cast<int>(round(getBlue() * power));
+            return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+        }
     private:
         float h = 0, s = 0, v = 0;
         float oh = 0, os = 0, ov = 0;

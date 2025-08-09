@@ -89,7 +89,6 @@ public:
         colorLight = new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, COLOR_LIGHT_ADDRESS, "Color Light");
         colorLight->module->setProperty(Implements::Scheduling, "true");
         colorLight->module->setProperty(Implements::Scheduling_ModuleEvents, "true");
-        colorLight->module->setProperty(Preference::AudioLight, "true");
 
         colorLight->onSetColor([this](LightColor c) {
             if (statusLED != nullptr) {
