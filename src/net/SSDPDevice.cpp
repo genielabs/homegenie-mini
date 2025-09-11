@@ -6,21 +6,21 @@
 #include "SSDPDevice.h"
 #include "defs.h"
 
-static const char* PROGMEM SSDP_RESPONSE_TEMPLATE =
+static const char* SSDP_RESPONSE_TEMPLATE =
         "HTTP/1.1 200 OK\r\n"
         "EXT:\r\n";
 
-static const char* PROGMEM SSDP_NOTIFY_ALIVE_TEMPLATE =
+static const char* SSDP_NOTIFY_ALIVE_TEMPLATE =
         "NOTIFY * HTTP/1.1\r\n"
         "HOST: 239.255.255.250:1900\r\n"
         "NTS: ssdp:alive\r\n";
 
-static const char* PROGMEM SSDP_NOTIFY_UPDATE_TEMPLATE =
+static const char* SSDP_NOTIFY_UPDATE_TEMPLATE =
         "NOTIFY * HTTP/1.1\r\n"
         "HOST: 239.255.255.250:1900\r\n"
         "NTS: ssdp:update\r\n";
 
-static const char* PROGMEM SSDP_PACKET_TEMPLATE =
+static const char* SSDP_PACKET_TEMPLATE =
         "%s" // _ssdp_response_template / _ssdp_notify_template
         "CACHE-CONTROL: max-age=%u\r\n" // SSDP_INTERVAL
         "SERVER: UPNP/1.1 %s/%s\r\n" // m_modelName, m_modelNumber
@@ -29,7 +29,7 @@ static const char* PROGMEM SSDP_PACKET_TEMPLATE =
         "LOCATION: http://%u.%u.%u.%u:%u/%s\r\n" // WiFi.localIP(), m_port, m_schemaURL
         "\r\n";
 
-static const char* PROGMEM SSDP_SCHEMA_TEMPLATE =
+static const char* SSDP_SCHEMA_TEMPLATE =
         "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/xml\r\n"
         "Connection: close\r\n"

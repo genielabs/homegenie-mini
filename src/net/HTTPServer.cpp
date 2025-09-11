@@ -39,14 +39,14 @@ namespace Net {
     using namespace IO;
     using namespace Service;
 
-    const char SSDP_Name[]              PROGMEM = CONFIG_DEVICE_MODEL_NAME;
-    const char SSDP_SerialNumber[]      PROGMEM = CONFIG_DEVICE_SERIAL_NUMBER;
-    const char SSDP_ModelName[]         PROGMEM = CONFIG_DEVICE_MODEL_NAME;
-    const char SSDP_ModelNumber[]       PROGMEM = CONFIG_DEVICE_MODEL_NUMBER;
-    const char SSDP_ModelDescription[]  PROGMEM = "HomeGenie Mini Device";
-    const char SSDP_ModelURL[]          PROGMEM = "https://homegenie.it";
-    const char SSDP_Manufacturer[]      PROGMEM = "G-Labs";
-    const char SSDP_ManufacturerURL[]   PROGMEM = "https://github.com/genielabs";
+    const char SSDP_Name[]              = CONFIG_DEVICE_MODEL_NAME;
+    const char SSDP_SerialNumber[]      = CONFIG_DEVICE_SERIAL_NUMBER;
+    const char SSDP_ModelName[]         = CONFIG_DEVICE_MODEL_NAME;
+    const char SSDP_ModelNumber[]       = CONFIG_DEVICE_MODEL_NUMBER;
+    const char SSDP_ModelDescription[]  = "HomeGenie Mini Device";
+    const char SSDP_ModelURL[]          = "https://homegenie.it";
+    const char SSDP_Manufacturer[]      = "G-Labs";
+    const char SSDP_ManufacturerURL[]   = "https://github.com/genielabs";
 
     static WebServer httpServer(HTTP_SERVER_PORT);
 
