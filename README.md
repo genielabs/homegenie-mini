@@ -8,6 +8,11 @@ based on *ESP32* or *ESP8266* SoC.
 https://homegenie.it/mini
 
 
+<p align="center">
+  <a href="https://deepwiki.com/genielabs/homegenie-mini"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+</p>
+
+
 ## Features
 
 - Easy device configuration using Wi-Fi protected setup button (WPS) or Bluetooth
