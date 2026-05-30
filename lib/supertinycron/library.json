@@ -1,0 +1,11 @@
+{
+  "name": "supertinycron",
+  "version": "1.0.0",
+  "build": {
+    "srcFilter": [
+      "+<*.c>",
+      "-<ccronexpr_test.c>",
+      "-<supertinycron.c>"
+    ]
+  }
+}
