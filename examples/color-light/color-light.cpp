@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -38,10 +38,21 @@ void setup() {
 
     // Read stored config (common)
     ledsPin = (int16_t)Config::getSetting(Configuration::LedsPin).toInt();
+
     // the following settings can also be configured from the app
-    ledsCount = abs(Config::getSetting(Configuration::LedsCount).toInt());
+    ledsConfig.count = abs(Config::getSetting(Configuration::LedsCount).toInt());
+    if (ledsConfig.count < 1) ledsConfig.count = 1;
+    ledsConfig.rows = abs(Config::getSetting(Configuration::LedsRows).toInt());
+    if (ledsConfig.rows < 1) ledsConfig.rows = 1;
+    ledsConfig.cols = ledsConfig.count / ledsConfig.rows;
+    ledsConfig.isVertical = Config::getSetting(Configuration::LedsIsVert, "false").equals("true");
+    ledsConfig.isSerpentine = Config::getSetting(Configuration::LedsIsSerp, "true").equals("true");
+    ledsConfig.startAtBottom = Config::getSetting(Configuration::LedsStBottom, "false").equals("true");
+    ledsConfig.startAtRight = Config::getSetting(Configuration::LedsStRight, "false").equals("true");
+
     maxPower = Config::getSetting(Configuration::LedsPower).toInt();
     if (maxPower <= 0) maxPower = DEFAULT_MAX_POWER;
+
     // NeoPixels WS2810B RGB LED config
     pixelsType = (int16_t)Config::getSetting(Configuration::LedsType).toInt();
     pixelsSpeed = (int16_t)Config::getSetting(Configuration::LedsSpeed).toInt();
@@ -71,7 +82,6 @@ void setup() {
         // colorLight is the main control module
         colorLight->onSetColor([](LightColor color) {
             statusLed.setCurrentColor(color);
-            fx_reset(color);
         });
 
         auto module = colorLight->module;
@@ -87,10 +97,13 @@ void setup() {
 #ifndef DISABLE_AUTOMATION
         // Setup example schedules/scenes
         setupDefaultSchedules();
+
+        scriptHandler = new LiteScriptHandler();
+        homeGenie->addAPIHandler(scriptHandler);
 #endif
 
         // Initialize FX buffer
-        fx_init(ledsCount, statusLed.getCurrentColor());
+        fx_init(ledsConfig, statusLed.getCurrentColor());
 
         // TODO: implement color/status recall on start
         // Set default color
@@ -111,6 +124,17 @@ void loop()
 
     if (isConfigured) {
 
+        // Track the effect style switch
+        static int lastStyleIndex = -1;
+        if (currentStyleIndex != lastStyleIndex) {
+            lastStyleIndex = currentStyleIndex;
+#ifndef DISABLE_AUTOMATION
+            scriptHandler->startTime = millis(); // Force fx_script to reset on next activation
+#endif
+            styleChanged = true;
+            levelChanged = true;                 // Force redraw/refresh
+        }
+
         if (millis() - lastRefreshTs > refreshMs)
         {
 
@@ -124,36 +148,103 @@ void loop()
                 // Strobe tick ON: show strobe light for `strobeFxDurationMs` milliseconds (25)
                 auto c = LightColor();
                 c.setColor(0, 0, 1, 0);
-                fx_solid(ledsCount, c, 0);
+                fx_solid(ledsConfig, c, 0);
                 strobeOff = false;
 
             } else {
 
                 // Apply selected effect (FX.Style)
+                uint16_t rows = ledsConfig.rows > 0 ? ledsConfig.rows : 1;
+                uint16_t cols = ledsConfig.count / rows;
+                if (cols == 0) cols = 1;
 
                 auto currentColor = statusLed.getCurrentColor();
                 switch (currentStyleIndex) {
-                    case LightStyles::RAINBOW:
-                        fx_rainbow(ledsCount, currentColor, 1);
+                    case RAINBOW:
+                        fx_rainbow(ledsConfig, currentColor, 1);
                         break;
-                    case LightStyles::RAINBOW_2:
-                        fx_rainbow(ledsCount, currentColor, 2);
+                    case RAINBOW_2:
+                        fx_rainbow(ledsConfig, currentColor, 2);
                         break;
-                    case LightStyles::WHITE_STRIPES:
-                        fx_white_stripes(ledsCount, currentColor);
+                    case WHITE_STRIPES:
+                        fx_white_stripes(ledsConfig, currentColor);
                         break;
-                    case LightStyles::WHITE_STRIPES_2:
-                        fx_white_stripes(ledsCount, currentColor, true);
+                    case WHITE_STRIPES_2:
+                        fx_white_stripes(ledsConfig, currentColor, true);
                         break;
-                    case LightStyles::KALEIDOSCOPE:
-                        fx_kaleidoscope(ledsCount, currentColor);
+                    case KALEIDOSCOPE:
+                        fx_kaleidoscope(ledsConfig, currentColor);
                         break;
-                    case LightStyles::SOLID:
+                    case DRIFT:
+                        fx_drift(ledsConfig, currentColor);
+                        break;
+                    case FIRE:
+                        fx_fire(ledsConfig, currentColor);
+                        break;
+                    case METEOR:
+                        if (styleChanged) fx_clear(ledsConfig);
+                        fx_meteor(ledsConfig, currentColor);
+                        break;
+                    case TWINKLE:
+                        fx_twinkle(ledsConfig, currentColor);
+                        break;
+                    case MATRIX_RAIN:
+                        fx_matrix_rain(ledsConfig, currentColor);
+                        break;
+                    case TUNNEL_3D:
+                        fx_3d_tunnel(ledsConfig, currentColor);
+                        break;
+                    case DISTORTION_WAVES:
+                        fx_distortion_waves(ledsConfig, currentColor);
+                        break;
+                    case PARTICLE_VORTEX:
+                        fx_vortex(ledsConfig, currentColor);
+                        break;
+                    case WATERFALL:
+                        fx_waterfall(ledsConfig, currentColor);
+                        break;
+                    case PARTICLE_GEQ:
+                        fx_particle_geq(ledsConfig, currentColor);
+                        break;
+                    case PARTICLE_CENTER_GEQ:
+                        fx_particle_center_geq(ledsConfig, currentColor);
+                        break;
+                    case BLACK_HOLE:
+                        fx_black_hole(ledsConfig, currentColor);
+                        break;
+                    case POLAR_LIGHT:
+                        fx_polar_lights(ledsConfig, currentColor);
+                        break;
+                    case WAVERLY:
+                        fx_waverly(ledsConfig, currentColor);
+                        break;
+#ifndef DISABLE_AUTOMATION
+                    case SCRIPT: {
+                        if (scriptHandler->compiledScript.size() == 0) {
+                            String fallbackScript = F(
+                                "#1\n"
+                                "00.000 ALL DEFAULT(1.00,1500)\n"
+                                "01.500 ALL DEFAULT(0.00,1500)\n"
+                                "03.000 ALL Off\n"
+                                "#LOOP:1"
+                            );
+                            compileScript(fallbackScript, scriptHandler->compiledScript, ledsConfig);
+                        }
+                        auto isPlaying = fx_script(ledsConfig, currentColor, scriptHandler->compiledScript, scriptHandler->startTime);
+                        if (!isPlaying || levelChanged) {
+                            // Restart / Redraw
+                            scriptHandler->startTime = millis();
+                        }
+                        break;
+                    }
+#endif
+                    case SOLID:
                     default:
-                        fx_solid(ledsCount, currentColor, strobeFxTickMs > 0 ? 0 : 200);
+                        fx_solid(ledsConfig, currentColor, strobeFxTickMs > 0 ? 0 : 200);
                         break;
                 }
-
+                levelChanged = false;
+                styleChanged = false;
             }
 
             renderPixels();

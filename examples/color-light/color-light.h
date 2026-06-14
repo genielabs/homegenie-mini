@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -22,6 +22,7 @@
  * - Generoso Martello <gene@homegenie.it>
  *
  */
+#pragma once
 
 #include <HomeGenie.h>
 #include <service/api/devices/Button.h>
@@ -29,15 +30,46 @@
 #include <Adafruit_NeoPixel.h>
 
 #include "configuration.h"
-#include "color-fx.h"
+
+#include "fx/fx.h"
+#include "fx/fx_3d_tunnel.h"
+#include "fx/fx_black_hole.h"
+#include "fx/fx_distortion_waves.h"
+#include "fx/fx_drift.h"
+#include "fx/fx_fire.h"
+//#include "fx/fx_fireworks.h"
+#include "fx/fx_kaleidoscope.h"
+#include "fx/fx_matrix_rain.h"
+#include "fx/fx_meteor.h"
+#include "fx/fx_particle_geq.h"
+#include "fx/fx_particle_center_geq.h"
+#include "fx/fx_polar_lights.h"
+#include "fx/fx_rainbow.h"
+#ifndef DISABLE_AUTOMATION
+#include "fx/fx_script.h"
+#endif
+#include "fx/fx_twinkle.h"
+#include "fx/fx_vortex.h"
+#include "fx/fx_waverly.h"
+#include "fx/fx_waterfall.h"
+#include "fx/fx_white_stripes.h"
 
 #include "StatusLed.h"
 StatusLed statusLed;
+
+#ifndef DISABLE_AUTOMATION
+#include "api/LiteScriptHandler.h"
+#endif
 
 namespace ColorLightApi {
     namespace Options {
         namespace Controller {
             const char LED_count[] = "LED.count";
+            const char LED_rows[]  = "LED.rows";
+            const char LED_vert[]  = "LED.vert";
+            const char LED_serp[]  = "LED.serp";
+            const char LED_strg[]  = "LED.strg";
+            const char LED_stbt[]  = "LED.stbt";
             const char LED_power[] = "LED.power";
         }
         namespace Light {
@@ -47,12 +79,17 @@ namespace ColorLightApi {
     }
 
     namespace Configuration {
-        static const char LedsPin[] = "leds-pin";
-        static const char LedsType[] = "leds-typ";
-        static const char LedsSpeed[] = "leds-spd";
-        static const char LedsCount[] = "leds-cnt";
-        static const char LedsPower[] = "leds-pwr";
-        static const char LedsModules[] = "leds-mod";
+        static const char LedsPin[]      = "leds-pin";
+        static const char LedsType[]     = "leds-typ";
+        static const char LedsSpeed[]    = "leds-spd";
+        static const char LedsCount[]    = "leds-cnt"; // count
+        static const char LedsRows[]     = "leds-rws"; // rows
+        static const char LedsIsVert[]   = "leds-vrt"; // isVertical
+        static const char LedsIsSerp[]   = "leds-srp"; // isSerpentine
+        static const char LedsStBottom[] = "leds-stb"; // startAtBottom
+        static const char LedsStRight[]  = "leds-str"; // startAtRight
+        static const char LedsPower[]    = "leds-pwr";
+        static const char LedsModules[]  = "leds-mod";
     }
 
 }
@@ -66,11 +103,15 @@ using namespace ColorLightApi;
 HomeGenie* homeGenie;
 bool isConfigured = false;
 
+#ifndef DISABLE_AUTOMATION
+LiteScriptHandler* scriptHandler = nullptr;
+#endif
+
 // Master/Status LED
 ColorLight* colorLight;
 
 // LED strip
-uint16_t ledsCount = 0;
+MatrixConfig ledsConfig = { 0, 0, 1, false, true, false, false }; // 16x16
 int16_t ledsPin = -1;
 uint8_t maxPower = DEFAULT_MAX_POWER;
 // WS2810B RGB LED
@@ -99,18 +140,54 @@ enum LightStyles {
     WHITE_STRIPES,
     WHITE_STRIPES_2,
     KALEIDOSCOPE,
+    DRIFT,
+    FIRE,
+    METEOR,
+    TWINKLE,
+    MATRIX_RAIN,
+    TUNNEL_3D,
+    DISTORTION_WAVES,
+    PARTICLE_VORTEX,
+    WATERFALL,
+    PARTICLE_GEQ,
+    PARTICLE_CENTER_GEQ,
+    BLACK_HOLE,
+    POLAR_LIGHT,
+    WAVERLY,
+#ifndef DISABLE_AUTOMATION
+    SCRIPT,
+#endif
     STYLES_COUNT // this must be always the last element
 };
+
 const char* const lightStyleNames[] = {
-        "solid",
-        "rainbow",
-        "rainbow_2",
-        "white_stripes",
-        "white_stripes_2",
-        "kaleidoscope"
+    "solid",
+    "rainbow",
+    "rainbow_2",
+    "white_stripes",
+    "white_stripes_2",
+    "kaleidoscope",
+    "drift",
+    "fire",
+    "meteor",
+    "twinkle",
+    "matrix_rain",
+    "tunnel_3d",
+    "distortion_waves",
+    "particle_vortex",
+    "waterfall",
+    "particle_geq",
+    "particle_center_geq",
+    "black_hole",
+    "polar_light",
+    "waverly",
+#ifndef DISABLE_AUTOMATION
+    "script"
+#endif
 };
-uint8_t getLightStyleIndex(String& styleName) {
-    for (int j = 0; j < LightStyles::STYLES_COUNT; j++) {
+
+inline uint8_t getLightStyleIndex(String& styleName) {
+    for (int j = 0; j < STYLES_COUNT; j++) {
         if  (styleName == lightStyleNames[j]) {
             return j;
         }
@@ -133,9 +210,12 @@ unsigned int strobeFxIntervalMs = 80;  // limit strobe to 10Hz  (20 + 80 -> 100m
 bool strobeOff = true;
 uint8_t currentStyleIndex = 0;
 
+bool levelChanged = false;
+bool styleChanged = false;
+
 LinkedList<ColorLight*> colorLightList;
 
-void refresh() {
+inline void refresh() {
     if (statusLed.isEnabled()) {
         statusLed.getLed()->show();
     }
@@ -144,10 +224,10 @@ void refresh() {
     }
 }
 
-void renderPixels() {
+inline void renderPixels() {
     float pwr = ((float)maxPower / 100.0f);
     if (pixels != nullptr) {
-        for (int i = 0; i < ledsCount; i++) {
+        for (int i = 0; i < ledsConfig.count; i++) {
             if (animatedColors[i]->getColor(pwr) != pixels->getPixelColor(i) && (!colorLightList.exist(i) || !colorLightList.get(i)->isOn())) {
                 pixels->setPixelColor(i,
                                       static_cast<int>(round(animatedColors[i]->getRed() * pwr)),
@@ -167,19 +247,19 @@ void renderPixels() {
     }
 }
 
-void createPixels()
+inline void createPixels()
 {
     if (ledsPin >= 0) {
-        pixels = new Adafruit_NeoPixel(ledsCount, ledsPin, pixelsType + pixelsSpeed);
+        pixels = new Adafruit_NeoPixel(ledsConfig.count, ledsPin, pixelsType + pixelsSpeed);
         // turn off
         //pixels->clear();
         //*
-        for (int i = 0; i < ledsCount; i++) {
+        for (int i = 0; i < ledsConfig.count; i++) {
             pixels->setPixelColor(i, 0, 0, 0);
         }
 
         if (Config::getSetting(Configuration::LedsModules, "false").equals("true")) {
-            for (int i = 0; i < ledsCount; i++) {
+            for (int i = 0; i < ledsConfig.count; i++) {
                 auto address = String("L") + String(i + 1);
                 auto name = String("LED ") + String(i + 1);
                 colorLightList.add(new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), name.c_str()));
@@ -197,13 +277,14 @@ void createPixels()
 
     }
 }
-void disposePixels() {
+
+inline void disposePixels() {
 
     // turn off all pixels
     if (pixels != nullptr) {
         //pixels->clear();
         //*
-        for (int i = 0; i < ledsCount; i++) {
+        for (int i = 0; i < ledsConfig.count; i++) {
             pixels->setPixelColor(i, 0, 0, 0);
         }
         refresh();
@@ -215,7 +296,7 @@ void disposePixels() {
 }
 
 // Adds 2 "GpioButton" modules for handling manual control (on/off, level, switch fx, ...)
-void setupControlButtons(Module* miniModule) {
+inline void setupControlButtons(Module* miniModule) {
     static bool button1Pressed = false;
 
     auto btn1_pin = Config::getSetting("btn1-pin", "-1").toInt();
@@ -258,6 +339,7 @@ void setupControlButtons(Module* miniModule) {
                     float v = presetColors[presetColorIndex][2];
                     colorLight->setColor(h, s, v, 0);
                     presetColorIndex = (presetColorIndex + 1) % presetColorsCount;
+                    levelChanged = true;
                 }
             } else if (!button1Pressed) {
                 buttonCommand = BUTTON_COMMAND_NONE;
@@ -284,7 +366,7 @@ void setupControlButtons(Module* miniModule) {
 }
 
 #ifndef DISABLE_AUTOMATION
-void setupDefaultSchedules() {
+inline void setupDefaultSchedules() {
 
     // Create default Dawn scene
     if (Scheduler::get("Dawn") == nullptr) {
@@ -361,9 +443,32 @@ public:
             // number of pixels changed
             disposePixels();
             // update current leds count
-            ledsCount = option->value.toInt();
+            ledsConfig.count = option->value.toInt();
+            ledsConfig.cols = ledsConfig.count / ledsConfig.rows;
             // re-create pixels with the new length
             createPixels();
+
+        } else if (option->is(Options::Controller::LED_rows)) {
+
+            // update current leds count
+            ledsConfig.rows = option->value.toInt();
+            ledsConfig.cols = ledsConfig.count / ledsConfig.rows;
+
+        } else if (option->is(Options::Controller::LED_vert)) {
+
+            ledsConfig.isVertical = (option->value.equalsIgnoreCase("true"));
+
+        } else if (option->is(Options::Controller::LED_serp)) {
+
+            ledsConfig.isSerpentine = (option->value.equalsIgnoreCase("true"));
+
+        } else if (option->is(Options::Controller::LED_stbt)) {
+
+            ledsConfig.startAtBottom = (option->value.equalsIgnoreCase("true"));
+
+        } else if (option->is(Options::Controller::LED_strg)) {
+
+            ledsConfig.startAtRight = (option->value.equalsIgnoreCase("true"));
 
         } else if (option->is(Options::Controller::LED_power)) {
 
@@ -376,11 +481,11 @@ public:
 
 } optionUpdateListener;
 
-void setupControllerOptions(Module* miniModule) {
+inline void setupControllerOptions(Module* miniModule) {
     // Number select control to set the number of LEDs of the strip
     miniModule->addWidgetOption(
             // name, value
-            Options::Controller::LED_count, String(ledsCount).c_str(),
+            Options::Controller::LED_count, String(ledsConfig.count).c_str(),
             // type
             UI_WIDGETS_FIELD_TYPE_NUMBER
             // label
@@ -388,6 +493,61 @@ void setupControllerOptions(Module* miniModule) {
             // min:max:default
             ":1:1920:1"
     )->withConfigKey(Configuration::LedsCount)->addUpdateListener(&optionUpdateListener);
+    // Number of rows if it's a LEDs matrix
+    miniModule->addWidgetOption(
+        // name, value
+        Options::Controller::LED_rows, String(ledsConfig.rows).c_str(),
+        // type
+        UI_WIDGETS_FIELD_TYPE_NUMBER
+        // label
+        ":led_rows"
+        // min:max:default
+        ":1:256:1"
+    )->withConfigKey(Configuration::LedsRows)->addUpdateListener(&optionUpdateListener);
+    // Is Vertical Matrix
+    miniModule->addWidgetOption(
+        // name, value
+        Options::Controller::LED_vert, (ledsConfig.isVertical ? "1" : "0"),
+        // type
+        UI_WIDGETS_FIELD_TYPE_CHECKBOX
+        // label
+        ":is_vertical_matrix"
+        // default
+        ""
+    )->withConfigKey(Configuration::LedsIsVert)->addUpdateListener(&optionUpdateListener);
+    // Is Serpentine Matrix
+    miniModule->addWidgetOption(
+        // name, value
+        Options::Controller::LED_serp, (ledsConfig.isSerpentine ? "1" : "0"),
+        // type
+        UI_WIDGETS_FIELD_TYPE_CHECKBOX
+        // label
+        ":is_serpentine_matrix"
+        // default
+        ""
+    )->withConfigKey(Configuration::LedsIsSerp)->addUpdateListener(&optionUpdateListener);
+    // Matrix starts at bottom
+    miniModule->addWidgetOption(
+        // name, value
+        Options::Controller::LED_stbt, (ledsConfig.startAtBottom ? "1" : "0"),
+        // type
+        UI_WIDGETS_FIELD_TYPE_CHECKBOX
+        // label
+        ":matrix_starts_at_bottom"
+        // default
+        ""
+    )->withConfigKey(Configuration::LedsStBottom)->addUpdateListener(&optionUpdateListener);
+    // Matrix starts at right
+    miniModule->addWidgetOption(
+        // name, value
+        Options::Controller::LED_strg, (ledsConfig.startAtRight ? "1" : "0"),
+        // type
+        UI_WIDGETS_FIELD_TYPE_CHECKBOX
+        // label
+        ":matrix_starts_at_right"
+        // default
+        ""
+    )->withConfigKey(Configuration::LedsStRight)->addUpdateListener(&optionUpdateListener);
     // Number select control to set maximum percentage of power that can be drawn
     miniModule->addWidgetOption(
             // name, value
@@ -400,22 +560,19 @@ void setupControllerOptions(Module* miniModule) {
             ":5:100:25"
     )->withConfigKey(Configuration::LedsPower)->addUpdateListener(&optionUpdateListener);
 }
-void setupColorLightOptions(Module* module) {
+
+inline void setupColorLightOptions(Module* module) {
+    // build fx list
+    String selectConfig = String(UI_WIDGETS_FIELD_TYPE_SELECT) + ":light_style";
+    for (int i = 0; i < STYLES_COUNT; i++) {
+        selectConfig += (i == 0 ? ":" : "|");
+        selectConfig += lightStyleNames[i];
+    }
     // - dropdown list control to select the light animation effect
     module->addWidgetOption(
-            // name, value
-            Options::Light::FX_Style, lightStyleNames[0],
-            // type
-            UI_WIDGETS_FIELD_TYPE_SELECT
-            // label
-            ":light_style"
-            // options
-            ":solid"  // TODO¨: create from `lightStyleNames` array
-            "|rainbow"
-            "|rainbow_2"
-            "|white_stripes"
-            "|white_stripes_2"
-            "|kaleidoscope"
+            Options::Light::FX_Style,
+            lightStyleNames[0],
+            selectConfig.c_str()
     )->addUpdateListener(&optionUpdateListener);
     // - dropdown list control to enable the strobe effect
     mpFxStrobe = module->addWidgetOption(

@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -342,7 +342,13 @@ namespace Net {
                 if (server.argName(a).length() > 0) {
                     uri += String("/") + server.argName(a);
                 }
-                uri += String ("/") + server.arg(a);
+
+                String val = server.arg(a);
+                // Escape '%' and '+' to protect raw POST data from automatic urlDecode in the router
+                val.replace("%", "%25");
+                val.replace("+", "%2B");
+
+                uri += String("/") + val;
             }
             // create response callback
             auto responseCallback = new WebServerResponseCallback(&server);
