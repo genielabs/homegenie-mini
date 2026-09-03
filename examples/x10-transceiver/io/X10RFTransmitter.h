@@ -35,17 +35,21 @@
 #include "X10RFTransmitterConfig.h"
 
 namespace IO { namespace X10 {
-
     class X10RFTransmitter
     {
+    using TransmitCallback = std::function<void()>;
     public:
         X10RFTransmitter();
         explicit X10RFTransmitter(X10RFTransmitterConfig *configuration);
         void begin();
         void sendCommand(uint8_t *data, uint8_t size, uint8_t repeat, uint8_t sendDelay);
         X10RFTransmitterConfig* getConfiguration() { return configuration; }
+        void setBeforeTransmitCallback(TransmitCallback callback);
+        void setAfterTransmitCallback(TransmitCallback callback);
     private:
         X10RFTransmitterConfig *configuration;
+        TransmitCallback beforeTransmit{};
+        TransmitCallback afterTransmit{};
         void sendByte(uint8_t data);
         void sendBit(bool databit);
         void pulseHigh();

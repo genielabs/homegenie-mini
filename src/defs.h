@@ -38,8 +38,6 @@
 #define CONFIG_BUILTIN_MODULE_NAME         "HG-Mini"
 #define CONFIG_BUILTIN_MODULE_ADDRESS      "mini"
 
-#define DEBUGLOG_DEFAULT_LOG_LEVEL_ERROR
-
 #ifndef BUILD_ENV_NAME
     #define BUILD_ENV_NAME "default-env"
 #endif

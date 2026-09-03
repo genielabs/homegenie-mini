@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -40,6 +40,7 @@
 namespace IO { namespace RCS {
 
     class RFTransmitter {
+    using TransmitCallback = std::function<void()>;
     public:
         RFTransmitter();
         RFTransmitter(RFTransmitterConfig *);
@@ -47,8 +48,13 @@ namespace IO { namespace RCS {
         void begin();
         void sendCommand(long command, unsigned short bitLength, unsigned short repeat, unsigned short delay);
 
+        void setBeforeTransmitCallback(TransmitCallback callback);
+        void setAfterTransmitCallback(TransmitCallback callback);
+
     private:
         RFTransmitterConfig *configuration;
+        TransmitCallback beforeTransmit{};
+        TransmitCallback afterTransmit{};
         RCSwitch RF = RCSwitch();
     };
 

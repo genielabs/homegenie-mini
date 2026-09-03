@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -52,7 +52,9 @@ namespace Service { namespace API {
         }
 
         void RCSwitchHandler::init() {
-            transmitter->begin();
+            if (transmitter != nullptr) {
+                transmitter->begin();
+            }
         }
 
         bool RCSwitchHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {

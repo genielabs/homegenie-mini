@@ -12,10 +12,10 @@ In addition to default system options the following configuration options are av
 | Key        | Description                 | Default                                 |
 |------------|-----------------------------|-----------------------------------------|
 | `leds-pin` | LED strip GPIO pin number   | -1 (-1=not used)                        |
-| `leds-cnt` | Number of LEDs              | 1 (1 - 1024)                            |
+| `leds-cnt` | Number of LEDs              | 1 (1 - 4096)                            |
 | `leds-rws` | Number of matrix rows       | 1 (1 - 64)                              |
-| `leds-vrt` | Matrix vertical wiring      | false (false=horizontal, true=vertical) |
 | `leds-srp` | Serpentine cabling layout   | true (false=progressive, true=serp.)    |
+| `leds-vrt` | Matrix vertical wiring      | false (false=horizontal, true=vertical) |
 | `leds-stb` | Start layout at bottom      | false (false=start top, true=bottom)    |
 | `leds-str` | Start layout at right       | false (false=start left, true=right)    |
 | `leds-spd` | Data transfer speed         | 0 (0=800kHz, 256=400kHz)                |

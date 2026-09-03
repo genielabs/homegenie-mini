@@ -77,7 +77,7 @@ HomeGenie Mini provides several specialized configurations and ready-to-use firm
 - 📷 [**Smart Camera + A.I.**](https://homegenie.it/mini/1.2/smart-camera-ai/): Implements video streaming and object tracking logic using ESP32-CAM models.
 - 💡 [**Smart Light / Mood Lamp**](https://homegenie.it/mini/1.2/smart-light/): Controls WS281x RGB LED strips with automated transitions, schedules, and custom animations.
 - 🌡️ [**Smart Sensor**](https://homegenie.it/mini/1.2/smart-sensor/): Gathers data from DHT22, LDR, and motion sensors with low overhead.
-- 📟 [**Remote Control & Gateway**](https://homegenie.it/mini/1.2/remote-control/): A transceiver gateway to capture and replay IR/RF commands.
+- 📟 [**Remote Control & Gateway**](https://homegenie.it/mini/1.2/remote-control/): A multi-protocol transceiver gateway (Firefly Kit) to capture, replay, and bridge IR, generic 433/315 MHz RF (SYN modules or CC1101 SPI), and bidirectional **X10 RF** home automation devices.
 
 ---
 
@@ -103,9 +103,16 @@ Once connected, your device will appear in the HomeGenie Panel dashboard.
 
 ### Connecting to HomeGenie Server
 
-HomeGenie Mini devices can communicate with [HomeGenie Server](https://github.com/genielabs/HomeGenie) and other brokers by configuring the MQTT client as shown below:
+HomeGenie Mini devices feature zero-configuration network discovery and seamless integration with [HomeGenie Server](https://github.com/genielabs/HomeGenie):
 
-![HomeGenie Server - MQTT configuration](data/images/phone/hg_server_mqtt_config.png)
+1. **Automatic Discovery (UPnP/SSDP):**  
+   Once connected to your local Wi-Fi network, your HomeGenie Mini device is automatically detected by HomeGenie Server and appears as a device card in the **UPnP** dashboard group.
+
+2. **One-Click MQTT Connection:**  
+   Click the **`CONNECT`** button on the device card. HomeGenie Server will automatically provision and establish the secure MQTT communication link in the background&mdash;no manual broker configuration required.
+
+3. **Browse Modules & Add Dashboard Widgets:**  
+   Once connected, click the **`MODULES`** button to view all hardware endpoints exposed by the device (e.g., *IR Transceiver*, *RC RF*, *Color Light*, *X10 Devices*). From the popup dialog, you can select any module and add its interactive widget directly to your preferred dashboard groups.
 
 ---
 

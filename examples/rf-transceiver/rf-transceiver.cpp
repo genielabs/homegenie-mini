@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -30,9 +30,15 @@
 #include <HomeGenie.h>
 
 #include "configuration.h"
-#include "io/RFTransmitter.h"
-#include "io/RFReceiver.h"
-#include "api/RCSwitchHandler.h"
+
+#include "../rf-transceiver/io/RFReceiver.h"
+#include "../rf-transceiver/io/RFTransmitter.h"
+#include "../rf-transceiver/io/CC1101Transceiver.h"
+#include "../rf-transceiver/api/RCSwitchHandler.h"
+
+#include "../x10-transceiver/io/X10RFReceiver.h"
+#include "../x10-transceiver/io/X10RFTransmitter.h"
+#include "../x10-transceiver/api/X10Handler.h"
 
 #ifdef BOARD_HAS_RGB_LED
 #include "../color-light/StatusLed.h"
@@ -42,44 +48,91 @@ StatusLed statusLed;
 using namespace Service;
 
 HomeGenie* homeGenie;
+CC1101Transceiver cc1101;
 
 void setup() {
     // Default name shown in SNMP/UPnP advertising
     Config::system.friendlyName = "Firefly RF";
 
     homeGenie = HomeGenie::getInstance();
+    auto miniModule = homeGenie->getDefaultModule();
+    miniModule->setProperty(Implements::Scheduling, "true");
 
 #ifdef BOARD_HAS_RGB_LED
+    // Custom status led (builtin NeoPixel RGB LED)
     statusLed.setup();
 #endif
 
-    auto apiHandler = new RCSwitchHandler();
+    // Read pin configuration
+    uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", CONFIG_RCSwitchReceiverPin).toInt();
+    uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", CONFIG_RCSwitchTransmitterPin).toInt();
+
+    // CC1101 sub-GHz RF Module auto-detect
+    cc1101.begin(rfReceiverPin, rfTransmitterPin);
+
+    // RC-Switch RF transceiver
+
+    auto rcsApiHandler = new RCSwitchHandler();
 #ifdef BOARD_HAS_RGB_LED
-    apiHandler->setOnDataReady([](const char* c) {
+    rcsApiHandler->setOnDataReady([](const char* c) {
         statusLed.signalActivity(0, 255, 255);
     });
 #endif
 
-    // RCSwitch RF Receiver
-    uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", CONFIG_RCSwitchReceiverPin).toInt();
-    if (rfReceiverPin > 0) {
-        auto receiverConfiguration = new RCS::RFReceiverConfig(rfReceiverPin);
-        auto rcsReceiver = new RCS::RFReceiver(receiverConfiguration);
-        apiHandler->setReceiver(rcsReceiver);
-        homeGenie->addIOHandler(rcsReceiver);
-    }
     // RCSwitch RF Transmitter
-    uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", CONFIG_RCSwitchTransmitterPin).toInt();
     if (rfTransmitterPin > 0) {
         auto rcsTransmitterConfig = new RCS::RFTransmitterConfig(rfTransmitterPin);
         auto rcsTransmitter = new RCS::RFTransmitter(rcsTransmitterConfig);
-        apiHandler->setTransmitter(rcsTransmitter);
+        cc1101.bindTransmitter(rcsTransmitter);
+        rcsApiHandler->setTransmitter(rcsTransmitter);
+    }
+    // RCSwitch RF Receiver
+    if (rfReceiverPin > 0) {
+        auto rcsReceiverConfiguration = new RCS::RFReceiverConfig(rfReceiverPin);
+        auto rcsReceiver = new RCS::RFReceiver(rcsReceiverConfiguration);
+        homeGenie->addIOHandler(rcsReceiver);
+        // shared interrupt handler with X10 class
+        X10RFReceiver::addInterruptHandler([rcsReceiver](){
+            if (!cc1101.isTransmitting()) {
+                rcsReceiver->handleInterrupt();
+            }
+        });
+        rcsApiHandler->setReceiver(rcsReceiver);
     }
 
-    homeGenie->addAPIHandler(apiHandler);
+    homeGenie->addAPIHandler(rcsApiHandler);
+
+    // X10 RF transceiver
+
+    auto x10ApiHandler = new X10Handler();
+#ifdef BOARD_HAS_RGB_LED
+    x10ApiHandler->setOnDataReady([](const char* c) {
+        statusLed.signalActivity(0, 0, 255);
+    });
+#endif
+
+    // X10 RF RFTransmitter
+    if (rfTransmitterPin > 0) {
+        auto x10TransmitterConfig = new X10::X10RFTransmitterConfig(rfTransmitterPin);
+        auto x10Transmitter = new X10::X10RFTransmitter(x10TransmitterConfig);
+        cc1101.bindTransmitter(x10Transmitter);
+        x10ApiHandler->setTransmitter(x10Transmitter);
+    }
+    // X10 RF RFReceiver
+    if (rfReceiverPin > 0) {
+        auto x10ReceiverConfig = new X10::X10RFReceiverConfig(rfReceiverPin);
+        auto x10Receiver = new X10::X10RFReceiver(x10ReceiverConfig);
+        x10ApiHandler->setReceiver(x10Receiver);
+        homeGenie->addIOHandler(x10Receiver);
+    }
+
+    homeGenie->addAPIHandler(x10ApiHandler);
 
     homeGenie->begin();
+
+    cc1101.startListening();
 }
+
 
 void loop()
 {

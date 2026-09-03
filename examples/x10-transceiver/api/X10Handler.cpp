@@ -38,7 +38,6 @@ namespace Service { namespace API {
         rfModule->address = CONFIG_X10RF_MODULE_ADDRESS;
         rfModule->type = ModuleApi::ModuleType::Sensor;
         rfModule->name = "X10 RF"; //TODO: CONFIG_X10RF_MODULE_NAME;
-
         // explicitly enable "scheduling" features for this module
         rfModule->setProperty(Implements::Scheduling, "true");
         rfModule->setProperty(Implements::Scheduling_ModuleEvents, "true");
@@ -51,25 +50,96 @@ namespace Service { namespace API {
 
         moduleList.add(rfModule);
 
-        auto hc = Config::getSetting("x10-hcode", "a");
-        hc.toLowerCase();
-        auto defaultHouseCode = hc.charAt(0);
+        // X10 Device Mapping from configuration (e.g. "A1=Light;A2=Dimmer;B1=Switch;B2=Shutter")
+        auto x10Devices = Config::getSetting("x10-devs", "");
+        if (!x10Devices.isEmpty()) {
+            int startIdx = 0;
+            while (startIdx < x10Devices.length()) {
+                int endIdx = x10Devices.indexOf(';', startIdx);
+                if (endIdx == -1) {
+                    endIdx = x10Devices.length();
+                }
+                String entry = x10Devices.substring(startIdx, endIdx);
+                entry.trim();
 
-        // Add 16 X10 modules for default house code
-        // module address: "<house_code_a_p><unit_number_1_16>"
-        // controlling these modules via API or app UI will result
-        // in sending the X10 RF code mathing the command (e.g. A1 ON)
-        for (int m = 0; m < UNIT_MAX; m++) {
-            auto address = String((char)defaultHouseCode) + String(m+UNIT_MIN);
-            address.toUpperCase();
-            auto module = new Module();
-            module->domain = IOEventDomains::HomeAutomation_X10;
-            module->address = address;
-            module->type = ModuleApi::ModuleType::Dimmer;
-            module->setProperty(IOEventPaths::Status_Level, "0", 0, Number);
-            moduleList.add(module);
+                if (!entry.isEmpty()) {
+                    int sepIdx = entry.indexOf('=');
+                    if (sepIdx > 0) {
+                        String address = entry.substring(0, sepIdx);
+                        String typeStr = entry.substring(sepIdx + 1);
+                        address.trim();
+                        address.toUpperCase();
+                        typeStr.trim();
+
+                        // Validate House Code (A-P) and Unit (1-16)
+                        if (address.length() >= 2 && address.charAt(0) >= 'A' && address.charAt(0) <= 'P') {
+                            int unitNum = address.substring(1).toInt();
+                            if (unitNum >= 1 && unitNum <= 16) {
+                                auto module = new Module();
+                                module->domain = IOEventDomains::HomeAutomation_X10;
+                                module->address = address;
+
+                                // Map device type
+                                auto type = ModuleApi::ModuleType::Switch; // default fallback
+                                if (typeStr.equalsIgnoreCase("Light")) {
+                                    type = ModuleApi::ModuleType::Light;
+                                } else if (typeStr.equalsIgnoreCase("Dimmer")) {
+                                    type = ModuleApi::ModuleType::Dimmer;
+                                } else if (typeStr.equalsIgnoreCase("Switch")) {
+                                    type = ModuleApi::ModuleType::Switch;
+                                } else if (typeStr.equalsIgnoreCase("Siren")) {
+                                    type = ModuleApi::ModuleType::Siren;
+                                } else if (typeStr.equalsIgnoreCase("Fan")) {
+                                    type = ModuleApi::ModuleType::Fan;
+                                } else if (typeStr.equalsIgnoreCase("Shutter")) {
+                                    type = ModuleApi::ModuleType::Shutter;
+                                } else if (typeStr.equalsIgnoreCase("Motor")) {
+                                    type = ModuleApi::ModuleType::Motor;
+                                } else if (typeStr.equalsIgnoreCase("DoorLock")) {
+                                    type = ModuleApi::ModuleType::DoorLock;
+                                }
+
+                                module->type = type;
+
+                                // Enable scheduling features (both cron/time and event-driven)
+                                module->setProperty(Implements::Scheduling, "true");
+                                module->setProperty(Implements::Scheduling_ModuleEvents, "true");
+
+                                // Initialize default status level
+                                module->setProperty(IOEventPaths::Status_Level, "0", nullptr, Number);
+
+                                moduleList.add(module);
+                            }
+                        }
+                    }
+                }
+                startIdx = endIdx + 1;
+            }
+        } else {
+            // Legacy fallback: default 16 dimmer modules for house code
+            auto hc = Config::getSetting("x10-hcode", "");
+            hc.toLowerCase();
+            if (hc.isEmpty() || hc.charAt(0) < 'a' || hc.charAt(0) > 'p') {
+                hc = "";
+            }
+            if (!hc.isEmpty()) {
+                auto defaultHouseCode = hc.charAt(0);
+                for (int m = 0; m < UNIT_MAX; m++) {
+                    auto address = String((char)defaultHouseCode) + String(m + UNIT_MIN);
+                    address.toUpperCase();
+                    auto module = new Module();
+                    module->domain = IOEventDomains::HomeAutomation_X10;
+                    module->address = address;
+                    module->type = ModuleApi::ModuleType::Dimmer;
+
+                    module->setProperty(Implements::Scheduling, "true");
+                    module->setProperty(Implements::Scheduling_ModuleEvents, "true");
+
+                    module->setProperty(IOEventPaths::Status_Level, "0", nullptr, Number);
+                    moduleList.add(module);
+                }
+            }
         }
-
     }
 
     void X10Handler::init() {
@@ -253,6 +323,20 @@ namespace Service { namespace API {
                         const char* command = cmd_code_to_str(decodedMessage->command);
                         String commandString = (houseCode + unitCode + " " + command);
 
+                        // update module status and signal event
+                        auto m = getModule(IOEventDomains::HomeAutomation_X10, (houseCode + unitCode).c_str());
+                        if (m != nullptr) {
+                            if (strcmp(command, "on") == 0) {
+                                m->setProperty(IOEventPaths::Status_Level, "1", nullptr, Number);
+                                auto msg = std::make_shared<QueuedMessage>(domain, houseCode + unitCode, IOEventPaths::Status_Level, "1");
+                                HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+                            } else if (strcmp(command, "off") == 0) {
+                                m->setProperty(IOEventPaths::Status_Level, "0", nullptr, Number);
+                                auto msg = std::make_shared<QueuedMessage>(domain, houseCode + unitCode, IOEventPaths::Status_Level, "0");
+                                HomeGenie::getInstance()->getEventRouter().signalEvent(msg);
+                            }
+                        }
+
                         Logger::trace(":%s %s", HOMEGENIEMINI_NS_PREFIX, commandString.c_str());
 
                         receiverCommand->setValue(commandString.c_str());
@@ -269,6 +353,8 @@ namespace Service { namespace API {
                         String commandString = (command);
                         String subtype = Utility::byteToHex((b0)) + Utility::byteToHex((b1));
                         subtype.toUpperCase();
+
+// TODO: create security modules dynamically and with proper types (door sensor, motion sensor, etc..)
 
                         Logger::trace(":%s S-%s %s", HOMEGENIEMINI_NS_PREFIX, subtype.c_str(), commandString.c_str());
 

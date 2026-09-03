@@ -51,14 +51,14 @@ namespace Service { namespace API {
         Module* rfModule;
         ModuleParameter* receiverRawData;
         ModuleParameter* receiverCommand;
-        X10RFTransmitter* transmitter = nullptr;
-        X10RFReceiver* receiver = nullptr;
+        X10RFTransmitter* transmitter{};
+        X10RFReceiver* receiver{};
 
         unsigned long eventTimestamp = 0;
         String lastEvent;
         unsigned long lastEventTimestamp = 0;
 
-        std::function<void(const char*)> ledBlinkHandler = nullptr;
+        std::function<void(const char*)> ledBlinkHandler{};
 
     public:
         X10Handler();

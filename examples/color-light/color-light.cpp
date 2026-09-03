@@ -98,7 +98,7 @@ void setup() {
         // Setup example schedules/scenes
         setupDefaultSchedules();
 
-        scriptHandler = new LiteScriptHandler();
+        scriptHandler = new LiteScriptHandler(module);
         homeGenie->addAPIHandler(scriptHandler);
 #endif
 

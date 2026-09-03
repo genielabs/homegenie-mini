@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -55,9 +55,13 @@ namespace Service { namespace API {
 
         moduleList.add(irModule);
 
-        transmitter->begin();
-        //receiver->begin(); <-- this is already done automatically by "IIOEventSender" parent class
-        receiver->setModule(irModule);
+        if (transmitter != nullptr) {
+            transmitter->begin();
+        }
+        if (receiver != nullptr) {
+            //receiver->begin(); <-- this is already done automatically by "IIOEventSender" parent class
+            receiver->setModule(irModule);
+        }
     }
 
     bool IRTransceiverHandler::handleRequest(APIRequest *command, ResponseCallback* responseCallback) {

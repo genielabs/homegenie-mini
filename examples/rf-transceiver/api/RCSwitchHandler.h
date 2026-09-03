@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -45,8 +45,8 @@ namespace Service { namespace API {
     class RCSwitchHandler : public APIHandler {
     private:
         LinkedList<Module*> moduleList;
-        RFReceiver* receiver;
-        RFTransmitter* transmitter;
+        RFReceiver* receiver{};
+        RFTransmitter* transmitter{};
         ModuleParameter* rawDataParameter{};
 
         unsigned long eventTimestamp = 0;

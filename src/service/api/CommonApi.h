@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -112,6 +112,10 @@ namespace Service { namespace API {
             static const char Color[] = "Color";
             static const char Sensor[] = "Sensor";
             static const char Motor[] = "Motor";
+            static const char Siren[] = "Siren";
+            static const char Fan[] = "Fan";
+            static const char Shutter[] = "Shutter";
+            static const char DoorLock[] = "DoorLock";
         }
     }
 

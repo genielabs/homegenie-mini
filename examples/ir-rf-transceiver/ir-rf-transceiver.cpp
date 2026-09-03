@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -34,6 +34,7 @@
 
 #include "../rf-transceiver/io/RFReceiver.h"
 #include "../rf-transceiver/io/RFTransmitter.h"
+#include "../rf-transceiver/io/CC1101Transceiver.h"
 #include "../rf-transceiver/api/RCSwitchHandler.h"
 
 #include "../x10-transceiver/io/X10RFReceiver.h"
@@ -48,6 +49,7 @@ StatusLed statusLed;
 using namespace Service;
 
 HomeGenie* homeGenie;
+CC1101Transceiver cc1101;
 
 void setup() {
     // Default name shown in SNMP/UPnP advertising
@@ -62,11 +64,16 @@ void setup() {
     statusLed.setup();
 #endif
 
+    // Read pin configuration
+    uint8_t irReceiverPin = Config::getSetting("irrc-pin", CONFIG_IRReceiverPin).toInt();
+    uint8_t irTransmitterPin = Config::getSetting("irtr-pin", CONFIG_IRTransmitterPin).toInt();
+    uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", CONFIG_RCSwitchReceiverPin).toInt();
+    uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", CONFIG_RCSwitchTransmitterPin).toInt();
+
     // IR transceiver
 
     auto irApiHandler = new IRTransceiverHandler();
     // IR receiver
-    uint8_t irReceiverPin = Config::getSetting("irrc-pin", CONFIG_IRReceiverPin).toInt();
     if (irReceiverPin > 0) {
         auto receiverConfiguration = new IR::IRReceiverConfig(irReceiverPin);
         auto receiver = new IR::IRReceiver(receiverConfiguration);
@@ -74,7 +81,6 @@ void setup() {
         homeGenie->addIOHandler(receiver);
     }
     // IR transmitter
-    uint8_t irTransmitterPin = Config::getSetting("irtr-pin", CONFIG_IRTransmitterPin).toInt();
     if (irTransmitterPin > 0) {
         auto transmitterConfig = new IR::IRTransmitterConfig(irTransmitterPin);
         auto transmitter = new IR::IRTransmitter(transmitterConfig);
@@ -82,8 +88,8 @@ void setup() {
     }
     homeGenie->addAPIHandler(irApiHandler);
 
-    uint8_t rfReceiverPin = Config::getSetting("rfrc-pin", CONFIG_RCSwitchReceiverPin).toInt();
-    uint8_t rfTransmitterPin = Config::getSetting("rftr-pin", CONFIG_RCSwitchTransmitterPin).toInt();
+    // CC1101 sub-GHz RF Module auto-detect
+    cc1101.begin(rfReceiverPin, rfTransmitterPin);
 
     // RC-Switch RF transceiver
 
@@ -98,6 +104,7 @@ void setup() {
     if (rfTransmitterPin > 0) {
         auto rcsTransmitterConfig = new RCS::RFTransmitterConfig(rfTransmitterPin);
         auto rcsTransmitter = new RCS::RFTransmitter(rcsTransmitterConfig);
+        cc1101.bindTransmitter(rcsTransmitter);
         rcsApiHandler->setTransmitter(rcsTransmitter);
     }
     // RCSwitch RF Receiver
@@ -107,7 +114,9 @@ void setup() {
         homeGenie->addIOHandler(rcsReceiver);
         // shared interrupt handler with X10 class
         X10RFReceiver::addInterruptHandler([rcsReceiver](){
-            rcsReceiver->handleInterrupt();
+            if (!cc1101.isTransmitting()) {
+                rcsReceiver->handleInterrupt();
+            }
         });
         rcsApiHandler->setReceiver(rcsReceiver);
     }
@@ -127,6 +136,7 @@ void setup() {
     if (rfTransmitterPin > 0) {
         auto x10TransmitterConfig = new X10::X10RFTransmitterConfig(rfTransmitterPin);
         auto x10Transmitter = new X10::X10RFTransmitter(x10TransmitterConfig);
+        cc1101.bindTransmitter(x10Transmitter);
         x10ApiHandler->setTransmitter(x10Transmitter);
     }
     // X10 RF RFReceiver
@@ -140,6 +150,8 @@ void setup() {
     homeGenie->addAPIHandler(x10ApiHandler);
 
     homeGenie->begin();
+
+    cc1101.startListening();
 }
 
 

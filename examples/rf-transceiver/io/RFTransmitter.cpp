@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -46,6 +46,14 @@ namespace IO { namespace RCS {
         this->configuration = configuration;
     }
 
+    void RFTransmitter::setBeforeTransmitCallback(TransmitCallback callback) {
+        this->beforeTransmit = std::move(callback);
+    }
+
+    void RFTransmitter::setAfterTransmitCallback(TransmitCallback callback) {
+        this->afterTransmit = std::move(callback);
+    }
+
     void RFTransmitter::begin() {
         Logger::info("|  - IO::RemoteControl::RFTransmitter (PIN=%d)", configuration->getPin());
         RF.disableReceive();
@@ -55,10 +63,16 @@ namespace IO { namespace RCS {
     }
 
     void RFTransmitter::sendCommand(long command, unsigned short bitLength, unsigned short repeat, unsigned short repeat_delay) {
+        if (this->beforeTransmit) {
+            this->beforeTransmit();
+        }
 // TODO: rewrite ASYNC (move to loop() SEE ir-transceiver/io/IRTransmitter.cpp)
         for (int i = 0; i < repeat; i++) {
             RF.send(command, bitLength);
             delay(repeat_delay);
+        }
+        if (this->afterTransmit) {
+            this->afterTransmit();
         }
     }
 

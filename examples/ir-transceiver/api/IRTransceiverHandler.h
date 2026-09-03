@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2024 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -42,8 +42,8 @@ namespace Service { namespace API {
     private:
         LinkedList<Module*> moduleList;
         ModuleParameter* rawDataParameter{};
-        IRTransmitter* transmitter = nullptr;
-        IRReceiver* receiver = nullptr;
+        IRTransmitter* transmitter{};
+        IRReceiver* receiver{};
     public:
         void setReceiver(IRReceiver*);
         void setTransmitter(IRTransmitter*);

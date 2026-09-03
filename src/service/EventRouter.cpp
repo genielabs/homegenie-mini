@@ -1,5 +1,5 @@
 /*
- * HomeGenie-Mini (c) 2018-2025 G-Labs
+ * HomeGenie-Mini (c) 2018-2026 G-Labs
  *
  *
  * This file is part of HomeGenie-Mini (HGM).
@@ -53,10 +53,15 @@ namespace Service {
 
                     bool matchesConditionsProperty = false;
 
-                    // TODO: check if domain/address match declared event modules (`s->eventModules` list)
+                    // check if domain/address match declared event modules (`s->eventModules` list)
 
                     JsonDocument doc;
-                    deserializeJson(doc, s->data);
+                    DeserializationError err = deserializeJson(doc, s->data);
+                    if (err) {
+                        Logger::warn(":%s failed to parse schedule data JSON: %s", EVENTROUTER_NS_PREFIX, err.c_str());
+                        continue;
+                    }
+
                     auto event = doc["event"].as<JsonArray>();
 
                     for (auto eventCondition: event) {

@@ -29,6 +29,8 @@
 
 #include "X10RFTransmitter.h"
 
+#include <utility>
+
 namespace IO { namespace X10 {
 
     /*
@@ -67,14 +69,25 @@ namespace IO { namespace X10 {
         this->configuration = configuration;
     }
 
+    void X10RFTransmitter::setBeforeTransmitCallback(TransmitCallback callback) {
+        this->beforeTransmit = std::move(callback);
+    }
+
+    void X10RFTransmitter::setAfterTransmitCallback(TransmitCallback callback) {
+        this->afterTransmit = std::move(callback);
+    }
+
     void X10RFTransmitter::begin() {
         Logger::info("|  - IO::X10::RFTransmitter (PIN=%d)", configuration->getPin());
         pinMode(configuration->getPin(), OUTPUT);
         Logger::info("|  ✔ IO::X10::RFTransmitter");
     }
 
-// TODO: rewrite ASYNC (move to loop() SEE ir-transceiver/io/IRTransmitter.cpp)
     void X10RFTransmitter::sendCommand(uint8_t *data, uint8_t size, uint8_t repeat, uint8_t sendDelay) {
+        if (this->beforeTransmit) {
+            this->beforeTransmit();
+        }
+// TODO: rewrite ASYNC (move to loop() SEE ir-transceiver/io/IRTransmitter.cpp)
         for (int i = 0; i < (repeat > 0 ? repeat : configuration->getSendRepeat()); i++) {
             pulseHigh();
             delayMicroseconds(configuration->getStartBustLong());
@@ -87,6 +100,9 @@ namespace IO { namespace X10 {
             delayMicroseconds(configuration->getPacketGap());
             // pause between commands (ms)
             delay(sendDelay);
+        }
+        if (this->afterTransmit) {
+            this->afterTransmit();
         }
     }
 
