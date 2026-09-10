@@ -336,25 +336,34 @@ namespace Net {
 #else
         bool handle(WebServer &server, HTTPMethod requestMethod, String requestUri) override {
 #endif
-            // append POST data to requestUri
             String uri = requestUri;
+
             for (int a = 0; a < server.args(); a++) {
-                if (server.argName(a).length() > 0) {
-                    uri += String("/") + server.argName(a);
-                }
-
+                String name = server.argName(a);
                 String val = server.arg(a);
-                // Escape '%' and '+' to protect raw POST data from automatic urlDecode in the router
-                val.replace("%", "%25");
-                val.replace("+", "%2B");
 
-                uri += String("/") + val;
+                if (name == "plain") {
+                    // Raw POST body (JSON / Script).
+                    // Keep it 100% as-is without any escaping so that '+', '%', and quotes
+                    // inside scripts or JSON payloads are never corrupted.
+                    uri += String("/plain/") + val;
+                } else {
+                    // Standard URL query parameters (?param=value)
+                    if (name.length() > 0) {
+                        uri += String("/") + name;
+                    }
+                    val.replace("%", "%25");
+                    val.replace("+", "%2B");
+
+                    uri += String("/") + val;
+                }
             }
-            // create response callback
+
+            // Create response callback
             auto responseCallback = new WebServerResponseCallback(&server);
             if (!netRequestHandler->onNetRequest(&server, uri.c_str(), responseCallback)) {
                 responseCallback->error("Invalid request.");
-            };
+            }
             delete responseCallback;
             return true;
         }

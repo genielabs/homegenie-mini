@@ -73,6 +73,10 @@ inline void executeOnLedRange(uint16_t ledStart, uint16_t ledEnd, uint8_t type, 
         float defV = defaultColor.getValue(); // Master brightness (0.0 to 1.0)
 
         for (int i = start; i <= end; i++) {
+            if (animatedColors[i] == nullptr) {
+                continue;
+            }
+
             switch (type) {
                 case CMD_ON:
                     animatedColors[i]->setColor(defH, defS, defV, 0);

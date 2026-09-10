@@ -108,7 +108,7 @@ LiteScriptHandler* scriptHandler = nullptr;
 #endif
 
 // Master/Status LED
-ColorLight* colorLight;
+ColorLight* colorLight = nullptr;
 
 // LED strip
 MatrixConfig ledsConfig = { 0, 0, 1, false, true, false, false }; // 16x16
@@ -198,8 +198,8 @@ inline uint8_t getLightStyleIndex(String& styleName) {
 ModuleParameter* mpFxStrobe;
 
 // Buttons state variables
-unsigned long lastStepCommandTs = -1;
-uint8_t buttonCommand = -1;
+unsigned long lastStepCommandTs = 0;
+uint8_t buttonCommand = BUTTON_COMMAND_NONE;
 
 // Light animation effects state variables
 unsigned int refreshMs = 10;
@@ -228,7 +228,7 @@ inline void renderPixels() {
     float pwr = ((float)maxPower / 100.0f);
     if (pixels != nullptr) {
         for (int i = 0; i < ledsConfig.count; i++) {
-            if (animatedColors[i]->getColor(pwr) != pixels->getPixelColor(i) && (!colorLightList.exist(i) || !colorLightList.get(i)->isOn())) {
+            if (animatedColors[i] != nullptr && animatedColors[i]->getColor(pwr) != pixels->getPixelColor(i) && (!colorLightList.exist(i) || !colorLightList.get(i)->isOn())) {
                 pixels->setPixelColor(i,
                                       static_cast<int>(round(animatedColors[i]->getRed() * pwr)),
                                       static_cast<int>(round(animatedColors[i]->getGreen() * pwr)),
@@ -236,7 +236,7 @@ inline void renderPixels() {
             }
         }
     }
-    if (statusLed.isEnabled()) {
+    if (statusLed.isEnabled() && animatedColors[0] != nullptr) {
         auto c = animatedColors[0];
         if (c->getColor() != statusLed.getLed()->getPixelColor(0)) {
             statusLed.getLed()->setPixelColor(0,
@@ -290,7 +290,7 @@ inline void disposePixels() {
         refresh();
         //*/
         delete pixels;
-        delay(1000);
+        pixels = nullptr;
     }
 
 }
@@ -440,18 +440,17 @@ public:
 
         } else if (option->is(Options::Controller::LED_count)) {
 
-            // number of pixels changed
             disposePixels();
-            // update current leds count
-            ledsConfig.count = option->value.toInt();
-            ledsConfig.cols = ledsConfig.count / ledsConfig.rows;
-            // re-create pixels with the new length
+            ledsConfig.count = max(1L, option->value.toInt());
+            if (ledsConfig.rows > 0) {
+                ledsConfig.cols = ledsConfig.count / ledsConfig.rows;
+            }
             createPixels();
 
         } else if (option->is(Options::Controller::LED_rows)) {
 
-            // update current leds count
-            ledsConfig.rows = option->value.toInt();
+            int rows = option->value.toInt();
+            ledsConfig.rows = max(1, rows);
             ledsConfig.cols = ledsConfig.count / ledsConfig.rows;
 
         } else if (option->is(Options::Controller::LED_vert)) {

@@ -82,11 +82,22 @@ namespace Service { namespace API {
                 case 3:
                     apiCommand.Command = arg;
                     apiCommand.OptionsString = command;
-                    // POST data is prefixed with 'plain/' string
+
+                    // Strip leading slash if present
+                    if (command.startsWith("/")) {
+                        command = command.substring(1);
+                    }
+
+                    // Extract POST body data
                     if (command.startsWith("plain/"))  {
                         apiCommand.Data = command.substring(6);
-                    } else if (command.indexOf("/plain/") > 0) {
-                        apiCommand.Data = command.substring(command.indexOf("/plain/") + 7);
+                        apiCommand.OptionsString = ""; // Options is empty, it was raw POST data
+                    } else {
+                        int pIdx = command.indexOf("/plain/");
+                        if (pIdx >= 0) {
+                            apiCommand.OptionsString = command.substring(0, pIdx);
+                            apiCommand.Data = command.substring(pIdx + 7);
+                        }
                     }
                     IO::Logger::trace("%s parse() >> [Command = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.Command.c_str());
                     IO::Logger::trace("%s parse() >> [Options = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.OptionsString.c_str());
