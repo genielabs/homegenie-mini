@@ -31,6 +31,8 @@
 
 #ifndef DISABLE_AUTOMATION
 
+#include "helpers/DuktapeMemory.h"
+
 namespace Automation {
 
     static const char baseCode[] PROGMEM = "const $$ = {\n"
@@ -169,7 +171,12 @@ namespace Automation {
         Logger::info(":%s [Scheduler::Event] >> ['%s' running]", PROGRAMENGINE_NS_PREFIX,
                      schedule->name.c_str());
 
-        duk_context *ctx = duk_create_heap_default();
+        duk_context *ctx = ScriptMemory::createHeap();
+        if (ctx == nullptr) {
+            Logger::error(":%s [Scheduler::Event] >> ['%s' unable to allocate JavaScript heap]",
+                          PROGRAMENGINE_NS_PREFIX, schedule->name.c_str());
+            return;
+        }
 
         duk_push_c_lightfunc(ctx, helper_log, DUK_VARARGS, 0, 0);
         duk_put_global_string(ctx, "__log");

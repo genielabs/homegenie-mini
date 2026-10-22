@@ -233,6 +233,7 @@ namespace UI { namespace Activities { namespace Monitor {
 
     JpegDimensions CameraDisplayActivity::getJpegDimensions(const uint8_t* jpg_data, size_t data_size) {
       JpegDimensions dims;
+      if (jpg_data == nullptr || data_size < 9) return dims;
       for (size_t i = 0; i < data_size - 9; ++i) {
         if (jpg_data[i] == 0xFF) {
           uint8_t marker_type = jpg_data[i + 1];
@@ -292,11 +293,16 @@ namespace UI { namespace Activities { namespace Monitor {
                 return nullptr;
             }
             WiFiClient* stream = http.getStreamPtr();
+#if defined(HTTP_TCP_RX_BUFFER_SIZE)
+            constexpr size_t readChunkSize = HTTP_TCP_RX_BUFFER_SIZE;
+#else
+            constexpr size_t readChunkSize = HTTP_TCP_BUFFER_SIZE;
+#endif
             size_t bytesRead = 0;
             unsigned long startTime = millis();
             while (http.connected() && (bytesRead < len) && (millis() - startTime < 1500)) { // Timeout 1500ms
                 if (stream->available()) {
-                    bytesRead += stream->readBytes(&imageBuffer[bytesRead], min((size_t)(len - bytesRead), (size_t)HTTP_TCP_BUFFER_SIZE));
+                    bytesRead += stream->readBytes(&imageBuffer[bytesRead], min((size_t)(len - bytesRead), readChunkSize));
                 }
             }
 
@@ -329,11 +335,15 @@ namespace UI { namespace Activities { namespace Monitor {
             auto c = cameraInstance;
             if (c && !c->jpegFeedUrl.isEmpty() && c->isActivityReady && WiFi.isConnected()) {
                 uint8_t* bufferData = nullptr;
+#ifdef ESP_CAMERA_SUPPORTED
+                bool localFrameAcquired = false;
+#endif
                 lastFrameTs = millis();
 #ifdef ESP_CAMERA_SUPPORTED
                 if (c->isEsp32Camera) {
                     auto fb = Sensors::Esp32Camera::cameraGetFrame(c->imageResolution.toInt(), c->imageQuality.toInt());
                     if (fb != nullptr) {
+                        localFrameAcquired = true;
                         bufferData = fb->buffer;
                         c->bufferSize = fb->length;
                         c->feedError = "";
@@ -396,16 +406,16 @@ namespace UI { namespace Activities { namespace Monitor {
                             }
                         }
                     }
-#ifdef ESP_CAMERA_SUPPORTED
-                    if (c->isEsp32Camera) {
-                        Sensors::Esp32Camera::cameraReleaseFrame();
-                    } else {
-#endif
-                        free(bufferData);
-#ifdef ESP_CAMERA_SUPPORTED
-                    }
-#endif
                 }
+#ifdef ESP_CAMERA_SUPPORTED
+                if (localFrameAcquired) {
+                    Sensors::Esp32Camera::cameraReleaseFrame();
+                } else {
+#endif
+                    free(bufferData);
+#ifdef ESP_CAMERA_SUPPORTED
+                }
+#endif
             }
             long delay = (100 - dts); // 10fps max.
             if (delay < 1) {

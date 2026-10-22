@@ -92,12 +92,24 @@ SSDPDeviceClass::SSDPDeviceClass() :
 	sprintf(m_schemaURL, "ssdp/schema.xml");
 
 #ifdef ESP8266
-	uint32_t chipId = ESP.getChipId();
+    uint32_t chipId = ESP.getChipId();
+    String prefix = WiFi.macAddress();
 #else
-	uint32_t chipId = ESP.getEfuseMac();
+    // This global object is constructed before Wi-Fi starts. Read the factory
+    // MAC directly, preserving the byte order used by WiFi.macAddress().
+    const uint64_t efuseMac = ESP.getEfuseMac();
+    const uint32_t chipId = (uint32_t)efuseMac;
+    char macPrefix[13];
+    snprintf(macPrefix, sizeof(macPrefix), "%02x%02x%02x%02x%02x%02x",
+             (unsigned)((efuseMac >> 0) & 0xff),
+             (unsigned)((efuseMac >> 8) & 0xff),
+             (unsigned)((efuseMac >> 16) & 0xff),
+             (unsigned)((efuseMac >> 24) & 0xff),
+             (unsigned)((efuseMac >> 32) & 0xff),
+             (unsigned)((efuseMac >> 40) & 0xff));
+    String prefix = macPrefix;
 #endif
 
-    String prefix = WiFi.macAddress();
     prefix.toLowerCase();
     prefix.replace(":", "");
 	sprintf(m_uuid, "%s-%s-6e69-654d-696e69%02x%02x%02x",

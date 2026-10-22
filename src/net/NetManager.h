@@ -332,6 +332,10 @@ namespace Net {
             return uri != nullptr && uri.startsWith("/api/");
         }
 #if ESP_ARDUINO_VERSION_MAJOR > 2
+        bool canHandle(WebServer& server, HTTPMethod method, const String& uri) override {
+            return canHandle(method, uri);
+        }
+
         bool handle(WebServer &server, HTTPMethod requestMethod, const String& requestUri) override {
 #else
         bool handle(WebServer &server, HTTPMethod requestMethod, String requestUri) override {

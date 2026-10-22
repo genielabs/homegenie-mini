@@ -62,6 +62,9 @@ namespace UI { namespace Activities { namespace Utilities {
 
         if (clockSprite == nullptr) {
             clockSprite = new LGFX_Sprite(canvas);
+#ifdef BOARD_HAS_PSRAM
+            clockSprite->setPsram(true);
+#endif
             clockSprite->setColorDepth(2);
         }
 

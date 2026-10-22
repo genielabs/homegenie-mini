@@ -60,6 +60,7 @@ namespace Net {
         // RequestHandler interface methods
 #if ESP_ARDUINO_VERSION_MAJOR > 2
         bool canHandle(HTTPMethod method, const String& uri) override;
+        bool canHandle(WebServer& server, HTTPMethod method, const String& uri) override;
         bool handle(WebServer& server, HTTPMethod requestMethod, const String& requestUri) override;
 #else
         bool canHandle(HTTPMethod method, String uri) override;

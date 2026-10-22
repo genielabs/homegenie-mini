@@ -28,6 +28,7 @@
  */
 
 #include "Config.h"
+#include "net/TimeClient.h"
 
 ZoneConfig Config::zone;
 SystemConfig Config::system;
@@ -75,6 +76,7 @@ void Config::handleConfigCommand(String &message) {
         // TODO: no integrated RTC available in ESP8266
 #else
         Config::getRTC()->setTime(seconds, ms);
+        Net::TimeClient::getNTPClient().setEpochTime(Config::getRTC()->getLocalEpoch());
 #endif
     }
     if (message.startsWith("#CONFIG:system-zone-id ")) {

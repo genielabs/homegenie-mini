@@ -28,6 +28,8 @@
  */
 
 #include "TimeClient.h"
+#include <stdint.h>
+#include <time.h>
 
 namespace Net {
     // Time sync
@@ -45,6 +47,16 @@ namespace Net {
         // GMT -1 = -3600
         // GMT 0 = 0
         ntpClient.setTimeOffset(0);
+#ifndef ESP8266
+        // The RTC may retain valid time across resets while NTPClient starts at
+        // zero. Seed its clock so API/event timestamps agree with system time
+        // immediately, without waiting for the next network synchronization.
+        const time_t rtcEpoch = time(nullptr);
+        rtcTimeSet = rtcEpoch >= 1712031624 && rtcEpoch <= static_cast<int64_t>(UINT32_MAX);
+        if (rtcTimeSet) {
+            ntpClient.setEpochTime(static_cast<unsigned long>(rtcEpoch));
+        }
+#endif
     }
 
     void TimeClient::loop() {

@@ -172,6 +172,10 @@ namespace Net {
     }
 
 #if ESP_ARDUINO_VERSION_MAJOR > 2
+    bool HTTPServer::canHandle(WebServer& server, HTTPMethod method, const String& uri) {
+        return canHandle(method, uri);
+    }
+
     bool HTTPServer::handle(WebServer& server, HTTPMethod requestMethod, const String& requestUri) {
 #else
     bool HTTPServer::handle(WebServer& server, HTTPMethod requestMethod, String requestUri) {

@@ -47,6 +47,11 @@ namespace Service { namespace API { namespace devices {
         if (command->Command == CameraApi::Camera_GetPicture) {
             if (setOnFrameRequestCallback != nullptr && setOnFrameReleaseCallback != nullptr) {
                 FrameBuffer *fb = setOnFrameRequestCallback(command->getOption(0).toInt(), command->getOption(1).toInt());
+                if (fb == nullptr || fb->buffer == nullptr || fb->length == 0) {
+                    if (fb != nullptr) setOnFrameReleaseCallback();
+                    responseCallback->error("{\"ResponseStatus\":\"ERROR\",\"Message\":\"Camera busy or frame unavailable\"}");
+                    return true;
+                }
                 responseCallback->writeBinary("image/jpeg", fb->buffer, fb->length);
                 setOnFrameReleaseCallback();
             }

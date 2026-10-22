@@ -55,11 +55,7 @@ namespace Net {
         void invalidate();
 
     private:
-#ifdef ESP32
-        bool rtcTimeSet = (esp_reset_reason() != ESP_RST_POWERON && esp_reset_reason() != ESP_RST_UNKNOWN);
-#else
         bool rtcTimeSet = false;
-#endif
         long long lastTimeCheck = -100000;
     };
 

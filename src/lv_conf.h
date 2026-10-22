@@ -66,8 +66,10 @@
 #define LV_MEM_ADR 0     /*0: unused*/
 /*Instead of an address give a memory allocator that will be called to get a memory pool for LVGL. E.g. my_malloc*/
 #if LV_MEM_ADR == 0
-//#define LV_MEM_POOL_INCLUDE your_alloc_library  /* Uncomment if using an external allocator*/
-//#define LV_MEM_POOL_ALLOC   your_alloc          /* Uncomment if using an external allocator*/
+#if defined(ESP32) && defined(BOARD_HAS_PSRAM)
+#define LV_MEM_POOL_INCLUDE "ui/LvglMemory.h"
+#define LV_MEM_POOL_ALLOC homegenie_lvgl_pool_alloc
+#endif
 #endif
 
 #else       /*LV_MEM_CUSTOM*/

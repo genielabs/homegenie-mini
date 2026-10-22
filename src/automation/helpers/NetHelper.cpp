@@ -28,13 +28,16 @@
  */
 
 #include "NetHelper.h"
+#include <memory>
 
 namespace Automation { namespace Helpers {
 
     String NetHelper::httpGet(const String &url) {
         String response;
         auto parsedUrl = Utility::parseURL(url);
-        auto client = getClient(parsedUrl.protocol.equalsIgnoreCase("https"));
+        // HTTPClient may use the transport during destruction, even after end().
+        // Declare its owner first so the transport is destroyed last.
+        std::unique_ptr<WiFiClient> client(getClient(parsedUrl.protocol.equalsIgnoreCase("https")));
         HTTPClient http;
         if (http.begin(*client, parsedUrl.url)) {
             if (parsedUrl.hasCredentials()) {
@@ -57,14 +60,15 @@ namespace Automation { namespace Helpers {
             // TODO: report error...
         }
         http.end();
-        delete client;
         return response;
     }
 
     String NetHelper::httpPost(const String& _url, const String& data) {
         String response;
         auto parsedUrl = Utility::parseURL(_url);
-        auto client = getClient(parsedUrl.protocol.equalsIgnoreCase("https"));
+        // HTTPClient may use the transport during destruction, even after end().
+        // Declare its owner first so the transport is destroyed last.
+        std::unique_ptr<WiFiClient> client(getClient(parsedUrl.protocol.equalsIgnoreCase("https")));
         HTTPClient http;
         if (http.begin(*client, parsedUrl.url)) {
             if (parsedUrl.hasCredentials()) {
@@ -87,7 +91,6 @@ namespace Automation { namespace Helpers {
             // TODO: report error...
         }
         http.end();
-        delete client;
         return response;
     }
 

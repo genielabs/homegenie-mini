@@ -34,6 +34,25 @@ enable smoother *Robotic Arm* movements. Otherwise, if `rcrcar-4wd` is set to `f
 then the configured motors will be `S1`, `S2`, `S3`, `S4`.
 
 
+Angular limits remain configurable and are not overwritten by these presets at boot.
+The current `Servo` driver maps level 0-100 through the configured angle range for
+both positional and continuous-rotation servos. For continuous-rotation wheels this
+controls pulse width (speed/direction), not a physical angle: changing the limits
+can shift the level-50 neutral point. A separate continuous-rotation control mode
+is not implemented.
+
+Maintainer-confirmed gripper settings for Motor 5 (S5) on the combined robot-car/arm:
+
+| Property | Value |
+|----------|-------|
+| `Motor.Type.Servo.AngleMin` (`angl-min#5`) | 90 |
+| `Motor.Type.Servo.AngleMax` (`angl-max#5`) | 160 |
+| `Motor.Type.Servo.AngleSpeed` (`angl-spd#5`) | 5 |
+
+These are tested settings for that assembly, not defaults for every motor. The
+existing arm preset still uses speed 10 for startup positioning, then 5 in normal
+operation; that behavior is unchanged.
+
 ### Parameters for `motr-typ`= '`ServoEncoder`'
 
 | Key            | Description               | Default                          |

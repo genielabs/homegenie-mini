@@ -37,6 +37,10 @@
 #include <src/service/api/devices/Camera.h>
 
 #include "esp_camera.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "freertos/task.h"
+#include <vector>
 #include "soc/rtc_cntl_reg.h"
 
 #include "../../api/SensorApi.h"
@@ -120,51 +124,45 @@ namespace IO { namespace Sensors {
 
         static void init(Camera *pCamera);
 
-        static FrameBuffer* cameraGetFrame(uint8_t frameSize = 0, uint8_t quality = 0) {
-            unsigned long ts = millis();
-            while (isBusy) { // perhaps it would be best to use a semaphore
-                // request timeout
-                if (millis() - ts > 50) {
-                    return currentFrame;
-                }
-                delay(1);
-            }
-            isBusy = true;
-
-            if (frameSize > 0 && (framesize_t)frameSize != config.frame_size) {
-                config.frame_size = (framesize_t)frameSize;
-                auto v = String(frameSize);
-                apiHandler->module->setProperty(Options::Image_Resolution, v);
-                auto m = std::make_shared<QueuedMessage>(apiHandler->module, Options::Image_Resolution, v, &frameSize, Number);
-                HomeGenie::getInstance()->getEventRouter().signalEvent(m);
-            }
-
-            if (!initialized) {
-                cameraStart();
-            }
-
-            if (quality > 0 && quality != config.jpeg_quality) {
-                config.jpeg_quality = quality;
-                auto v = String(quality);
-                apiHandler->module->setProperty(Options::Image_Quality, v);
-                auto m = std::make_shared<QueuedMessage>(apiHandler->module, Options::Image_Quality, v, &quality, Number);
-                HomeGenie::getInstance()->getEventRouter().signalEvent(m);
-            }
-
-            cameraFrame = esp_camera_fb_get();
-            currentFrame->buffer = cameraFrame->buf;
-            currentFrame->length = cameraFrame->len;
-
-            return currentFrame;
-        }
-        static void cameraReleaseFrame() {
-            esp_camera_fb_return(cameraFrame);
-            isBusy = false;
-        }
+        // Each task may hold one shared frame lease, released by that same task.
+        static FrameBuffer* cameraGetFrame(uint8_t frameSize = 0, uint8_t quality = 0);
+        static void cameraReleaseFrame();
+        static void cameraUpdateOption(ModuleParameter* option);
 
     private:
         static camera_fb_t* cameraFrame;
-        static bool isBusy;
+        static SemaphoreHandle_t cameraMutex;
+        static std::vector<TaskHandle_t> frameReaders;
+        static unsigned int waitingWriters;
+        class CameraLock {
+            bool acquired;
+        public:
+            explicit CameraLock(TickType_t wait = pdMS_TO_TICKS(250))
+                : acquired(cameraMutex != nullptr && xSemaphoreTakeRecursive(cameraMutex, wait) == pdTRUE) {}
+            ~CameraLock() { if (acquired) xSemaphoreGiveRecursive(cameraMutex); }
+            explicit operator bool() const { return acquired; }
+            // Wait without holding the mutex so existing readers can release their leases.
+            bool waitForIdle(TickType_t wait = portMAX_DELAY) {
+                for (auto reader : frameReaders) {
+                    if (reader == xTaskGetCurrentTaskHandle()) return false;
+                }
+                const TickType_t started = xTaskGetTickCount();
+                ++waitingWriters;
+                while (cameraFrame != nullptr) {
+                    if (wait != portMAX_DELAY && xTaskGetTickCount() - started >= wait) {
+                        --waitingWriters;
+                        return false;
+                    }
+                    xSemaphoreGiveRecursive(cameraMutex);
+                    vTaskDelay(1);
+                    xSemaphoreTakeRecursive(cameraMutex, portMAX_DELAY);
+                }
+                --waitingWriters;
+                return true;
+            }
+            CameraLock(const CameraLock&) = delete;
+            CameraLock& operator=(const CameraLock&) = delete;
+        };
         static bool initialized;
         static bool sdcardInitialized;
         static FrameBuffer* currentFrame;
@@ -199,37 +197,8 @@ namespace IO { namespace Sensors {
             return sdcardInitialized;
         }
 
-        static bool takeNewPhoto(const char* folder, const char* fullPath) {
-            bool success = false;
-            if (!initialized) {
-                cameraStart();
-            }
-            // Camera sensor successfully initialized
-            if (initialized)  {
-                // empty cache
-                for (int i = 0; i < config.fb_count; i++) {
-                    camera_fb_t* fb = esp_camera_fb_get();
-                    esp_camera_fb_return(fb);
-                }
-                camera_fb_t* fb = esp_camera_fb_get();
-                if (!fb) {
-                    // Capture failed
-                    return false;
-                }
-                // Save to file
-                fs::FS &fs = SD_MMC;
-                if (!fs.exists(folder)) {
-                    fs.mkdir(folder);
-                }
-                File file = fs.open(fullPath, FILE_WRITE);
-                if (file) {
-                    success = file.write(fb->buf, fb->len) == fb->len;
-                }
-                file.close();
-                esp_camera_fb_return(fb);
-            }
-            return success;
-        }
+        static bool takeNewPhoto(const char* folder, const char* fullPath);
+        static int configValueNormalize(const char* key, int min, int max, int v);
 
     };
 
@@ -237,45 +206,7 @@ namespace IO { namespace Sensors {
     static class : public ModuleParameter::UpdateListener {
     public:
         void onUpdate(ModuleParameter* option) override {
-            int v = option->value.toInt();
-            sensor_t* s = esp_camera_sensor_get();
-            if (s != nullptr) {
-                if (option->is(Options::Controls_Brightness)) {
-                    v = configValueNormalize(Camera_Sensor::BrightnessControl, -3, 3, v);
-                    s->set_brightness(s, v);
-                } else if (option->is(Options::Controls_Saturation)) {
-                    v = configValueNormalize(Camera_Sensor::SaturationControl, -3, 3, v);
-                    s->set_saturation(s, v);
-                } else if (option->is(Options::Controls_Contrast)) {
-                    v = configValueNormalize(Camera_Sensor::ContrastControl, -3, 3, v);
-                    s->set_contrast(s, v);
-                } else if (option->is(Options::Controls_Effect)) {
-                    v = configValueNormalize(Camera_Sensor::EffectControl, 0, 6, v);
-                    s->set_special_effect(s, v);
-                } else if (option->is(Options::Controls_HMirror)) {
-                    s->set_hmirror(s, option->value.equals("true") ? 1 : 0);
-                } else if (option->is(Options::Controls_VFlip)) {
-                    s->set_vflip(s, option->value.equals("true") ? 1 : 0);
-                } else if (option->is(Options::Image_Quality)) {
-                    v = configValueNormalize(Options::Image_Quality, 10, 63, v);
-                    s->set_quality(s, v);
-                } else if (option->is(Options::Image_Resolution)) {
-                    Esp32Camera::cameraStop();
-                }
-            }
-        }
-    private:
-        static int configValueNormalize(const char* key, int min, int max, int v) {
-            if (v < min) {
-                v = min;
-                Config::saveSetting(key, String(v));
-
-            } else if (v > max) {
-                v = max;
-                auto val = String(v);
-                Config::saveSetting(key, String(v));
-            }
-            return v;
+            Esp32Camera::cameraUpdateOption(option);
         }
     } optionUpdateListener;
 

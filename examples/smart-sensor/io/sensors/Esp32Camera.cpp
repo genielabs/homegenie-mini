@@ -35,13 +35,19 @@ namespace IO { namespace Sensors {
     camera_config_t Esp32Camera::config;
     camera_fb_t* Esp32Camera::cameraFrame = nullptr;
     bool Esp32Camera::initialized = false;
-    bool Esp32Camera::isBusy = false;
+    SemaphoreHandle_t Esp32Camera::cameraMutex = nullptr;
+    std::vector<TaskHandle_t> Esp32Camera::frameReaders;
+    unsigned int Esp32Camera::waitingWriters = 0;
     FrameBuffer* Esp32Camera::currentFrame = new FrameBuffer();
     Esp32Camera* Esp32Camera::instance = nullptr;
     bool Esp32Camera::sdcardInitialized = false;
     devices::Camera* Esp32Camera::apiHandler = nullptr;
 
     Esp32Camera::Esp32Camera(devices::Camera* cameraHandler) {
+        cameraMutex = xSemaphoreCreateRecursiveMutex();
+        if (cameraMutex == nullptr) {
+            Serial.println("ESP32-CAMERA ERROR: unable to create camera mutex.");
+        }
 #ifndef ESP32_S3
         // On classic ESP32-CAM the internal LED has inverted on/off behaviour
         Config::StatusLedInvert = true;
@@ -60,11 +66,7 @@ namespace IO { namespace Sensors {
             char fullPath[50];
             sprintf(folderName, "/%02d%02d%02d", rtc->getYear(), rtc->getMonth(), rtc->getDay());
             sprintf(fullPath, "%s/%02d%02d%02d%02d%02d%02d%03d.jpg", folderName, rtc->getYear(), rtc->getMonth(), rtc->getDay(), rtc->getHour(true), rtc->getMinute(), rtc->getSecond(), rtc->getMillis());
-            if (Esp32Camera::sdcardInitialized || Esp32Camera::initMicroSDCard()) {
-                // TODO: emit event `Camera.SDCard.LastSaved` Serial.println(fileName);
-                return Esp32Camera::takeNewPhoto(folderName, fullPath);
-            }
-            return false;
+            return Esp32Camera::takeNewPhoto(folderName, fullPath);
         });
         // Get Camera handler module
         auto module = apiHandler->module;
@@ -86,7 +88,7 @@ namespace IO { namespace Sensors {
         )->withConfigKey(Camera_Sensor::ImageQuality)->addUpdateListener(&optionUpdateListener);
 
         // Add option for image size
-        auto psramSize = esp_spiram_get_size();
+        auto psramSize = ESP.getPsramSize();
         char resolutionOptions[512];
         if (psramSize == 0) { // NO PSRAM
             snprintf(resolutionOptions, sizeof(resolutionOptions),
@@ -244,6 +246,145 @@ namespace IO { namespace Sensors {
 
     }
 
+    FrameBuffer* Esp32Camera::cameraGetFrame(uint8_t frameSize, uint8_t quality) {
+        CameraLock lock;
+        if (!lock || waitingWriters != 0) return nullptr;
+        const auto task = xTaskGetCurrentTaskHandle();
+        for (auto reader : frameReaders) {
+            if (reader == task) return nullptr; // One outstanding lease per task.
+        }
+        if (cameraFrame != nullptr) {
+            const bool compatible = (frameSize == 0 || (framesize_t)frameSize == config.frame_size)
+                                 && (quality == 0 || quality == config.jpeg_quality);
+            if (compatible) {
+                frameReaders.push_back(task);
+                return currentFrame;
+            }
+            if (!lock.waitForIdle(pdMS_TO_TICKS(250))) return nullptr;
+        }
+
+        if (frameSize > 0 && (framesize_t)frameSize != config.frame_size) {
+            config.frame_size = (framesize_t)frameSize;
+            auto v = String(frameSize);
+            apiHandler->module->setProperty(Options::Image_Resolution, v);
+            int32_t eventValue = frameSize;
+            auto m = std::make_shared<QueuedMessage>(apiHandler->module, Options::Image_Resolution, v, &eventValue, Number);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+        }
+        if (!initialized) cameraStart();
+        if (!initialized) return nullptr;
+
+        if (quality > 0 && quality != config.jpeg_quality) {
+            config.jpeg_quality = quality;
+            auto v = String(quality);
+            apiHandler->module->setProperty(Options::Image_Quality, v);
+            int32_t eventValue = quality;
+            auto m = std::make_shared<QueuedMessage>(apiHandler->module, Options::Image_Quality, v, &eventValue, Number);
+            HomeGenie::getInstance()->getEventRouter().signalEvent(m);
+        }
+        cameraFrame = esp_camera_fb_get();
+        if (cameraFrame == nullptr) return nullptr;
+        if (cameraFrame->buf == nullptr || cameraFrame->len == 0) {
+            esp_camera_fb_return(cameraFrame);
+            cameraFrame = nullptr;
+            return nullptr;
+        }
+        currentFrame->buffer = cameraFrame->buf;
+        currentFrame->length = cameraFrame->len;
+        frameReaders.push_back(task); // The last reader returns the frame to the driver.
+        return currentFrame;
+    }
+
+    void Esp32Camera::cameraReleaseFrame() {
+        CameraLock lock(portMAX_DELAY);
+        if (!lock || cameraFrame == nullptr) return;
+        const auto task = xTaskGetCurrentTaskHandle();
+        for (auto reader = frameReaders.begin(); reader != frameReaders.end(); ++reader) {
+            if (*reader != task) continue;
+            frameReaders.erase(reader);
+            if (frameReaders.empty()) {
+                esp_camera_fb_return(cameraFrame);
+                cameraFrame = nullptr;
+                currentFrame->buffer = nullptr;
+                currentFrame->length = 0;
+            }
+            return;
+        }
+        // Ignore releases from tasks without a lease, including duplicate releases.
+    }
+
+    bool Esp32Camera::takeNewPhoto(const char* folder, const char* fullPath) {
+        CameraLock lock;
+        if (!lock || !lock.waitForIdle(pdMS_TO_TICKS(250))) return false;
+        if (!sdcardInitialized && !initMicroSDCard()) return false;
+        if (!initialized) cameraStart();
+        if (!initialized) return false;
+
+        // Empty the camera queue while holding exclusive access.
+        for (int i = 0; i < config.fb_count; i++) {
+            camera_fb_t* cached = esp_camera_fb_get();
+            if (cached != nullptr) esp_camera_fb_return(cached);
+        }
+        camera_fb_t* fb = esp_camera_fb_get();
+        if (fb == nullptr) return false;
+        if (fb->buf == nullptr || fb->len == 0) {
+            esp_camera_fb_return(fb);
+            return false;
+        }
+
+        fs::FS &fs = SD_MMC;
+        if (!fs.exists(folder)) fs.mkdir(folder);
+        File file = fs.open(fullPath, FILE_WRITE);
+        bool success = file && file.write(fb->buf, fb->len) == fb->len;
+        file.close();
+        esp_camera_fb_return(fb);
+        return success;
+    }
+
+    void Esp32Camera::cameraUpdateOption(ModuleParameter* option) {
+        CameraLock lock(portMAX_DELAY);
+        if (!lock || option == nullptr || !lock.waitForIdle()) return;
+        int v = option->value.toInt();
+        sensor_t* s = esp_camera_sensor_get();
+        if (s != nullptr) {
+            if (option->is(Options::Controls_Brightness)) {
+                v = configValueNormalize(Camera_Sensor::BrightnessControl, -3, 3, v);
+                s->set_brightness(s, v);
+            } else if (option->is(Options::Controls_Saturation)) {
+                v = configValueNormalize(Camera_Sensor::SaturationControl, -3, 3, v);
+                s->set_saturation(s, v);
+            } else if (option->is(Options::Controls_Contrast)) {
+                v = configValueNormalize(Camera_Sensor::ContrastControl, -3, 3, v);
+                s->set_contrast(s, v);
+            } else if (option->is(Options::Controls_Effect)) {
+                v = configValueNormalize(Camera_Sensor::EffectControl, 0, 6, v);
+                s->set_special_effect(s, v);
+            } else if (option->is(Options::Controls_HMirror)) {
+                s->set_hmirror(s, option->value.equals("true") ? 1 : 0);
+            } else if (option->is(Options::Controls_VFlip)) {
+                s->set_vflip(s, option->value.equals("true") ? 1 : 0);
+            } else if (option->is(Options::Image_Quality)) {
+                v = configValueNormalize(Options::Image_Quality, 10, 63, v);
+                s->set_quality(s, v);
+            } else if (option->is(Options::Image_Resolution)) {
+                Esp32Camera::cameraStop();
+            }
+        }
+    }
+
+    int Esp32Camera::configValueNormalize(const char* key, int min, int max, int v) {
+        if (v < min) {
+            v = min;
+            Config::saveSetting(key, String(v));
+
+        } else if (v > max) {
+            v = max;
+            auto val = String(v);
+            Config::saveSetting(key, String(v));
+        }
+        return v;
+    }
+
     void Esp32Camera::applySettings() {
         sensor_t* camera = esp_camera_sensor_get();
         camera->set_brightness(camera, Config::getSetting(Camera_Sensor::BrightnessControl, "0").toInt());     // -2 to 2
@@ -271,7 +412,8 @@ namespace IO { namespace Sensors {
     }
 
     void Esp32Camera::cameraStart(camera_grab_mode_t grabMode) {
-        if (initialized) return;
+        CameraLock lock(portMAX_DELAY);
+        if (!lock || initialized || !lock.waitForIdle()) return;
 #ifndef ESP32_S3
         // Disable WPS button on ESP32-CAM classic model
         // because GPIO0 is also used for X_CLOCK line
@@ -323,7 +465,7 @@ namespace IO { namespace Sensors {
         }
         config.frame_size = res;
 
-        auto psramSize = esp_spiram_get_size();
+        auto psramSize = ESP.getPsramSize();
         config.fb_count = (psramSize > 0) ? Config::getSetting(Camera_Sensor::CameraCfg_fbc, "2").toInt() : 1;
         config.grab_mode = grabMode;
 
@@ -348,6 +490,8 @@ namespace IO { namespace Sensors {
     }
 
     void Esp32Camera::cameraStop() {
+        CameraLock lock(portMAX_DELAY);
+        if (!lock || !initialized || !lock.waitForIdle()) return;
         esp_err_t err = esp_camera_deinit();
         if (err != ESP_OK) {
             Serial.println("Error de-initializing camera sensor");
