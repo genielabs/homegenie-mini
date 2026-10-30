@@ -66,6 +66,19 @@ pio project config
 
 You can customize environments or define your own pin mappings and features by editing the `platformio.ini` file.
 
+Build platforms are selected by target to preserve internal RAM for automation:
+
+| Target | Platform | Arduino core |
+| --- | --- | --- |
+| ESP32-C3 (all C3 environments) | `espressif32@7.1.3` | 2.x |
+| Other ESP32 targets, including S2/S3/C6 | `espressif32@~8.0.0` | 3.x |
+| ESP8266 | `espressif8266@2.6.3` | Existing ESP8266 core |
+
+The C3 exception retains the current firmware features, including Bluetooth
+provisioning, while preserving JavaScript heap headroom. See
+[build platform policy and memory evidence](docs/build-platforms.md).
+
+
 ---
 
 ## Pre-built Firmware Projects (Examples)

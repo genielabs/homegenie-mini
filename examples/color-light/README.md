@@ -5,6 +5,15 @@ A smart light device with addressable RGB LEDs.
 - [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/smart-led-lights/)
 
 
+## Offline use and provisioning
+
+Local light controls and effects work without configured Wi-Fi. BOOT long press
+enters BOOT 1 (WPS only) with saved credentials, or directly BOOT 2 (WPS + Bluetooth
+on supported boards) without credentials. A second separate long press in
+configuration resets Wi-Fi credentials and enters BOOT 2. Ordinary offline startup
+does not enable configuration or Bluetooth. See [configuration mode and device checks](../../docs/configuration-mode.md)
+for indicator patterns, restart behavior and the 16x16 acceptance sequence.
+
 ## Firmware configuration
 
 In addition to default system options the following configuration options are available:
@@ -114,3 +123,22 @@ where the optional `<target>` suffix can be one of the following:
 Several matrix effects in this firmware are custom procedural adaptations inspired by or adapted from popular open-source projects:
 - **WLED**: Distortion Waves (by ldirko, blazoncek, and dedehai) and 1D Particle Fire (by Damian Schneider / DedeHai).
 - **FastLED / Soulmate Lights**: 2D Drift (by Stepko, modified by Andrew Tuline) and 2D Polar Lights (by Kostyantyn Matviyevskyy, modified by Andrew Tuline).
+
+### Matrix orientation and scripts
+
+Two-dimensional script selections use the configured matrix mapping, including
+vertical wiring, serpentine rows/columns and bottom/right origins. Coordinate
+rectangles are compiled into contiguous physical spans along the wiring axis.
+Explicit physical LED indices/ranges and `ALL` keep their existing behavior.
+There is no extra frame buffer or per-frame coordinate conversion.
+
+After changing the matrix layout in the app, resend the image/script so it is
+compiled with the new mapping. Source scripts are deliberately not retained in
+RAM after compilation. To check orientation, use the same layout that displays
+Fire correctly, then send the Pac-Man Ghost again.
+
+Host regression test (requires Python and a C++11 compiler):
+
+```sh
+python test/matrix-script/test.py c++
+```

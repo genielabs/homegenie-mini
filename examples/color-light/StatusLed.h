@@ -41,11 +41,7 @@ class StatusLed: Task {
 private:
     // Optional RGB Status LED
     Adafruit_NeoPixel* statusLED = nullptr;
-    bool _statusLedWifiConnected = false;
-
-    // Blinks only first 20 seconds right after boot
-    unsigned long helloWorldDuration = 20000;
-    bool helloWorldActive = true;
+    uint32_t effectColor = 0;
 
     // Status LED activity signal callback
     bool activityBlink = false;
@@ -58,7 +54,7 @@ private:
         if (isLedOn) {
             statusLED->setPixelColor(0, Adafruit_NeoPixel::Color(100, 100, 0));
         } else {
-            statusLED->setPixelColor(0, Adafruit_NeoPixel::Color(0, 0, 0));
+            statusLED->setPixelColor(0, effectColor);
         }
         statusLED->show();
     }
@@ -91,11 +87,9 @@ public:
         colorLight->module->setProperty(Implements::Scheduling_ModuleEvents, "true");
 
         colorLight->onSetColor([this](LightColor c) {
-            if (statusLED != nullptr) {
-                statusLED->setPixelColor(0, (int)round(c.getRed()), (int)round(c.getGreen()), (int)round(c.getBlue()));
-                statusLED->show();
-                currentColor.setColor(c.getHue(), c.getSaturation(), c.getValue(), 0);
-            }
+            currentColor.setColor(c.getHue(), c.getSaturation(), c.getValue(), 0);
+            setEffectColor(c);
+            if (statusLED != nullptr) statusLED->show();
         });
 
         auto hg = Service::HomeGenie::getInstance();
@@ -103,31 +97,11 @@ public:
     }
 
     void loop() override {
-        if (statusLED != nullptr) {
-            if (helloWorldActive && millis() > helloWorldDuration && Config::isDeviceConfigured()) {
-                // stops blinking if "helloWorldDuration" is elapsed
-                helloWorldActive = false;
-                Config::statusLedCallback(nullptr);
-            } else if (WiFi.isConnected() != _statusLedWifiConnected) {
-                _statusLedWifiConnected = WiFi.isConnected();
-                if (_statusLedWifiConnected) {
-                    // turn off status LED blinking if connected
-                    if (!helloWorldActive) {
-                        Config::statusLedCallback(nullptr);
-                    }
-                } else {
-                    // blinks status LED rapidly if not connected
-                    Config::statusLedCallback([this](bool isLedOn) {
-                        blinkLed(isLedOn);
-                    });
-                }
-            }
-        }
-
         if (activityBlink && millis() - activityBlinkTs > 50) {
             activityBlink = false;
             if (statusLED != nullptr) {
-                statusLED->setPixelColor(0, (int)round(currentColor.getRed()), (int)round(currentColor.getGreen()), (int)round(currentColor.getBlue()));
+                if (Config::isStatusLedOn) blinkLed(true);
+                else statusLED->setPixelColor(0, effectColor);
                 statusLED->show();
             }
         }
@@ -154,6 +128,13 @@ public:
     }
     ColorLight* getColorLight() {
         return colorLight;
+    }
+
+    void setEffectColor(const LightColor& c) {
+        effectColor = c.getColor();
+        if (statusLED != nullptr && !Config::isStatusLedOn && !activityBlink) {
+            statusLED->setPixelColor(0, effectColor);
+        }
     }
 
     void setCurrentColor(LightColor c) {

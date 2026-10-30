@@ -134,7 +134,8 @@ uint8_t presetColorIndex = 0;
 
 // Light animation styles
 enum LightStyles {
-    SOLID = 0,
+    DISTORTION_WAVES = 0,
+    SOLID,
     RAINBOW,
     RAINBOW_2,
     WHITE_STRIPES,
@@ -146,7 +147,6 @@ enum LightStyles {
     TWINKLE,
     MATRIX_RAIN,
     TUNNEL_3D,
-    DISTORTION_WAVES,
     PARTICLE_VORTEX,
     WATERFALL,
     PARTICLE_GEQ,
@@ -161,6 +161,7 @@ enum LightStyles {
 };
 
 const char* const lightStyleNames[] = {
+    "distortion_waves",
     "solid",
     "rainbow",
     "rainbow_2",
@@ -173,7 +174,6 @@ const char* const lightStyleNames[] = {
     "twinkle",
     "matrix_rain",
     "tunnel_3d",
-    "distortion_waves",
     "particle_vortex",
     "waterfall",
     "particle_geq",
@@ -208,7 +208,8 @@ unsigned long strobeFxTickMs = 0;
 unsigned int strobeFxDurationMs = 20;
 unsigned int strobeFxIntervalMs = 80;  // limit strobe to 10Hz  (20 + 80 -> 100ms interval)
 bool strobeOff = true;
-uint8_t currentStyleIndex = 0;
+// Waves is first and is the default; named FX.Style identifiers stay unchanged.
+uint8_t currentStyleIndex = DISTORTION_WAVES;
 
 bool levelChanged = false;
 bool styleChanged = false;
@@ -226,25 +227,25 @@ inline void refresh() {
 
 inline void renderPixels() {
     float pwr = ((float)maxPower / 100.0f);
-    if (pixels != nullptr) {
-        for (int i = 0; i < ledsConfig.count; i++) {
-            if (animatedColors[i] != nullptr && animatedColors[i]->getColor(pwr) != pixels->getPixelColor(i) && (!colorLightList.exist(i) || !colorLightList.get(i)->isOn())) {
-                pixels->setPixelColor(i,
-                                      static_cast<int>(round(animatedColors[i]->getRed() * pwr)),
-                                      static_cast<int>(round(animatedColors[i]->getGreen() * pwr)),
-                                      static_cast<int>(round(animatedColors[i]->getBlue() * pwr)));
-            }
+    const LightColor* representative = nullptr;
+    for (int i = 0; i < ledsConfig.count; i++) {
+        auto color = animatedColors[i];
+        if (color == nullptr) continue;
+        uint32_t renderedColor = color->getColor(pwr);
+        // Sample actual effect output, not just pixel zero (often black in
+        // sparse effects). Reuse the render traversal without allocating.
+        if (representative == nullptr && renderedColor != 0) representative = color;
+        if (pixels != nullptr && renderedColor != pixels->getPixelColor(i)
+            && (!colorLightList.exist(i) || !colorLightList.get(i)->isOn())) {
+            pixels->setPixelColor(i,
+                (renderedColor >> 16) & 255,
+                (renderedColor >> 8) & 255,
+                renderedColor & 255);
         }
     }
-    if (statusLed.isEnabled() && animatedColors[0] != nullptr) {
-        auto c = animatedColors[0];
-        if (c->getColor() != statusLed.getLed()->getPixelColor(0)) {
-            statusLed.getLed()->setPixelColor(0,
-                                 static_cast<int>(round(c->getRed())),
-                                 static_cast<int>(round(c->getGreen())),
-                                 static_cast<int>(round(c->getBlue())));
-        }
-    }
+    // In an intentionally dark effect frame, retain the selected light color.
+    // When the light is off its current value also fades to zero as before.
+    statusLed.setEffectColor(representative ? *representative : statusLed.getCurrentColor());
 }
 
 inline void createPixels()
@@ -570,7 +571,7 @@ inline void setupColorLightOptions(Module* module) {
     // - dropdown list control to select the light animation effect
     module->addWidgetOption(
             Options::Light::FX_Style,
-            lightStyleNames[0],
+            lightStyleNames[currentStyleIndex],
             selectConfig.c_str()
     )->addUpdateListener(&optionUpdateListener);
     // - dropdown list control to enable the strobe effect

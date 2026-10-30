@@ -174,7 +174,7 @@ namespace Service {
         TaskManager::loop();
 
 #ifdef CONFIG_ENABLE_POWER_MANAGER
-        if (Config::isDeviceConfigured() && PowerManager::canEnterSleepMode()) {
+        if (Config::isDeviceConfigured() && !Config::configurationRequested && PowerManager::canEnterSleepMode()) {
 
             // TODO: should gracefully stop all activities and drivers
 

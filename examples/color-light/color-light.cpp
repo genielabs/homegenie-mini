@@ -65,17 +65,9 @@ void setup() {
     colorLight = statusLed.getColorLight();
 
     isConfigured = Config::isDeviceConfigured();
-    if (!isConfigured) {
-
-        Config::setOnWiFiConfiguredCallback([]{
-            // Device successfully configured
-            Serial.println("Restarting now.");
-            delay(2000);
-            ESP.restart();
-            // TODO: re-arrange code so that it won't require a restart
-        });
-
-    } else {
+    // Provisioning is an explicit session until reboot. A network event alone
+    // must not end it (e.g. an SDK reconnect using the retained credentials).
+    if (isConfigured) {
 
         createPixels();
 

@@ -40,6 +40,34 @@ bool Config::isStatusLedOn = false;
 std::function<void(bool)> Config::ledCallback = nullptr;
 std::function<void()> Config::wifiConfiguredCallback = nullptr;
 bool Config::wpsRequest = false;
+bool Config::configurationRequested = false;
+DeviceSetup::Mode Config::configurationMode = DeviceSetup::Mode::Normal;
+bool Config::legacyDisplayConfiguration = false;
+
+void Config::consumeConfigurationRequest() {
+    Preferences preferences;
+    if (!preferences.begin(CONFIG_SYSTEM_NAME, false)) return;
+    // Do not enter if consuming the marker fails: avoid a sticky boot mode.
+    configurationMode = DeviceSetup::consumeBootRequest(preferences, CONFIG_KEY_config_once);
+    if (configurationMode != DeviceSetup::Mode::Normal) {
+        configurationMode = DeviceSetup::configurationEntryMode(hasWiFiCredentials(),
+            configurationMode == DeviceSetup::Mode::Provisioning);
+    }
+    preferences.end();
+}
+
+bool Config::restartInConfigurationMode(bool fullConfiguration) {
+    Preferences preferences;
+    if (!preferences.begin(CONFIG_SYSTEM_NAME, false)) return false;
+    auto mode = DeviceSetup::configurationEntryMode(hasWiFiCredentials(), fullConfiguration);
+    bool saved = DeviceSetup::saveBootRequest(preferences, CONFIG_KEY_config_once, mode);
+    preferences.end();
+    if (!saved) return false;
+    Serial.println(mode == DeviceSetup::Mode::Provisioning ? "Restarting in full configuration mode." : "Restarting in WPS-only configuration mode.");
+    delay(50);
+    ESP.restart();
+    return true;
+}
 
 void Config::statusLedOn() {
     isStatusLedOn = true;
@@ -114,6 +142,10 @@ void Config::handleConfigCommand(String &message) {
     } else
     if (message.equals("#UPTIME")) {
         Serial.printf("#UPTIME:%.3f seconds\n", (float)millis() / 1000.0f);
+    } else
+    if (message.equals("#CONFIG:wifi-setup")) {
+        if (!isConfigurationMode()) configurationRequested = true;
+        Serial.println("#CONFIG:wifi-setup");
     } else
     if (message.equals("#WPS")) {
         Config::wpsRequest = true;

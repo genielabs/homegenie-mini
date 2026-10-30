@@ -52,7 +52,7 @@ namespace UI { namespace Activities { namespace Utilities {
             preferences.begin(CONFIG_SYSTEM_NAME, false);
             String systemMode = preferences.getString(CONFIG_KEY_system_mode);
             // toggle config mode flag
-            preferences.putString(CONFIG_KEY_system_mode, systemMode.equals("config") ? "" : "config");
+            preferences.putString(CONFIG_KEY_system_mode, (systemMode.equals("config") || Config::isTemporaryConfiguration()) ? "" : "config");
             preferences.end();
             meditate();
             esp_restart();
@@ -116,7 +116,7 @@ namespace UI { namespace Activities { namespace Utilities {
                 rotateScreenButton->setLocation(ox + center + 34, oy + center + 80);
             }
 
-        } else if (Config::isWiFiConfigured() || Config::system.systemMode.equals("config")) {
+        } else if (Config::isWiFiConfigured() || Config::system.systemMode.equals("config") || Config::isTemporaryConfiguration()) {
 
             if (configDeviceButton == nullptr) {
                 configDeviceButton = new RoundButton(canvas, ox + 16, oy + center, 64);
@@ -210,16 +210,29 @@ namespace UI { namespace Activities { namespace Utilities {
 
             ox += dx; oy += dx;
 
-            canvas->setCursor(ox + 110, oy + 4);
-            canvas->print("GET");
-            canvas->setCursor(ox + 71, oy + 20);
-            canvas->setTextColor(ActivityColors::ACCENT);
-            canvas->print("HomeGenie Panel");
-            canvas->setTextColor(ActivityColors::TEXT);
-            canvas->setCursor(ox + 61, oy + 35);
-            canvas->print("app on Google Play");
-            canvas->setCursor(ox + 46, oy + 50);
-            canvas->print("to configure this device");
+            if (Config::isBluetoothConfiguration()) {
+                canvas->setCursor(ox + 110, oy + 4);
+                canvas->print("GET");
+                canvas->setCursor(ox + 71, oy + 20);
+                canvas->setTextColor(ActivityColors::ACCENT);
+                canvas->print("HomeGenie Panel");
+                canvas->setTextColor(ActivityColors::TEXT);
+                canvas->setCursor(ox + 61, oy + 35);
+                canvas->print("app on Google Play");
+                canvas->setCursor(ox + 46, oy + 50);
+                canvas->print("to configure this device");
+            } else {
+                canvas->setTextColor(ActivityColors::ACCENT);
+                canvas->setCursor(ox + 56, oy + 20);
+                canvas->print("Wi-Fi configuration");
+                canvas->setTextColor(ActivityColors::TEXT);
+                canvas->setCursor(ox + 35, oy + 54);
+                canvas->print("Press WPS on your router");
+                canvas->setCursor(ox + 35, oy + 86);
+                canvas->print("Hold BOOT again to reset");
+                canvas->setCursor(ox + 35, oy + 104);
+                canvas->print("and enable Bluetooth setup");
+            }
 
             canvas->setFont(&fonts::TomThumb);
             // MAC address
@@ -229,7 +242,9 @@ namespace UI { namespace Activities { namespace Utilities {
             canvas->setTextColor(ActivityColors::TEXT);
             canvas->println(WiFi.macAddress().c_str());
 
-            canvas->drawBitmap(ox + 47, oy + 68, qrcode_map, 150, 150, 2);
+            if (Config::isBluetoothConfiguration()) {
+                canvas->drawBitmap(ox + 47, oy + 68, qrcode_map, 150, 150, 2);
+            }
 
         }
 

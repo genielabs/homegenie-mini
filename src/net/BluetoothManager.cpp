@@ -41,7 +41,7 @@ namespace Net {
     }
 
     void BluetoothManager::begin() {
-        if (Config::isDeviceConfigured()) {
+        if (!Config::isBluetoothConfiguration()) {
 #ifndef DISABLE_BLUETOOTH_LE
             BLEDevice::init(CONFIG_SYSTEM_NAME);
             BLEDevice::deinit(true);

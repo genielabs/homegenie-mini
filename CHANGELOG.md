@@ -1,8 +1,25 @@
 # Changelog
 
-## 1.2.68 (unreleased)
+## Unreleased
 
-Prepared on 2026-10-22 from the current working tree and maintainer-reported build and hardware tests. The firmware version is set to 1.2.68; publication and final CI artifact verification are still pending.
+- Fix color-light script coordinate spans and rectangles on vertically wired matrices. Compile selections along the physical wiring axis, retaining compact bytecode, physical-index semantics and the existing frame renderer. Resend scripts after changing the matrix layout. Native regressions passed (304 cases across all 16 layouts, rectangular matrices and the Pac-Man Ghost), as did an isolated C3 Arduino 2.x firmware build; device validation is pending.
+
+- Pin all eight ESP32-C3 environments to `espressif32@7.1.3` (Arduino 2.x) to preserve internal heap for JavaScript automation. Keep the default ESP32 platform at `espressif32@~8.0.0` and ESP8266 at `espressif8266@2.6.3`. Share C3 platform/compiler settings and report the correct platform in SystemInfo; retain current firmware features and Bluetooth provisioning. Keep the optional no-Bluetooth diagnostic profile explicitly on 8.0.0. See [build platform policy](docs/build-platforms.md).
+
+- Select BOOT 1 (WPS only, Bluetooth off) when explicit configuration is requested with saved Wi-Fi credentials, or BOOT 2 (WPS + Bluetooth) when none are saved. Entering BOOT 2 without credentials does not erase other settings, and ordinary offline startup remains unchanged. Preserve smart-display first-time BLE setup and its non-destructive Reconfigure/Restore flow; show router-WPS instructions during BOOT 1 instead of the Bluetooth app QR code. Host policy/WPS/Bluetooth-startup regressions passed, as did full C3/ESP8266 light builds and compilation of the six affected smart-display S3 translation units. Hardware acceptance remains pending.
+
+- Start WPS automatically in temporary BOOT 1/BOOT 2 configuration. Preserve previous credentials on failed/interrupted BOOT 1 attempts, retain the BOOT 2 reset, and automatically restart one second after a newly paired network obtains an IP and its credentials are saved. Keep SDK event callbacks free of blocking waits and storage writes for this workflow. WPS host regressions and complete isolated color-light C3/ESP8266 builds passed; router/device WPS acceptance remains pending.
+
+- Maintainer confirmed both BOOT indication/reset stages and normal local operation without Wi-Fi on the 16x16 smart-light. Automatic WPS is now integrated in both BOOT stages; router/device validation is pending.
+
+- Add explicit temporary configuration in the core: BOOT long press and release preserves Wi-Fi credentials; a separate long press in configuration resets credentials. One-shot boot requests are consumed before services start. Keep smart-display first-time provisioning and persistent Reconfigure/Restore behavior. Add serial `#CONFIG:wifi-setup` for the same temporary entry.
+- Permit normal local operation without saved Wi-Fi credentials. System status blinking is limited to an established connection being lost or explicit configuration, with distinct regular/two-pulse configuration patterns. Reconnect waits remain unchanged.
+- Put Waves first in the color-light effect list, before Solid, and select it at startup; preserve named effect values and local controls without Wi-Fi. Keep status-LED feedback for sparse effects and the existing matrix power limit and per-pixel overrides.
+- Add host regressions for configuration requests, button handling, indicators and the actual 16x16 renderer. Full isolated C3/ESP8266 builds and targeted S3 display source compilation passed; the complete display link was not validated after local Windows object-directory errors. Hardware acceptance for this change is pending; see [configuration mode](docs/configuration-mode.md).
+
+## 1.2.68
+
+Prepared on 2026-10-22 from the current working tree and maintainer-reported build and hardware tests. The firmware version is 1.2.68. On 2026-10-24 the maintainer confirmed release CI and artifacts, and publication of the updated firmware through the website.
 
 ### Changed
 
@@ -23,14 +40,14 @@ Prepared on 2026-10-22 from the current working tree and maintainer-reported bui
 
 ### Confirmed tests and limits
 
-- All 45 PlatformIO environments compiled at the initial compatibility checkpoint; the maintainer subsequently confirmed successful complete builds after the final firmware changes. Final release CI and ZIP artifacts still need verification.
+- All 45 PlatformIO environments compiled at the initial compatibility checkpoint; the maintainer subsequently confirmed successful complete builds after the final firmware changes. The maintainer subsequently confirmed release CI and ZIP artifacts on 2026-10-24.
 - Maintainer tested IR, RF, matrix LEDs on color-light C3, JavaScript scheduling, SSDP discovery, HTTP access and device time synchronization. The IR/RF device is an ESP32-S3-Zero; it does not drive the 256-LED matrix.
 - After the HTTP transport-lifetime fix, the S3 motion-automation device reached 29,435.480 seconds of uptime (about 8 h 10 min), with 188,948 bytes free DRAM at that sample. This is a successful observation interval, not proof that every intermittent crash or Wi-Fi failure is resolved.
 - Display PSRAM changes recovered at least 30 KB of DRAM in maintainer testing. With Duktape also using PSRAM, the tested light-control activity had about 117 KB free DRAM at rest and 113 KB during script execution. The earlier tested PHY timer allocation crash did not recur in that test.
 - Maintainer confirmed local and remote camera operation, then reproduced simultaneous-access crashes. The first protection fix stopped those crashes but reduced FPS; after restoring safe frame sharing, the maintainer reported that simultaneous viewing now works well.
 - Native tests against extracted production methods passed shared-frame ownership, final-reader release, invalid captures, reconfiguration, SD save and 500 concurrent acquisition attempts. Allocator tests passed PSRAM/fallback and allocation-failure cases. These are host tests, not firmware or long-running device acceptance.
 - Maintainer confirmed successful firmware upload on ESP32-S3-CAM without IO0, including the first attempt after USB disconnect/reconnect, and on ESP32-S3-Zero and ESP32-C3-Zero/Mini. The tested classic ESP32-CAM requires manual IO0 with both the website and PlatformIO; upload completes when IO0 is used.
-- Full builds, camera acceptance and motor hardware checks are completed according to maintainer confirmation and the release checklist. The remaining release check is final CI/artifact packaging. See [ROADMAP.md](ROADMAP.md).
+- Full builds, camera acceptance and motor hardware checks are completed according to maintainer confirmation and the release checklist. Final CI/artifact packaging was also confirmed by the maintainer on 2026-10-24. See [ROADMAP.md](ROADMAP.md).
 
 ### Companion configurator
 

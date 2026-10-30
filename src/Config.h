@@ -34,6 +34,7 @@
 #include <ArduinoJson.h>
 
 #include "defs.h"
+#include "ConfigurationState.h"
 
 #ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
 #include <FreeRTOSConfig.h>
@@ -61,6 +62,8 @@ const static char CONFIG_KEY_wifi_password[] = {"wifi:password"};
 const static char CONFIG_KEY_device_name[] = {"device:name"};
 const static char CONFIG_KEY_device_group[] = {"device:group"};
 const static char CONFIG_KEY_system_mode[] = {"system:mode"};
+// Consumed before services start; never a persistent configuration-mode switch.
+const static char CONFIG_KEY_config_once[] = {"system:cfg1"};
 const static char CONFIG_KEY_system_zone_id[] = {"system:zn_id"};
 const static char CONFIG_KEY_system_zone_description[] = {"system:zn_dsc"};
 const static char CONFIG_KEY_system_zone_name[] = {"system:zn_nam"};
@@ -114,6 +117,21 @@ public:
     static bool StatusLedInvert;
     static bool isStatusLedOn;
     static bool wpsRequest;
+    static bool configurationRequested;
+    static bool restartInConfigurationMode(bool fullConfiguration = false);
+    static void enableLegacyDisplayConfiguration() { legacyDisplayConfiguration = true; }
+    static bool isTemporaryConfiguration() { return configurationMode != DeviceSetup::Mode::Normal; }
+    static bool isConfigurationMode() {
+        return isTemporaryConfiguration() || system.systemMode.equals("config")
+            || (legacyDisplayConfiguration && !hasWiFiCredentials());
+    }
+    static bool isFullConfiguration() { return configurationMode == DeviceSetup::Mode::Provisioning; }
+    static bool isBluetoothConfiguration() {
+        // Explicit BOOT 1 is WPS-only, even when entered from display setup.
+        // Legacy display Reconfigure/first-time setup retain Bluetooth.
+        return isTemporaryConfiguration() ? isFullConfiguration() : isConfigurationMode();
+    }
+    static bool hasWiFiCredentials() { return !system.ssid.isEmpty(); }
     static ZoneConfig zone;
     static SystemConfig system;
 #ifdef ESP32
@@ -132,11 +150,12 @@ public:
     }
 
     static bool isDeviceConfigured() {
-        return isWiFiConfigured();
+        // Operational readiness is independent of saved network credentials.
+        return !isConfigurationMode();
     }
 
     static bool isWiFiConfigured() {
-        return !system.systemMode.equals("config") && !system.ssid.isEmpty();
+        return !isConfigurationMode() && hasWiFiCredentials();
     }
     static void onWiFiConfigured() {
         // reset system mode if it was previously forced to "config"
@@ -264,11 +283,15 @@ public:
         }
 
         preferences.end();
+        consumeConfigurationRequest();
         updateTimezone();
     }
 
     static void handleConfigCommand(String &message);
 private:
+    static DeviceSetup::Mode configurationMode;
+    static bool legacyDisplayConfiguration;
+    static void consumeConfigurationRequest();
     static std::function<void(bool)> ledCallback;
     static std::function<void()> wifiConfiguredCallback;
 };

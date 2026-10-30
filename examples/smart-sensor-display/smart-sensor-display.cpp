@@ -39,6 +39,8 @@ void setup() {
     Config::system.friendlyName = "Smart Display";
 
     homeGenie = HomeGenie::getInstance();
+    // Preserve first-time provisioning and Reconfigure/Restore on the display.
+    Config::enableLegacyDisplayConfiguration();
     miniModule = homeGenie->getDefaultModule();
     miniModule->setProperty(Implements::Scheduling, "true");
     miniModule->setProperty(Implements::Scheduling_ModuleEvents, "true");

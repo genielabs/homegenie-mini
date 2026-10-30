@@ -202,16 +202,9 @@ namespace Service {
 
         // Service Button handling
 
-        volatile int64_t buttonPressStart = 0;
-        volatile bool buttonPressed = false;
-        static void buttonChange() {
-            auto hg = getInstance();
-            bool wasPressed = hg->buttonPressed;
-            hg->buttonPressed = (digitalRead(Config::ServiceButtonPin) == LOW);
-            if (!wasPressed && hg->buttonPressed) {
-                hg->buttonPressStart = millis();
-            }
-        }
+        DeviceSetup::ServiceButtonHold serviceButton;
+        DeviceSetup::StatusIndicator statusIndicator;
+
         static void checkServiceButton() {
             auto hg = getInstance();
             if (Config::wpsRequest) {
@@ -219,49 +212,43 @@ namespace Service {
                 hg->getNetManager().getWiFiManager().configure();
                 return;
             }
-            if (Config::ServiceButtonPin < 0) {
+            bool pressed = Config::ServiceButtonPin >= 0 && digitalRead(Config::ServiceButtonPin) == LOW;
+            if (Config::configurationRequested) {
+                if (pressed) return;
+                Config::configurationRequested = false;
+                if (!Config::restartInConfigurationMode()) Logger::error("Could not save configuration request.");
                 return;
             }
-            buttonChange();
-            int64_t elapsed = 0;
-            if (hg->buttonPressed) {
-                // released
-                elapsed = millis() - hg->buttonPressStart;
-                if (elapsed > Config::ConfigureButtonPushInterval) {
-                    hg->getNetManager().getWiFiManager().configure();
+            if (Config::ServiceButtonPin < 0) return;
+            // Act only after a debounced release. A held button cannot trigger
+            // both entry and reset, nor survive an internal restart as a new hold.
+            if (hg->serviceButton.update(pressed, uint32_t(millis()), Config::ConfigureButtonPushInterval)) {
+                if (Config::isConfigurationMode()) {
+                    if (!hg->getNetManager().getWiFiManager().configure(true)) {
+                        Logger::error("Could not reset credentials and save configuration request.");
+                    }
+                } else if (!Config::restartInConfigurationMode()) {
+                    Logger::error("Could not save configuration request.");
                 }
             }
         }
 
-        uint64_t statusLedTs;
         void statusLedLoop() {
 #ifdef ESP32
-            if (!Net::WiFiManager::wpsIsRegistering()) {
+            // Retain the existing explicit WPS timeout/cancel handling.
+            if (Net::WiFiManager::wpsIsTimedOut()) Net::WiFiManager::wpsCancel();
 #endif
-                if (WiFi.isConnected()) {
-                    // when connected the LED will blink quickly every 2 seconds
-                    if (millis() - statusLedTs > 1950 && !Config::isStatusLedOn) {
-                        Config::statusLedOn();
-                        statusLedTs = millis();
-                    } else if (Config::isStatusLedOn && millis() - statusLedTs > 50) {
-                        Config::statusLedOff();
-                        statusLedTs = millis();
-                    }
-                } else {
-                    // if not connected the LED will blink quickly every 200ms
-                    if (millis() - statusLedTs > 100 && !Config::isStatusLedOn) {
-                        Config::statusLedOn();
-                        statusLedTs = millis();
-                    } else if (Config::isStatusLedOn && millis() - statusLedTs > 100) {
-                        Config::statusLedOff();
-                        statusLedTs = millis();
-                    }
-                }
-#ifdef ESP32
-            } else if (Net::WiFiManager::wpsIsTimedOut()) {
-                Net::WiFiManager::wpsCancel();
+            DeviceSetup::Mode mode = Config::isFullConfiguration() ? DeviceSetup::Mode::Provisioning
+                : Config::isConfigurationMode() ? DeviceSetup::Mode::Temporary : DeviceSetup::Mode::Normal;
+            // Preview the action at the hold threshold so the user knows when
+            // to release. Execution is still deferred until release.
+            if (serviceButton.ready(uint32_t(millis()), Config::ConfigureButtonPushInterval)) {
+                mode = DeviceSetup::configurationEntryMode(Config::hasWiFiCredentials(), Config::isConfigurationMode());
             }
-#endif
+            bool on = statusIndicator.update(uint32_t(millis()), WiFi.isConnected(), mode);
+            if (on != Config::isStatusLedOn) {
+                if (on) Config::statusLedOn(); else Config::statusLedOff();
+            }
         }
 
         static char* allocateJsonBuffer(size_t size) {

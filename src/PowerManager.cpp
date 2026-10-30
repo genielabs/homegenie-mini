@@ -97,10 +97,12 @@ namespace Service {
 
         // Wakeup on external GPIO high
         if (wakeUpGPIO != GPIO_NUM_NC) {
-#ifndef ESP32_C3
-            esp_sleep_enable_ext0_wakeup(wakeUpGPIO, ESP_EXT1_WAKEUP_ANY_HIGH);
-#else
+#if defined(ESP32_C6) || defined(CONFIG_IDF_TARGET_ESP32C6)
+            esp_sleep_enable_ext1_wakeup(1ULL << wakeUpGPIO, ESP_EXT1_WAKEUP_ANY_HIGH);
+#elif defined(ESP32_C3)
             esp_deep_sleep_enable_gpio_wakeup(wakeUpGPIO, ESP_GPIO_WAKEUP_GPIO_HIGH);
+#else
+            esp_sleep_enable_ext0_wakeup(wakeUpGPIO, ESP_EXT1_WAKEUP_ANY_HIGH);
 #endif
         }
 

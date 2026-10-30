@@ -26,6 +26,7 @@
 #define HOMEGENIE_MINI_FX_SCRIPT_TYPES_H
 
 #include <vector>
+#include <algorithm>
 
 #include "../configuration.h"
 
@@ -81,6 +82,34 @@ inline void write32At(std::vector<uint8_t>& buf, size_t offset, uint32_t val) {
     buf[offset + 1] = (val >> 8) & 0xFF;
     buf[offset + 2] = (val >> 16) & 0xFF;
     buf[offset + 3] = (val >> 24) & 0xFF;
+}
+
+// Compile a logical rectangle along the physical major axis. Each span is
+// contiguous even with vertical/serpentine wiring; no per-frame remap or buffer.
+inline void appendScriptRectangle(std::vector<TempInstruction>& instructions,
+                                  const MatrixConfig& cfg, const TempInstruction& command,
+                                  uint16_t colStart, uint16_t rowStart,
+                                  uint16_t colEnd, uint16_t rowEnd) {
+    if (cfg.cols == 0 || cfg.rows == 0 || colStart >= cfg.cols || rowStart >= cfg.rows
+        || colEnd < colStart || rowEnd < rowStart) return;
+    if (colEnd >= cfg.cols) colEnd = cfg.cols - 1;
+    if (rowEnd >= cfg.rows) rowEnd = cfg.rows - 1;
+    const uint16_t majorStart = cfg.isVertical ? colStart : rowStart;
+    const uint16_t majorEnd = cfg.isVertical ? colEnd : rowEnd;
+    const uint16_t minorStart = cfg.isVertical ? rowStart : colStart;
+    const uint16_t minorEnd = cfg.isVertical ? rowEnd : colEnd;
+    for (uint16_t major = majorStart; major <= majorEnd; ++major) {
+        TempInstruction span = command;
+        const uint16_t first = cfg.isVertical
+            ? getLEDIndex(major, minorStart, cfg) : getLEDIndex(minorStart, major, cfg);
+        const uint16_t last = cfg.isVertical
+            ? getLEDIndex(major, minorEnd, cfg) : getLEDIndex(minorEnd, major, cfg);
+        span.ledStart = first < last ? first : last;
+        span.ledEnd = first < last ? last : first;
+        if (span.ledStart >= cfg.count) continue;
+        if (span.ledEnd >= cfg.count) span.ledEnd = cfg.count - 1;
+        instructions.push_back(span);
+    }
 }
 
 inline bool compileScript(const String& scriptText, std::vector<uint8_t>& compiledScript, const MatrixConfig& cfg) {
@@ -341,41 +370,38 @@ inline bool compileScript(const String& scriptText, std::vector<uint8_t>& compil
                                     uint16_t width = offsetStr.substring(0, colonOffset).toInt();
                                     uint16_t height = offsetStr.substring(colonOffset + 1).toInt();
 
-                                    // Normalize and clip bounds to matrix dimensions
-                                    uint16_t rowEnd = rowStart + height - 1;
-                                    if (rowEnd >= cfg.rows) rowEnd = cfg.rows - 1;
-
-                                    for (uint16_t r = rowStart; r <= rowEnd; r++) {
-                                        uint16_t cEnd = colStart + width - 1;
-                                        if (cEnd >= cfg.cols) cEnd = cfg.cols - 1;
-
-                                        TempInstruction inst;
-                                        inst.timestamp = currentParsedTime;
-                                        inst.ledStart = getLEDIndex(colStart, r, cfg);
-                                        inst.ledEnd = getLEDIndex(cEnd, r, cfg);
-                                        inst.type = cmdType;
-                                        inst.h = cmdH; inst.s = cmdS; inst.v = cmdV;
-                                        inst.transition = transition;
-                                        inst.labelNum = labelNum;
-                                        inst.repeatCount = repeatCount;
-                                        tempInstructions.push_back(inst);
+                                    if (width == 0 || height == 0) {
+                                        currentPos = lineEnd + 1;
+                                        continue;
                                     }
-                                } else {
-                                    // 2D horizontal span on the same row: +width
-                                    uint16_t width = offsetStr.toInt();
-                                    uint16_t colEnd = colStart + width - 1;
-                                    if (colEnd >= cfg.cols) colEnd = cfg.cols - 1;
-
-                                    TempInstruction inst;
+                                    TempInstruction inst{};
                                     inst.timestamp = currentParsedTime;
-                                    inst.ledStart = getLEDIndex(colStart, rowStart, cfg);
-                                    inst.ledEnd = getLEDIndex(colEnd, rowStart, cfg);
                                     inst.type = cmdType;
                                     inst.h = cmdH; inst.s = cmdS; inst.v = cmdV;
                                     inst.transition = transition;
                                     inst.labelNum = labelNum;
                                     inst.repeatCount = repeatCount;
-                                    tempInstructions.push_back(inst);
+                                    appendScriptRectangle(tempInstructions, cfg, inst,
+                                        colStart, rowStart,
+                                        (uint16_t)std::min<uint32_t>((uint32_t)colStart + width - 1, UINT16_MAX),
+                                        (uint16_t)std::min<uint32_t>((uint32_t)rowStart + height - 1, UINT16_MAX));
+                                } else {
+                                    // 2D horizontal span on the same row: +width
+                                    uint16_t width = offsetStr.toInt();
+                                    if (width == 0) {
+                                        currentPos = lineEnd + 1;
+                                        continue;
+                                    }
+                                    TempInstruction inst{};
+                                    inst.timestamp = currentParsedTime;
+                                    inst.type = cmdType;
+                                    inst.h = cmdH; inst.s = cmdS; inst.v = cmdV;
+                                    inst.transition = transition;
+                                    inst.labelNum = labelNum;
+                                    inst.repeatCount = repeatCount;
+                                    appendScriptRectangle(tempInstructions, cfg, inst,
+                                        colStart, rowStart,
+                                        (uint16_t)std::min<uint32_t>((uint32_t)colStart + width - 1, UINT16_MAX), rowStart);
                                 }
                             } else {
                                 // 1D Offset: start+length
@@ -410,22 +436,16 @@ inline bool compileScript(const String& scriptText, std::vector<uint8_t>& compil
                                     uint16_t r2 = endStr.substring(0, colon2).toInt();
                                     uint16_t c2 = endStr.substring(colon2 + 1).toInt();
 
-                                    uint16_t rStart = (r1 < r2) ? r1 : r2;
-                                    uint16_t rEnd = (r1 < r2) ? r2 : r1;
-                                    if (rEnd >= cfg.rows) rEnd = cfg.rows - 1;
-
-                                    for (uint16_t r = rStart; r <= rEnd; r++) {
-                                        TempInstruction inst;
-                                        inst.timestamp = currentParsedTime;
-                                        inst.ledStart = getLEDIndex(c1, r, cfg);
-                                        inst.ledEnd = getLEDIndex(c2, r, cfg);
-                                        inst.type = cmdType;
-                                        inst.h = cmdH; inst.s = cmdS; inst.v = cmdV;
-                                        inst.transition = transition;
-                                        inst.labelNum = labelNum;
-                                        inst.repeatCount = repeatCount;
-                                        tempInstructions.push_back(inst);
-                                    }
+                                    TempInstruction inst{};
+                                    inst.timestamp = currentParsedTime;
+                                    inst.type = cmdType;
+                                    inst.h = cmdH; inst.s = cmdS; inst.v = cmdV;
+                                    inst.transition = transition;
+                                    inst.labelNum = labelNum;
+                                    inst.repeatCount = repeatCount;
+                                    appendScriptRectangle(tempInstructions, cfg, inst,
+                                        std::min(c1, c2), std::min(r1, r2),
+                                        std::max(c1, c2), std::max(r1, r2));
                                 } else {
                                     // 1D or Mixed Range
                                     uint16_t ledStart = 0;

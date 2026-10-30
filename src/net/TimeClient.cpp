@@ -69,7 +69,6 @@ namespace Net {
             if (!ntpClient.isUpdated()) {
                 if (ntpClient.update()) {
                     // TimeClient synced with NTP
-                    Config::statusLedOff();
 #ifndef ESP8266
                     Config::getRTC()->setTime(ntpClient.getEpochTime(), 0);
                     rtcTimeSet = true;
@@ -77,7 +76,6 @@ namespace Net {
 #endif
                 } else {
                     // NTP Update failed
-                    Config::statusLedOn();
                     Logger::warn("|  x TimeClient: NTP update failed!");
                 }
             }

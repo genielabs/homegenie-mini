@@ -38,12 +38,24 @@
 #endif
 
 #include <WiFiUdp.h>
+
 //#include <wifi_provisioning/manager.h>
 //#include <qrcode.h>
 
 #include <io/Logger.h>
 
 #include "Config.h"
+#ifdef CONFIGURE_WITH_WPS
+#ifdef ESP8266
+#include <interrupts.h>
+extern "C" {
+#include <user_interface.h>
+}
+#include <coredecls.h>
+#else
+#include <atomic>
+#endif
+#endif
 #include "Task.h"
 
 #ifdef ESP32
@@ -59,13 +71,32 @@
 #endif
 
 namespace Net {
+#ifdef CONFIGURE_WITH_WPS
+#ifdef ESP8266
+    // The old Xtensa toolchain has no 32-bit atomic RMW implementation.
+    // Preserve interrupt state and protect only the single flag operation.
+    class WpsEventFlags {
+        volatile unsigned flags = 0;
+    public:
+        void store(unsigned value) { esp8266::InterruptLock lock; flags = value; }
+        void fetch_or(unsigned value) { esp8266::InterruptLock lock; flags |= value; }
+        unsigned exchange(unsigned value) {
+            esp8266::InterruptLock lock;
+            unsigned previous = flags; flags = value; return previous;
+        }
+    };
+#else
+    using WpsEventFlags = std::atomic<unsigned>;
+#endif
+#endif
+
 
     class WiFiManager : Task {
     public:
         WiFiManager();
         void loop() override;
         static void connect();
-        static bool configure();
+        static bool configure(bool rebootIntoConfiguration = false);
         static bool checkWiFiStatus();
 #ifdef ESP32
         static bool wpsIsRegistering() {
@@ -88,6 +119,23 @@ namespace Net {
 #endif
 
 #ifdef CONFIGURE_WITH_WPS
+        // Only the loop owns provisioning state and credentials. SDK callbacks
+        // publish flags, without Preferences writes, delays or restarts.
+        static bool temporaryWps;
+        static WpsEventFlags temporaryWpsEvents;
+        enum class WpsPhase { Initial, Registering, Associating, Restart, Finished };
+        WpsPhase temporaryWpsPhase = WpsPhase::Initial;
+        unsigned long temporaryWpsTimestamp = 0;
+        bool temporaryWpsConnectRequested = false;
+        void temporaryWpsLoop();
+        bool startTemporaryWps();
+        void stopTemporaryWps();
+        bool saveTemporaryWpsCredentials();
+#ifdef ESP8266
+        static void temporaryWpsCallback(int status) {
+            temporaryWpsEvents.fetch_or(status == WPS_CB_ST_SUCCESS ? 1u : 2u);
+        }
+#endif
         static void setWiFiConfigured() {
             bool wasConfigured = Config::isWiFiConfigured();
             Preferences preferences;
@@ -118,6 +166,10 @@ namespace Net {
 #ifdef ESP8266
         // WPS events handling
         static void WiFiEvent(WiFiEvent_t event) {
+            if (temporaryWps) {
+                if (event == WIFI_EVENT_STAMODE_GOT_IP) temporaryWpsEvents.fetch_or(4u);
+                return;
+            }
             switch(event) {
                 case WIFI_EVENT_STAMODE_GOT_IP:
                 case WIFI_EVENT_STAMODE_DISCONNECTED:
@@ -152,6 +204,13 @@ namespace Net {
         }
         // WPS events handling
         static void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info) {
+            if (temporaryWps) {
+                if (event == ARDUINO_EVENT_WPS_ER_SUCCESS) temporaryWpsEvents.fetch_or(1u);
+                else if (event == ARDUINO_EVENT_WPS_ER_FAILED || event == ARDUINO_EVENT_WPS_ER_TIMEOUT)
+                    temporaryWpsEvents.fetch_or(2u);
+                else if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP) temporaryWpsEvents.fetch_or(4u);
+                return;
+            }
             switch (event) {
                 case ARDUINO_EVENT_WPS_ER_SUCCESS: {
                     wpsStop();

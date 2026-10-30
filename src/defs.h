@@ -76,7 +76,7 @@
 #endif
 
 
-#ifdef ESP32_C3
+#if defined(ESP32_C3) || defined(ESP32_C6) || defined(CONFIG_IDF_TARGET_ESP32C6)
     #undef DISABLE_BLUETOOTH_LE
     #define DISABLE_BLUETOOTH_CLASSIC
 #elif ESP32_S2
