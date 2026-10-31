@@ -50,21 +50,19 @@ inline uint32_t read32(const std::vector<uint8_t>& buf, size_t& offset) {
 // Modular helper to execute target color and levels on a given LED range
 inline void executeOnLedRange(uint16_t ledStart, uint16_t ledEnd, uint8_t type, const LightColor& defaultColor,
                               uint8_t h_byte, uint8_t s_byte, uint8_t v_byte, uint16_t transition, uint16_t ledsCount) {
+    if (ledsCount == 0) return;
     int start = ledStart;
     int end = ledEnd;
 
-    // Resolve the special 'ALL' marker dynamically using the actual ledsCount
+    // Resolve ALL dynamically. Normalize explicit ranges before clipping so a
+    // range entirely beyond a shrunken strip cannot swap back out of bounds.
     if (end == 0xFFFF) {
         start = 0;
         end = ledsCount - 1;
     } else {
-        if (start < 0) start = 0;
+        if (start > end) std::swap(start, end);
+        if (start >= ledsCount) return;
         if (end >= ledsCount) end = ledsCount - 1;
-
-        // Swap bounds if reversed (handles serpentines and custom direction inputs safely)
-        if (start > end) {
-            std::swap(start, end);
-        }
     }
 
     if (start <= end) {

@@ -37,6 +37,7 @@ short Config::StatusLedPin = -1;
 bool Config::StatusLedInvert = false;
 
 bool Config::isStatusLedOn = false;
+bool Config::statusLedConfigurationActive = false;
 std::function<void(bool)> Config::ledCallback = nullptr;
 std::function<void()> Config::wifiConfiguredCallback = nullptr;
 bool Config::wpsRequest = false;
@@ -49,17 +50,13 @@ void Config::consumeConfigurationRequest() {
     if (!preferences.begin(CONFIG_SYSTEM_NAME, false)) return;
     // Do not enter if consuming the marker fails: avoid a sticky boot mode.
     configurationMode = DeviceSetup::consumeBootRequest(preferences, CONFIG_KEY_config_once);
-    if (configurationMode != DeviceSetup::Mode::Normal) {
-        configurationMode = DeviceSetup::configurationEntryMode(hasWiFiCredentials(),
-            configurationMode == DeviceSetup::Mode::Provisioning);
-    }
     preferences.end();
 }
 
 bool Config::restartInConfigurationMode(bool fullConfiguration) {
     Preferences preferences;
     if (!preferences.begin(CONFIG_SYSTEM_NAME, false)) return false;
-    auto mode = DeviceSetup::configurationEntryMode(hasWiFiCredentials(), fullConfiguration);
+    auto mode = DeviceSetup::configurationEntryMode(fullConfiguration);
     bool saved = DeviceSetup::saveBootRequest(preferences, CONFIG_KEY_config_once, mode);
     preferences.end();
     if (!saved) return false;
@@ -144,7 +141,7 @@ void Config::handleConfigCommand(String &message) {
         Serial.printf("#UPTIME:%.3f seconds\n", (float)millis() / 1000.0f);
     } else
     if (message.equals("#CONFIG:wifi-setup")) {
-        if (!isConfigurationMode()) configurationRequested = true;
+        if (!isTemporaryConfiguration()) configurationRequested = true;
         Serial.println("#CONFIG:wifi-setup");
     } else
     if (message.equals("#WPS")) {

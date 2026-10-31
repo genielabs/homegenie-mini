@@ -1,6 +1,14 @@
 # Roadmap
 
-Status: 2026-10-30. This list separates implemented changes and observed results from pending release checks. See [CHANGELOG.md](CHANGELOG.md).
+Status: 2026-10-31. This list separates implemented changes and observed results from pending release checks. See [CHANGELOG.md](CHANGELOG.md).
+
+## Auxiliary controller LED
+
+- [x] Add optional `auld-*` settings and C2 to color-light. Default to status/effect replication; provide a persistent `LED.mode` option for independent color control. Keep C1/matrix rendering and core blink rules, support boards without a built-in RGB indicator, and allocate the optional driver/module only when a separate GPIO is configured.
+- Host regressions passed with/without a built-in RGB indicator; the C3 7.1.3 firmware build and affected S3 8.0.0 translation units compiled successfully. The complete S3 firmware link was not run to completion in this Windows environment.
+- [x] Maintainer confirmed auxiliary controller LED operation after implementation. C3 GPIO 8 and S3 GPIO 9, type 82, are the selected controller wiring; defaults remain disabled on other installations.
+- [ ] Complete any remaining per-controller checks of independent C2 transitions, mode persistence and C1 isolation before release.
+- [ ] Consider a second strip/matrix output controlled by C2 in a future change; this first version drives only the auxiliary indicator.
 
 ## Current consolidation
 
@@ -23,22 +31,26 @@ Scope agreed with the maintainer on 2026-10-30: explicit configuration mode and 
 
 - [x] Initialize local light controls, pixels and effects independently of saved Wi-Fi credentials. A device without configured Wi-Fi must be usable immediately, without automatically entering provisioning mode.
 - [x] Use the core service/BOOT-button long press as a two-stage gesture: from normal operation, enter temporary non-destructive configuration; a new long press while in temporary configuration invokes the existing Wi-Fi credential reset through WiFiManager::configure(). Preserve the existing light-button gestures and the smart-display Reconfigure/Restore workflow.
-- [x] Implement explicit core configuration mode valid only until the next user restart or power cycle, retaining credentials on first entry. Keep separate concepts for saved credentials, actual connectivity and configuration mode. Account for the Bluetooth memory-release lifecycle; if entry/reset needs an internal restart, carry a one-shot request into that boot and consume it immediately. Preserve smart-display persistent configuration alongside the temporary mode. An additional serial entry for the website configurator remains optional.
+- [x] Implement explicit core configuration mode valid only until the next user restart or power cycle, retaining credentials on first entry. Keep separate concepts for saved credentials, actual connectivity and configuration mode. Account for the Bluetooth memory-release lifecycle; if entry/reset needs an internal restart, carry a one-shot request into that boot and consume it immediately. Preserve smart-display persistent configuration alongside the temporary mode. The serial command `#CONFIG:wifi-setup` enters the same temporary flow without erasing credentials.
 - [x] Consume each physical BOOT hold only once. Require release before accepting a second long press, including across an internal restart, so one prolonged hold cannot enter configuration and then erase credentials. Prefer performing the requested restart after button release.
 - [x] Give BOOT 1 (WPS only) and BOOT 2 (full provisioning) distinct system-LED blink patterns. BOOT 2 must remain recognizable while the device stays in configuration mode; preserve the existing Wi-Fi connection-loss overlay. BOOT 1 uses 500 ms on/off; BOOT 2 uses two 100 ms pulses per second.
 - [x] Put **Waves** first in the effect list, before **Solid**, and select it at startup. Keep all named FX.Style values unchanged.
 - [x] Ensure the status LED always provides visible feedback for every active effect: either the current color or an indication of effect progression, including effects whose first pixel is dark. Preserve light-off and brightness behavior.
-- [x] Blink the status LED only after an established Wi-Fi connection is lost, or while explicit configuration mode is active. Starting without saved credentials, or waiting for the first connection, must not by itself trigger disconnected-status blinking. Preserve the existing connection-loss overlay on the running effect without stopping or resetting that effect.
+- [x] Preserve historical status signalling when Wi-Fi credentials are saved: fast disconnected flashing, including the first connection attempt, and brief connected pulses. Color-light limits connected pulses to its initial 20-second window. Ordinary startup without credentials has no network warning. Explicit setup keeps its distinct blink patterns and effect overlays.
 - [ ] Revisit non-blocking Wi-Fi reconnection separately. Existing stored credentials with an unavailable router can currently cause waits in the shared device loop. This change is deferred from the initial offline-startup work, which does not require reconnection changes when no credentials exist.
 
 Implemented on 2026-10-30. Host policy and production-renderer regressions passed; isolated color-light-c3 (espressif32 8.0.0) and color-light-d1-mini (espressif8266 2.6.3) full builds passed. The two changed display S3 translation units also compiled successfully; the earlier full display build hit local Windows object-directory errors, so this is not a complete display firmware link or hardware acceptance. These checks are separate from device acceptance.
 
 - Maintainer confirmed on 2026-10-30: the first BOOT hold gives regular blinking, a separate second hold gives the double-pulse/reset indication, and the device operates normally with local controls without reconnecting to Wi-Fi after the reset.
-- [ ] Remaining smart-light acceptance: credential preservation on first entry, Waves-first ordering/default and status-LED feedback across effects.
-- [x] Separate provisioning services from credential erasure: with saved credentials, explicit entry selects BOOT 1 (WPS only, Bluetooth off); without credentials, it selects BOOT 2 (WPS + Bluetooth) without a redundant erase. A normal offline boot remains operational. Preserve the display's first-time BLE setup and non-destructive persistent Reconfigure/Restore; show WPS instructions during physical BOOT 1.
-- [x] Integrate automatic WPS in BOOT 1 and BOOT 2: preserve previous credentials in BOOT 1, erase them when advancing to BOOT 2, and save new credentials only after IP acquisition before an automatic normal restart after one second. Event callbacks publish flags; the main loop performs persistence/restart. Legacy SDK-only passwords are preserved before a new attempt.
-- [ ] Hardware WPS acceptance: BOOT 1 failed/interrupted attempt followed by reboot restores the previous network; BOOT 2 failure leaves no saved network; Bluetooth is absent in BOOT 1 and available in BOOT 2 on supported boards; successful WPS automatically restarts and reconnects with the new credentials. Verify on ESP32 and ESP8266.
-- [ ] Maintainer acceptance of smart-display first-time provisioning and persistent Reconfigure/Restore alongside temporary configuration.
+- [x] Confirm credential preservation after interrupted BOOT 1 WPS on color-light C3.
+- [ ] Complete any remaining Waves-first/effect-feedback and physical network loss/recovery checks for the release candidate.
+- [x] Separate provisioning services from credential erasure: the first BOOT hold/release always selects BOOT 1 (WPS only, Bluetooth off), with or without credentials. A second separate hold/release clears only Wi-Fi and selects BOOT 2 (WPS + Bluetooth). A normal offline boot remains operational. Preserve display first-time BLE setup and persistent Reconfigure/Restore; hide Restore Config in temporary BOOT modes.
+- [x] Integrate automatic WPS in BOOT 1 and BOOT 2: preserve previous credentials in BOOT 1, erase them when advancing to BOOT 2, and save credentials directly from the SDK after WPS success and restart normally after one second, without an association/IP wait. Event callbacks publish flags; the main loop performs persistence/restart. Legacy SDK-only passwords are preserved before a new attempt.
+- [x] Maintainer confirmed color-light C3 WPS success/save/restart, reconnection, preserved credentials after interrupted WPS, Wi-Fi reset and Bluetooth provisioning.
+- [x] Retry WPS after errors/timeouts with a nonblocking two-second pause, keeping setup active and credentials intact until successful pairing and storage. Host tests cover repeated failures/recovery on ESP32 and ESP8266.
+- [ ] Complete remaining target-specific acceptance, including ESP8266 WPS/reset and repeated router-timeout cycles on the final candidate.
+- [x] Maintainer confirmed Smart Display S3 configuration tests after the Bluetooth completion and temporary-screen fixes: Reconfigure completes into normal startup; temporary WPS does not show Restore Config.
+- [x] Fix live LED-count changes by resizing effect/output buffers together between frames, preserving existing colors, clipping script ranges and rolling back on allocation failure. Host regressions and maintainer color-light device test passed.
 
 ## Build platform and C3 memory policy
 
@@ -53,3 +65,7 @@ Implemented on 2026-10-30. Host policy and production-renderer regressions passe
 - [ ] Add explicit notification registration/unregistration with a bounded persistent recipient registry and defined handling of obsolete registrations.
 - [ ] Expose notification sending to JavaScript scripts using the existing Panel-compatible delivery path. Design bounded queued delivery so network waits do not block the main device/event loop.
 - [ ] Add Android's per-device "Receive notifications from this device" checkbox for Mini and HomeGenie Server. Registration must follow the user's explicit choice; Server's existing unregister endpoint alone does not implement Mini notifications.
+
+## Deferred light API consistency
+
+- [ ] Review optional `Control.Level` transition units and the Dimmer status callback that currently overrides the requested duration. Consider decimal seconds to match `Control.ColorHsb`, preserving motor behavior and verifying existing callers before changing the API. This work was explicitly deferred and is separate from the current consolidation.

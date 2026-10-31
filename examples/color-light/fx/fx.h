@@ -26,6 +26,7 @@
 #pragma once
 
 #include <cmath>
+#include <new>
 
 #include <service/api/devices/ColorLight.h>
 
@@ -37,13 +38,32 @@ AnimatedColor* animatedColors = nullptr;
 
 float cursorDirection = 1;
 
-inline void fx_init(const MatrixConfig& cfg, const LightColor& currentColor) {
-    // Allocate "animated" colors
-    animatedColors = new AnimatedColor[cfg.count];
-    for (int i = 0; i < cfg.count; i++) {
-        animatedColors[i] = new LightColor();
-        animatedColors[i]->setColor(currentColor.getHue(), currentColor.getSaturation(), currentColor.getValue(), 0);
+// The render loop owns this buffer. Prepare growth before releasing anything,
+// retaining existing LightColor objects and their in-progress transitions.
+uint16_t animatedColorCount = 0;
+inline bool fx_resize(uint16_t count, const LightColor& currentColor) {
+    if (count == animatedColorCount) return true;
+    auto replacement = new (std::nothrow) AnimatedColor[count]();
+    if (replacement == nullptr) return false;
+    const uint16_t retained = count < animatedColorCount ? count : animatedColorCount;
+    for (uint16_t i = 0; i < retained; ++i) replacement[i] = animatedColors[i];
+    for (uint16_t i = retained; i < count; ++i) {
+        replacement[i] = new (std::nothrow) LightColor();
+        if (replacement[i] == nullptr) {
+            for (uint16_t j = retained; j < i; ++j) delete replacement[j];
+            delete[] replacement;
+            return false;
+        }
+        replacement[i]->setColor(currentColor.getHue(), currentColor.getSaturation(), currentColor.getValue(), 0);
     }
+    for (uint16_t i = count; i < animatedColorCount; ++i) delete animatedColors[i];
+    delete[] animatedColors;
+    animatedColors = replacement;
+    animatedColorCount = count;
+    return true;
+}
+inline bool fx_init(const MatrixConfig& cfg, const LightColor& currentColor) {
+    return fx_resize(cfg.count, currentColor);
 }
 
 inline void fx_clear(const MatrixConfig& cfg, int transitionMs = 0) {

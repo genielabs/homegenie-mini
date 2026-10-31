@@ -123,11 +123,11 @@ namespace Net {
         // publish flags, without Preferences writes, delays or restarts.
         static bool temporaryWps;
         static WpsEventFlags temporaryWpsEvents;
-        enum class WpsPhase { Initial, Registering, Associating, Restart, Finished };
+        enum class WpsPhase { Initial, Registering, Restart, Retry };
         WpsPhase temporaryWpsPhase = WpsPhase::Initial;
         unsigned long temporaryWpsTimestamp = 0;
-        bool temporaryWpsConnectRequested = false;
         void temporaryWpsLoop();
+        void retryTemporaryWps(const char* reason);
         bool startTemporaryWps();
         void stopTemporaryWps();
         bool saveTemporaryWpsCredentials();
@@ -167,7 +167,6 @@ namespace Net {
         // WPS events handling
         static void WiFiEvent(WiFiEvent_t event) {
             if (temporaryWps) {
-                if (event == WIFI_EVENT_STAMODE_GOT_IP) temporaryWpsEvents.fetch_or(4u);
                 return;
             }
             switch(event) {
@@ -208,7 +207,6 @@ namespace Net {
                 if (event == ARDUINO_EVENT_WPS_ER_SUCCESS) temporaryWpsEvents.fetch_or(1u);
                 else if (event == ARDUINO_EVENT_WPS_ER_FAILED || event == ARDUINO_EVENT_WPS_ER_TIMEOUT)
                     temporaryWpsEvents.fetch_or(2u);
-                else if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP) temporaryWpsEvents.fetch_or(4u);
                 return;
             }
             switch (event) {

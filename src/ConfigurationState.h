@@ -7,8 +7,8 @@ namespace DeviceSetup {
 // Persisted values remain compatible with existing one-shot boot markers.
 enum class Mode : uint8_t { Normal = 0, Temporary = 1, Provisioning = 2 };
 
-inline Mode configurationEntryMode(bool hasCredentials, bool fullConfiguration = false) {
-    return fullConfiguration || !hasCredentials ? Mode::Provisioning : Mode::Temporary;
+inline Mode configurationEntryMode(bool fullConfiguration = false) {
+    return fullConfiguration ? Mode::Provisioning : Mode::Temporary;
 }
 
 template<class Storage>
@@ -66,31 +66,43 @@ private:
 
 class StatusIndicator {
 public:
-    bool update(uint32_t now, bool connected, Mode configuration) {
-        if (connected) everConnected = true;
+    bool update(uint32_t now, bool connected, Mode configuration, bool hasCredentials) {
         uint8_t next = configuration == Mode::Provisioning ? 3
-            : configuration == Mode::Temporary ? 2
-            : everConnected && !connected ? 1 : 0;
+            : configuration == Mode::Temporary ? 2 : 0;
         if (next != pattern) {
             pattern = next;
             changedAt = now;
         }
         uint32_t elapsed = uint32_t(now - changedAt);
         if (pattern == 3) {
-            // Two 100 ms flashes, then a 700 ms pause: full provisioning (WPS + Bluetooth where supported).
             uint32_t phase = elapsed % 1000;
             return phase < 100 || (phase >= 200 && phase < 300);
         }
         if (pattern == 2) return elapsed % 1000 < 500;
-        // Preserve the existing 100 ms on / 100 ms off connection-loss signal.
-        if (pattern == 1) return elapsed % 200 < 100;
-        return false;
+        if (!hasCredentials) {
+            normalOn = false;
+            normalChangedAt = now;
+            return false;
+        }
+        // Historical core timing: connected = 50 ms pulse after 1950 ms off;
+        // disconnected = 100 ms on / 100 ms off, including the first connection.
+        elapsed = uint32_t(now - normalChangedAt);
+        if (connected) {
+            if ((!normalOn && elapsed > 1950) || (normalOn && elapsed > 50)) {
+                normalOn = !normalOn;
+                normalChangedAt = now;
+            }
+        } else if (elapsed > 100) {
+            normalOn = !normalOn;
+            normalChangedAt = now;
+        }
+        return normalOn;
     }
 
 private:
-    bool everConnected = false;
+    bool normalOn = false;
     uint8_t pattern = 0;
-    uint32_t changedAt = 0;
+    uint32_t changedAt = 0, normalChangedAt = 0;
 };
 
 } // namespace DeviceSetup

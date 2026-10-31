@@ -31,6 +31,8 @@
 
 #include <Adafruit_NeoPixel.h>
 
+#include "AuxiliaryLed.h"
+
 #define COLOR_LIGHT_ADDRESS "C1"
 
 
@@ -41,7 +43,10 @@ class StatusLed: Task {
 private:
     // Optional RGB Status LED
     Adafruit_NeoPixel* statusLED = nullptr;
+    AuxiliaryLed* auxiliaryLed = nullptr;
     uint32_t effectColor = 0;
+    bool helloWorldActive = true;
+    bool statusSignalOn = false;
 
     // Status LED activity signal callback
     bool activityBlink = false;
@@ -49,14 +54,18 @@ private:
     LightColor currentColor;
     ColorLight* colorLight;
 
+    void writeColor(uint32_t color) {
+        if (statusLED != nullptr) statusLED->setPixelColor(0, color);
+        if (auxiliaryLed != nullptr) auxiliaryLed->setStatusColor(color);
+    }
+
     void blinkLed(bool isLedOn) {
-        if (statusLED == nullptr) return;
-        if (isLedOn) {
-            statusLED->setPixelColor(0, Adafruit_NeoPixel::Color(100, 100, 0));
-        } else {
-            statusLED->setPixelColor(0, effectColor);
-        }
-        statusLED->show();
+        // Keep the historical 20-second startup window for connected color-light.
+        // Loss and explicit setup must still show, including the held-button preview.
+        statusSignalOn = isLedOn && (helloWorldActive || !WiFi.isConnected()
+            || Config::statusLedConfigurationActive);
+        writeColor(statusSignalOn ? Adafruit_NeoPixel::Color(100, 100, 0) : effectColor);
+        show();
     }
 
 public:
@@ -65,20 +74,17 @@ public:
     }
 
     void setup() {
+        int statusLedPin = -1;
 #ifdef BOARD_HAS_RGB_LED
         // Get status LED config
         auto pin = Config::getSetting("stld-pin");
-        int statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
+        statusLedPin = pin.isEmpty() ? -1 : pin.toInt();
         if (statusLedPin >= 0) {
             int statusLedType = Config::getSetting("stld-typ", "82").toInt();
             int statusLedSpeed = Config::getSetting("stld-spd", "0").toInt();
             statusLED = new Adafruit_NeoPixel(1, statusLedPin, statusLedType + statusLedSpeed);
             statusLED->setPixelColor(0, 0, 0, 0);
             statusLED->begin();
-            // Status LED Blink callback
-            Config::statusLedCallback([this](bool isLedOn) {
-                blinkLed(isLedOn);
-            });
         }
 #endif
         // Setup master LED control module
@@ -89,31 +95,48 @@ public:
         colorLight->onSetColor([this](LightColor c) {
             currentColor.setColor(c.getHue(), c.getSaturation(), c.getValue(), 0);
             setEffectColor(c);
-            if (statusLED != nullptr) statusLED->show();
+            show();
         });
 
         auto hg = Service::HomeGenie::getInstance();
         hg->addAPIHandler(colorLight);
+
+        // Allocate the optional LED/module only when explicitly configured.
+        if (Config::getSetting("auld-pin", "-1").toInt() >= 0) {
+            auxiliaryLed = new AuxiliaryLed();
+            if (!auxiliaryLed->setup(statusLedPin)) {
+                delete auxiliaryLed;
+                auxiliaryLed = nullptr;
+            }
+        }
+        // One callback drives both indicators, including aux-only boards.
+        if (statusLED != nullptr || auxiliaryLed != nullptr) {
+            Config::statusLedCallback([this](bool isLedOn) { blinkLed(isLedOn); });
+            blinkLed(Config::isStatusLedOn);
+        }
     }
 
     void loop() override {
+        if (helloWorldActive && millis() > 20000 && Config::isDeviceConfigured()) {
+            helloWorldActive = false;
+            if (!activityBlink) blinkLed(Config::isStatusLedOn);
+        }
         if (activityBlink && millis() - activityBlinkTs > 50) {
             activityBlink = false;
-            if (statusLED != nullptr) {
-                if (Config::isStatusLedOn) blinkLed(true);
-                else statusLED->setPixelColor(0, effectColor);
-                statusLED->show();
-            }
+            blinkLed(Config::isStatusLedOn);
         }
     }
 
     void signalActivity(uint8_t r, uint8_t g, uint8_t b) {
-        if (statusLED != nullptr) {
-            statusLED->setPixelColor(0, r, g, b);
-            statusLED->show();
-        }
+        writeColor(Adafruit_NeoPixel::Color(r, g, b));
+        show();
         activityBlink = true;
         activityBlinkTs = millis();
+    }
+
+    void show() {
+        if (statusLED != nullptr) statusLED->show();
+        if (auxiliaryLed != nullptr) auxiliaryLed->show();
     }
 
     bool isEnabled() {
@@ -132,8 +155,8 @@ public:
 
     void setEffectColor(const LightColor& c) {
         effectColor = c.getColor();
-        if (statusLED != nullptr && !Config::isStatusLedOn && !activityBlink) {
-            statusLED->setPixelColor(0, effectColor);
+        if (!statusSignalOn && !activityBlink) {
+            writeColor(effectColor);
         }
     }
 

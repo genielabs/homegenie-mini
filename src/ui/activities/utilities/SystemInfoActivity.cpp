@@ -116,7 +116,7 @@ namespace UI { namespace Activities { namespace Utilities {
                 rotateScreenButton->setLocation(ox + center + 34, oy + center + 80);
             }
 
-        } else if (Config::isWiFiConfigured() || Config::system.systemMode.equals("config") || Config::isTemporaryConfiguration()) {
+        } else if (!Config::isTemporaryConfiguration() && Config::system.systemMode.equals("config")) {
 
             if (configDeviceButton == nullptr) {
                 configDeviceButton = new RoundButton(canvas, ox + 16, oy + center, 64);

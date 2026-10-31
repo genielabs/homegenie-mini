@@ -223,7 +223,7 @@ namespace Service {
             // Act only after a debounced release. A held button cannot trigger
             // both entry and reset, nor survive an internal restart as a new hold.
             if (hg->serviceButton.update(pressed, uint32_t(millis()), Config::ConfigureButtonPushInterval)) {
-                if (Config::isConfigurationMode()) {
+                if (Config::isTemporaryConfiguration()) {
                     if (!hg->getNetManager().getWiFiManager().configure(true)) {
                         Logger::error("Could not reset credentials and save configuration request.");
                     }
@@ -243,10 +243,13 @@ namespace Service {
             // Preview the action at the hold threshold so the user knows when
             // to release. Execution is still deferred until release.
             if (serviceButton.ready(uint32_t(millis()), Config::ConfigureButtonPushInterval)) {
-                mode = DeviceSetup::configurationEntryMode(Config::hasWiFiCredentials(), Config::isConfigurationMode());
+                mode = DeviceSetup::configurationEntryMode(Config::isTemporaryConfiguration());
             }
-            bool on = statusIndicator.update(uint32_t(millis()), WiFi.isConnected(), mode);
-            if (on != Config::isStatusLedOn) {
+            bool configurationActive = mode != DeviceSetup::Mode::Normal;
+            bool configurationChanged = configurationActive != Config::statusLedConfigurationActive;
+            Config::statusLedConfigurationActive = configurationActive;
+            bool on = statusIndicator.update(uint32_t(millis()), WiFi.isConnected(), mode, Config::hasWiFiCredentials());
+            if (on != Config::isStatusLedOn || configurationChanged) {
                 if (on) Config::statusLedOn(); else Config::statusLedOff();
             }
         }

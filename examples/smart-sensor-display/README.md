@@ -6,6 +6,30 @@ Smart multi-sensor device with display. HomeGenie Mini UI example application.
 - [Documentation and firmware install page](https://homegenie.it/mini/1.2/examples/smart-display/)
 
 
+## Wi-Fi setup
+
+For first-time setup, follow the instructions on the display to connect through
+Bluetooth with HomeGenie Panel.
+
+To change Wi-Fi from the display, select **Reconfigure** and complete setup in
+the app. The device saves the new credentials and restarts normally. **Restore
+Config** leaves Reconfigure without replacing the saved Wi-Fi settings.
+
+You can also use the BOOT button:
+
+- Hold it for **4 seconds and release** to start WPS. The LED flashes slowly;
+  press the WPS button on your router. Saved credentials are kept.
+- Hold and release it again for **4 seconds** to clear Wi-Fi credentials and
+  enable Bluetooth setup. The LED shows two quick flashes, repeated. Display
+  and other device settings are kept.
+
+WPS retries after errors or timeouts. Successful pairing saves the received
+credentials and restarts the device; normal startup connects to Wi-Fi.
+Temporary button setup ends on an ordinary restart or power cycle and does not
+show Restore Config. That button belongs to the on-screen Reconfigure workflow.
+
+See [configuration modes and device checks](../../docs/configuration-mode.md).
+
 ## Firmware configuration
 
 Besides the default system options and the *smart-sensor* options detailed in the `../smart-sensor/README.md` file,

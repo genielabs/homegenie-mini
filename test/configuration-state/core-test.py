@@ -23,6 +23,7 @@ getters='\n'.join(function(header,'static '+signature) for signature in [
 methods=function(config,'void Config::consumeConfigurationRequest()')+'\n'+function(config,'bool Config::restartInConfigurationMode(')
 reset=function(wifi,'bool WiFiManager::configure(')
 bluetooth=function((root/'src/net/BluetoothManager.cpp').read_text(encoding='utf-8'),'void BluetoothManager::begin()')
+buttonMethod=function((root/'src/HomeGenie.h').read_text(encoding='utf-8'), 'static void checkServiceButton()')
 harness=r'''
 #include <assert.h>
 #include <stdint.h>
@@ -82,6 +83,9 @@ public:
     static DeviceSetup::Mode configurationMode;
     static bool legacyDisplayConfiguration;
     static SystemConfig system;
+    static short ServiceButtonPin;
+    static bool wpsRequest,configurationRequested;
+    static const unsigned ConfigureButtonPushInterval=3000;
     static void consumeConfigurationRequest();
     static bool restartInConfigurationMode(bool fullConfiguration=false);
 '''
@@ -90,6 +94,8 @@ harness+=getters+'''
 DeviceSetup::Mode Config::configurationMode=DeviceSetup::Mode::Normal;
 bool Config::legacyDisplayConfiguration=false;
 SystemConfig Config::system;
+short Config::ServiceButtonPin=0;
+bool Config::wpsRequest=false,Config::configurationRequested=false;
 '''+methods+'\nnamespace Net {class WiFiManager{public:static bool configure(bool rebootIntoConfiguration=false);};\n'+reset+'''
 class BluetoothManager {
 public:
@@ -99,6 +105,65 @@ public:
     ~BluetoothManager(){delete SerialBTLE;}
 };
 '''+bluetooth+'\n}\n'
+harness+=r'''
+static unsigned long buttonTime=0;
+static bool buttonPressed=false;
+unsigned long millis(){return buttonTime;}
+enum {LOW=0};
+int digitalRead(short){return buttonPressed?LOW:1;}
+struct ButtonLogger {static void error(const char*){}};
+using Logger=ButtonLogger;
+struct ButtonNetwork {
+    Net::WiFiManager& getWiFiManager(){static Net::WiFiManager wifi;return wifi;}
+};
+class ButtonFixture {
+public:
+    DeviceSetup::ServiceButtonHold serviceButton;
+    static ButtonFixture* getInstance(){static ButtonFixture fixture;return &fixture;}
+    ButtonNetwork& getNetManager(){static ButtonNetwork network;return network;}
+'''+buttonMethod+r'''
+};
+void assertBluetooth(bool);
+void checkPhysicalSequence(){
+    // Saved/empty credentials, ordinary device, first-time display and persistent display setup.
+    for(bool saved:{false,true})for(unsigned displayMode=0;displayMode<3;++displayMode){
+        Store::failOpen=false;Store::failWrite=false;Store::numbers.clear();Store::strings.clear();
+        Config::configurationMode=DeviceSetup::Mode::Normal;
+        Config::legacyDisplayConfiguration=displayMode!=0;
+        Config::system.systemMode=displayMode==2?"config":"";
+        Config::system.ssid=saved?"saved-network":"";
+        Config::system.pass=saved?"saved-password":"";
+        Store::strings[CONFIG_KEY_wifi_ssid]=Config::system.ssid;
+        Store::strings[CONFIG_KEY_wifi_password]=Config::system.pass;
+        Store::strings["$leds-cnt"]="256";Store::strings["script"]="keep-script";
+        const auto original=Store::strings;
+        ButtonFixture::getInstance()->serviceButton=DeviceSetup::ServiceButtonHold{};
+        buttonTime=0;buttonPressed=false;ButtonFixture::checkServiceButton();
+        const unsigned calls=ESP.calls;
+        buttonPressed=true;buttonTime=100;ButtonFixture::checkServiceButton();
+        buttonTime=131;ButtonFixture::checkServiceButton();
+        buttonTime=4131;ButtonFixture::checkServiceButton();assert(ESP.calls==calls);
+        buttonPressed=false;buttonTime=4200;ButtonFixture::checkServiceButton();
+        buttonTime=4231;try{ButtonFixture::checkServiceButton();assert(false);}catch(const Restart&){}
+        assert(ESP.calls==calls+1 && Store::strings==original);
+        assert(Store::numbers[CONFIG_KEY_config_once]==uint32_t(DeviceSetup::Mode::Temporary));
+        Config::consumeConfigurationRequest();
+        assert(Config::isTemporaryConfiguration() && !Config::isFullConfiguration());
+        assert(!Config::isBluetoothConfiguration());assertBluetooth(false);
+        buttonPressed=true;buttonTime=4300;ButtonFixture::checkServiceButton();
+        buttonTime=4331;ButtonFixture::checkServiceButton();
+        buttonTime=8331;ButtonFixture::checkServiceButton();assert(ESP.calls==calls+1);
+        buttonPressed=false;buttonTime=8400;ButtonFixture::checkServiceButton();
+        buttonTime=8431;try{ButtonFixture::checkServiceButton();assert(false);}catch(const Restart&){}
+        assert(Store::numbers[CONFIG_KEY_config_once]==uint32_t(DeviceSetup::Mode::Provisioning));
+        assert(Store::strings[CONFIG_KEY_wifi_ssid].empty() && Store::strings[CONFIG_KEY_wifi_password].empty());
+        assert(Store::strings["$leds-cnt"]=="256" && Store::strings["script"]=="keep-script");
+        Config::system.ssid="";Config::system.pass="";Config::consumeConfigurationRequest();
+        assert(Config::isFullConfiguration() && Config::isBluetoothConfiguration());assertBluetooth(true);
+        Config::consumeConfigurationRequest();assert(!Config::isTemporaryConfiguration());
+    }
+}
+'''
 checks=r'''
 void assertBluetooth(bool expected){
     const unsigned previous=BleSerial::starts;BLEDevice::released=false;
@@ -144,24 +209,25 @@ int main(){
     assert(Config::isTemporaryConfiguration() && Config::isFullConfiguration() && Config::isBluetoothConfiguration());assertBluetooth(true);
     Config::configurationMode=DeviceSetup::Mode::Normal;Config::consumeConfigurationRequest();
     assert(Config::isDeviceConfigured() && !Config::hasWiFiCredentials());
-    // A request without credentials enters BOOT 2 without executing an erase.
+    // The first request without credentials is WPS-only and does not erase settings.
     WiFi.erased=false;
     const auto offline=Store::strings;
     try{Config::restartInConfigurationMode();assert(false);}catch(const Restart&){}
     Config::consumeConfigurationRequest();
-    assert(Config::isFullConfiguration() && Config::isBluetoothConfiguration());assertBluetooth(true);
+    assert(Config::isTemporaryConfiguration() && !Config::isFullConfiguration() && !Config::isBluetoothConfiguration());assertBluetooth(false);
     assert(!WiFi.erased && Store::strings==offline);
     // No sticky configuration on the next ordinary boot.
     Config::configurationMode=DeviceSetup::Mode::Normal;Config::consumeConfigurationRequest();
     assert(Config::isDeviceConfigured() && !Config::isBluetoothConfiguration());assertBluetooth(false);
-    // An old BOOT 1 marker with credentials removed becomes BOOT 2, not normal.
+    // Consuming BOOT 1 without credentials must keep WPS-only mode.
     Store::numbers[CONFIG_KEY_config_once]=1;Config::consumeConfigurationRequest();
-    assert(Config::isFullConfiguration() && Config::isBluetoothConfiguration());assertBluetooth(true);
+    assert(Config::isTemporaryConfiguration() && !Config::isFullConfiguration() && !Config::isBluetoothConfiguration());assertBluetooth(false);
     unsigned calls=ESP.calls;Store::failWrite=true;
     assert(!Config::restartInConfigurationMode() && ESP.calls==calls);
     Store::failWrite=false;Store::failOpen=true;
     assert(!Config::restartInConfigurationMode() && !Net::WiFiManager::configure(true) && ESP.calls==calls);
-    puts("PASS: production config entry/reset, one-shot reboot, credential preservation, 16x16 settings, WPS-only/BLE selection, offline entry, display legacy modes and storage failures");
+    checkPhysicalSequence();
+    puts("PASS: physical WPS-first/Bluetooth-second gestures, saved/empty credentials and display modes; production config entry/reset, one-shot reboot, credential preservation, 16x16 settings, WPS-only/BLE selection, offline entry, display legacy modes and storage failures");
 }
 '''
 with tempfile.TemporaryDirectory(prefix='mini-config-core-') as temp:

@@ -95,7 +95,10 @@ void setup() {
 #endif
 
         // Initialize FX buffer
-        fx_init(ledsConfig, statusLed.getCurrentColor());
+        if (!fx_init(ledsConfig, statusLed.getCurrentColor())) {
+            IO::Logger::error("|  x Not enough memory for LED effects");
+            isConfigured = false;
+        }
 
         // TODO: implement color/status recall on start
         // Set default color
@@ -115,6 +118,8 @@ void loop()
     homeGenie->loop();
 
     if (isConfigured) {
+
+        applyPendingLedCount();
 
         // Track the effect style switch
         static int lastStyleIndex = -1;

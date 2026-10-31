@@ -27,10 +27,9 @@ static bool release(ServiceButtonHold& button, uint32_t at) {
 }
 
 int main() {
-    assert(configurationEntryMode(true) == Mode::Temporary);
-    assert(configurationEntryMode(false) == Mode::Provisioning);
-    assert(configurationEntryMode(true, true) == Mode::Provisioning);
-    assert(configurationEntryMode(false, true) == Mode::Provisioning);
+    assert(configurationEntryMode() == Mode::Temporary);
+    assert(configurationEntryMode(false) == Mode::Temporary);
+    assert(configurationEntryMode(true) == Mode::Provisioning);
     StoredRequest store;
     assert(consumeBootRequest(store, "request") == Mode::Normal && store.writes == 0);
     assert(saveBootRequest(store, "request", Mode::Temporary));
@@ -81,27 +80,52 @@ int main() {
     assert(wrap.ready(uint32_t(0xfffffff0u + 31 + 3000), 3000));
     assert(release(wrap, uint32_t(0xfffffff0u + 31 + 3500)));
 
-    StatusIndicator led;
-    for (uint32_t t = 0; t < 10000; t += 37) assert(!led.update(t, false, Mode::Normal));
-    assert(!led.update(10000, true, Mode::Normal));
-    assert(led.update(11000, false, Mode::Normal));
-    assert(!led.update(11100, false, Mode::Normal));
-    assert(led.update(11200, false, Mode::Normal));
-    assert(!led.update(11300, true, Mode::Normal));
-    assert(led.update(12000, false, Mode::Temporary));
-    assert(led.update(12499, false, Mode::Temporary));
-    assert(!led.update(12500, false, Mode::Temporary));
-    assert(led.update(13000, false, Mode::Temporary));
-    assert(led.update(14000, false, Mode::Provisioning));
-    assert(!led.update(14100, false, Mode::Provisioning));
-    assert(led.update(14200, false, Mode::Provisioning));
-    assert(!led.update(14300, false, Mode::Provisioning));
-    assert(!led.update(14999, false, Mode::Provisioning));
-    // Configuration has precedence even if the radio is still connected.
-    assert(led.update(15000, true, Mode::Provisioning));
-    assert(!led.update(15100, true, Mode::Normal));
-    StatusIndicator ledWrap;
-    assert(ledWrap.update(0xffffff00u, false, Mode::Temporary));
-    assert(!ledWrap.update(uint32_t(0xffffff00u + 500), false, Mode::Temporary));
+    StatusIndicator offline;
+    for (uint32_t t = 0; t < 30000; t += 37)
+        assert(!offline.update(t, false, Mode::Normal, false));
+    StatusIndicator connected;
+    assert(!connected.update(0, true, Mode::Normal, true));
+    assert(!connected.update(1950, true, Mode::Normal, true));
+    assert(connected.update(1951, true, Mode::Normal, true));
+    assert(connected.update(2001, true, Mode::Normal, true));
+    assert(!connected.update(2002, true, Mode::Normal, true));
+    assert(!connected.update(3952, true, Mode::Normal, true));
+    assert(connected.update(3953, true, Mode::Normal, true));
+    // Disconnected on the first boot: no grace window and no expiry.
+    StatusIndicator lost;
+    assert(!lost.update(0, false, Mode::Normal, true));
+    assert(!lost.update(100, false, Mode::Normal, true));
+    assert(lost.update(101, false, Mode::Normal, true));
+    assert(lost.update(201, false, Mode::Normal, true));
+    assert(!lost.update(202, false, Mode::Normal, true));
+    for (uint32_t t = 303; t < 30000; t += 101)
+        assert(lost.update(t, false, Mode::Normal, true) == ((t / 101) % 2 != 0));
+    // Compare every sample with the original core loop through loss/reconnection.
+    StatusIndicator historical;
+    uint32_t oldTs = 0; bool oldOn = false;
+    for (uint32_t t = 0; t < 60000; t += 7) {
+        bool online = (t < 10000 || t >= 15000) && (t < 35000 || t >= 40000);
+        uint32_t age = t - oldTs;
+        if (online) {
+            if ((!oldOn && age > 1950) || (oldOn && age > 50)) {
+                oldOn = !oldOn; oldTs = t;
+            }
+        } else if (age > 100) { oldOn = !oldOn; oldTs = t; }
+        assert(historical.update(t, online, Mode::Normal, true) == oldOn);
+    }
+    StatusIndicator setup;
+    assert(setup.update(12000, false, Mode::Temporary, false));
+    assert(setup.update(12499, false, Mode::Temporary, false));
+    assert(!setup.update(12500, false, Mode::Temporary, false));
+    assert(setup.update(14000, true, Mode::Provisioning, true));
+    assert(!setup.update(14100, true, Mode::Provisioning, true));
+    assert(setup.update(14200, true, Mode::Provisioning, true));
+    assert(!setup.update(14300, true, Mode::Provisioning, true));
+    assert(!setup.update(14999, true, Mode::Provisioning, true));
+    StatusIndicator rollover;
+    const uint32_t base = 0xfffffff0u;
+    assert(rollover.update(base, false, Mode::Normal, true));
+    assert(!rollover.update(uint32_t(base + 101), false, Mode::Normal, true));
+    assert(rollover.update(uint32_t(base + 202), false, Mode::Normal, true));
     puts("PASS: one-shot requests and storage failure, hold/release, startup latch, debounce, rollover, offline/connected/lost Wi-Fi and configuration LED patterns");
 }

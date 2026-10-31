@@ -28,6 +28,7 @@
 #include <service/api/devices/Button.h>
 
 #include <Adafruit_NeoPixel.h>
+#include <atomic>
 
 #include "configuration.h"
 
@@ -118,6 +119,9 @@ uint8_t maxPower = DEFAULT_MAX_POWER;
 int16_t pixelsType;
 int16_t pixelsSpeed;
 Adafruit_NeoPixel* pixels = nullptr;
+// API callbacks publish only the requested size. Allocation and publication of
+// the new render state happen together in the Arduino loop, between frames.
+std::atomic<uint16_t> requestedLedCount{0};
 
 // Preset colors (normalized HSV)
 const int presetColorsCount = 7;
@@ -217,11 +221,34 @@ bool styleChanged = false;
 LinkedList<ColorLight*> colorLightList;
 
 inline void refresh() {
-    if (statusLed.isEnabled()) {
-        statusLed.getLed()->show();
-    }
+    statusLed.show();
     if (pixels != nullptr) {
         pixels->show();
+    }
+}
+
+inline void setupPixelModules()
+{
+    if (ledsPin >= 0) {
+        if (Config::getSetting(Configuration::LedsModules, "false").equals("true")) {
+            for (int i = colorLightList.size(); i < ledsConfig.count; i++) {
+                auto address = String("L") + String(i + 1);
+                auto name = String("LED ") + String(i + 1);
+                colorLightList.add(new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), name.c_str()));
+                colorLightList[i]->onSetColor([i](LightColor color) {
+                    // Handlers keep their identity across size changes. LEDs
+                    // outside the current output must never touch its buffer.
+                    if (pixels == nullptr || i >= ledsConfig.count) return;
+                    float pwr = ((float)maxPower / 100.0f);
+                    auto r = color.getRed() * pwr;
+                    auto g = color.getGreen() * pwr;
+                    auto b = color.getBlue() * pwr;
+                    pixels->setPixelColor(i, r, g, b);
+                    refresh();
+                });
+                homeGenie->addAPIHandler(colorLightList[i]);
+            }
+        }
     }
 }
 
@@ -259,22 +286,7 @@ inline void createPixels()
             pixels->setPixelColor(i, 0, 0, 0);
         }
 
-        if (Config::getSetting(Configuration::LedsModules, "false").equals("true")) {
-            for (int i = 0; i < ledsConfig.count; i++) {
-                auto address = String("L") + String(i + 1);
-                auto name = String("LED ") + String(i + 1);
-                colorLightList.add(new ColorLight(IO::IOEventDomains::HomeAutomation_HomeGenie, address.c_str(), name.c_str()));
-                colorLightList[i]->onSetColor([i](LightColor color) {
-                    float pwr = ((float)maxPower / 100.0f);
-                    auto r = color.getRed() * pwr;
-                    auto g = color.getGreen() * pwr;
-                    auto b = color.getBlue() * pwr;
-                    pixels->setPixelColor(i, r, g, b);
-                    refresh();
-                });
-                homeGenie->addAPIHandler(colorLightList[i]);
-            }
-        }
+        setupPixelModules();
 
     }
 }
@@ -294,6 +306,46 @@ inline void disposePixels() {
         pixels = nullptr;
     }
 
+}
+
+// Called only between frames, never from the option/API callback.
+inline void applyPendingLedCount() {
+    static uint16_t lastRequest = 0;
+    const uint16_t count = requestedLedCount.load();
+    if (count == 0 || count == lastRequest) return;
+    lastRequest = count;
+    if (count == ledsConfig.count) return;
+
+    Adafruit_NeoPixel* replacement = nullptr;
+    if (ledsPin >= 0) {
+        replacement = new (std::nothrow) Adafruit_NeoPixel(count, ledsPin, pixelsType + pixelsSpeed);
+        if (replacement != nullptr && replacement->numPixels() != count) {
+            delete replacement;
+            replacement = nullptr;
+        }
+    }
+    if ((ledsPin >= 0 && replacement == nullptr) || !fx_resize(count, statusLed.getCurrentColor())) {
+        delete replacement;
+        // NeoPixel destruction releases its GPIO; restore the retained output.
+        if (pixels != nullptr) pixels->begin();
+        IO::Logger::error("|  x Not enough memory to resize LED output; keeping %u LEDs", ledsConfig.count);
+        auto option = homeGenie->getDefaultModule()->getProperty(Options::Controller::LED_count);
+        if (option != nullptr) option->setValue(String(ledsConfig.count).c_str());
+        return;
+    }
+    // Clear removed LEDs before dropping the old hardware buffer.
+    disposePixels();
+    pixels = replacement;
+    ledsConfig.count = count;
+    ledsConfig.cols = ledsConfig.rows > 0 ? count / ledsConfig.rows : count;
+    if (pixels != nullptr) pixels->begin();
+    setupPixelModules();
+#ifndef DISABLE_AUTOMATION
+    // ALL resolves at playback time; explicit ranges are clipped by the player.
+    if (scriptHandler != nullptr) scriptHandler->startTime = millis();
+#endif
+    styleChanged = true;
+    levelChanged = true;
 }
 
 // Adds 2 "GpioButton" modules for handling manual control (on/off, level, switch fx, ...)
@@ -441,12 +493,8 @@ public:
 
         } else if (option->is(Options::Controller::LED_count)) {
 
-            disposePixels();
-            ledsConfig.count = max(1L, option->value.toInt());
-            if (ledsConfig.rows > 0) {
-                ledsConfig.cols = ledsConfig.count / ledsConfig.rows;
-            }
-            createPixels();
+            const long count = option->value.toInt();
+            requestedLedCount.store(static_cast<uint16_t>(count < 1 ? 1 : count > 1920 ? 1920 : count));
 
         } else if (option->is(Options::Controller::LED_rows)) {
 

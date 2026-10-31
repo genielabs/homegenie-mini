@@ -116,6 +116,7 @@ public:
     static short StatusLedPin;
     static bool StatusLedInvert;
     static bool isStatusLedOn;
+    static bool statusLedConfigurationActive;
     static bool wpsRequest;
     static bool configurationRequested;
     static bool restartInConfigurationMode(bool fullConfiguration = false);
@@ -157,16 +158,24 @@ public:
     static bool isWiFiConfigured() {
         return !isConfigurationMode() && hasWiFiCredentials();
     }
-    static void onWiFiConfigured() {
-        // reset system mode if it was previously forced to "config"
+    static bool onWiFiConfigured() {
+        // Commit the exit from persistent display Reconfigure before callers
+        // close Bluetooth or reboot. Keep temporary in-memory mode until reboot.
         Preferences preferences;
-        preferences.begin(CONFIG_SYSTEM_NAME, false);
+        if (!preferences.begin(CONFIG_SYSTEM_NAME, false)) return false;
         preferences.putString(CONFIG_KEY_system_mode, "");
+        preferences.putUInt(CONFIG_KEY_config_once, 0);
+        const bool saved = preferences.getString(CONFIG_KEY_system_mode, "config").isEmpty()
+            && preferences.getUInt(CONFIG_KEY_config_once, 1) == 0;
+        if (saved) {
+            system.systemMode = "";
+        }
         preferences.end();
-        // invoke callback if set
+        if (!saved) return false;
         if (wifiConfiguredCallback != nullptr) {
             wifiConfiguredCallback();
         }
+        return true;
     }
     static void setOnWiFiConfiguredCallback(std::function<void()> callback) {
         wifiConfiguredCallback = std::move(callback);

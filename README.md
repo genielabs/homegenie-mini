@@ -85,32 +85,61 @@ provisioning, while preserving JavaScript heap headroom. See
 
 HomeGenie Mini provides several specialized configurations and ready-to-use firmware templates. You can find detailed guides, 3D printing files, and schematics on the official website:
 
-- 📺 [**Smart Display & Control**](https://homegenie.it/mini/1.2/smart-display-control/): Transforms an ESP32 with a TFT touch display into a local smart dashboard using LVGL or LovyanGFX.
-- 🤖 [**Smart Car & Robotic Arm**](https://homegenie.it/mini/1.2/robotic-arm/): Configures multi-servo motor control (`smart-motor` firmware) for DIY robotics and Mecanum wheels.
-- 📷 [**Smart Camera + A.I.**](https://homegenie.it/mini/1.2/smart-camera-ai/): Implements video streaming and object tracking logic using ESP32-CAM models.
-- 💡 [**Smart Light / Mood Lamp**](https://homegenie.it/mini/1.2/smart-light/): Controls WS281x RGB LED strips with automated transitions, schedules, and custom animations.
-- 🌡️ [**Smart Sensor**](https://homegenie.it/mini/1.2/smart-sensor/): Gathers data from DHT22, LDR, and motion sensors with low overhead.
-- 📟 [**Remote Control & Gateway**](https://homegenie.it/mini/1.2/remote-control/): A multi-protocol transceiver gateway (Firefly Kit) to capture, replay, and bridge IR, generic 433/315 MHz RF (SYN modules or CC1101 SPI), and bidirectional **X10 RF** home automation devices.
+- 📺 [**Smart Display & Control**](https://homegenie.it/mini/1.2/examples/smart-display/): Transforms an ESP32 with a TFT touch display into a local smart dashboard using LVGL or LovyanGFX.
+- 🤖 [**Smart Car & Robotic Arm**](https://homegenie.it/robot-car/): Configures multi-servo motor control (`smart-motor` firmware) for DIY robotics and Mecanum wheels.
+- 📷 [**Smart Camera + A.I.**](https://homegenie.it/mini/1.2/examples/smart-camera/): Implements video streaming and object tracking logic using ESP32-CAM models.
+- 💡 [**Smart Light / Mood Lamp**](https://homegenie.it/smart-light/): Controls WS281x RGB LED strips with automated transitions, schedules, and custom animations.
+- 🌡️ [**Smart Sensor**](https://homegenie.it/mini/1.2/examples/smart-sensor/): Gathers data from DHT22, LDR, and motion sensors with low overhead.
+- 📟 [**Remote Control & Gateway**](https://homegenie.it/firefly/): A multi-protocol transceiver gateway (Firefly Kit) to capture, replay, and bridge IR, generic 433/315 MHz RF (SYN modules or CC1101 SPI), and bidirectional **X10 RF** home automation devices.
 
 ---
 
+Smart Light also supports matrix orientation settings and an optional auxiliary
+controller LED. The LED can follow the status LED or be controlled separately
+through C2. See the [color-light README](examples/color-light/README.md) for wiring
+and configuration.
+
 ## Connecting the Device
 
-Once the firmware is installed, the status LED will blink continuously, indicating the device is not yet connected to a network. You can connect it using one of these methods:
+You can use Smart Light's buttons and effects without Wi-Fi.
 
-### 1. Via Web Installer (Quickest)
-If you flashed your device using the browser-based Web Installer, you can pre-configure the Wi-Fi credentials. If you need to update them later, enter the new credentials, check **"Initialize only"** on the upload form, and click **Create device** to write only the configuration parameters without re-flashing the firmware.
+### Start Wi-Fi setup
 
-### 2. Via WPS (Wi-Fi Protected Setup)
-1. Enable WPS on your router.
-2. Press and hold the WPS button on your ESP device (often labeled as `BOOT` or `B`) for at least 5 seconds.
-3. The LED will turn solid while pairing, blink quickly for 5 seconds when connected, and then switch to a slow, steady pulse.
+Hold the **BOOT button for 4 seconds, then release it**. On some boards, this
+button is labeled B or IO0.
 
-### 3. Via Bluetooth (HomeGenie Panel)
-1. Turn on Bluetooth on your smartphone and open the [HomeGenie Panel](https://play.google.com/store/apps/details?id=com.glabs.homegenieplus) app.
-2. Go to the connection discovery page. The app will detect the new device over Bluetooth and open a setup wizard to configure the device name and Wi-Fi credentials.
+The first press always starts **WPS**, whether Wi-Fi has been configured before
+or not. Press the WPS button on your router to connect. The LED flashes
+**slowly and regularly**. Saved Wi-Fi settings are kept.
 
-Once connected, your device will appear in the HomeGenie Panel dashboard.
+To erase saved Wi-Fi settings and configure the device through Bluetooth, hold
+the **same button again for 4 seconds, then release it**. The device restarts,
+ready to be found through Bluetooth in HomeGenie Panel. The LED shows **two quick
+flashes, repeated**. Follow the app instructions to enter your network name and
+password. Your other settings are kept.
+
+WPS retries automatically after an error or timeout until you leave setup.
+When WPS pairing succeeds, the device saves the new Wi-Fi settings and
+restarts automatically. To leave setup without making changes, disconnect and
+reconnect the power.
+
+See [Device setup](https://homegenie.it/mini/1.2/device-setup/) for the complete
+instructions, or [configuration mode](docs/configuration-mode.md) for core behavior
+and device checks. Smart Display retains its on-screen setup options.
+
+### Configure with a USB cable
+
+In the web installer, select your device model, check the settings and enter the
+network name and password. Select **Initialize only** and click **Create device**
+to apply the settings without reinstalling the firmware.
+
+All selected settings in the form will be applied. Leave the Wi-Fi fields empty
+to keep the saved network name and password.
+
+### Add the device to HomeGenie Panel
+
+Open [HomeGenie Panel](https://play.google.com/store/apps/details?id=com.glabs.homegenieplus),
+search for devices and select your device to add it to the dashboard.
 
 ![HomeGenie Panel - Discovery: select device](data/images/phone/hg_panel_discovery_select.png)
 
@@ -145,7 +174,11 @@ You can configure the device or query its status directly from the serial termin
 - `#CONFIG:device-name <name>`
 - `#CONFIG:wifi-ssid <ssid>`
 - `#CONFIG:wifi-password <passwd>`
+- `#CONFIG:wifi-setup` (start Wi-Fi setup without clearing saved Wi-Fi settings)
 - `#VERSION` / `#RESET` / `#UPTIME` / `#WPS`
+
+The legacy `#WPS` command clears saved Wi-Fi settings. Use `#CONFIG:wifi-setup`
+to keep them.
 
 #### Get/Set Parameters
 - `#GET:<parameter_key>`
@@ -153,15 +186,15 @@ You can configure the device or query its status directly from the serial termin
 
 | Key        | Description                                    | Default          |
 |------------|------------------------------------------------|------------------|
-| `sys-rb-n` | Factory reset button GPIO#                     | -1 (disabled)    |
+| `sys-rb-n` | BOOT / Wi-Fi setup button GPIO#                     | -1 (disabled)    |
 | `sys-sl-n` | System status LED GPIO#                        | -1 (disabled)    |
 | `io-typ01` | I/O Ch.1 type ('Switch', 'Light', 'Dimmer')     |                  |
 | `io-pin01` | I/O Ch.1 GPIO#                                 | -1 (disabled)    |
 
-*Example setting status LED and reset button:*
+*Example setting the status LED and BOOT button:*
 ```text
-#SET:sys-sl-n=10
-#SET:sys-rb-n=0
+#SET:sys-sl-n 10
+#SET:sys-rb-n 0
 #RESET
 ```
 

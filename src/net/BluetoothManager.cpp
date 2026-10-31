@@ -108,6 +108,12 @@ namespace Net {
 
     void BluetoothManager::handleMessage(String& message) {
         if (message.equals("#RESET")) {
+            // Complete persistent display setup before tearing down the channel
+            // that delivered the configuration commands.
+            if (!Config::onWiFiConfigured()) {
+                IO::Logger::error("Could not complete Wi-Fi configuration; retry setup");
+                return;
+            }
 #ifndef DISABLE_BLUETOOTH_LE
             SerialBTLE->end();
 #endif
@@ -115,10 +121,6 @@ namespace Net {
             SerialBT.disconnect();
             SerialBT.end();
 #endif
-            // TODO: onWiFiConfigured should be moved to
-            //       a specific "#CONFIG:DONE" command instead of "#RESET"
-            Config::onWiFiConfigured();
-
             IO::Logger::info("RESET!");
         }
         // handle received command

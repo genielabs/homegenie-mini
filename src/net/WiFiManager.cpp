@@ -222,7 +222,7 @@ namespace Net {
             }
         }
 #ifdef ESP32
-        // WPS credentials stay in RAM until a new connection obtains an IP.
+        // WPS credentials stay in RAM until pairing succeeds and they are saved.
         if (esp_wifi_set_storage(WIFI_STORAGE_RAM) != ESP_OK) return false;
 #else
         disable_extra4k_at_link_time(); // Same WPS stack requirement as the Arduino core.
@@ -250,8 +250,22 @@ namespace Net {
     }
 
     bool WiFiManager::saveTemporaryWpsCredentials() {
-        const String ssid = WiFi.SSID();
-        const String password = WiFi.psk();
+        // WPS has supplied the station credentials, but association/DHCP need
+        // not have happened. SSID() may still be empty on newer Arduino cores.
+        char ssidBytes[33] = {}, passwordBytes[65] = {};
+#ifdef ESP32
+        wifi_config_t station = {};
+        if (esp_wifi_get_config(WIFI_IF_STA, &station) != ESP_OK) return false;
+        memcpy(ssidBytes, station.sta.ssid, 32);
+        memcpy(passwordBytes, station.sta.password, 64);
+#else
+        struct station_config station = {};
+        if (!wifi_station_get_config(&station)) return false;
+        memcpy(ssidBytes, station.ssid, 32);
+        memcpy(passwordBytes, station.password, 64);
+#endif
+        const String ssid = ssidBytes;
+        const String password = passwordBytes;
         if (ssid.isEmpty()) return false;
         Preferences preferences;
         if (!preferences.begin(CONFIG_SYSTEM_NAME, false)) return false;
@@ -269,57 +283,51 @@ namespace Net {
         if (!saved) return false;
         Config::system.ssid = ssid;
         Config::system.pass = password;
-        Config::onWiFiConfigured();
-        return true;
+        return Config::onWiFiConfigured();
+    }
+
+    void WiFiManager::retryTemporaryWps(const char* reason) {
+        stopTemporaryWps();
+        WiFi.disconnect();
+        temporaryWpsEvents.store(0);
+        temporaryWpsTimestamp = millis();
+        temporaryWpsPhase = WpsPhase::Retry;
+        IO::Logger::info("|  - %s; retrying WPS in 2 seconds", reason);
     }
 
     void WiFiManager::temporaryWpsLoop() {
         const unsigned long now = millis();
+        if (temporaryWpsPhase == WpsPhase::Retry) {
+            // Keep the configuration session and its indicator active. Back off
+            // without blocking local controls or the second BOOT gesture.
+            if (now - temporaryWpsTimestamp >= 2000) temporaryWpsPhase = WpsPhase::Initial;
+            else return;
+        }
         if (temporaryWpsPhase == WpsPhase::Initial) {
             if (startTemporaryWps()) {
                 temporaryWpsPhase = WpsPhase::Registering;
                 temporaryWpsTimestamp = now;
             } else {
-                stopTemporaryWps();
-                temporaryWpsPhase = WpsPhase::Finished;
-                IO::Logger::error("|  x Could not start WPS");
+                retryTemporaryWps("Could not start WPS");
             }
             return;
         }
         const unsigned events = temporaryWpsEvents.exchange(0);
         if (temporaryWpsPhase == WpsPhase::Registering) {
-            if ((events & 2u) || now - temporaryWpsTimestamp >= 40000) {
-                stopTemporaryWps();
-                temporaryWpsPhase = WpsPhase::Finished;
-                IO::Logger::info("|  - WPS ended without a new connection");
-            } else if (events & 1u) {
-                stopTemporaryWps();
-                temporaryWpsPhase = WpsPhase::Associating;
-                temporaryWpsTimestamp = now;
-            }
-        } else if (temporaryWpsPhase == WpsPhase::Associating) {
-            if (!temporaryWpsConnectRequested && now - temporaryWpsTimestamp >= 2000) {
-                // Retain the original settling delay, without blocking the
-                // event task or reconnecting with the OLD Config password.
-                temporaryWpsConnectRequested = true;
-#ifdef ESP32
-                esp_wifi_connect();
-#else
-                wifi_station_connect();
-#endif
-            } else if (temporaryWpsConnectRequested && (events & 4u) && WiFi.isConnected()) {
+            if (events & 1u) {
+                IO::Logger::info("|  - WPS pairing successful; saving Wi-Fi credentials");
+                // Read the credentials before disabling WPS. Normal startup
+                // will perform association and DHCP through the existing path.
                 if (saveTemporaryWpsCredentials()) {
+                    stopTemporaryWps();
                     temporaryWpsPhase = WpsPhase::Restart;
                     temporaryWpsTimestamp = now;
                     IO::Logger::info("|  - WPS configured; restarting");
                 } else {
-                    temporaryWpsPhase = WpsPhase::Finished;
-                    IO::Logger::error("|  x Could not save WPS credentials");
+                    retryTemporaryWps("Could not save WPS credentials");
                 }
-            } else if (now - temporaryWpsTimestamp >= 17000) {
-                WiFi.disconnect();
-                temporaryWpsPhase = WpsPhase::Finished;
-                IO::Logger::info("|  - WPS connection timed out");
+            } else if ((events & 2u) || now - temporaryWpsTimestamp >= 40000) {
+                retryTemporaryWps("WPS ended without a new connection");
             }
         } else if (temporaryWpsPhase == WpsPhase::Restart && now - temporaryWpsTimestamp >= 1000) {
             ESP.restart();
