@@ -28,6 +28,7 @@
  */
 
 #include "HomeGenie.h"
+#include "service/PanelNotifications.h"
 
 namespace Service {
     HomeGenie* HomeGenie::serviceInstance = nullptr;
@@ -101,6 +102,11 @@ namespace Service {
         for (int i = 0; i < handlers.size(); i++) {
             auto handler = handlers.get(i);
             handler->init();
+            auto modules = handler->getModuleList();
+            if (modules) {
+                for (int m = 0; m < modules->size(); ++m)
+                    PanelNotifications::restore(modules->get(m));
+            }
         }
 
 #ifndef DISABLE_AUTOMATION
@@ -156,6 +162,16 @@ namespace Service {
     void HomeGenie::loop() {
         Logger::verbose(":%s loop() >> BEGIN", HOMEGENIEMINI_NS_PREFIX);
 
+#ifndef DISABLE_AUTOMATION
+        static unsigned long lastCheck = 0;
+        if (millis() - lastCheck >= 1000) {
+            lastCheck = millis();
+            auto clock = netManager.getTimeClient();
+            if (clock->isTimeSet() || clock->getNTPClient().isUpdated())
+                Scheduler::checkOneTime(clock->getNTPClient().getEpochTime());
+        }
+#endif
+        PanelNotifications::loop();
         statusLedLoop();
         checkServiceButton();
 
@@ -188,7 +204,16 @@ namespace Service {
     }
 
 #ifndef DISABLE_AUTOMATION
-    void HomeGenie::onSchedule(Automation::Schedule *schedule) {
+    void HomeGenie::onOneTimeChanged(const String& name) {
+        auto change = std::make_shared<QueuedMessage>();
+        change->domain = "HomeAutomation.HomeGenie";
+        change->sender = "Scheduler";
+        change->event = "Scheduler.OneTimeChanged";
+        change->value = name;
+        getEventRouter().signalEvent(change);
+    }
+
+    void HomeGenie::onSchedule(Automation::Schedule* schedule) {
         if (netManager.getTimeClient()->isTimeSet() || netManager.getTimeClient()->getNTPClient().isUpdated()) {
 
             ProgramEngine::run(schedule);

@@ -39,9 +39,24 @@
 
 namespace Automation {
 
+    using ScheduleRef = std::shared_ptr<Schedule>;
+
+    // Registry and worker queue operations may run on different ESP32 tasks.
+    struct SchedulerLock {
+#ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
+        static SemaphoreHandle_t mutex() {
+            static auto handle = xSemaphoreCreateRecursiveMutex();
+            return handle;
+        }
+        SchedulerLock() { xSemaphoreTakeRecursive(mutex(), portMAX_DELAY); }
+        ~SchedulerLock() { xSemaphoreGiveRecursive(mutex()); }
+#endif
+    };
+
     class SchedulerListener {
     public:
         virtual void onSchedule(Schedule* schedule) = 0;
+        virtual void onOneTimeChanged(const String&) {}
     };
 
 #ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
@@ -61,11 +76,15 @@ namespace Automation {
             listener = l;
         };
         // adds or updates a schedule
-        static void addSchedule(Schedule*);
+        static bool addSchedule(Schedule*);
+        static bool formatLocalMinute(char (&output)[17], const struct tm& local);
+        static void checkOneTime(time_t now);
         static void enableSchedule(const char* name);
         static void disableSchedule(const char* name);
         static void deleteSchedule(const char* name);
-        static Schedule* get(const char* name);
+        static ScheduleRef find(const char* name);
+        static Schedule* get(const char* name) { return find(name).get(); }
+        static LinkedList<ScheduleRef> snapshot();
         static LinkedList<Schedule*> getScheduleList();
 #ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
         static void worker();
@@ -73,17 +92,18 @@ namespace Automation {
         void loop() override;
 #endif
         static void load();
-        static void save();
+        static bool save();
         static Schedule* getScheduleFromJson(JsonVariant json);
         static void getJson(JsonObject* jsonSchedule, Schedule* schedule);
-        static String getJsonList();
+        static String getJsonList(bool forStorage = false);
     private:
-        static LinkedList<Schedule*> scheduleList;
+        static LinkedList<ScheduleRef> scheduleList;
         // TODO: add LinkedList<RuntimeEvent*> runtimeEventList;  ( RuntimeEvent => {key/value} )
         //       - registerRuntimeEvent(const char* key, const char* description, ..)
         //       - handleRuntimeEvent(const char* key, const char* value, ..)
         static SchedulerListener* listener;
         static int lastCheckMinute;
+        static void tick();
         static ModuleReference* parseModuleReference(JsonObject& em);
     };
 

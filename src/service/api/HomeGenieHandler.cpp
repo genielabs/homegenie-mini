@@ -28,6 +28,8 @@
  */
 
 #include "HomeGenieHandler.h"
+#include "service/PanelNotifications.h"
+#include "service/PanelRelay.h"
 
 namespace Service { namespace API {
 
@@ -98,21 +100,44 @@ namespace Service { namespace API {
                         && doc.containsKey(ScheduleField::cronExpression)
                         && doc.containsKey(ScheduleField::script)) {
 
-                        // TODO: return a bool value for success/error
-                        Scheduler::addSchedule(Scheduler::getScheduleFromJson(doc));
-
-                        responseCallback->writeAll(ApiHandlerResponseText::OK);
+                        auto schedule = Scheduler::getScheduleFromJson(doc);
+                        const char* errorResponse = nullptr;
+                        if (!schedule->name.length()) {
+                            errorResponse = "A schedule name is required.";
+                        } else if (schedule->oneTime) {
+                            auto clock = homeGenie->getNetManager().getTimeClient();
+                            time_t now = clock->getNTPClient().getEpochTime();
+                            struct tm local;
+                            char minute[17];
+                            localtime_r(&now, &local);
+                            if (!(clock->isTimeSet() || clock->getNTPClient().isUpdated()) ||
+                                !Scheduler::formatLocalMinute(minute, local) ||
+                                strcmp(schedule->oneTimeMinute.c_str(), minute) <= 0)
+                                errorResponse = "Choose a valid future date and time.";
+                            else if (schedule->cronExpression.isEmpty())
+                                errorResponse = "A cron expression is required.";
+                        } else {
+                            auto previous = Scheduler::find(schedule->name.c_str());
+                            if (previous && previous->oneTime)
+                                errorResponse = "A one-time event already uses this name.";
+                        }
+                        if (errorResponse) delete schedule;
+                        else if (!Scheduler::addSchedule(schedule)) errorResponse = "Unable to save schedule.";
+                        if (errorResponse) {
+                            String result = String("{\"Status\":\"Error\",\"Message\":\"") + errorResponse + "\"}";
+                            responseCallback->writeAll(result.c_str());
+                        } else responseCallback->writeAll(ApiHandlerResponseText::OK);
                         return true;
                     }
                 }
 
                 return false;
             } else if (request->Command == AutomationApi::Scheduling_Get) {
-                auto schedule = Scheduler::get(request->getOption(0).c_str());
+                auto schedule = Scheduler::find(request->getOption(0).c_str());
                 if (schedule != nullptr) {
                     JsonDocument doc;
                     auto obj = doc.add<JsonObject>();
-                    Scheduler::getJson(&obj, schedule);
+                    Scheduler::getJson(&obj, schedule.get());
                     String output;
                     serializeJson(obj, output);
 
@@ -132,7 +157,7 @@ namespace Service { namespace API {
                     auto include = doc["include"].as<JsonArray>();
                     for (auto s: include) {
                         auto scheduleName = s["Value"].as<const char*>();
-                        auto schedule = Scheduler::get(scheduleName);
+                        auto schedule = Scheduler::find(scheduleName);
                         if (schedule != nullptr) {
                             bool exits = false;
                             auto boundModules = &schedule->boundModules;
@@ -157,7 +182,7 @@ namespace Service { namespace API {
                     auto exclude = doc["exclude"].as<JsonArray>();
                     for (auto s: exclude) {
                         auto scheduleName = s["Value"].as<const char*>();
-                        auto schedule = Scheduler::get(scheduleName);
+                        auto schedule = Scheduler::find(scheduleName);
                         if (schedule != nullptr) {
                             auto boundModules = &schedule->boundModules;
                             for (int i = 0; i < boundModules->size(); i++) {
@@ -283,6 +308,16 @@ namespace Service { namespace API {
             }
 #endif
         } else if (request->Address == "Config") {
+            if (request->Domain == IOEventDomains::HomeAutomation_HomeGenie && request->Command == "Notifications.RelayKey") {
+                responseCallback->writeAll(request->OptionsString.isEmpty() ? PanelRelay::updateKey(request->Data)
+                    : R"({"Status":"Error","Message":"Invalid relay key request"})");
+                return true;
+            }
+            bool registering = request->Command == "Notifications.Register";
+            if (request->Domain == IOEventDomains::HomeAutomation_HomeGenie && PanelNotifications::available() && (registering || request->Command == "Notifications.Unregister")) {
+                responseCallback->writeAll(PanelNotifications::updateDevice(registering, request->getOption(0), request->getOption(1)));
+                return true;
+            }
             if (request->Command == ConfigApi::Groups_List) {
                 responseCallback->beginGetLength();
                 homeGenie->writeGroupListJSON(responseCallback);
@@ -396,6 +431,11 @@ namespace Service { namespace API {
                     if (module != nullptr) {
                         for (ModuleParameter p: parameters) {
                             if (p.name.isEmpty()) continue;
+                            if (p.name == PanelNotifications::Feature && PanelNotifications::available() &&
+                                !PanelNotifications::saveOption(module, p.value)) {
+                                responseCallback->writeAll(R"({"Status":"Error","Message":"Cannot save notification setting"})");
+                                return true;
+                            }
                             module->setProperty(p.name, p.value);
                             auto m = std::make_shared<QueuedMessage>();
                             m->domain = domain;

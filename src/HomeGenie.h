@@ -104,6 +104,7 @@ namespace Service {
 #ifndef DISABLE_AUTOMATION
         // SchedulerListener events
         void onSchedule(Schedule* schedule) override;
+        void onOneTimeChanged(const String& name) override;
 #endif
 
         // ProgramStatusListener events

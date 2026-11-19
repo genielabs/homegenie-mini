@@ -1,13 +1,13 @@
 # Roadmap
 
-Status: 2026-10-31. This list separates implemented changes and observed results from pending release checks. See [CHANGELOG.md](CHANGELOG.md).
+Status: 2026-11-09. Release 1.2.69 includes offline Smart Light operation, the two-stage Wi-Fi setup flow, and the optional C2 LED. The maintainer reported 46 successful PlatformIO builds and confirmed provisioning on color-light C3 and Smart Display S3. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Auxiliary controller LED
 
 - [x] Add optional `auld-*` settings and C2 to color-light. Default to status/effect replication; provide a persistent `LED.mode` option for independent color control. Keep C1/matrix rendering and core blink rules, support boards without a built-in RGB indicator, and allocate the optional driver/module only when a separate GPIO is configured.
 - Host regressions passed with/without a built-in RGB indicator; the C3 7.1.3 firmware build and affected S3 8.0.0 translation units compiled successfully. The complete S3 firmware link was not run to completion in this Windows environment.
 - [x] Maintainer confirmed auxiliary controller LED operation after implementation. C3 GPIO 8 and S3 GPIO 9, type 82, are the selected controller wiring; defaults remain disabled on other installations.
-- [ ] Complete any remaining per-controller checks of independent C2 transitions, mode persistence and C1 isolation before release.
+- [ ] Verify independent C2 transitions, mode persistence and C1 isolation across controllers.
 - [ ] Consider a second strip/matrix output controlled by C2 in a future change; this first version drives only the auxiliary indicator.
 
 ## Current consolidation
@@ -43,12 +43,13 @@ Implemented on 2026-10-30. Host policy and production-renderer regressions passe
 
 - Maintainer confirmed on 2026-10-30: the first BOOT hold gives regular blinking, a separate second hold gives the double-pulse/reset indication, and the device operates normally with local controls without reconnecting to Wi-Fi after the reset.
 - [x] Confirm credential preservation after interrupted BOOT 1 WPS on color-light C3.
-- [ ] Complete any remaining Waves-first/effect-feedback and physical network loss/recovery checks for the release candidate.
+- [x] Maintainer confirmed the corrected matrix animation scripts in HomeGenie Panel on the tested matrix.
+- [ ] Verify effect feedback across the remaining effects and the status LED during a forced Wi-Fi loss and recovery.
 - [x] Separate provisioning services from credential erasure: the first BOOT hold/release always selects BOOT 1 (WPS only, Bluetooth off), with or without credentials. A second separate hold/release clears only Wi-Fi and selects BOOT 2 (WPS + Bluetooth). A normal offline boot remains operational. Preserve display first-time BLE setup and persistent Reconfigure/Restore; hide Restore Config in temporary BOOT modes.
 - [x] Integrate automatic WPS in BOOT 1 and BOOT 2: preserve previous credentials in BOOT 1, erase them when advancing to BOOT 2, and save credentials directly from the SDK after WPS success and restart normally after one second, without an association/IP wait. Event callbacks publish flags; the main loop performs persistence/restart. Legacy SDK-only passwords are preserved before a new attempt.
 - [x] Maintainer confirmed color-light C3 WPS success/save/restart, reconnection, preserved credentials after interrupted WPS, Wi-Fi reset and Bluetooth provisioning.
 - [x] Retry WPS after errors/timeouts with a nonblocking two-second pause, keeping setup active and credentials intact until successful pairing and storage. Host tests cover repeated failures/recovery on ESP32 and ESP8266.
-- [ ] Complete remaining target-specific acceptance, including ESP8266 WPS/reset and repeated router-timeout cycles on the final candidate.
+- [ ] Verify ESP8266 WPS/reset and repeated router-timeout cycles on hardware.
 - [x] Maintainer confirmed Smart Display S3 configuration tests after the Bluetooth completion and temporary-screen fixes: Reconfigure completes into normal startup; temporary WPS does not show Restore Config.
 - [x] Fix live LED-count changes by resizing effect/output buffers together between frames, preserving existing colors, clipping script ranges and rolling back on allocation failure. Host regressions and maintainer color-light device test passed.
 
@@ -56,12 +57,15 @@ Implemented on 2026-10-30. Host policy and production-renderer regressions passe
 
 - [x] Pin all eight C3 environments to espressif32@7.1.3 (Arduino 2.x), retaining current source features and Bluetooth provisioning. Other ESP32 targets keep the default espressif32@~8.0.0; ESP8266 remains on espressif8266@2.6.3. Keep shared compiler flags and accurate C3 SystemInfo platform metadata.
 - Maintainer measured about 126 KB free internal DRAM on the C3 with 7.1.3 and Wi-Fi connected. An 8.0.0 build with Bluetooth excluded still had about 99.5 KB free. The memory regression is not specific to the recent BOOT changes. See [platform policy](docs/build-platforms.md) and the local diagnostic report under artifacts/memory-comparison/.
-- [ ] Validate the complete mixed-platform build matrix for the next release, plus C3 BOOT/WPS/Bluetooth provisioning and JavaScript execution with the pinned platform.
+- [x] Maintainer confirmed all 46 PlatformIO environments built for 1.2.69, including the mixed-platform matrix. C3 BOOT/WPS/Bluetooth was verified on hardware.
+- [ ] Verify scheduled JavaScript execution on C3 with the pinned platform under the current Smart Light configuration.
 - [ ] Revisit Arduino 3.x on C3 when measured runtime heap is sufficient. Track SDK initialization/cleanup and IRAM placement; do not assume the entire gap is a BLE leak. A no-Bluetooth build is a diagnostic only, not the production workaround.
 
 ## Future work
 
-- [ ] Design Mini notifications interoperable with HomeGenie Panel, reviewing the existing delivery protocol before choosing the Mini API. This is future work and is not included in 1.2.68.
+- [ ] Implement the HomeGenie-compatible API for one-time scheduling so clients can schedule and cancel a device action. Verify local execution and removal after execution.
+
+- [ ] Design Mini notifications interoperable with HomeGenie Panel, reviewing the existing delivery protocol before choosing the Mini API.
 - [ ] Add explicit notification registration/unregistration with a bounded persistent recipient registry and defined handling of obsolete registrations.
 - [ ] Expose notification sending to JavaScript scripts using the existing Panel-compatible delivery path. Design bounded queued delivery so network waits do not block the main device/event loop.
 - [ ] Add Android's per-device "Receive notifications from this device" checkbox for Mini and HomeGenie Server. Registration must follow the user's explicit choice; Server's existing unregister endpoint alone does not implement Mini notifications.

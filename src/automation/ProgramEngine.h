@@ -58,9 +58,11 @@ namespace Automation {
         void loop() override;
 #endif
         static void run(Schedule*);
+        static void run(ScheduleRef);
         static std::function<void(void*, const char* , ResponseCallback*)> apiRequest;
     private:
-        static LinkedList<Schedule*> scheduleList;
+        static void runNext();
+        static LinkedList<ScheduleRef> scheduleList;
     };
 
 }

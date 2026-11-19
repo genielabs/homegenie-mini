@@ -100,8 +100,10 @@ namespace Service { namespace API {
                         }
                     }
                     IO::Logger::trace("%s parse() >> [Command = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.Command.c_str());
-                    IO::Logger::trace("%s parse() >> [Options = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.OptionsString.c_str());
-                    IO::Logger::trace("%s parse() >> [Data = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.Data.c_str());
+                    if (!apiCommand.Command.startsWith("Notifications.")) {
+                        IO::Logger::trace("%s parse() >> [Options = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.OptionsString.c_str());
+                        IO::Logger::trace("%s parse() >> [Data = '%s']", APIREQUEST_LOG_PREFIX, apiCommand.Data.c_str());
+                    }
                     return apiCommand;
             }
             i = command.indexOf('/');

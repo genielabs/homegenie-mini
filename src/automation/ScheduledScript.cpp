@@ -32,6 +32,7 @@
 #ifndef DISABLE_AUTOMATION
 
 #include "helpers/DuktapeMemory.h"
+#include "service/PanelNotifications.h"
 
 namespace Automation {
 
@@ -146,8 +147,11 @@ namespace Automation {
             "  onNext: function() {\n"
             "    return __onNext();\n"
             "  },\n"
+            "  program: { notifyPanel: function(message) { __notifyPanel(message); return this; } },\n"
             "  data: function(k, v) {\n"
-            "    __log(k, v);\n" // TODO: cross-instance persistent data(<key>, <value>) 2B implemented
+            "    if (typeof v === \"undefined\") return __scheduleData(String(k));\n"
+            "    __scheduleData(String(k), String(v));\n"
+            "    return this;\n"
             "  },\n"
             "  log: function(k, v) {\n"
             "    __log(k, v);\n"
@@ -156,7 +160,32 @@ namespace Automation {
             "    __pause(seconds);\n"
             "    return this;\n"
             "  }\n"
-            "};\n";
+            "};\n"
+            "const Program = { NotifyPanel: $$.program.notifyPanel };\n";
+
+    static duk_ret_t scheduleData(duk_context* ctx) {
+        const bool reading = duk_get_top(ctx) == 1;
+        duk_size_t keyLength;
+        const char* key = duk_require_lstring(ctx, 0, &keyLength);
+        duk_get_global_string(ctx, DUK_HIDDEN_SYMBOL("schedule"));
+        auto* schedule = static_cast<Schedule*>(duk_get_pointer(ctx, -1));
+        std::string name(key, keyLength);
+        if (reading) {
+            auto it = schedule->scriptData.find(name);
+            if (it == schedule->scriptData.end()) duk_push_string(ctx, "");
+            else duk_push_lstring(ctx, it->second.data(), it->second.size());
+            return 1;
+        }
+        duk_size_t length;
+        const char* value = duk_require_lstring(ctx, 1, &length);
+        schedule->scriptData[name].assign(value, length);
+        return 0;
+    }
+
+    static duk_ret_t notifyPanel(duk_context* ctx) {
+        PanelNotifications::notify(duk_require_string(ctx, 0));
+        return 0;
+    }
 
     ScheduledScript::ScheduledScript(Schedule *s) {
         schedule = s;
@@ -177,6 +206,11 @@ namespace Automation {
                           PROGRAMENGINE_NS_PREFIX, schedule->name.c_str());
             return;
         }
+
+        duk_push_c_lightfunc(ctx, scheduleData, DUK_VARARGS, 0, 0);
+        duk_put_global_string(ctx, "__scheduleData");
+        duk_push_c_lightfunc(ctx, notifyPanel, 1, 1, 0);
+        duk_put_global_string(ctx, "__notifyPanel");
 
         duk_push_c_lightfunc(ctx, helper_log, DUK_VARARGS, 0, 0);
         duk_put_global_string(ctx, "__log");

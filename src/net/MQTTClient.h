@@ -96,6 +96,12 @@ namespace Net {
         static void xorFilter(String* payload, String* clientKey = 0);
         static void andFilter(String* payload, String* clientKey = 0);
 
+        enum class Incoming { None, Request, Command };
+        Incoming incoming = Incoming::None;
+        String incomingPayload;
+        int incomingLength = 0;
+        void resetIncoming();
+        void receiveData(esp_mqtt_event_handle_t event);
         static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data);
     };
 

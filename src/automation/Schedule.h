@@ -30,6 +30,9 @@
 #ifndef HOMEGENIE_MINI_SCHEDULE_H
 #define HOMEGENIE_MINI_SCHEDULE_H
 
+#include <atomic>
+#include <map>
+#include <string>
 #include "data/Module.h"
 #include "ExtendedCron.h"
 #include "service/EventRouter.h"
@@ -65,6 +68,9 @@ namespace Automation {
 
     class Schedule {
     public:
+        // Volatile script state, owned by this schedule across JavaScript heaps.
+        std::map<std::string, std::string> scriptData;
+
         Schedule(const char *n, const char *d, const char *dt, const char *cs, const char *jscript) {
             name = n;
             description = d;
@@ -152,6 +158,11 @@ namespace Automation {
             }
         }
 
+        bool oneTime = false;
+        // Canonical local date and minute (yyyy-MM-dd HH:mm).
+        String oneTimeMinute;
+        bool oneTimeStarted = false;
+        std::atomic<bool> oneTimeFinished{false};
         bool isEnabled = true;
         bool triggered = false;
         bool onModuleEvent = false;

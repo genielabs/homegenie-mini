@@ -341,6 +341,17 @@ namespace Net {
         bool handle(WebServer &server, HTTPMethod requestMethod, String requestUri) override {
 #endif
             String uri = requestUri;
+            const char* relayPath = "/api/HomeAutomation.HomeGenie/Config/Notifications.RelayKey";
+            if (uri == relayPath || uri.startsWith("/api/HomeAutomation.HomeGenie/Config/Notifications.RelayKey/")) {
+                if (requestMethod != HTTP_POST) {
+                    server.send(405, "application/json", R"({"Status":"Error","Message":"POST required"})");
+                    return true;
+                }
+                if ((uri != relayPath && uri != String(relayPath) + "/") || !server.hasArg("plain") || server.args() != 1) {
+                    server.send(400, "application/json", R"({"Status":"Error","Message":"JSON body required"})");
+                    return true;
+                }
+            }
 
             for (int a = 0; a < server.args(); a++) {
                 String name = server.argName(a);

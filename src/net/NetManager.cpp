@@ -209,7 +209,13 @@ namespace Net {
     bool NetManager::onMqttRequest(void *sender, String &req, String &data, String &tid) {
         String topic = Config::system.id + "/MQTT.Listeners/" + tid + "/response";
         auto callback = MQTTResponseCallback((MQTTChannel*)mqttClient, &topic);
-        netRequestHandler->onNetRequest(sender, req.c_str(), &callback);
+        // The MQTT request envelope carries its JSON body separately from the command.
+        if (!data.isEmpty() &&
+            (!req.concat(req.endsWith("/") ? "plain/" : "/plain/") || !req.concat(data))) {
+            callback.writeAll(R"({"Status":"Error","Message":"Insufficient memory for request body"})");
+        } else {
+            netRequestHandler->onNetRequest(sender, req.c_str(), &callback);
+        }
         return false;
     }
 #endif

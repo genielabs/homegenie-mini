@@ -28,6 +28,7 @@
  */
 
 #include "EventRouter.h"
+#include "PanelNotifications.h"
 
 #include "HomeGenie.h"
 
@@ -43,13 +44,14 @@ namespace Service {
             auto domain = m->domain.c_str();
             auto sender = m->sender.c_str();
             auto eventPath = m->event.c_str();
+            PanelNotifications::event(m->domain, m->sender, m->event, m->value);
             Logger::info(":%s dequeued event >> [domain '%s' address '%s' event '%s']", EVENTROUTER_NS_PREFIX, domain, sender, eventPath);
 
 #ifndef DISABLE_AUTOMATION
             // Run schedules based on module events
-            auto scheduleList = Scheduler::getScheduleList();
+            auto scheduleList = Scheduler::snapshot();
             for (auto s : scheduleList) {
-                if (s->isEnabled && s->onModuleEvent) {
+                if (!s->oneTime && s->isEnabled && s->onModuleEvent) {
 
                     bool matchesConditionsProperty = false;
 

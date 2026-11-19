@@ -37,7 +37,7 @@ namespace Automation {
 
     using namespace IO;
 
-    LinkedList<Schedule*> ProgramEngine::scheduleList;
+    LinkedList<ScheduleRef> ProgramEngine::scheduleList;
     std::function<void(void*, const char* , ResponseCallback*)> ProgramEngine::apiRequest = nullptr;
 
     ProgramEngine::ProgramEngine() {
@@ -50,14 +50,21 @@ namespace Automation {
         ProgramEngine::apiRequest = std::move(ar);
     }
 
+    void ProgramEngine::runNext() {
+        ScheduleRef next;
+        {
+            SchedulerLock lock;
+            if (scheduleList.size()) next = scheduleList.shift();
+        }
+        if (!next) return;
+        ScheduledScript(next.get()).run();
+        if (next->oneTime) next->oneTimeFinished = true;
+    }
+
 #ifdef CONFIG_AUTOMATION_SPAWN_FREERTOS_TASK
     [[noreturn]] void ProgramEngine::worker() {
-        auto jobs = &ProgramEngine::scheduleList;
         for(;;) {
-            if (jobs->size() > 0) {
-                ScheduledScript scheduledScript(jobs->shift());
-                scheduledScript.run();
-            }
+            runNext();
             vTaskDelay(100 * portTICK_PERIOD_MS);
         }
     }
@@ -66,16 +73,18 @@ namespace Automation {
     void ProgramEngine::loop() {
         if (isRunning) return;
         isRunning = true;
-        auto jobs = &ProgramEngine::scheduleList;
-        if (jobs->size() > 0) {
-            ScheduledScript scheduledScript(jobs->shift());
-            scheduledScript.run();
-        }
+        runNext();
         isRunning = false;
     }
 #endif
 
     void ProgramEngine::run(Schedule* schedule) {
+        auto current = Scheduler::find(schedule->name.c_str());
+        if (current.get() == schedule) run(current);
+    }
+
+    void ProgramEngine::run(ScheduleRef schedule) {
+        SchedulerLock lock;
         bool exists = false;
         for (auto s : scheduleList) {
             if (s == schedule) {

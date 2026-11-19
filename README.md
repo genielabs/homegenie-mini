@@ -68,11 +68,11 @@ You can customize environments or define your own pin mappings and features by e
 
 Build platforms are selected by target to preserve internal RAM for automation:
 
-| Target | Platform | Arduino core |
-| --- | --- | --- |
-| ESP32-C3 (all C3 environments) | `espressif32@7.1.3` | 2.x |
-| Other ESP32 targets, including S2/S3/C6 | `espressif32@~8.0.0` | 3.x |
-| ESP8266 | `espressif8266@2.6.3` | Existing ESP8266 core |
+| Target                                  | Platform              | Arduino core |
+| --------------------------------------- | --------------------- | ------------ |
+| ESP32-C3 (all C3 environments)          | `espressif32@7.1.3`   |          2.x |
+| Other ESP32 targets, including S2/S3/C6 | `espressif32@~8.0.0`  |          3.x |
+| ESP8266                                 | `espressif8266@2.6.3` | ESP8266 core |
 
 The C3 exception retains the current firmware features, including Bluetooth
 provisioning, while preserving JavaScript heap headroom. See
@@ -186,9 +186,9 @@ to keep them.
 
 | Key        | Description                                    | Default          |
 |------------|------------------------------------------------|------------------|
-| `sys-rb-n` | BOOT / Wi-Fi setup button GPIO#                     | -1 (disabled)    |
+| `sys-rb-n` | BOOT / Wi-Fi setup button GPIO#                | -1 (disabled)    |
 | `sys-sl-n` | System status LED GPIO#                        | -1 (disabled)    |
-| `io-typ01` | I/O Ch.1 type ('Switch', 'Light', 'Dimmer')     |                  |
+| `io-typ01` | I/O Ch.1 type ('Switch', 'Light', 'Dimmer')    |                  |
 | `io-pin01` | I/O Ch.1 GPIO#                                 | -1 (disabled)    |
 
 *Example setting the status LED and BOOT button:*
